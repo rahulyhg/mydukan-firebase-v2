@@ -1,19 +1,35 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context="org.app.mydukan.fragments.Product_PricePlatformFragment">
 
-    <!-- TODO: Update blank fragment layout -->
     <TextView
-        android:id="@+id/platform_Name"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
-    <TextView
-        android:id="@+id/platform_price"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        android:id="@+id/title_header"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/listrow_topmargin_multiline"
+        android:text="Compare Price : "
+        android:layout_marginLeft="10dp"
+        android:textColor="#CC0033"
+        android:textSize="@dimen/mediumtextSize"
+        android:textStyle="normal|bold"
+        android:visibility="visible"
+        tools:ignore="HardcodedText,RtlHardcoded" />
 
-</FrameLayout>
+   <!-- <TextView
+        android:id="@+id/othersTextView"
+        android:layout_width="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/listrow_topmargin_multiline"
+        android:textColor="@color/text_color"
+        android:textSize="@dimen/smalltextSize"
+        tools:ignore="RtlHardcoded" />-->
+    <ListView
+        android:id="@+id/list_pricePlatform"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="2dp" />
+</LinearLayout>
