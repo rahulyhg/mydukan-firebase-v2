@@ -78,6 +78,7 @@ public class VidPlayer extends YouTubeBaseActivity implements
                    // path="D8Ert5yjMV4";
                 }
             }
+            // testing for git_gub
         }
  /*
         //initialization of adview in this activity//

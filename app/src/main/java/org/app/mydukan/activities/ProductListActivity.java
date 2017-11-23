@@ -255,6 +255,7 @@ public class ProductListActivity extends BaseActivity implements TabLayout.OnTab
                                             }
                                         }
                                     }
+
                                     HashMap<String, ArrayList<Product>> filteredList = new HashMap<String,ArrayList<Product>>();
                                     for (Map.Entry<String, ArrayList<Product>> entry : mProductList.entrySet()) {
                                         if(entry.getValue().size() == 0){

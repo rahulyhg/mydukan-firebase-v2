@@ -27,6 +27,18 @@ public class Product extends Object implements Serializable {
     private String mop = "";
     private String mrp = "";
 
+     private Platforms mPlatforms ;
+    public Platforms getmPlatforms() {
+        return mPlatforms;
+    }
+
+    public void setmPlatforms(Platforms mPlatforms) {
+        this.mPlatforms = mPlatforms;
+    }
+
+
+
+
     public String getMrp() {
         return mrp;
     }

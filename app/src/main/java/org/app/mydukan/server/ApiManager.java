@@ -35,6 +35,7 @@ import org.app.mydukan.data.Notification;
 import org.app.mydukan.data.Offer;
 import org.app.mydukan.data.Order;
 import org.app.mydukan.data.OrderProduct;
+import org.app.mydukan.data.Platforms;
 import org.app.mydukan.data.PriceDrop;
 import org.app.mydukan.data.Product;
 import org.app.mydukan.data.ProfileContants;
@@ -1671,6 +1672,14 @@ public class ApiManager {
                                     priceDrop.setDropamount(productAtt.child("pricedrop").child("dropamount").getValue(String.class));
                                     priceDrop.setStartdate(productAtt.child("pricedrop").child("startdate").getValue(Long.class));
                                     product.setPriceDrop(priceDrop);
+                                } catch (Exception e) {
+
+                                }
+                            }
+
+                           if (productAtt.hasChild("platforms")) {
+                                try {
+                                    product.setmPlatforms(productAtt.child("platforms").getValue(Platforms.class));
                                 } catch (Exception e) {
 
                                 }
