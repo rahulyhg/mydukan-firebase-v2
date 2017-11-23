@@ -6,6 +6,10 @@
     android:layout_marginBottom="@dimen/cardview_horizontal_margin"
     android:layout_marginTop="@dimen/cardview_horizontal_margin"
     android:background="@color/cardview_shadow_end_color">
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -231,4 +235,27 @@
                 </LinearLayout>
             </LinearLayout>
         </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/separator_color" >
+
+    <TextView
+        android:id="@+id/pricePlatform"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:text="compare Prices"
+        android:textSize="@dimen/smalltextSize"
+        android:padding="2dp"
+        android:layout_margin="2dp"
+        android:singleLine="true"
+        android:textColor="@color/googlered"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        android:ellipsize="marquee"/>
+    </LinearLayout>
+</LinearLayout>
 </RelativeLayout>

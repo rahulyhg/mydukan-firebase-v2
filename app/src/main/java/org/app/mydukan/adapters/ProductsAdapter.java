@@ -19,6 +19,7 @@ import org.app.mydukan.data.Product;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 
 public class ProductsAdapter extends
@@ -121,6 +122,7 @@ public class ProductsAdapter extends
         });
 
         holder.mProductName.setText(mApp.getUtils().toSameCase(currentProduct.getName().trim().toString()));
+
         if(mApp.getUtils().getPriceFormat(currentProduct.getMrp())!=null ){
             holder.mProductMRPPrice.setVisibility(View.VISIBLE);
             holder.mProductMRPPrice.setText(currentProduct.getMrp());
@@ -169,64 +171,7 @@ public class ProductsAdapter extends
                         break;
                 }
 
-            /*    if(Objects.equals(currentProduct.getMrp(), "1"))
-                {
-                    holder.mProductMRPPrice.setText("Jan");
-                }
-                else if(Objects.equals(currentProduct.getMrp(), "2"))
-                {
-                    holder.mProductMRPPrice.setText("Feb");
-                }
-                else if(Objects.equals(currentProduct.getMrp(), "3"))
-                {
-                    holder.mProductMRPPrice.setText("Mar");
-                }
 
-                else if(Objects.equals(currentProduct.getMrp(), "4"))
-                {
-                    holder.mProductMRPPrice.setText("Apr");
-                }
-
-                else if(Objects.equals(currentProduct.getMrp(), "5"))
-                {
-                    holder.mProductMRPPrice.setText("May");
-                }
-
-                else if(Objects.equals(currentProduct.getMrp(), "6"))
-                {
-                    holder.mProductMRPPrice.setText("Jun");
-                }
-                else if(Objects.equals(currentProduct.getMrp(), "7"))
-                {
-                    holder.mProductMRPPrice.setText("Jul");
-                }
-
-                else if(Objects.equals(currentProduct.getMrp(), "8"))
-                {
-                    holder.mProductMRPPrice.setText("Aug");
-                }
-
-                else if(Objects.equals(currentProduct.getMrp(), "9"))
-                {
-                    holder.mProductMRPPrice.setText("Sep");
-                }
-                else if(Objects.equals(currentProduct.getMrp(), "10"))
-                {
-                    holder.mProductMRPPrice.setText("Oct");
-                }
-
-                else if(Objects.equals(currentProduct.getMrp(), "11"))
-                {
-                    holder.mProductMRPPrice.setText("Nov");
-                }
-
-                else if(Objects.equals(currentProduct.getMrp(), "12"))
-                {
-                    holder.mProductMRPPrice.setText("Dec");
-                }
-                else {
-                    holder.mProductMRPPrice.setVisibility(View.GONE);
-                }*/
             }
         }
         if(mSupplierID!=null){
@@ -258,6 +203,22 @@ public class ProductsAdapter extends
             holder.mNewArrival.setVisibility(View.GONE);
         }
 
+        //======showing the product price platform.=====
+
+       if (currentProduct.getmPlatforms()!=null && currentProduct.getmPlatforms().size()>0){
+            holder.mpricePlatform.setVisibility(View.VISIBLE);
+            String comparePrice="";
+            Set<String> platformName=currentProduct.getmPlatforms().keySet();
+            for (String mplatform:currentProduct.getmPlatforms().keySet()) {
+                comparePrice=comparePrice+mplatform+": "+"₹ "+currentProduct.getmPlatforms().get(mplatform)+" | ";
+            }
+            holder.mpricePlatform.setText( mApp.getUtils().toCamelCase(comparePrice));
+           holder.mpricePlatform.setSelected(true);
+        }else{
+            holder.mpricePlatform.setVisibility(View.GONE);
+        }
+
+        //=================================
         if (currentProduct.getPriceDrop() != null && currentProduct.getPriceDrop().getStartdate() != 0l) {
             holder.mStatusLayout.setVisibility(View.VISIBLE);
             holder.mStatusLabel.setVisibility(View.VISIBLE);
@@ -367,6 +328,7 @@ public class ProductsAdapter extends
         private TextView mStatusLabelDate;
         private TextView mStockCount;
         private TextView mNewArrival;
+        private TextView mpricePlatform;
         private LinearLayout mAddToCart;
         private LinearLayout mCartoptionLayout;//optionLayout
         private ImageButton mInfobtn;
@@ -390,6 +352,8 @@ public class ProductsAdapter extends
             mProductPrice = (TextView) itemView.findViewById(R.id.price);
             mProductMOPPrice = (TextView) itemView.findViewById(R.id.mop_price);
             mProductMRPPrice = (TextView) itemView.findViewById(R.id.mrp_price);
+            mpricePlatform = (TextView) itemView.findViewById(R.id.pricePlatform);
+
         }
     }
 
