@@ -158,9 +158,12 @@ public class UserProfile extends BaseActivity implements View.OnClickListener {
     private void InitProfileView(ChattUser chattUser) {
 
 //        user_Profile_Name.setText(chattUser.getName());
-        user_Email_Id.setText(chattUser.getEmail());
-        if( chattUser.getPhotoUrl()!=null)
+        FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+
+        if( chattUser.getPhotoUrl()!=null && chattUser.getEmail() !=null)
         {
+            user_Email_Id.setText(chattUser.getEmail());
+
             Glide.with(getApplicationContext())
                     .load( chattUser.getPhotoUrl() )
                     .centerCrop()
@@ -174,6 +177,14 @@ public class UserProfile extends BaseActivity implements View.OnClickListener {
                     .transform(new CircleTransform(this))
                     .override(50,50)
                     .into(user_profile_pic);
+
+            if (firebaseUser != null) {
+                user_Email_Id.setText(firebaseUser.getEmail());
+            }
+            else {
+                user_Email_Id.setText("");
+            }
+
         }
     }
 
