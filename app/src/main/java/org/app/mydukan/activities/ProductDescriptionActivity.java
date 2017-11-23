@@ -74,7 +74,6 @@ public class ProductDescriptionActivity extends BaseActivity {
             try {
                 mProduct = (Product) extras.getSerializable(AppContants.PRODUCT);
                 mSupplier = (SupplierBindData) extras.getSerializable(AppContants.SUPPLIER);
-
             } catch (Exception ex) {
                 ex.printStackTrace();
             }

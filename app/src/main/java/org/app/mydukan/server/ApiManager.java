@@ -35,7 +35,6 @@ import org.app.mydukan.data.Notification;
 import org.app.mydukan.data.Offer;
 import org.app.mydukan.data.Order;
 import org.app.mydukan.data.OrderProduct;
-import org.app.mydukan.data.Platforms;
 import org.app.mydukan.data.PriceDrop;
 import org.app.mydukan.data.Product;
 import org.app.mydukan.data.ProfileContants;
@@ -1388,6 +1387,7 @@ public class ApiManager {
                                 }
                             }
 
+
                             if (searchStr != null) {
                                 if (!(product.getName().contains(searchStr.toLowerCase()))) {
                                     product = null;
@@ -1402,6 +1402,19 @@ public class ApiManager {
                                 product.setMop(productSnapshot.child("price").child("mop").getValue(String.class));
                                 product.setMrp(productSnapshot.child("price").child("mrp").getValue(String.class));
 
+                                if (productSnapshot.hasChild("platforms")) {
+                                    try {
+                                          HashMap<String,String> mPlatforms = new HashMap<>();
+                                        productSnapshot.child("platforms").getChildren();
+                                        for (DataSnapshot recipe : productSnapshot.child("platforms").getChildren()){
+                                            mPlatforms.put(recipe.getKey(),recipe.getValue(String.class));
+                                        }
+                                        product.setmPlatforms(mPlatforms);
+
+                                    } catch (Exception e) {
+
+                                    }
+                                }
                                 //Get the pricedrop json
                                 if (productSnapshot.hasChild("pricedrop")) {
                                     try {
@@ -1677,13 +1690,7 @@ public class ApiManager {
                                 }
                             }
 
-                           if (productAtt.hasChild("platforms")) {
-                                try {
-                                    product.setmPlatforms(productAtt.child("platforms").getValue(Platforms.class));
-                                } catch (Exception e) {
 
-                                }
-                            }
                             //Get the offer json
                             if (productAtt.hasChild("offer")) {
                                 try {

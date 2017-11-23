@@ -247,9 +247,9 @@
     <string name="yearly_plan">₹ 509/- for One Year</string>
 
     <string-array name="websites_array">
-    <item>₹ 51/- for One Month</item>
-   <item>₹ 201/- for Six Months</item>
-    <item>₹ 365/- for One Year \n**(Limited Period Offer)</item>
+        <item>₹ 51/- for One Month</item>
+        <item>₹ 201/- for Six Months</item>
+        <item>₹ 365/- for One Year \n**(Limited Period Offer)</item>
     </string-array>
     <!--
     <string name="lorem_ipsum">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis in porta purus. Proin bibendum mattis ante, vehicula semper nisl iaculis et. Aenean non blandit nulla. Nunc justo lacus, hendrerit in dapibus sit amet, laoreet non magna. Morbi consequat neque ac lectus dapibus, id eleifend elit semper. Aliquam pharetra velit tempor, porttitor elit ultrices, viverra lectus. Aenean at sapien risus.</string>

@@ -27,17 +27,16 @@ public class Product extends Object implements Serializable {
     private String mop = "";
     private String mrp = "";
 
-     private Platforms mPlatforms ;
-    public Platforms getmPlatforms() {
+
+    private HashMap<String,String> mPlatforms = new HashMap<>();
+
+    public HashMap<String, String> getmPlatforms() {
         return mPlatforms;
     }
 
-    public void setmPlatforms(Platforms mPlatforms) {
+    public void setmPlatforms(HashMap<String, String> mPlatforms) {
         this.mPlatforms = mPlatforms;
     }
-
-
-
 
     public String getMrp() {
         return mrp;
