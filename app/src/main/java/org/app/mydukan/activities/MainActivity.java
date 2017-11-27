@@ -1017,7 +1017,13 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         TextView headerText = (TextView) navigationView.getHeaderView(0).findViewById(R.id.emailID);
         FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-        headerText.setText(firebaseUser.getEmail());
+        if (firebaseUser != null) {
+            headerText.setText(firebaseUser.getEmail());
+        }
+        else
+        {
+            headerText.setText("");
+        }
        /* User user = mApp.getPreference().getUser(MainActivity.this);
         if (user != null && user.getUserinfo() != null) {
             if (!mApp.getUtils().isStringEmpty(user.getUserinfo().getEmailid())) {
