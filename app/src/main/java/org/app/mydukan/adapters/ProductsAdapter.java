@@ -213,7 +213,7 @@ public class ProductsAdapter extends
                 comparePrice=comparePrice+mplatform+": "+"₹ "+currentProduct.getmPlatforms().get(mplatform)+" | ";
             }
             holder.mpricePlatform.setText( mApp.getUtils().toCamelCase(comparePrice));
-           holder.mpricePlatform.setSelected(true);
+            holder.mpricePlatform.setSelected(true);
         }else{
             holder.mpricePlatform.setVisibility(View.GONE);
         }
