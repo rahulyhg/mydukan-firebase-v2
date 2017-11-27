@@ -25,6 +25,7 @@ import org.app.mydukan.server.ApiManager;
 import org.app.mydukan.server.ApiResult;
 import org.app.mydukan.utils.AppContants;
 
+import static org.app.mydukan.activities.ProductDescriptionActivity.fullpage;
 import static org.app.mydukan.activities.ProductDescriptionActivity.mApp;
 
 /**
@@ -85,6 +86,7 @@ public class KeySpecification extends Fragment {
         mOthersTextView = (TextView) mView.findViewById(R.id.othersTextView);
         ksListView = (ListView)  mView.findViewById(R.id.list_Keyspecification);
         fetchProductAndShow();
+
         return mView;
     }
     public void showProgress() {
@@ -166,8 +168,8 @@ public class KeySpecification extends Fragment {
             ksListView.setAdapter(adapter);
 
         } else {
-            mOthersTextView.setVisibility(View.GONE);
-            mOthersTextView.setText("ot available");
+            mOthersTextView.setVisibility(View.VISIBLE);
+            mOthersTextView.setText("Not available");
         }
     }
 
