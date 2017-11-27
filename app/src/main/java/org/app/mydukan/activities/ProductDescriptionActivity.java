@@ -164,21 +164,44 @@ public class ProductDescriptionActivity extends BaseActivity {
     private void setupTabIcons() {
 
         if(!mSupplier.getId().equals("RcJ1L4mWaZeIe2wRO3ejHOmcSxf2")){
-            // Supplier id for free Version "RcJ1L4mWaZeIe2wRO3ejHOmcSxf2" =====
-            final TextView tabOne = (TextView) LayoutInflater.from(this).inflate(R.layout.custom_tab, null);
-            tabOne.setText("Key Specifications");
-            // tabOne.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.ic_action_google, 0, 0);
-            tabLayout.getTabAt(0).setCustomView(tabOne);
 
-            final TextView tabTwo = (TextView) LayoutInflater.from(this).inflate(R.layout.custom_tab, null);
-            tabTwo.setText("Compare Price");
-            // tabTwo.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.ic_action_google, 0, 0);
-            tabLayout.getTabAt(1).setCustomView(tabTwo);
+            if (mProduct.getmPlatforms()!=null && mProduct.getmPlatforms().size()>0){
+         /*   if(mProduct.getmPlatforms().size()!=0)
+            {*/
+                // Supplier id for free Version "RcJ1L4mWaZeIe2wRO3ejHOmcSxf2" =====
+                final TextView tabOne = (TextView) LayoutInflater.from(this).inflate(R.layout.custom_tab, null);
+                tabOne.setText("Key Specifications");
+                // tabOne.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.ic_action_google, 0, 0);
+                tabLayout.getTabAt(0).setCustomView(tabOne);
 
-            final TextView tabThree = (TextView) LayoutInflater.from(this).inflate(R.layout.custom_tab, null);
-            tabThree.setText("Product Details");
-            // tabTwo.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.ic_action_google, 0, 0);
-            tabLayout.getTabAt(2).setCustomView(tabThree);
+                final TextView tabTwo = (TextView) LayoutInflater.from(this).inflate(R.layout.custom_tab, null);
+                tabTwo.setText("Compare Price");
+                // tabTwo.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.ic_action_google, 0, 0);
+                tabLayout.getTabAt(1).setCustomView(tabTwo);
+
+                final TextView tabThree = (TextView) LayoutInflater.from(this).inflate(R.layout.custom_tab, null);
+                tabThree.setText("Product Details");
+                // tabTwo.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.ic_action_google, 0, 0);
+                tabLayout.getTabAt(2).setCustomView(tabThree);
+            }
+
+            else {
+                // Supplier id for free Version "RcJ1L4mWaZeIe2wRO3ejHOmcSxf2" =====
+                final TextView tabOne = (TextView) LayoutInflater.from(this).inflate(R.layout.custom_tab, null);
+                tabOne.setText("Key Specifications");
+                // tabOne.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.ic_action_google, 0, 0);
+                tabLayout.getTabAt(0).setCustomView(tabOne);
+
+                final TextView tabTwo = (TextView) LayoutInflater.from(this).inflate(R.layout.custom_tab, null);
+                tabTwo.setText("Product Details");
+                // tabTwo.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.ic_action_google, 0, 0);
+                tabLayout.getTabAt(1).setCustomView(tabTwo);
+
+               /* final TextView tabThree = (TextView) LayoutInflater.from(this).inflate(R.layout.custom_tab, null);
+                tabThree.setText("Product Details");
+                // tabTwo.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.ic_action_google, 0, 0);
+                tabLayout.getTabAt(2).setCustomView(tabThree);*/
+            }
 
         }else{
             final TextView tabTwo = (TextView) LayoutInflater.from(this).inflate(R.layout.custom_tab, null);
@@ -216,9 +239,18 @@ public class ProductDescriptionActivity extends BaseActivity {
         /*adapter.addFrag(new KeySpecification(), "ONE");
         adapter.addFrag(new DescriptionFragment(), "TWO");*/
         if(!mSupplier.getId().equals("RcJ1L4mWaZeIe2wRO3ejHOmcSxf2")){
-            adapter.addFrag(new KeySpecification(), "ONE");
-            adapter.addFrag(new Product_PricePlatformFragment(), "TWO");
-            adapter.addFrag(new DescriptionFragment(), "THREE");
+
+            if (mProduct.getmPlatforms()!=null && mProduct.getmPlatforms().size()>0){
+           /* if(mProduct.getmPlatforms().size()!=0)
+            {*/
+                adapter.addFrag(new KeySpecification(), "ONE");
+                adapter.addFrag(new Product_PricePlatformFragment(), "TWO");
+                adapter.addFrag(new DescriptionFragment(), "THREE");
+            }
+            else{
+                adapter.addFrag(new KeySpecification(), "ONE");
+                adapter.addFrag(new DescriptionFragment(), "TWO");
+            }
 
         }else{
             adapter.addFrag(new DescriptionFragment(), "ONE");
