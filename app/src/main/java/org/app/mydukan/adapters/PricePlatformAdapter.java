@@ -142,50 +142,55 @@ public class PricePlatformAdapter extends BaseAdapter {
 */
 
         if(item!=null) {
+            ((TextView) result.findViewById(android.R.id.text1)).setText(mApp.getUtils().toCamelCase(item.getKey())+": ");
+            ((TextView) result.findViewById(android.R.id.text2)).setText("₹ "+item.getValue());
 
-            switch (item.getKey()) {
+        /*
+
+        switch (item.getKey()) {
+
+        // use switch case , if you are adding the images statically depending on the branch names.
 
                 case "amazon":
                     ((TextView) result.findViewById(android.R.id.text1)).setText(mApp.getUtils().toCamelCase(item.getKey())+": ");
-                    ((TextView) result.findViewById(android.R.id.text2)).setText(item.getValue());
+                    ((TextView) result.findViewById(android.R.id.text2)).setText("₹ "+item.getValue());
 
                     break;
-
-                case "snapdeal":
+     case "snapdeal":
                     ((TextView) result.findViewById(android.R.id.text1)).setText(mApp.getUtils().toCamelCase(item.getKey())+" :");
-                    ((TextView) result.findViewById(android.R.id.text2)).setText(item.getValue());
+                    ((TextView) result.findViewById(android.R.id.text2)).setText("₹ "+item.getValue());
                     break;
                 case "paytm":
                     ((TextView) result.findViewById(android.R.id.text1)).setText(mApp.getUtils().toCamelCase(item.getKey())+" :");
-                    ((TextView) result.findViewById(android.R.id.text2)).setText(item.getValue());
+                    ((TextView) result.findViewById(android.R.id.text2)).setText("₹ "+item.getValue());
                     break;
                 case "lockthedeal":
                     ((TextView) result.findViewById(android.R.id.text1)).setText(mApp.getUtils().toCamelCase(item.getKey())+" :");
-                    ((TextView) result.findViewById(android.R.id.text2)).setText(item.getValue());
+                    ((TextView) result.findViewById(android.R.id.text2)).setText("₹ "+item.getValue());
                     break;
                 case "shopclues":
                     ((TextView) result.findViewById(android.R.id.text1)).setText(mApp.getUtils().toCamelCase(item.getKey())+" :");
-                    ((TextView) result.findViewById(android.R.id.text2)).setText(item.getValue());
+                    ((TextView) result.findViewById(android.R.id.text2)).setText("₹ "+item.getValue());
                     break;
 
                 case "flipkart":
                     ((TextView) result.findViewById(android.R.id.text1)).setText(mApp.getUtils().toCamelCase(item.getKey())+" :");
-                    ((TextView) result.findViewById(android.R.id.text2)).setText(item.getValue());
+                    ((TextView) result.findViewById(android.R.id.text2)).setText("₹ "+item.getValue());
                     break;
 
                 case "gadget360":
                     ((TextView) result.findViewById(android.R.id.text1)).setText(mApp.getUtils().toCamelCase(item.getKey())+" :");
-                    ((TextView) result.findViewById(android.R.id.text2)).setText(item.getValue());
+                    ((TextView) result.findViewById(android.R.id.text2)).setText("₹ "+item.getValue());
                     break;
 
                 default:
                 {
                     ((TextView) result.findViewById(android.R.id.text1)).setText(mApp.getUtils().toCamelCase(item.getKey())+" :");
-                    ((TextView) result.findViewById(android.R.id.text2)).setText(item.getValue());
+                    ((TextView) result.findViewById(android.R.id.text2)).setText("₹ "+item.getValue());
                 }
                 break;
 
-            }
+            }*/
         }
 
            /* // TODO replace findViewById by ViewHolder

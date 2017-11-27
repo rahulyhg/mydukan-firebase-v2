@@ -510,7 +510,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             public void run() {
                 handler.post(Update);
             }
-        }, 8000, 8000);
+        }, 10000, 10000);
 
         // Pager listener over indicator
         indicator.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
