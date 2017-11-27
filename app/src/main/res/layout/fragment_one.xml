@@ -1,19 +1,17 @@
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:ads="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context=".fragments.OneFragment">
+    tools:context=".fragments.MyNetworkFragment">
 
     <com.google.android.gms.ads.AdView
         android:id="@+id/adView_myNetwork_one"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
         android:visibility="visible"
         ads:adSize="BANNER"
-        android:layout_alignParentBottom="true"
         ads:adUnitId="@string/banner_myNetwork_ad_unit_id" />
 
     <LinearLayout
@@ -21,32 +19,34 @@
         android:layout_height="wrap_content"
         android:layout_above="@id/adView_myNetwork_one"
         android:orientation="vertical">
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-        </RelativeLayout>
 
         <RelativeLayout
             android:id="@+id/container_MyNetwork"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_margin="@dimen/card_padding">
+            >
 
-
-            <android.support.v7.widget.RecyclerView
-                android:id="@+id/rv_list_feed"
+            <android.support.v4.widget.SwipeRefreshLayout
+                android:id="@+id/swipeToRefresh"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent" />
+                android:layout_height="match_parent">
 
-            <ProgressBar
-                android:id="@+id/pb"
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/rv_list_feed"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+
+            </android.support.v4.widget.SwipeRefreshLayout>
+            <TextView
+                android:id="@+id/emptyText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_centerHorizontal="true"
-                android:layout_centerVertical="true"
-                android:layout_gravity="center" />
-
+                android:layout_centerInParent="true"
+                android:gravity="center"
+                android:text="No feeds to display"
+                android:textSize="18sp"
+                android:visibility="gone"
+                />
 
         </RelativeLayout>
     </LinearLayout>

@@ -108,7 +108,7 @@ public class MyProfileActivity extends BaseActivity implements MyFeedAdapter.OnC
     String feedLink="";
     private MyDukan mApp;
 
-    //=========  1.distributor  2.Company Professional 3.Store Promoter / Sales Executive
+    //==================== 1.distributor  2.Company Professional 3.Store Promoter / Sales Executive
     public static final String FEED_ROOT = "feed";
     public static final String LIKE_ROOT = "like";
     public static final String FOLLOW_ROOT = "following";
@@ -196,7 +196,7 @@ public class MyProfileActivity extends BaseActivity implements MyFeedAdapter.OnC
                 if(!feedLink.isEmpty()){
                     boolean isLink= hyperLink(feedLink);
                     if(!isLink){
-                        showOkAlert(MyProfileActivity.this,"Error", "Please add the proper Link","ok");
+                        showOkAlert(MyProfileActivity.this,"Link Error", "Please add the proper Link","ok");
                     }
                 }
 
@@ -206,7 +206,7 @@ public class MyProfileActivity extends BaseActivity implements MyFeedAdapter.OnC
                 }
                 if (mApp.getUtils().isStringEmpty(imgString) && (imgString==null)&& !(mApp.getUtils().isStringEmpty(tv_FeedText.getText().toString()))  ){
                     sendPhotoFirebase(feedText,feedLink);
-                  //  Toast.makeText(MyProfileActivity.this, "Please add something to post.", Toast.LENGTH_LONG).show();
+                    //  Toast.makeText(MyProfileActivity.this, "Please add something to post.", Toast.LENGTH_LONG).show();
                 }
                 if (!mApp.getUtils().isStringEmpty(imgString) && !(imgString==null)) {
                     sendPhotoFirebase(imgString,feedText,feedLink);
@@ -255,7 +255,7 @@ public class MyProfileActivity extends BaseActivity implements MyFeedAdapter.OnC
         img_BackBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-               onBackPressed();
+                onBackPressed();
             }
         });
 
@@ -300,11 +300,9 @@ public class MyProfileActivity extends BaseActivity implements MyFeedAdapter.OnC
         intent.setAction(Intent.ACTION_GET_CONTENT);
         startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE_REQUEST);*/
 
-        /*
-        Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
+        /*Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
         photoPickerIntent.setType("image*//*");
-        startActivityForResult(photoPickerIntent, PICK_IMAGE_REQUEST);
-        */
+        startActivityForResult(photoPickerIntent, PICK_IMAGE_REQUEST);*/
         final CharSequence[] options = {"Take Photo", "Choose from Gallery", "Cancel"};
 
         AlertDialog.Builder builder = new AlertDialog.Builder(MyProfileActivity.this);
@@ -366,7 +364,7 @@ public class MyProfileActivity extends BaseActivity implements MyFeedAdapter.OnC
             //If permission is granted
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 //Displaying a toast
-              //  Toast.makeText(this, "Permission granted now you can read the storage", Toast.LENGTH_LONG).show();
+                //  Toast.makeText(this, "Permission granted now you can read the storage", Toast.LENGTH_LONG).show();
             } else {
                 //Displaying another toast if permission is not granted
                 Toast.makeText(this, "Oops you just denied the permission", Toast.LENGTH_LONG).show();
@@ -639,28 +637,18 @@ public class MyProfileActivity extends BaseActivity implements MyFeedAdapter.OnC
     }
 
     private void initProfileView(User profileDetails, ChattUser mChattUser) {
-        try {
-            if (profileDetails.getCompanyinfo() != null) {
-                tv_profile.setText(profileDetails.getCompanyinfo().getName());
-            } else if (profileDetails.getUserinfo() != null) {
-                tv_profile.setText(profileDetails.getUserinfo().getName());
-            } else {
-                tv_profile.setText("My Profile");
-            }
-            String profileRole = "";
-            if (profileDetails.getOtherinfo() != null) {
-                profileRole = profileDetails.getOtherinfo().getRole();
-            }
-            if (profileRole.isEmpty() && profileRole != null) {
-                tv_ProfileType.setVisibility(View.VISIBLE);
-                tv_ProfileType.setText(profileDetails.getOtherinfo().getRole());
-            } else {
-                tv_ProfileType.setVisibility(View.GONE);
-            }
-        }catch (Exception e){
-            Answers.getInstance().logCustom(new CustomEvent("MyNetwork_Profile ")
-                    .putCustomAttribute("UnLoading Profile", "roble inLoading company info,user Role"));
-            throw new IllegalArgumentException(e);
+        String cNAME=profileDetails.getCompanyinfo().getName();
+        if(cNAME!=null){
+            tv_profile.setText(profileDetails.getCompanyinfo().getName());
+        }else{
+            tv_profile.setText(profileDetails.getUserinfo().getName());
+        }
+        String profileRole=profileDetails.getOtherinfo().getRole();
+        if(profileRole.isEmpty()&&profileRole!=null){
+            tv_ProfileType.setVisibility(View.VISIBLE);
+            tv_ProfileType.setText(profileDetails.getOtherinfo().getRole());
+        }else{
+            tv_ProfileType.setVisibility(View.GONE);
         }
 
         tv_profilrEmail.setText(profileDetails.getUserinfo().getEmailid() + " " + profileDetails.getUserinfo().getNumber());
@@ -687,17 +675,17 @@ public class MyProfileActivity extends BaseActivity implements MyFeedAdapter.OnC
         */
 
         if (mChattUser.getPhotoUrl() != null) {
-            Glide.with(getApplicationContext())
+            Glide.with(MyProfileActivity.this)
                     .load(mChattUser.getPhotoUrl())
                     .centerCrop()
-                    .transform(new CircleTransform(this))
+                    .transform(new CircleTransform(MyProfileActivity.this))
                     .override(50, 50)
                     .into(tv_profileImg);
         } else {
-            Glide.with(getApplicationContext())
+            Glide.with(MyProfileActivity.this)
                     .load(R.drawable.ic_action_profile)
                     .centerCrop()
-                    .transform(new CircleTransform(this))
+                    .transform(new CircleTransform(MyProfileActivity.this))
                     .override(50, 50)
                     .into(tv_profileImg);
         }
@@ -715,7 +703,7 @@ public class MyProfileActivity extends BaseActivity implements MyFeedAdapter.OnC
                 if (flagFollow) {
                     if (dataSnapshot.child(auth.getUid()).hasChild(feed.getIdUser())) {
                         referenceFollow.child(auth.getUid()).child(feed.getIdUser()).removeValue();//removing userid to following list  .
-                        referenceIFollow.child(feed.getIdUser()).child(auth.getUid()).removeValue();//removing the user mCatId to distributor following list.
+                        referenceIFollow.child(feed.getIdUser()).child(auth.getUid()).removeValue();//removing the user id to distributor following list.
                         btn_Follow.setText("Follow");
                         flagFollow = false;
                         Answers.getInstance().logCustom(new CustomEvent("Mynetwork FeedPage")
@@ -723,7 +711,7 @@ public class MyProfileActivity extends BaseActivity implements MyFeedAdapter.OnC
                         showProgress(false);
                     } else {
                         referenceFollow.child(auth.getUid()).child(feed.getIdUser()).setValue(true);//adding userid to following list  .
-                        referenceIFollow.child(feed.getIdUser()).child(auth.getUid()).setValue(true);//adding the user mCatId to distributor following list.
+                        referenceIFollow.child(feed.getIdUser()).child(auth.getUid()).setValue(true);//adding the user id to distributor following list.
                         btn_Follow.setText("UnFollow");
                         flagFollow = false;
                         Answers.getInstance().logCustom(new CustomEvent("Mynetwork FeedPage")
@@ -743,10 +731,10 @@ public class MyProfileActivity extends BaseActivity implements MyFeedAdapter.OnC
     @Override
     public void onBackPressed()
     {
-       // code here to show dialog
-       // super.onBackPressed();
-        Intent intent = new Intent(this, MyNetworksActivity.class);
-        startActivity(intent);
+        // code here to show dialog
+        super.onBackPressed();
+//        Intent intent = new Intent(this, MyNetworksActivity.class);
+//        startActivity(intent);
         // optional depending on your needs
     }
 
@@ -817,7 +805,7 @@ public class MyProfileActivity extends BaseActivity implements MyFeedAdapter.OnC
                 }
                 break;
             case R.id.tv_contentLink:  // HyperLink click
-               String textHyper= feed.getText();
+                String textHyper= feed.getText();
                 if(textHyper.isEmpty()|| textHyper==null){
                     return;
                 }else{
@@ -836,7 +824,7 @@ public class MyProfileActivity extends BaseActivity implements MyFeedAdapter.OnC
         Matcher m = p.matcher(textHyper);//replace with string to compare*/
 
         List<String> containedUrls = new ArrayList<String>();
-       // String urlRegex = "((https?|ftp|gopher|telnet|file):((//)|(\\\\))+[\\w\\d:#@%/;$()~_?\\+-=\\\\\\.&]*)";
+        // String urlRegex = "((https?|ftp|gopher|telnet|file):((//)|(\\\\))+[\\w\\d:#@%/;$()~_?\\+-=\\\\\\.&]*)";
         String urlRegex ="^((https?|ftp)://|(www|ftp)\\.)?[a-z0-9-]+(\\.[a-z0-9-]+)+([/?].*)?$";
         Pattern pattern = Pattern.compile(urlRegex, Pattern.CASE_INSENSITIVE);
         Matcher urlMatcher = pattern.matcher(textHyper);
@@ -933,7 +921,7 @@ public class MyProfileActivity extends BaseActivity implements MyFeedAdapter.OnC
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.child(auth.getUid()).hasChild(feed.getIdUser())) {
                     referenceFollow.child(auth.getUid()).child(feed.getIdUser()).removeValue();//removing userid to following list  .
-                    referenceIFollow.child(feed.getIdUser()).child(auth.getUid()).removeValue();//removing the user mCatId to distributor following list.
+                    referenceIFollow.child(feed.getIdUser()).child(auth.getUid()).removeValue();//removing the user id to distributor following list.
                 }
             }
             @Override

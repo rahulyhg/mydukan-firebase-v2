@@ -65,19 +65,19 @@ public class Search_MyNetworkActivity extends AppCompatActivity implements Searc
         searchBTN = (Button) findViewById(R.id.button_Search);
         back_BTN= (ImageView) findViewById(R.id.back_BTN);
         initViews();
-       /// SearchSuggestaionData();
+        /// SearchSuggestaionData();
 
         searchBTN.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-               String mobNum= String.valueOf(searchMobNum.getText());
+                String mobNum= String.valueOf(searchMobNum.getText());
                 if(mobNum.length()!= 10){
                     Toast.makeText(Search_MyNetworkActivity.this, "Please enter 10 digit valid number", Toast.LENGTH_SHORT).show();
                     return;
                 }
-            if(!mobNum.isEmpty()){
-                mobNum="+91"+mobNum;
-                SearchUserData(mobNum);
+                if(!mobNum.isEmpty()){
+                    mobNum="+91"+mobNum;
+                    SearchUserData(mobNum);
                 }
             }
         });
@@ -180,7 +180,7 @@ public class Search_MyNetworkActivity extends AppCompatActivity implements Searc
             String phoneNumber = phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
             //   Toast.makeText(Search_MyNetworkActivity.this, "User Contact List: " + phoneNumber, Toast.LENGTH_SHORT).show();
             //  Toast.makeText(S
-           // showProgress(true);
+            // showProgress(true);
             DatabaseReference feedReference = FirebaseDatabase.getInstance().getReference("chat_USER");
             feedReference.orderByChild("phoneNumber").equalTo(phoneNumber).addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
@@ -197,9 +197,9 @@ public class Search_MyNetworkActivity extends AppCompatActivity implements Searc
                         initRecyclerView(chattUsers);
                         //  Toast.makeText(Search_MyNetworkActivity.this, "User: "+chattUsers.get(0).getName()+" "+chattUsers.get(0).getEmail(), Toast.LENGTH_SHORT).show();
                     }else {
-                      //  Toast.makeText(Search_MyNetworkActivity.this, "User Profile Not found for entered Mobile Number or enter the Mobile Number is Not exists" , Toast.LENGTH_SHORT).show();
+                        //  Toast.makeText(Search_MyNetworkActivity.this, "User Profile Not found for entered Mobile Number or enter the Mobile Number is Not exists" , Toast.LENGTH_SHORT).show();
                     }
-                  //showProgress(false);
+                    //showProgress(false);
                 }
                 @Override
                 public void onCancelled(DatabaseError databaseError) {
@@ -239,7 +239,7 @@ public class Search_MyNetworkActivity extends AppCompatActivity implements Searc
                     showProgress(false);
                     initRecyclerView(chattUsers);
 
-                   // Toast.makeText(Search_MyNetworkActivity.this, "User: "+chattUsers.get(0).getName()+" "+chattUsers.get(0).getEmail(), Toast.LENGTH_SHORT).show();
+                    // Toast.makeText(Search_MyNetworkActivity.this, "User: "+chattUsers.get(0).getName()+" "+chattUsers.get(0).getEmail(), Toast.LENGTH_SHORT).show();
                 }else {
                     showProgress(false);
                     Toast.makeText(Search_MyNetworkActivity.this, "User Profile Not found for entered Mobile Number or enter the Mobile Number is Not exists" , Toast.LENGTH_SHORT).show();
@@ -268,7 +268,7 @@ public class Search_MyNetworkActivity extends AppCompatActivity implements Searc
      */
     private void initViews(){
         mProgressBar = (ProgressBar)  findViewById(R.id.pb);
-        //    FloatingActionButton fab = (FloatingActionButton) mView.findViewById(R.mCatId.fab);
+        //    FloatingActionButton fab = (FloatingActionButton) mView.findViewById(R.id.fab);
         recyclerView = (RecyclerView) findViewById(R.id.rv_list_feed);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -280,16 +280,16 @@ public class Search_MyNetworkActivity extends AppCompatActivity implements Searc
     }
     @Override
     public void onBackPressed() {
-        //  super.onBackPressed();
-        Intent intent = new Intent(Search_MyNetworkActivity.this, MyNetworksActivity.class);
-        startActivity(intent);
+        super.onBackPressed();
+//        Intent intent = new Intent(Search_MyNetworkActivity.this, MyNetworksActivity.class);
+//        startActivity(intent);
     }
 
     @Override
     public void onClickProfileFeed(int position, View view) {
         ChattUser chattUser = chattUsers.get(position);
         switch (view.getId()) {
-           /* case R.mCatId.iv_like:  // Like_BTN
+           /* case R.id.iv_like:  // Like_BTN
                 addLike(feed);
                 break;*/
             case R.id.btn_follow:  // follow_BTN
@@ -314,14 +314,14 @@ public class Search_MyNetworkActivity extends AppCompatActivity implements Searc
                 if (flagFollow) {
                     if (dataSnapshot.child(auth.getUid()).hasChild(chattUser.getuId())) {
                         referenceFollow.child(auth.getUid()).child(chattUser.getuId()).removeValue();//removing userid to following list  .
-                        referenceIFollow.child(chattUser.getuId()).child(auth.getUid()).removeValue();//removing the user mCatId to distributor following list.
-                       // btn_Follow.setText("Follow");
+                        referenceIFollow.child(chattUser.getuId()).child(auth.getUid()).removeValue();//removing the user id to distributor following list.
+                        // btn_Follow.setText("Follow");
                         flagFollow = false;
                         showProgress(false);
                     } else {
                         referenceFollow.child(auth.getUid()).child(chattUser.getuId()).setValue(true);//adding userid to following list  .
-                        referenceIFollow.child(chattUser.getuId()).child(auth.getUid()).setValue(true);//adding the user mCatId to distributor following list.
-                      //  btn_Follow.setText("UnFollow");
+                        referenceIFollow.child(chattUser.getuId()).child(auth.getUid()).setValue(true);//adding the user id to distributor following list.
+                        //  btn_Follow.setText("UnFollow");
                         flagFollow = false;
                         showProgress(false);
                     }

@@ -28,6 +28,8 @@ import org.app.mydukan.utils.NotificationUtils;
 import java.io.File;
 import java.util.HashMap;
 
+import static org.app.mydukan.activities.IntentForwardingActivity.DEEP_LINK;
+
 public class LaunchActivity extends BaseActivity   {
 
     private String mUid;
@@ -255,10 +257,11 @@ public class LaunchActivity extends BaseActivity   {
                     openActivity();
                     Answers.getInstance().logCustom(new CustomEvent("Launcher_Page")
                             .putCustomAttribute("UserId", mUid));
-                   /* Intent intent = new Intent(LaunchActivity.this, MainActivity.class);
-                    intent.putExtra(AppContants.NOTIFICATION,notificationInfo);
+                    Intent intent = new Intent(LaunchActivity.this, MainActivity.class);
+//                    intent.putExtra(AppContants.NOTIFICATION,notificationInfo);
+                    intent.putExtra(DEEP_LINK,getIntent().getStringExtra(DEEP_LINK));
                     startActivity(intent);
-                    finish();*/
+                    finish();
                 } else if(mAppState == stateContants.PROFILE_SCREEN){
                     Intent intent = new Intent(LaunchActivity.this, UserProfile.class);
                     intent.putExtra(AppContants.VIEW_TYPE, AppContants.SIGN_UP);
@@ -275,10 +278,11 @@ public class LaunchActivity extends BaseActivity   {
 
                     Answers.getInstance().logCustom(new CustomEvent("Launcher_Page")
                             .putCustomAttribute("UserId", mUid));
-                    /*Intent intent = new Intent(LaunchActivity.this, MainActivity.class);
-                    intent.putExtra(AppContants.NOTIFICATION,notificationInfo);
+                    Intent intent = new Intent(LaunchActivity.this, MainActivity.class);
+//                    intent.putExtra(AppContants.NOTIFICATION,notificationInfo);
+                    intent.putExtra(DEEP_LINK,getIntent().getStringExtra(DEEP_LINK));
                     startActivity(intent);
-                    finish();*/
+                    finish();
                 }
             }
         }

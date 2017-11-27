@@ -1,14 +1,12 @@
 package org.app.mydukan.adapters;
 
 import android.content.Context;
-import android.support.v4.app.FragmentActivity;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import com.bumptech.glide.Glide;
@@ -27,9 +25,6 @@ import org.app.mydukan.R;
 import org.app.mydukan.activities.MyNetworksActivity;
 import org.app.mydukan.application.MyDukan;
 import org.app.mydukan.data.Feed;
-import org.app.mydukan.data.Supplier;
-import org.app.mydukan.fragments.OneFragment;
-import org.app.mydukan.utils.AppContants;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -90,8 +85,8 @@ public class FeedListAdapter extends
     public void onBindViewHolder(final ViewHolder holder, final int position) {
         currentFeed = feeds.get(position);
 
-       // String name = mApp.getUtils().toCamelCase(currentFeed.get.getName());
-      //  Feed feed = mList.get(position);
+        // String name = mApp.getUtils().toCamelCase(currentFeed.get.getName());
+        //  Feed feed = mList.get(position);
 
         holder.setTvName(currentFeed.getName());
         holder.setTvContent( currentFeed.getText() );
