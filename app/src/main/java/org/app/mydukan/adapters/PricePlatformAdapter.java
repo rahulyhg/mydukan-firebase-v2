@@ -143,7 +143,10 @@ public class PricePlatformAdapter extends BaseAdapter {
 
         if(item!=null) {
 
-            switch (item.getKey()) {
+            ((TextView) result.findViewById(android.R.id.text1)).setText(mApp.getUtils().toCamelCase(item.getKey())+": ");
+            ((TextView) result.findViewById(android.R.id.text2)).setText("₹ "+item.getValue());
+
+         /*   switch (item.getKey()) {
 
                 case "amazon":
                     ((TextView) result.findViewById(android.R.id.text1)).setText(mApp.getUtils().toCamelCase(item.getKey())+": ");
@@ -185,7 +188,7 @@ public class PricePlatformAdapter extends BaseAdapter {
                 }
                 break;
 
-            }
+            }*/
         }
 
            /* // TODO replace findViewById by ViewHolder

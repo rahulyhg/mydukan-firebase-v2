@@ -22,6 +22,8 @@ import org.app.mydukan.server.ApiManager;
 import org.app.mydukan.server.ApiResult;
 import org.app.mydukan.utils.AppContants;
 
+import java.util.Set;
+
 import static org.app.mydukan.activities.ProductDescriptionActivity.fullpage;
 import static org.app.mydukan.activities.ProductDescriptionActivity.mApp;
 
@@ -113,8 +115,6 @@ public class Product_PricePlatformFragment extends Fragment {
                             mProduct.setDescription(product.getDescription());
                             mProduct.setUrl(product.getUrl());
                             product.setmPlatforms(mProduct.getmPlatforms());
-
-
                         }
                         dismissProgress();
                         setupOthers();
@@ -130,6 +130,14 @@ public class Product_PricePlatformFragment extends Fragment {
     private void setupOthers(){
         String othersStr = "";
 
+
+
+
+
+        //=================================
+
+
+/*
         for (String attKey: mProduct.getmPlatforms().keySet()) {
             String value = mProduct.getmPlatforms().get(attKey);
 
@@ -161,19 +169,34 @@ public class Product_PricePlatformFragment extends Fragment {
                 }
             }
         }
+*/
 
-        if(!mApp.getUtils().isStringEmpty(othersStr)){
+
+        if (mProduct.getmPlatforms()!=null && mProduct.getmPlatforms().size()>0){
+
+        /*    String comparePrice="";
+            Set<String> platformName=mProduct.getmPlatforms().keySet();
+            for (String mplatform:mProduct.getmPlatforms().keySet()) {
+                comparePrice=comparePrice+mplatform+": "+"₹ "+mProduct.getmPlatforms().get(mplatform)+" | ";
+            }*/
+            PricePlatformAdapter adapter = new PricePlatformAdapter(context, mProduct.getmPlatforms());
+            list_pricePlatform.setAdapter(adapter);
+        }else{
+            mOthersTextView.setVisibility(View.VISIBLE);
+            mOthersTextView.setText("Not available");
+        }
+
+       /* if(!mApp.getUtils().isStringEmpty(othersStr)){
             // mOthersTextView.setText(othersStr);
             // showProgress(false);
             // KeySpecificationAdapter adapter = new KeySpecificationAdapter(context,  mProduct.getAttributes());
             // ksListView.setAdapter(adapter);
-            PricePlatformAdapter adapter = new PricePlatformAdapter(context, mProduct.getmPlatforms());
-            list_pricePlatform.setAdapter(adapter);
+
 
         } else {
-            mOthersTextView.setVisibility(View.VISIBLE);
+      mOthersTextView.setVisibility(View.VISIBLE);
             mOthersTextView.setText("Not available");
-        }
+        }*/
     }
 
 }
