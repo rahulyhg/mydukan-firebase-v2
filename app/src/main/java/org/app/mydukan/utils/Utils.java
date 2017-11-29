@@ -1,7 +1,6 @@
 package org.app.mydukan.utils;
 
 import android.util.Base64;
-import android.util.Log;
 
 import java.io.UnsupportedEncodingException;
 import java.text.DateFormat;
@@ -28,7 +27,59 @@ public class Utils {
     public static final String DemoPage_Fragment = "DemoPage_Fragment";
 
     private final static long MILLISECS_PER_DAY = 24 * 60 * 60 * 1000;
-    DateFormat df =  new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+    public static String dateFormatter(String dateStr, String sourceFormat, String targetFormat) {
+        String formattedDate = "";
+        try {
+            DateFormat originalFormat = new SimpleDateFormat(sourceFormat, Locale.ENGLISH);
+            DateFormat resultFormat = new SimpleDateFormat(targetFormat);
+            Date date = originalFormat.parse(dateStr);
+            formattedDate = resultFormat.format(date);
+
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return formattedDate;
+    }
+
+    public static String getCurrentdate() {
+        DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Date current_Date = new Date();
+        try {
+            current_Date = df.parse(String.valueOf(current_Date));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return String.valueOf(current_Date);
+    }
+
+    public static String getDisplayTimeText(String text) throws ParseException {
+        Calendar calendar = Calendar.getInstance();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        calendar.setTime(sdf.parse(text));
+
+        Calendar currentDate = Calendar.getInstance();
+        if (currentDate.get(Calendar.YEAR) != calendar.get(Calendar.YEAR)) {
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd MMM yyyy 'at' h:mm a");
+            return simpleDateFormat.format(calendar.getTime());
+        } else if (currentDate.get(Calendar.DAY_OF_YEAR) != calendar.get(Calendar.DAY_OF_YEAR)) {
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd MMM 'at' h:mm a");
+            return simpleDateFormat.format(calendar.getTime());
+        } else {
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("h:mm a");
+            return simpleDateFormat.format(calendar.getTime());
+        }
+    }
+
+    public static String formatNumber(String number) {
+        number = number.replaceAll(" ", "");
+        number = number.substring((number.length() - 10 >= 0) ?
+                (number.length() - 10) : 0);
+        number = "+91" + number;
+        return number;
+    }
+
     public boolean isStringEmpty(String input) {
         Boolean valid = false;
         if (input == null) {
@@ -114,20 +165,6 @@ public class Utils {
         return dateStr;
     }
 
-    public static String dateFormatter(String dateStr, String sourceFormat, String targetFormat) {
-        String formattedDate = "";
-        try {
-            DateFormat originalFormat = new SimpleDateFormat(sourceFormat, Locale.ENGLISH);
-            DateFormat resultFormat = new SimpleDateFormat(targetFormat);
-            Date date = originalFormat.parse(dateStr);
-            formattedDate = resultFormat.format(date);
-
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        return formattedDate;
-    }
-
     public long getMonthStartInMillSec() {
         Calendar calendar = Calendar.getInstance();
 
@@ -172,6 +209,7 @@ public class Utils {
         if (s.length() == 0) return s;
         return s.substring(0, 1).toUpperCase() + s.substring(1);
     }
+
     public String toSameCase(String string) {
         String result = "";
         if (!isStringEmpty(string)) {
@@ -204,36 +242,6 @@ public class Utils {
         } catch (Exception ex) {
         }
         return null;
-    }
-
-    public static String getCurrentdate() {
-        DateFormat df =  new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        Date current_Date = new Date();
-        try {
-            current_Date =df.parse(String.valueOf(current_Date));
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        return String.valueOf(current_Date);
-    }
-
-    public static String getDisplayTimeText(String text) throws ParseException {
-        Calendar calendar=Calendar.getInstance();
-        SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        calendar.setTime(sdf.parse(text));
-
-        Calendar currentDate=Calendar.getInstance();
-        if(currentDate.get(Calendar.YEAR)!=calendar.get(Calendar.YEAR)){
-            SimpleDateFormat simpleDateFormat=new SimpleDateFormat("dd MMM yyyy 'at' h:mm a");
-            return simpleDateFormat.format(calendar.getTime());
-        }else if(currentDate.get(Calendar.DAY_OF_YEAR) != calendar.get(Calendar.DAY_OF_YEAR)){
-            SimpleDateFormat simpleDateFormat=new SimpleDateFormat("dd MMM 'at' h:mm a");
-            return simpleDateFormat.format(calendar.getTime());
-        }
-        else{
-            SimpleDateFormat simpleDateFormat=new SimpleDateFormat("h:mm a");
-            return simpleDateFormat.format(calendar.getTime());
-        }
     }
 
 

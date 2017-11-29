@@ -2,11 +2,14 @@ package org.app.mydukan.data;
 
 import java.io.Serializable;
 
+import io.realm.annotations.PrimaryKey;
+import io.realm.annotations.Required;
+
 /**
  * Created by Shivayogi Hiremath on 20/07/2017.
  */
 @SuppressWarnings("serial")
-public class ChattUser  implements Serializable {
+public class ChattUser implements Serializable{
 
     private String name;
     private String email;

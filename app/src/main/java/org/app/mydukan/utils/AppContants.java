@@ -83,6 +83,10 @@ public class AppContants {
     public static final String FEED = "feed_data";
     public final static String FEED_ID = "feed_id";
 
+    //=============DB Constants==================
+    public final static String CHAT_USER="chat_USER";
+
+
 }
 
 

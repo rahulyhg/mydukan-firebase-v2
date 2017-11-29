@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="2dp"
+    android:layout_marginTop="2dp">
+
+    <RelativeLayout
+        android:id="@+id/layout_Profile"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="8dp">
+
+        <ImageView
+            android:id="@+id/img_profile"
+            android:layout_width="72dp"
+            android:layout_height="72dp"
+            android:padding="6dp" />
+
+        <LinearLayout
+            android:id="@+id/linearLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@+id/img_profile"
+            android:layout_toEndOf="@+id/img_profile"
+            android:layout_toRightOf="@+id/img_profile"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/tv_profileName"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_toLeftOf="@+id/btn_follow"
+                    android:layout_toStartOf="@+id/btn_follow"
+                    android:text="Profile Name"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/dukanName"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="(dukan name)" />
+                <TextView
+                    android:id="@+id/profile_Type"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignLeft="@+id/linearLayout"
+                    android:layout_alignStart="@+id/linearLayout"
+                    android:layout_below="@+id/linearLayout"
+                    android:layout_centerVertical="true"
+                    android:background="@drawable/bg_buttons"
+                    android:padding="6dp"
+                    android:text="Disributor"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/microtextSize" />
+            </LinearLayout>
+
+            <Button
+                android:layout_gravity="center_vertical"
+                android:id="@+id/btn_follow"
+                android:layout_width="wrap_content"
+                android:layout_height="28dp"
+
+                android:text="Follow"
+                android:textSize="12sp"
+                android:background="@color/colorPrimary"
+                android:textColor="@color/white"
+                />
+
+        </LinearLayout>
+
+
+
+
+
+        <TextView
+            android:id="@+id/tv_profileEmail"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/linearLayout"
+            android:layout_alignStart="@+id/linearLayout"
+            android:layout_below="@+id/linearLayout"
+            android:layout_centerVertical="true"
+            android:text="mydukanapp@gmail.com"
+            android:visibility="gone" />
+
+
+    </RelativeLayout>
+</android.support.v7.widget.CardView>

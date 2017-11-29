@@ -62,6 +62,7 @@ public class AdapterListFeed extends RecyclerView.Adapter<FeedViewHolder> {
             holder.setTvLink(feed.getLink());
         }
         holder.getLikes(feed);
+        holder.setDeletable(feed.getIdUser().equalsIgnoreCase(auth.getUid()));
 //        holder.changeFollowing(feed.getIdUser());
 
     }
@@ -85,7 +86,6 @@ public class AdapterListFeed extends RecyclerView.Adapter<FeedViewHolder> {
         super.onViewRecycled(holder);
         holder.tvLike.setText("loading...");
         holder.ivLike.setImageResource(R.drawable.ic_action_like);
-        // TODO: 02-10-2017 remove 'following' data
     }
 
 
