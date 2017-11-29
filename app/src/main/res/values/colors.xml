@@ -83,5 +83,6 @@
    <!-- New design blue color  -->
     <color name="new_btn_blue">#4285F4</color>
     <color name="new_btn_blue_baground">#EEEEEE</color>
+    <color name="cast_expanded_controller_seek_bar_progress_background_tint_color">#46FFFFFF</color>
 
 </resources>

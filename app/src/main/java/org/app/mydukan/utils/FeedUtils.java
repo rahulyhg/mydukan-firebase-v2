@@ -129,7 +129,7 @@ public class FeedUtils {
     public static void share(Feed feed, Context context) {
         String userId = feed.getIdUser();
         String feedId = feed.getIdFeed();
-
+//todo add share text
         String dynamicLink = "https://wy4d6.app.goo.gl/?link=https://mydukaan.com/feed_link/"
                 + userId + "/" + feedId + "&apn=org.app.mydukan&amv=105";
 

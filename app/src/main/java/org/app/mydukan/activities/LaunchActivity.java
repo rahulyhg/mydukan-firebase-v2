@@ -5,10 +5,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.CountDownTimer;
-import android.provider.ContactsContract;
-import android.support.annotation.NonNull;
 import android.util.Log;
-
 
 import com.crashlytics.android.answers.Answers;
 import com.crashlytics.android.answers.CustomEvent;
@@ -30,14 +27,38 @@ import java.util.HashMap;
 
 import static org.app.mydukan.activities.IntentForwardingActivity.DEEP_LINK;
 
-public class LaunchActivity extends BaseActivity   {
+public class LaunchActivity extends BaseActivity {
 
+    SharedPreferences sharedPreferences;
+    HashMap<String, Object> notificationInfo;
     private String mUid;
     private User user;
     private int mAppState;
     private MyDukan mApp;
-    SharedPreferences sharedPreferences;
-    HashMap<String, Object> notificationInfo;
+
+    //====================================delete cache data starts=========================
+    public static void deleteCache(Context context) {
+        try {
+            File dir = context.getCacheDir();
+            deleteDir(dir);
+        } catch (Exception ignored) {
+        }
+    }
+
+    public static boolean deleteDir(File dir) {
+        if (dir != null && dir.isDirectory()) {
+            String[] children = dir.list();
+            for (String aChildren : children) {
+                boolean success = deleteDir(new File(dir, aChildren));
+                if (!success) {
+                    return false;
+                }
+            }
+            return dir.delete();
+        } else
+            return dir != null && dir.isFile() && dir.delete();
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -66,7 +87,7 @@ public class LaunchActivity extends BaseActivity   {
 
 
         Bundle bundle = getIntent().getExtras();
-        if(bundle != null){
+        if (bundle != null) {
             getNotificationData(bundle);
         }
 
@@ -80,34 +101,13 @@ public class LaunchActivity extends BaseActivity   {
         new SplashScreenTimer(1000, 2000).start();
     }
 
-//====================================delete cache data starts=========================
-    public static void deleteCache(Context context) {
-        try {
-            File dir = context.getCacheDir();
-            deleteDir(dir);
-        } catch (Exception ignored) {}
-    }
-
-    public static boolean deleteDir(File dir) {
-        if (dir != null && dir.isDirectory()) {
-            String[] children = dir.list();
-            for (String aChildren : children) {
-                boolean success = deleteDir(new File(dir, aChildren));
-                if (!success) {
-                    return false;
-                }
-            }
-            return dir.delete();
-        } else
-            return dir != null && dir.isFile() && dir.delete();
-    }
-//====================================delete cache data ends=========================
+    //====================================delete cache data ends=========================
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         Log.d(MyDukan.LOGTAG, "onNewIntent bundle:" + intent);
         Bundle bundle = getIntent().getExtras();
-        if(bundle != null){
+        if (bundle != null) {
             mAppState = 9;
             getNotificationData(bundle);
         }
@@ -116,40 +116,40 @@ public class LaunchActivity extends BaseActivity   {
     private void openActivity() {
 
 //        String mUserid=mApp.getFirebaseAuth().getCurrentUser().getUid();
-        DatabaseReference referenceUser = FirebaseDatabase.getInstance().getReference().child("users/"+mUid);
+        DatabaseReference referenceUser = FirebaseDatabase.getInstance().getReference().child("users/" + mUid);
         referenceUser.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                if (dataSnapshot!=null){
-                    user=dataSnapshot.getValue(User.class);
-                       if (user!=null){
-                           Answers.getInstance().logCustom(new CustomEvent("Launcher_OpenPage")
-                                   .putCustomAttribute("UserId", mUid));
+                if (dataSnapshot != null) {
+                    user = dataSnapshot.getValue(User.class);
+                    if (user != null) {
+                        Answers.getInstance().logCustom(new CustomEvent("Launcher_OpenPage")
+                                .putCustomAttribute("UserId", mUid));
 
-                           String mob_vrify= user.getVrified_mobilenum();
-                           String location_verfy=user.getVerified_location();
+                        String mob_vrify = user.getVrified_mobilenum();
+                        String location_verfy = user.getVerified_location();
 //                           String cmpnyInfo_vrify= user.getVerified_CompanyInfo();
 
 
-                           if(user.getVrified_mobilenum() == null && mob_vrify.equals("false")){
+                        if (user.getVrified_mobilenum() == null && mob_vrify.equals("false")) {
 
-                               Answers.getInstance().logCustom(new CustomEvent("Launcher_OpenPage")
-                                       .putCustomAttribute("UserId_NewSignUpActivity", mUid));
+                            Answers.getInstance().logCustom(new CustomEvent("Launcher_OpenPage")
+                                    .putCustomAttribute("UserId_NewSignUpActivity", mUid));
 
-                               Intent intent = new Intent(LaunchActivity.this, NewSignUpActivity.class);
-                               intent.putExtra(AppContants.VIEW_TYPE, AppContants.SIGN_UP);
-                               startActivity(intent);
-                               finish();
-                           }else if(user.getVerified_location() == null && location_verfy.equals("false")){
+                            Intent intent = new Intent(LaunchActivity.this, NewSignUpActivity.class);
+                            intent.putExtra(AppContants.VIEW_TYPE, AppContants.SIGN_UP);
+                            startActivity(intent);
+                            finish();
+                        } else if (user.getVerified_location() == null && location_verfy.equals("false")) {
 
-                               Answers.getInstance().logCustom(new CustomEvent("Launcher_OpenPage")
-                                       .putCustomAttribute("UserId_UsersLocationAddress", mUid));
+                            Answers.getInstance().logCustom(new CustomEvent("Launcher_OpenPage")
+                                    .putCustomAttribute("UserId_UsersLocationAddress", mUid));
 
-                               Intent intent = new Intent(LaunchActivity.this, UsersLocationAddress.class);
-                               intent.putExtra(AppContants.VIEW_TYPE, AppContants.SIGN_UP);
-                               startActivity(intent);
-                               finish();
-                           }
+                            Intent intent = new Intent(LaunchActivity.this, UsersLocationAddress.class);
+                            intent.putExtra(AppContants.VIEW_TYPE, AppContants.SIGN_UP);
+                            startActivity(intent);
+                            finish();
+                        }
 
 
                       /* else if(cmpnyInfo_vrify.equals("false")){
@@ -158,26 +158,26 @@ public class LaunchActivity extends BaseActivity   {
                            startActivity(intent);
                            finish();
 
-                       }*/ else{
+                       }*/
+                        else {
 
 
-                               Answers.getInstance().logCustom(new CustomEvent("Launcher_Page")
-                                       .putCustomAttribute("UserId", mUid));
-                        Intent intent = new Intent(LaunchActivity.this, MainActivity.class);
-                        intent.putExtra(AppContants.NOTIFICATION,notificationInfo);
-                        startActivity(intent);
+                            Answers.getInstance().logCustom(new CustomEvent("Launcher_Page")
+                                    .putCustomAttribute("UserId", mUid));
+                            Intent intent = new Intent(LaunchActivity.this, MainActivity.class);
+                            intent.putExtra(AppContants.NOTIFICATION, notificationInfo);
+                            startActivity(intent);
+                            finish();
+
+                        }
+                    } else {
+
+                        Answers.getInstance().logCustom(new CustomEvent("Launcher_Page")
+                                .putCustomAttribute("UserId_Null", mUid));
+
+                        startActivity(new Intent(LaunchActivity.this, LoginActivity.class));
                         finish();
-
                     }
-                   }
-                   else{
-
-                           Answers.getInstance().logCustom(new CustomEvent("Launcher_Page")
-                                   .putCustomAttribute("UserId_Null", mUid));
-
-                           startActivity(new Intent(LaunchActivity.this, LoginActivity.class));
-                           finish();
-                       }
                 }
             }
 
@@ -189,20 +189,19 @@ public class LaunchActivity extends BaseActivity   {
 
     }
 
-    private void getNotificationData(Bundle payload){
+    private void getNotificationData(Bundle payload) {
         Log.d(MyDukan.LOGTAG, "getNotificationData called:");
 
-        if(payload.size() > 0){
+        if (payload.size() > 0) {
             NotificationUtils utils = new NotificationUtils(LaunchActivity.this);
             //mUid = mApp.getFirebaseAuth().getCurrentUser().getUid();
             String message = null;
             String command = payload.getString(utils.COMMAND);
 
 
-
             //String supplierId = null;
 
-            if(!mApp.getUtils().isStringEmpty(command)) {
+            if (!mApp.getUtils().isStringEmpty(command)) {
                 //If command is refresh.
 
                 if (command.equalsIgnoreCase(utils.RECORD)) {
@@ -210,19 +209,19 @@ public class LaunchActivity extends BaseActivity   {
                     message = payload.getString(utils.MESSAGE);
 
                     if (!mApp.getUtils().isStringEmpty(message)) {
-                        if(mApp.getFirebaseAuth().getCurrentUser() != null){
+                        if (mApp.getFirebaseAuth().getCurrentUser() != null) {
                             utils.saveNotification(mApp.getFirebaseAuth().getCurrentUser().getUid(), message);
 
                             String notificationTitle = String.valueOf(payload.get("title"));
-                            String notificationMessage=String.valueOf(payload.get("message"));
-                            String notificationImage=String.valueOf(payload.get("image"));
+                            String notificationMessage = String.valueOf(payload.get("message"));
+                            String notificationImage = String.valueOf(payload.get("image"));
 
 
                             notificationInfo = new HashMap<>();
-                            notificationInfo.put("notificationTitle",notificationTitle);
-                            notificationInfo.put("notificationMessage",notificationMessage);
-                            notificationInfo.put("notificationImage",notificationImage);
-                            notificationInfo.put("mUid",mUid);
+                            notificationInfo.put("notificationTitle", notificationTitle);
+                            notificationInfo.put("notificationMessage", notificationMessage);
+                            notificationInfo.put("notificationImage", notificationImage);
+                            notificationInfo.put("mUid", mUid);
                           /*  Intent intent = new Intent(LaunchActivity.this, NotificationDescriptionActivity.class);
                             intent.putExtra(AppContants.NOTIFICATION,notificationInfo);
                             startActivity(intent);
@@ -234,6 +233,7 @@ public class LaunchActivity extends BaseActivity   {
             }
         }
     }
+
     private class SplashScreenTimer extends CountDownTimer {
         public SplashScreenTimer(long millisInFuture, long countDownInterval) {
             super(millisInFuture, countDownInterval);
@@ -252,35 +252,35 @@ public class LaunchActivity extends BaseActivity   {
                 finish();
             } else {
                 AppStateContants stateContants = new AppStateContants();
-                if(mAppState == stateContants.HOME_SCREEN){
-                   // startActivity(new Intent(LaunchActivity.this, MainActivity.class));
+                if (mAppState == stateContants.HOME_SCREEN) {
+                    // startActivity(new Intent(LaunchActivity.this, MainActivity.class));
                     openActivity();
                     Answers.getInstance().logCustom(new CustomEvent("Launcher_Page")
                             .putCustomAttribute("UserId", mUid));
                     Intent intent = new Intent(LaunchActivity.this, MainActivity.class);
 //                    intent.putExtra(AppContants.NOTIFICATION,notificationInfo);
-                    intent.putExtra(DEEP_LINK,getIntent().getStringExtra(DEEP_LINK));
+                    intent.putExtra(DEEP_LINK, getIntent().getStringExtra(DEEP_LINK));
                     startActivity(intent);
                     finish();
-                } else if(mAppState == stateContants.PROFILE_SCREEN){
+                } else if (mAppState == stateContants.PROFILE_SCREEN) {
                     Intent intent = new Intent(LaunchActivity.this, UserProfile.class);
                     intent.putExtra(AppContants.VIEW_TYPE, AppContants.SIGN_UP);
                     startActivity(intent);
                     finish();
-                } else if(mAppState==stateContants.Notification_SCREEN){
+                } else if (mAppState == stateContants.Notification_SCREEN) {
                     Intent intent = new Intent(LaunchActivity.this, NotificationDescriptionActivity.class);
-                    intent.putExtra(AppContants.NOTIFICATION,notificationInfo);
+                    intent.putExtra(AppContants.NOTIFICATION, notificationInfo);
                     startActivity(intent);
                     finish();
-                }else {
-                   // startActivity(new Intent(LaunchActivity.this, MainActivity.class));
+                } else {
+                    // startActivity(new Intent(LaunchActivity.this, MainActivity.class));
                     openActivity();
 
                     Answers.getInstance().logCustom(new CustomEvent("Launcher_Page")
                             .putCustomAttribute("UserId", mUid));
                     Intent intent = new Intent(LaunchActivity.this, MainActivity.class);
 //                    intent.putExtra(AppContants.NOTIFICATION,notificationInfo);
-                    intent.putExtra(DEEP_LINK,getIntent().getStringExtra(DEEP_LINK));
+                    intent.putExtra(DEEP_LINK, getIntent().getStringExtra(DEEP_LINK));
                     startActivity(intent);
                     finish();
                 }

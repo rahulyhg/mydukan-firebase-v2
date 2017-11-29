@@ -2,6 +2,7 @@ package org.app.mydukan.activities;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.util.Log;
@@ -52,7 +53,7 @@ public class IntentForwardingActivity extends Activity {
 
         String deepLink =getIntent().getDataString();
         Intent intent2=new Intent(IntentForwardingActivity.this,LaunchActivity.class);
-        intent2.putExtra(DEEP_LINK,deepLink.toString());
+        intent2.putExtra(DEEP_LINK, deepLink);
         Log.e("Deep Link", deepLink);
         startActivity(intent2);
         IntentForwardingActivity.this.finish();
