@@ -3,6 +3,7 @@ package org.app.mydukan.adapters;
 import android.content.Context;
 import android.graphics.Color;
 import android.os.Build;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -130,41 +131,44 @@ public class ProductsAdapter extends
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
                 String valueMRP=currentProduct.getMrp();
                 switch(valueMRP){
+
+                    //January, February, March, April, May, June, July, August, September, October, November, December
+
                     case "1":
-                        holder.mProductMRPPrice.setText("Jan");
+                        holder.mProductMRPPrice.setText("January");
                         break;
                     case "2":
-                        holder.mProductMRPPrice.setText("Feb");
+                        holder.mProductMRPPrice.setText("February");
                         break;
                     case "3":
-                        holder.mProductMRPPrice.setText("Mar");
+                        holder.mProductMRPPrice.setText("March");
                         break;
                     case "4":
-                        holder.mProductMRPPrice.setText("Apr");
+                        holder.mProductMRPPrice.setText("April");
                         break;
                     case "5":
                         holder.mProductMRPPrice.setText("May");
                         break;
                     case "6":
-                        holder.mProductMRPPrice.setText("Jun");
+                        holder.mProductMRPPrice.setText("June");
                         break;
                     case "7":
-                        holder.mProductMRPPrice.setText("Jul");
+                        holder.mProductMRPPrice.setText("July");
                         break;
                     case "8":
-                        holder.mProductMRPPrice.setText("Aug");
+                        holder.mProductMRPPrice.setText("August");
                         break;
                     case "9":
-                        holder.mProductMRPPrice.setText("Sep");
+                        holder.mProductMRPPrice.setText("September");
                         break;
                     case "10":
-                        holder.mProductMRPPrice.setText("Oct");
+                        holder.mProductMRPPrice.setText("October");
                         break;
                     case "11":
-                        holder.mProductMRPPrice.setText("Nov");
+                        holder.mProductMRPPrice.setText("November");
                         break;
                     case "12":
-                        holder.mProductMRPPrice.setText("Dec");
+                        holder.mProductMRPPrice.setText("December");
                         break;
                     default:
                         holder.mProductMRPPrice.setText("");
@@ -316,7 +320,7 @@ public class ProductsAdapter extends
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        private RelativeLayout mProductLayout;
+        private CardView mProductLayout;
         private LinearLayout  mStatusLayout;
         private LinearLayout  mNewArrivalLayout;
         private TextView mProductName;
@@ -336,7 +340,10 @@ public class ProductsAdapter extends
 
         public ViewHolder(final View itemView) {
             super(itemView);
-            mProductLayout = (RelativeLayout) itemView.findViewById(R.id.product_table);
+            mProductLayout = (CardView) itemView.findViewById(R.id.product_table);
+            
+            mProductLayout.setBackgroundResource(R.drawable.bg_border_rectangle);
+
             mProductName = (TextView) itemView.findViewById(R.id.modelName);
             mStatusPrice = (TextView) itemView.findViewById(R.id.discountPrice);
             mStatusLayout = (LinearLayout) itemView.findViewById(R.id.discountLayout);
