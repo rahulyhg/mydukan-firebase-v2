@@ -5,7 +5,7 @@
     android:orientation="vertical"
     tools:context="org.app.mydukan.fragments.DescriptionFragment">
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
@@ -21,29 +21,33 @@
             android:textSize="@dimen/mediumtextSize"
             android:visibility="gone"
             android:textStyle="normal|bold"
-            tools:ignore="HardcodedText,RtlHardcoded" />
+            tools:ignore="HardcodedText,RtlHardcoded"
+            android:id="@+id/textView7" />
 
         <Button
             android:id="@+id/btn_DownloadProductPage"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:scaleType="fitXY"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignTop="@+id/textView7"
             android:layout_gravity="right"
+            android:layout_marginEnd="15dp"
+            android:layout_marginRight="15dp"
+            android:background="@android:color/transparent"
             android:drawableLeft="@drawable/ic_download"
             android:drawablePadding="6dp"
-            android:layout_marginRight="10dp"
-            android:layout_alignParentRight="true"
-            android:textAllCaps="false"
-            android:background="@android:color/transparent"
-            android:textColor="@color/new_btn_blue"
-            android:text="Download"
             android:ellipsize="middle"
-            android:visibility="gone"
             android:lines="1"
-            android:textSize="12sp"
+            android:scaleType="fitXY"
+            android:text="Download"
+            android:textAllCaps="false"
+            android:textColor="@color/new_btn_blue"
+            android:textSize="14sp"
+            android:visibility="visible"
             tools:ignore="EllipsizeMaxLines" />
 
-    </LinearLayout>
+    </RelativeLayout>
 
 
     <TextView

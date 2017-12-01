@@ -22,6 +22,7 @@ import com.google.firebase.database.ValueEventListener;
 import org.app.mydukan.R;
 import org.app.mydukan.application.MyDukan;
 import org.app.mydukan.data.ChattUser;
+import org.app.mydukan.data.PlatForm_Info;
 import org.app.mydukan.utils.AppContants;
 
 import java.util.ArrayList;
@@ -41,13 +42,15 @@ import static org.app.mydukan.activities.ProductDescriptionActivity.mApp;
 public class PricePlatformAdapter extends BaseAdapter {
     private final ArrayList mData;
     private MyDukan mApp;
-    Map<String, String> mItem;
-    public PricePlatformAdapter(Context context,Map<String, String> map) {
+    HashMap<String, PlatForm_Info> mItem;
+    public PricePlatformAdapter(Context context,HashMap<String, PlatForm_Info> map) {
         mData = new ArrayList();
-
+        mItem= new HashMap<>();
         mApp = (MyDukan) context.getApplicationContext();
 
-        mData.addAll(map.entrySet());
+        mData.addAll(map.keySet());
+        mItem=map;
+
         }
 
 
@@ -58,8 +61,8 @@ public class PricePlatformAdapter extends BaseAdapter {
     }
 
     @Override
-    public Map.Entry<String, String> getItem(int position) {
-        return (Map.Entry) mData.get(position);
+    public String getItem(int position) {
+        return (String) mData.get(position);
     }
 
     @Override
@@ -71,7 +74,7 @@ public class PricePlatformAdapter extends BaseAdapter {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         final View result;
-        Map.Entry<String, String> item = getItem(position);
+       String item = getItem(position);
 
         if (convertView == null) {
             result = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_priceplatformfragment, parent, false);
@@ -94,8 +97,8 @@ public class PricePlatformAdapter extends BaseAdapter {
                     othersStr += value + " " + getString(R.string.ram);
                 }
             }*/
-/*
 
+        /*
         if(item!=null) {
             switch (item.getKey()) {
                 case "connectivity":
@@ -110,8 +113,9 @@ public class PricePlatformAdapter extends BaseAdapter {
                 case "memory":
                     ImageView imageView= (ImageView) result.findViewById(R.id.img2);
                     imageView.setVisibility(View.GONE);
-                       */
-/* if(item.getValue().contains("&")  && item.getValue().contains("#")){
+               */
+        /*
+         if(item.getValue().contains("&")  && item.getValue().contains("#")){
                             Map<String, String> parsedMap=new HashMap<>();
                             splitString(item.getValue());
 
@@ -136,15 +140,19 @@ public class PricePlatformAdapter extends BaseAdapter {
                     ((TextView) result.findViewById(android.R.id.text2)).setText(item.getValue());
                 }
                 break;
-
             }
         }
-*/
+
+    */
 
         if(item!=null) {
 
-            ((TextView) result.findViewById(android.R.id.text1)).setText(mApp.getUtils().toCamelCase(item.getKey())+": ");
-            ((TextView) result.findViewById(android.R.id.text2)).setText("₹ "+item.getValue());
+            ((TextView) result.findViewById(android.R.id.text1)).setText(mApp.getUtils().toCamelCase(item));
+            if(mItem.size()>0){
+                ((TextView) result.findViewById(android.R.id.text2)).setText("₹ "+mItem.get(item).getPrice());
+            }else{
+                ((TextView) result.findViewById(android.R.id.text2)).setText("-");
+            }
 
          /*   switch (item.getKey()) {
 

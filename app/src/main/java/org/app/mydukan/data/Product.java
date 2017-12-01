@@ -28,13 +28,13 @@ public class Product extends Object implements Serializable {
     private String mrp = "";
 
 
-    private HashMap<String,String> mPlatforms = new HashMap<>();
+    private HashMap<String,PlatForm_Info> mPlatforms = new HashMap<>();
 
-    public HashMap<String, String> getmPlatforms() {
+    public HashMap<String, PlatForm_Info> getmPlatforms() {
         return mPlatforms;
     }
 
-    public void setmPlatforms(HashMap<String, String> mPlatforms) {
+    public void setmPlatforms(HashMap<String, PlatForm_Info> mPlatforms) {
         this.mPlatforms = mPlatforms;
     }
 

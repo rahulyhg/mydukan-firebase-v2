@@ -207,10 +207,11 @@ public class ProductsAdapter extends
 
        if (currentProduct.getmPlatforms()!=null && currentProduct.getmPlatforms().size()>0){
             holder.mpricePlatform.setVisibility(View.VISIBLE);
-            String comparePrice="";
+            String comparePrice="ComparePrices:-";
             Set<String> platformName=currentProduct.getmPlatforms().keySet();
             for (String mplatform:currentProduct.getmPlatforms().keySet()) {
-                comparePrice=comparePrice+mplatform+": "+"₹ "+currentProduct.getmPlatforms().get(mplatform)+" | ";
+               // currentProduct.getmPlatforms().get(mplatform).getPrice()
+                comparePrice=comparePrice+" "+mplatform+": "+"₹ "+currentProduct.getmPlatforms().get(mplatform).getPrice()+" | ";
             }
             holder.mpricePlatform.setText( mApp.getUtils().toCamelCase(comparePrice));
            holder.mpricePlatform.setSelected(true);

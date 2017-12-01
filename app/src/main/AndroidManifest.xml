@@ -3,6 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="org.app.mydukan">
 
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.RECEIVE_SMS" />
@@ -403,7 +405,19 @@
             android:name=".activities.UsersLocationAddress"
             android:screenOrientation="portrait" />
         <activity android:name=".activities.UserProfile" />
-        <activity android:name=".activities.CompanyDetails"></activity>
+        <activity android:name=".activities.CompanyDetails" />
+        <activity android:name=".activities.BroadcastActivity"></activity>
+
+        <activity android:name=".fragments.YouTubeFragmentActivity" />
+        <activity
+            android:name=".fragments.YouTubeActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".fragments.CustomLightboxActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:theme="@style/AppTheme.Translucent" />
+        <activity android:name=".fragments.CustomYouTubeControlsActivity" />
     </application>
 
 </manifest>
