@@ -2,8 +2,8 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:fab="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
-
+    android:layout_height="match_parent"
+    >
 
     <include
         android:id="@+id/supplierlayout"
@@ -12,6 +12,7 @@
         layout="@layout/recycler_listview"
         android:layout_above="@+id/cmplnt_lst_add_id"/>
 
+    <!--#ff9800-->
     <com.github.clans.fab.FloatingActionMenu
         android:id="@+id/filter_action_menu"
         android:layout_width="match_parent"
@@ -21,12 +22,13 @@
         android:paddingRight="10dp"
         android:layout_above="@+id/cmplnt_lst_add_id"
 
+
         fab:menu_animationDelayPerItem="2"
         fab:menu_backgroundColor="#ccffffff"
-        fab:menu_colorNormal="#ff9800"
-        fab:menu_colorPressed="#F2AB00"
-        fab:menu_colorRipple="#EC2723"
-        fab:menu_icon="@drawable/ic_action_filter_white"
+        fab:menu_colorNormal="@color/fab_blue"
+        fab:menu_colorPressed="#3E50B4"
+        fab:menu_colorRipple="#4285F4"
+        fab:menu_icon="@drawable/ic_filter"
         fab:menu_labels_ellipsize="end"
         fab:menu_labels_hideAnimation="@anim/jump_to_down"
         fab:menu_labels_position="left"
@@ -34,6 +36,7 @@
         fab:menu_labels_singleLine="true"
         fab:menu_labels_style="@style/MenuLabelsStyle"
         fab:menu_shadowColor="#444"
+        fab:menu_fab_label="FILTER"
         android:visibility="gone">
 
         <com.github.clans.fab.FloatingActionButton

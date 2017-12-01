@@ -83,5 +83,9 @@
    <!-- New design blue color  -->
     <color name="new_btn_blue">#4285F4</color>
     <color name="new_btn_blue_baground">#EEEEEE</color>
+    <color name="new_baground">#FFffFC</color>
+    <color name="fab_blue">#528FFF</color>
+    <color name="sky_blue">#87cefa</color>
+
 
 </resources>
