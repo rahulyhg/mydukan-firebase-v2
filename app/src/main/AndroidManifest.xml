@@ -406,18 +406,7 @@
             android:screenOrientation="portrait" />
         <activity android:name=".activities.UserProfile" />
         <activity android:name=".activities.CompanyDetails" />
-        <activity android:name=".activities.BroadcastActivity"></activity>
 
-        <activity android:name=".fragments.YouTubeFragmentActivity" />
-        <activity
-            android:name=".fragments.YouTubeActivity"
-            android:configChanges="orientation|keyboardHidden|screenSize"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name=".fragments.CustomLightboxActivity"
-            android:configChanges="orientation|keyboardHidden|screenSize"
-            android:theme="@style/AppTheme.Translucent" />
-        <activity android:name=".fragments.CustomYouTubeControlsActivity" />
     </application>
 
 </manifest>

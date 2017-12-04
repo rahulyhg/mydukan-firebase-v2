@@ -39,7 +39,7 @@
                 android:layout_weight="1"
                 android:text="Product Name"
                 android:textColor="@color/com_facebook_button_background_color_pressed"
-                android:fontFamily="sans-serif-condensed"
+                android:fontFamily="serif"
                 android:textSize="@dimen/mediumtextSize"
                 android:textStyle="bold|normal"
                  />
@@ -70,7 +70,7 @@
                 android:layout_marginLeft="2dp"
                 android:gravity="center_vertical"
                 android:layout_weight="1"
-                android:fontFamily="sans-serif-condensed"
+                android:fontFamily="serif"
                 android:text="190000"
                 android:textColor="@color/text_color"
                 android:textStyle="normal|bold"
@@ -88,7 +88,7 @@
                 android:gravity="right"
                 android:text="190000"
                 android:textColor="@color/text_color"
-                android:fontFamily="sans-serif-condensed"
+                android:fontFamily="serif"
                 android:textSize="@dimen/mediumtextSize"
                 android:visibility="visible"
                 android:textStyle="normal|bold"
@@ -253,6 +253,7 @@
                 android:layout_gravity="center_vertical"
                 android:layout_weight="1"
                 android:text="1253"
+                android:fontFamily="serif"
                 android:textColor="@color/com_facebook_button_background_color_pressed"
                 android:textSize="@dimen/mediumtextSize_1"
                 android:textStyle="normal|bold" />
@@ -260,7 +261,7 @@
             <Button
                 android:id="@+id/claimBtn"
                 android:layout_width="0dp"
-                android:layout_height="16dp"
+                android:layout_height="24dp"
                 android:layout_gravity="center_vertical"
                 android:layout_weight="1.2"
                 android:background="@drawable/bg_imeiview"

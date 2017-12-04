@@ -636,7 +636,7 @@ public class CategoryListActivity extends BaseActivity implements CategoryAdapte
 
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                Toast.makeText(getBaseContext(), "Cancel clicked", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getBaseContext(), "Canceled", Toast.LENGTH_SHORT).show();
             }
         });
 

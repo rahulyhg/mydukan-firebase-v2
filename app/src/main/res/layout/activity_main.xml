@@ -108,7 +108,7 @@
                                 layout="@layout/item_subscribe"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                app:layout_behavior="@string/appbar_scrolling_view_behavior"></include>
+                                app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
                             <View
                                 style="@style/Divider"
@@ -122,21 +122,20 @@
                             layout="@layout/promotional_layout"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_below="@+id/layout_subscribe"
-                             ></include>
-
+                            android:layout_below="@+id/banner" />
 
                         <LinearLayout
                             android:id="@+id/banner"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_below="@+id/viewFlipperWithBtn">
+                            android:layout_below="@+id/layout_subscribe">
 
                             <include
                                 android:id="@+id/viewPagerBanner"
                                 layout="@layout/item_banner_page"
                                 android:layout_width="fill_parent"
                                 android:layout_height="wrap_content"
+                                android:layout_marginBottom="5dp"
                                 >
                                 <View style="@style/Divider"
                                     android:background="@color/colorBtnBackground"
@@ -150,7 +149,7 @@
                             layout="@layout/recycler_listview"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_below="@+id/banner"
+                            android:layout_below="@+id/viewFlipperWithBtn"
                             android:layout_margin="@dimen/layoutmarginsmall">
 
                         </include>
