@@ -1,5 +1,7 @@
 package org.app.mydukan.data;
 
+import java.util.Map;
+
 /**
  * Created by Harshit Agarwal on 04-10-2017.
  */
@@ -9,6 +11,7 @@ public class Comment {
     String text;
     String time;
     String id;
+    Map<String, Boolean> likes;
 
     public Comment() {
     }
@@ -52,6 +55,14 @@ public class Comment {
         this.time = time;
     }
 
+    public Map<String, Boolean> getLikes() {
+        return likes;
+    }
+
+    public void setLikes(Map<String, Boolean> likes) {
+        this.likes = likes;
+    }
+
     public static class UserInfo {
         String uId;
         String name;
@@ -93,4 +104,3 @@ public class Comment {
 
     }
 }
-

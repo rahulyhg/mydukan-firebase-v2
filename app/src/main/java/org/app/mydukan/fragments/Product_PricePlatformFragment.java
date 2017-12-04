@@ -14,9 +14,18 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import org.app.mydukan.R;
+import org.app.mydukan.adapters.KeySpecificationAdapter;
+import org.app.mydukan.adapters.PricePlatformAdapter;
 import org.app.mydukan.data.Product;
 import org.app.mydukan.data.SupplierBindData;
+import org.app.mydukan.server.ApiManager;
+import org.app.mydukan.server.ApiResult;
 import org.app.mydukan.utils.AppContants;
+
+import java.util.Set;
+
+import static org.app.mydukan.activities.ProductDescriptionActivity.fullpage;
+import static org.app.mydukan.activities.ProductDescriptionActivity.mApp;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -36,6 +45,7 @@ public class Product_PricePlatformFragment extends Fragment {
     Product product;
 
     ListView list_pricePlatform;
+    private TextView mOthersTextView;
 
 
     public Product_PricePlatformFragment() {
@@ -52,7 +62,6 @@ public class Product_PricePlatformFragment extends Fragment {
         context = mView.getContext();
 
 
-
         Bundle extras = getActivity().getIntent().getExtras();
         if (extras != null) {
             try {
@@ -64,9 +73,9 @@ public class Product_PricePlatformFragment extends Fragment {
             }
         }
 
-
         list_pricePlatform = (ListView)  mView.findViewById(R.id.list_pricePlatform);
-
+        mOthersTextView = (TextView) mView.findViewById(R.id.othersTextView);
+        fetchProductAndShow();
         return mView;
     }
 
@@ -95,6 +104,99 @@ public class Product_PricePlatformFragment extends Fragment {
 
         }
     }
-    
+    private void fetchProductAndShow(){
+        showProgress();
+        ApiManager.getInstance(context).getProductDetails(mProduct.getProductId(),
+                new ApiResult() {
+                    @Override
+                    public void onSuccess(Object data) {
+                        product = (Product)data;
+                        if(product != null) {
+                            mProduct.setDescription(product.getDescription());
+                            mProduct.setUrl(product.getUrl());
+                            product.setmPlatforms(mProduct.getmPlatforms());
+                        }
+                        dismissProgress();
+                        setupOthers();
+                    }
+                    @Override
+                    public void onFailure(String response) {
+                        dismissProgress();
+                        setupOthers();
+                    }
+                });
+    }
+
+    private void setupOthers(){
+        String othersStr = "";
+
+
+
+
+
+        //=================================
+
+
+/*
+        for (String attKey: mProduct.getmPlatforms().keySet()) {
+            String value = mProduct.getmPlatforms().get(attKey);
+
+            if(!mApp.getUtils().isStringEmpty(othersStr) && !othersStr.endsWith(", ")){
+                othersStr += ", ";
+            }
+
+            if(!mApp.getUtils().isStringEmpty(value)){
+                if(attKey.equalsIgnoreCase("amazon")){
+                    othersStr += value + " " + getString(R.string.amazon);
+                }
+                else if(attKey.equalsIgnoreCase("snapdeal")){
+                    othersStr += value + " " + getString(R.string.snapdeal);
+                }
+                else if(attKey.equalsIgnoreCase("paytm")){
+                    othersStr += value + " " + getString(R.string.paytm);
+                }
+                else if(attKey.equalsIgnoreCase("lockthedeal")){
+                    othersStr += value + " " + getString(R.string.lockthedeal);
+                }
+                else if(attKey.equalsIgnoreCase("shopclues")){
+                    othersStr += value + " " + getString(R.string.shopclues);
+                }
+                else if(attKey.equalsIgnoreCase("flipkart")){
+                    othersStr += value + " " + getString(R.string.flipkart);
+                }
+                else if(attKey.equalsIgnoreCase("gadget360")){
+                    othersStr += value + " " + getString(R.string.gadget360);
+                }
+            }
+        }
+*/
+
+
+        if (mProduct.getmPlatforms()!=null && mProduct.getmPlatforms().size()>0){
+
+        /*    String comparePrice="";
+            Set<String> platformName=mProduct.getmPlatforms().keySet();
+            for (String mplatform:mProduct.getmPlatforms().keySet()) {
+                comparePrice=comparePrice+mplatform+": "+"₹ "+mProduct.getmPlatforms().get(mplatform)+" | ";
+            }*/
+            PricePlatformAdapter adapter = new PricePlatformAdapter(context, mProduct.getmPlatforms());
+            list_pricePlatform.setAdapter(adapter);
+        }else{
+            mOthersTextView.setVisibility(View.VISIBLE);
+            mOthersTextView.setText("Not available");
+        }
+
+       /* if(!mApp.getUtils().isStringEmpty(othersStr)){
+            // mOthersTextView.setText(othersStr);
+            // showProgress(false);
+            // KeySpecificationAdapter adapter = new KeySpecificationAdapter(context,  mProduct.getAttributes());
+            // ksListView.setAdapter(adapter);
+
+
+        } else {
+      mOthersTextView.setVisibility(View.VISIBLE);
+            mOthersTextView.setText("Not available");
+        }*/
+    }
 
 }

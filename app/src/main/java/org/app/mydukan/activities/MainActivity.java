@@ -9,12 +9,10 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.ContactsContract;
-import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -73,8 +71,6 @@ import org.app.mydukan.data.User;
 import org.app.mydukan.server.ApiManager;
 import org.app.mydukan.server.ApiResult;
 import org.app.mydukan.utils.AppContants;
-//import org.app.mydukan.utils.PaytmGateway;
-import org.app.mydukan.utils.SimpleDividerItemDecoration;
 import org.app.mydukan.utils.Utils;
 
 import java.util.ArrayList;
@@ -83,6 +79,12 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import uk.co.deanwild.materialshowcaseview.target.Target;
+
+import static org.app.mydukan.activities.IntentForwardingActivity.DEEP_LINK;
+import static org.app.mydukan.utils.AppContants.FEED_ID;
+import static org.app.mydukan.utils.AppContants.USER_ID;
+
+//import org.app.mydukan.utils.PaytmGateway;
 
 
 /**
@@ -93,54 +95,9 @@ import uk.co.deanwild.materialshowcaseview.target.Target;
 public class MainActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener,
         SupplierAdapter.supplierAdapterListener {
 
-    private static ViewPager mPager;
-    private static int currentPage = 0;
-    private static int NUM_PAGES = 0;
-    private ArrayList<ImageModel> imageModelArrayList;
-
-    private int[] myImageList = new int[]{R.drawable.slide1, R.drawable.slide2,
-            R.drawable.slide3, R.drawable.slide4
-            , R.drawable.slide5};
-
-    Target t1, t2, t3;
     public static final String FOLLOW_ROOT = "following";
-    private int mNavItemId;
-    private Toolbar mToolbar;
-    private DrawerLayout drawer;
-    private FloatingActionButton addsupplierbtn;
-    private FloatingActionButton mWhatsAppBtn;
-
-    private final Handler mDrawerActionHandler = new Handler();
     private static final long DRAWER_CLOSE_DELAY_MS = 250;
-
-    //Ui reference
-    private RecyclerView mSupplierRecyclerView;
-    private TextView mSupplierEmptyView;
-
-    private LinearLayout subscribeAleartLayout;
-    private Button btn_Subscribe, btn_Trial, btn_DaysRemaing, btn_navigation;
-    private TextView daysRemain, mDueDays;
-    boolean notNew_user = true;
-    LoginActivity loginActivity = new LoginActivity();
-    SharedPreferences sharedPreferences;
-    String lounchedDate_User;
-
-    //Variables
-    private SupplierAdapter mSupplierAdapter;
-    InterstitialAd mInterstitialAd;//to display interstitial ads
-    private ArrayList<Supplier> mSupplerlist = new ArrayList<>();
-    private ArrayList<String> mBannerImg = new ArrayList<>();
-
-    private MyDukan mApp;
-    private User userdetails;
-    private String userID;
-    private int mViewType = 1;
-    AdView mAdView;
-    private HashMap mNotification;
-
-    AppSubscriptionInfo appSubscriptionInfo = new AppSubscriptionInfo();
     private static final String TAG = "MainActivity";
-
     // Remote Config keys showSubscriptionPage
     private static final String LOADING_PHRASE_CONFIG_KEY1 = "video_url";
     private static final String LOADING_PHRASE_CONFIG_KEY2 = "isVideoToBeDsiplayed";
@@ -149,21 +106,20 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     private static final String MAINPAGE_CONFIG__IMGBANNER_2 = "showSubscriptionPage";
     private static final String MAINPAGE_CONFIG__IMGBANNER_3 = "showSubscriptionPage";
     private static final String MAINPAGE_CONFIG__IMGBANNER_4 = "showSubscriptionPage";
-
-    private ArrayList<String> list_BannerImg = new ArrayList<>();
     private static final String WELCOME_MESSAGE_KEY = "isVideoToBeDsiplayed";
     private static final String WELCOME_MESSAGE_CAPS_KEY = "isVideoToBeDsiplayed";
-
-  /*
-    private static final String INTRO_CARD = "fab_intro";
-    private static final String INTRO_SWITCH = "switch_intro";
-    private static final String INTRO_RESET = "reset_intro";
-    private static final String INTRO_REPEAT = "repeat_intro";
-    private static final String INTRO_CHANGE_POSITION = "change_position_intro";
-    private static final String INTRO_SEQUENCE = "sequence_intro";
-    private boolean isRevealEnabled = true;
-    */
-    private FirebaseRemoteConfig mFirebaseRemoteConfig;
+    private static ViewPager mPager;
+    private static int currentPage = 0;
+    private static int NUM_PAGES = 0;
+    private final Handler mDrawerActionHandler = new Handler();
+    Target t1, t2, t3;
+    boolean notNew_user = true;
+    LoginActivity loginActivity = new LoginActivity();
+    SharedPreferences sharedPreferences;
+    String lounchedDate_User;
+    InterstitialAd mInterstitialAd;//to display interstitial ads
+    AdView mAdView;
+    AppSubscriptionInfo appSubscriptionInfo = new AppSubscriptionInfo();
     String remoteUrl, remoteToDisplay, remoteDisp_Subscription, remote_imgBanner_one, remote_imgBanner_two, remote_imgBanner_three;
     LinearLayout whatsapp_layout, records_layout, mynetwork_layout, askRaju_layout, serviceCenter_layout;
     LinearLayout relative_flipper_layout;
@@ -171,6 +127,41 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     int mFlipping = 0; // Initially flipping is off
     ImageView banner1;
     boolean isSubscribed = false;
+    private ArrayList<ImageModel> imageModelArrayList;
+    private int[] myImageList = new int[]{R.drawable.slide1, R.drawable.slide2,
+            R.drawable.slide3, R.drawable.slide4
+            , R.drawable.slide5};
+    private int mNavItemId;
+    private Toolbar mToolbar;
+    private DrawerLayout drawer;
+    private FloatingActionButton addsupplierbtn;
+    private FloatingActionButton mWhatsAppBtn;
+    //Ui reference
+    private RecyclerView mSupplierRecyclerView;
+    private TextView mSupplierEmptyView;
+    private LinearLayout subscribeAleartLayout;
+    private Button btn_Subscribe, btn_Trial, btn_DaysRemaing, btn_navigation;
+    private TextView daysRemain, mDueDays;
+    //Variables
+    private SupplierAdapter mSupplierAdapter;
+    private ArrayList<Supplier> mSupplerlist = new ArrayList<>();
+    private ArrayList<String> mBannerImg = new ArrayList<>();
+    private MyDukan mApp;
+    private User userdetails;
+    private String userID;
+    private int mViewType = 1;
+    private HashMap mNotification;
+    private ArrayList<String> list_BannerImg = new ArrayList<>();
+    /*
+      private static final String INTRO_CARD = "fab_intro";
+      private static final String INTRO_SWITCH = "switch_intro";
+      private static final String INTRO_RESET = "reset_intro";
+      private static final String INTRO_REPEAT = "repeat_intro";
+      private static final String INTRO_CHANGE_POSITION = "change_position_intro";
+      private static final String INTRO_SEQUENCE = "sequence_intro";
+      private boolean isRevealEnabled = true;
+      */
+    private FirebaseRemoteConfig mFirebaseRemoteConfig;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -179,13 +170,14 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         mApp = (MyDukan) getApplicationContext();
 
         final FirebaseUser userid = FirebaseAuth.getInstance().getCurrentUser();
-        if(userid!=null){
-            userID=userid.getUid();
-        }else{
+        if (userid != null) {
+            userID = userid.getUid();
+        } else {
             userID = mApp.getUserId();
         }
 
         mPager = (ViewPager) findViewById(R.id.pager);
+        handleDeepLink();
         //get the initial data
         Bundle bundle = getIntent().getExtras();
         if (bundle != null) {
@@ -210,6 +202,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         setupDrawerLayout();
         //checkUserPresentInDatabase();
         getUserProfile();
+
      /*   imageModelArrayList = new ArrayList<>();
         imageModelArrayList = populateList(list_BannerImg);
         initViewPager();*/
@@ -458,6 +451,40 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 //        new CompanyInfo().execute();
     }
 
+    private void handleDeepLink() {
+        String deepLink = getIntent().getParcelableExtra(DEEP_LINK);
+        Uri deepLink2= getIntent().getData();
+
+
+        if (deepLink == null)
+            return;
+
+        /* link -> https://www.mydukan.com/link_type/params
+        *   link_type -> feed_link or user_id or feed_id
+        *
+        */
+        if (!deepLink.startsWith("https://mydukaan.com/")) {
+            return;
+        }
+        deepLink = deepLink.substring("https://mydukaan.com/".length());
+        String[] splits = deepLink.split("/");
+        try {
+            int i = 0;
+            switch (splits[i++]) {
+                case "feed_link":
+                    Intent intent = new Intent(this, CommentsActivity.class);
+                    intent.putExtra(USER_ID, splits[i++]);
+                    intent.putExtra(FEED_ID, splits[i]);
+                    startActivity(intent);
+                    break;
+            }
+        } catch (ArrayIndexOutOfBoundsException e) {
+            Toast.makeText(this, "Incomplete link!", Toast.LENGTH_SHORT).show();
+        }
+
+
+    }
+
 
     private ArrayList<ImageModel> populateList(ArrayList<String> list_BannerImg) {
 
@@ -510,7 +537,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             public void run() {
                 handler.post(Update);
             }
-        }, 8000, 8000);
+        }, 10000, 10000);
 
         // Pager listener over indicator
         indicator.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
@@ -652,7 +679,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
     }
 
-    private boolean isUserSubscribed(User userdetails){
+    private boolean isUserSubscribed(User userdetails) {
         PriceDropSubscription priceDropSubscription = new PriceDropSubscription();
         boolean isSubscribed = priceDropSubscription.checkSubscription(this, userdetails);
         return isSubscribed;
@@ -733,7 +760,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                     setChatUserData();
                     getBannerImages();
                     isSubscribed = isUserSubscribed(userdetails);
-                    if(userdetails!=null && userdetails.getCompanyinfo()==null){
+                    if (userdetails != null && userdetails.getCompanyinfo() == null) {
                         new android.support.v7.app.AlertDialog.Builder(MainActivity.this)
                                 .setTitle("Info")
                                 .setMessage("Please fill the Company / Outlet Details to Continue..")
@@ -766,21 +793,21 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     }
 
     private void setChatUserData() {
-        if(userdetails!=null){
-            try{
+        if (userdetails != null) {
+            try {
                 FirebaseUser auth = FirebaseAuth.getInstance().getCurrentUser();
-                final DatabaseReference referenceFollow = FirebaseDatabase.getInstance().getReference().child("chat_USER/" +  userID);
-                String userROLE=userdetails.getOtherinfo().getRole();
-                if(userROLE!=null){
+                final DatabaseReference referenceFollow = FirebaseDatabase.getInstance().getReference().child("chat_USER/" + userID);
+                String userROLE = userdetails.getOtherinfo().getRole();
+                if (userROLE != null) {
                     referenceFollow.child("userType").setValue(userdetails.getOtherinfo().getRole());
-                }else {
+                } else {
 //                    Toast.makeText(MainActivity.this, "Please update your profile details to use MyNetwork feature.", Toast.LENGTH_SHORT).show();
                     referenceFollow.child("userType").setValue("");
                 }
-                String userNUMBER=userdetails.getUserinfo().getNumber();
-                if(userNUMBER!=null){
+                String userNUMBER = userdetails.getUserinfo().getNumber();
+                if (userNUMBER != null) {
                     referenceFollow.child("phoneNumber").setValue(userdetails.getUserinfo().getNumber());
-                }else{
+                } else {
                     referenceFollow.child("phoneNumber").setValue("");
 //                    Toast.makeText(MainActivity.this, "Please update your profile details to use MyNetwork feature.", Toast.LENGTH_SHORT).show();
                 }
@@ -789,8 +816,8 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 referenceFollow.child("name").setValue(userdetails.getCompanyinfo().getName());
                 final DatabaseReference addFollow = FirebaseDatabase.getInstance().getReference().child(FOLLOW_ROOT);
                 addFollow.child(userID).child(userID).setValue(true);
-            }catch (Exception e){
-                Log.i(MyDukan.LOGTAG, "exception ChattProfile UpdateProfile: "+e.getMessage());
+            } catch (Exception e) {
+                Log.i(MyDukan.LOGTAG, "exception ChattProfile UpdateProfile: " + e.getMessage());
 //                Toast.makeText(MainActivity.this, "Please update your profile details to use MyNetwork feature.", Toast.LENGTH_SHORT).show();
             }
         }
@@ -839,7 +866,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 mInterstitialAd.show();
             }
              */
-           finish();
+            finish();
             super.onBackPressed();
         }
     }
@@ -1017,7 +1044,11 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         TextView headerText = (TextView) navigationView.getHeaderView(0).findViewById(R.id.emailID);
         FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-        headerText.setText(firebaseUser.getEmail());
+        if (firebaseUser != null) {
+            headerText.setText(firebaseUser.getEmail());
+        } else {
+            headerText.setText("");
+        }
        /* User user = mApp.getPreference().getUser(MainActivity.this);
         if (user != null && user.getUserinfo() != null) {
             if (!mApp.getUtils().isStringEmpty(user.getUserinfo().getEmailid())) {

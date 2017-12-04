@@ -329,6 +329,8 @@
             android:name=".activities.VidPlayer"
             android:label="Player"
             android:screenOrientation="portrait">
+
+            <!--
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
 
@@ -342,6 +344,7 @@
                     android:host="mydukan.com"
                     android:scheme="https" />
             </intent-filter>
+            -->
         </activity>
         <activity
             android:name=".activities.JsonActivity"
@@ -359,7 +362,8 @@
             android:screenOrientation="portrait" />
         <activity
             android:name=".activities.Search_MyNetworkActivity"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.ActionBar"/>
         <activity
             android:name=".activities.MyProfileActivity"
             android:screenOrientation="portrait" />
@@ -403,7 +407,25 @@
             android:name=".activities.UsersLocationAddress"
             android:screenOrientation="portrait" />
         <activity android:name=".activities.UserProfile" />
-        <activity android:name=".activities.CompanyDetails"></activity>
+        <activity android:name=".activities.CompanyDetails" />
+        <activity
+            android:name=".activities.IntentForwardingActivity"
+            android:launchMode="singleTask">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:host="mydukaan.com"
+                    android:scheme="https" />
+            </intent-filter>
+        </activity>
+
+        <service
+            android:name=".services.SyncContacts"
+            android:exported="false"></service>
     </application>
 
 </manifest>

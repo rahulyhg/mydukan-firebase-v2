@@ -58,7 +58,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.app.mydukan.fragments.OneFragment.FEED_ROOT;
+import static org.app.mydukan.fragments.MyNetworkFragment.FEED_ROOT;
 
 /**
  * Created by Codespeak on 05-07-2016.

@@ -645,7 +645,7 @@ public class CategoryListActivity extends BaseActivity implements CategoryAdapte
             @Override
             public void onClick(DialogInterface dialog, int which) {
 
-                if (index >= 0) {
+                if (index >= 0 && mCategoryList != null) {
                     if (networkUtil.isConnectingToInternet(CategoryListActivity.this)) {
                         //checkPrimeCategory();
                         open_PageName = "category_filter"; // this will tell us which page has to open

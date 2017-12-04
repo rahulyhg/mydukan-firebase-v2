@@ -19,7 +19,7 @@
         android:visibility="visible"
         tools:ignore="HardcodedText,RtlHardcoded" />
 
-   <!-- <TextView
+    <TextView
         android:id="@+id/othersTextView"
         android:layout_width="wrap_content"
         android:layout_marginLeft="10dp"
@@ -27,7 +27,7 @@
         android:layout_marginTop="@dimen/listrow_topmargin_multiline"
         android:textColor="@color/text_color"
         android:textSize="@dimen/smalltextSize"
-        tools:ignore="RtlHardcoded" />-->
+        tools:ignore="RtlHardcoded" />
     <ListView
         android:id="@+id/list_pricePlatform"
         android:layout_width="match_parent"

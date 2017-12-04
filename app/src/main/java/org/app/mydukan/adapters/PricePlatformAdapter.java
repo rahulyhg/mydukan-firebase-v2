@@ -38,27 +38,19 @@ import static org.app.mydukan.activities.ProductDescriptionActivity.mApp;
  */
 
 
-public class KeySpecificationAdapter extends BaseAdapter {
+public class PricePlatformAdapter extends BaseAdapter {
     private final ArrayList mData;
-    private Context mContext;
     private MyDukan mApp;
     Map<String, String> mItem;
-    public KeySpecificationAdapter(Context context,Map<String, String> map) {
+    public PricePlatformAdapter(Context context,Map<String, String> map) {
         mData = new ArrayList();
 
         mApp = (MyDukan) context.getApplicationContext();
-        if(map.containsKey("memory")){
-            String parse= map.get("memory");
-            if(parse.contains("&")  && parse.contains("#")){
-                mData.addAll(splitString(parse).entrySet()) ;
-            }
-            if(map.containsKey("memory")){
-                map.remove("memory");
-            }
-            mData.addAll(map.entrySet());
+
+        mData.addAll(map.entrySet());
         }
 
-    }
+
 
     @Override
     public int getCount() {
@@ -79,17 +71,14 @@ public class KeySpecificationAdapter extends BaseAdapter {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         final View result;
-
         Map.Entry<String, String> item = getItem(position);
 
         if (convertView == null) {
-            result = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_keyspecification, parent, false);
-            ImageView imageView = (ImageView) result.findViewById(R.id.img2);
-            imageView.setVisibility(View.GONE);
+            result = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_priceplatformfragment, parent, false);
+
         } else {
             result = convertView;
-            ImageView imageView = (ImageView) result.findViewById(R.id.img2);
-            imageView.setVisibility(View.GONE);
+
         }
 
 
@@ -153,38 +142,50 @@ public class KeySpecificationAdapter extends BaseAdapter {
 */
 
         if(item!=null) {
-            switch (item.getKey()) {
-
-                case "connectivity":
+            ((TextView) result.findViewById(android.R.id.text1)).setText(mApp.getUtils().toCamelCase(item.getKey())+": ");
+            ((TextView) result.findViewById(android.R.id.text2)).setText("₹ "+item.getValue());
+            
+         /*   switch (item.getKey()) {
+                case "amazon":
                     ((TextView) result.findViewById(android.R.id.text1)).setText(mApp.getUtils().toCamelCase(item.getKey())+": ");
-                    ((TextView) result.findViewById(android.R.id.text2)).setText(item.getValue().replace("4g", "4G").replace("volte", "VoLte").replace("3g", "3G"));
+                    ((TextView) result.findViewById(android.R.id.text2)).setText("₹ "+item.getValue());
 
                     break;
+     case "snapdeal":
+                    ((TextView) result.findViewById(android.R.id.text1)).setText(mApp.getUtils().toCamelCase(item.getKey())+" :");
+                    ((TextView) result.findViewById(android.R.id.text2)).setText("₹ "+item.getValue());
+                    break;
+                case "paytm":
+                    ((TextView) result.findViewById(android.R.id.text1)).setText(mApp.getUtils().toCamelCase(item.getKey())+" :");
+                    ((TextView) result.findViewById(android.R.id.text2)).setText("₹ "+item.getValue());
+                    break;
+                case "lockthedeal":
+                    ((TextView) result.findViewById(android.R.id.text1)).setText(mApp.getUtils().toCamelCase(item.getKey())+" :");
+                    ((TextView) result.findViewById(android.R.id.text2)).setText("₹ "+item.getValue());
+                    break;
+                case "shopclues":
+                    ((TextView) result.findViewById(android.R.id.text1)).setText(mApp.getUtils().toCamelCase(item.getKey())+" :");
+                    ((TextView) result.findViewById(android.R.id.text2)).setText("₹ "+item.getValue());
+                    break;
 
-                case "displaysize":
-                    ((TextView) result.findViewById(android.R.id.text1)).setText(mApp.getUtils().toCamelCase("Display Size")+" :");
-                    ((TextView) result.findViewById(android.R.id.text2)).setText(item.getValue()+" Inches");
+                case "flipkart":
+                    ((TextView) result.findViewById(android.R.id.text1)).setText(mApp.getUtils().toCamelCase(item.getKey())+" :");
+                    ((TextView) result.findViewById(android.R.id.text2)).setText("₹ "+item.getValue());
                     break;
-                case "memory":
-                    ImageView imageView= (ImageView) result.findViewById(R.id.img2);
-                    imageView.setVisibility(View.GONE);
+
+                case "gadget360":
+                    ((TextView) result.findViewById(android.R.id.text1)).setText(mApp.getUtils().toCamelCase(item.getKey())+" :");
+                    ((TextView) result.findViewById(android.R.id.text2)).setText("₹ "+item.getValue());
                     break;
-                case "androidversion":
-                    ((TextView) result.findViewById(android.R.id.text1)).setText(mApp.getUtils().toCamelCase("Android version")+" :");
-                    ((TextView) result.findViewById(android.R.id.text2)).setText(item.getValue());
-                    break;
-                case "cameramegapixel":
-                    ((TextView) result.findViewById(android.R.id.text1)).setText("Camera Back/Front :");
-                    ((TextView) result.findViewById(android.R.id.text2)).setText(item.getValue()+" MP");
-                    break;
+
                 default:
                 {
-                    ((TextView) result.findViewById(android.R.id.text1)).setText(mApp.getUtils().toCamelCase(item.getKey()).replace("Cpu", "CPU")+" :");
-                    ((TextView) result.findViewById(android.R.id.text2)).setText(item.getValue());
+                    ((TextView) result.findViewById(android.R.id.text1)).setText(mApp.getUtils().toCamelCase(item.getKey())+" :");
+                    ((TextView) result.findViewById(android.R.id.text2)).setText("₹ "+item.getValue());
                 }
                 break;
 
-            }
+            }*/
         }
 
            /* // TODO replace findViewById by ViewHolder
@@ -194,30 +195,4 @@ public class KeySpecificationAdapter extends BaseAdapter {
         return result;
     }
 
-    private Map<String,String> splitString(String value) {
-
-
-        //String format is 2/16|Battery#4000MAH&
-        mItem = new HashMap<>();
-        for(String w:value.split("\\|",2)){
-            System.out.println(w);
-        }
-        String[] strings= value.split("\\|",2);
-        if(strings.length>0) {
-
-            mItem.put("Memory (RAM/ROM)",strings[0]);
-            String mvalue = strings[1];
-            List<String> list=new ArrayList();
-            for (String str : mvalue.split("\\&")) {
-                list.add(str);
-            }
-            for (String mStr : list) {
-                String[] s= mStr.split("\\#",2);
-                mItem.put(s[0],s[1]);
-
-            }
-            int n=mItem.size();
-        }
-        return mItem;
-    }
 }

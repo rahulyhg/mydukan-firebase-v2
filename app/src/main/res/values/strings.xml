@@ -124,6 +124,15 @@
     <string name="size">size</string>
     <string name="camera">camera</string>
 
+    <string name="amazon">amazon</string>
+    <string name="snapdeal">snapdeal</string>
+    <string name="paytm">paytm</string>
+    <string name="lockthedeal">lockthedeal</string>
+    <string name="shopclues">shopclues</string>
+    <string name="flipkart">flipkart</string>
+    <string name="gadget360">gadget360</string>
+
+
 
     <!-- Strings related to screen titles -->
     <string name="signin_title">Sign In</string>

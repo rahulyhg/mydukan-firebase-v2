@@ -85,6 +85,7 @@ public class DescriptionFragment extends Fragment {
             }
         }
 
+
         mDescWebView = (WebView) mView.findViewById(R.id.descWebView);
         mDescTextView = (TextView) mView.findViewById(R.id.descTextView);
 
@@ -98,6 +99,7 @@ public class DescriptionFragment extends Fragment {
         });
 //        setupDescription();
         fetchProductAndShow();
+//        fullpage.setVisibility(View.VISIBLE);
         return mView;
 
     }
@@ -138,6 +140,7 @@ public class DescriptionFragment extends Fragment {
                             mProduct.setDescription(product.getDescription());
                             mProduct.setUrl(product.getUrl());
                             mProduct.setAttributes(product.getAttributes());
+                            fullpage.setVisibility(View.VISIBLE);
                         }
 
                         dismissProgress();
@@ -193,6 +196,7 @@ public class DescriptionFragment extends Fragment {
     }
 
     private class MyWebViewClient extends WebViewClient {
+
         @Override
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
             return false;
@@ -201,7 +205,8 @@ public class DescriptionFragment extends Fragment {
         @Override
         public void onPageStarted(WebView view, String url, Bitmap favicon) {
             super.onPageStarted(view, url, favicon);
-            mProgress = new ProgressDialog(context);
+
+            mProgress = new ProgressDialog(getContext());
           //  mProgress.setTitle(getString(R.string.Please_wait));
             mProgress.setMessage(getString(R.string.Page_is_loading));
             mProgress.setCancelable(true);
