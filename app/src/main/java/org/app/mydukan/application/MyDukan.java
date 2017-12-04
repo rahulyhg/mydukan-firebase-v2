@@ -97,7 +97,7 @@ public class MyDukan extends Application {
         if(mFirebaseAuth.getCurrentUser() != null) {
             ApiManager.getInstance(getApplicationContext()).checkAndSubscribeForTopic();
             String token = FirebaseInstanceId.getInstance().getToken();
-
+ 
             // Send the Instance ID token to your app server.
             ApiManager.getInstance(this).sendRegistrationId(mFirebaseAuth.getCurrentUser().getUid(), token, new ApiResult() {
                 @Override
