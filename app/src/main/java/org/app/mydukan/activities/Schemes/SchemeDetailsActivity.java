@@ -1,13 +1,25 @@
 package org.app.mydukan.activities.Schemes;
 
 import android.app.Dialog;
+import android.app.DownloadManager;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.webkit.WebChromeClient;
@@ -19,6 +31,7 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.app.mydukan.R;
 import org.app.mydukan.activities.BaseActivity;
@@ -29,9 +42,13 @@ import org.app.mydukan.data.Scheme;
 import org.app.mydukan.data.SchemeInfo;
 import org.app.mydukan.data.SchemeRecord;
 import org.app.mydukan.data.SupplierInfo;
+import org.app.mydukan.fragments.DescriptionFragment;
 import org.app.mydukan.server.ApiManager;
 import org.app.mydukan.server.ApiResult;
 import org.app.mydukan.utils.AppContants;
+import org.app.mydukan.utils.NetworkUtil;
+
+import java.util.Random;
 
 /**
  * Created by arpithadudi on 9/11/16.
@@ -58,6 +75,13 @@ public class SchemeDetailsActivity extends BaseActivity {
     private RelativeLayout webLayout;
     private Button fullpage, normalpage, downloadpage;
     private LinearLayout linear_scheme_layout;
+    private NetworkUtil networkUtil;
+    // Progress Dialog
+    private ProgressDialog cDialog;
+    private static final int STORAGE_PERMISSION_CODE = 555;
+    private static String file_url = "https://s3-ap-southeast-1.amazonaws.com/mydukan/A+NOVEMBER+UPDATES/1509290822price_list+(1).xls";
+
+
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -65,10 +89,10 @@ public class SchemeDetailsActivity extends BaseActivity {
         setContentView(R.layout.activity_schemedetails);
 
         mApp = (MyDukan) getApplicationContext();
-
+        networkUtil =new NetworkUtil();
         //Set up the actionbar
         setupActionBar();
-
+        requestStoragePermission();
         //get the initial data
         Bundle bundle = getIntent().getExtras();
         if (bundle != null) {
@@ -100,6 +124,19 @@ public class SchemeDetailsActivity extends BaseActivity {
         normalpage= (Button) findViewById(R.id.btn_NormalPage);
         downloadpage= (Button) findViewById(R.id.btn_DownloadPage);
 
+        downloadpage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                // starting new Async Task
+                if(networkUtil.isConnectingToInternet(SchemeDetailsActivity.this)){
+                    new  DownloadFileFromURL().execute(file_url);
+                }else{
+                    Toast.makeText(SchemeDetailsActivity.this, "Please check network connectivity.", Toast.LENGTH_LONG).show();
+                }
+
+            }
+        });
         mEnrolledBtn.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
@@ -141,7 +178,6 @@ public class SchemeDetailsActivity extends BaseActivity {
             }
         });
 
-
         mDescWebView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -166,11 +202,41 @@ public class SchemeDetailsActivity extends BaseActivity {
                 dialog.show();
                 */
 
-
             }
         });
 
         setSchemeData();
+    }
+    private void requestStoragePermission() {
+        if (ContextCompat.checkSelfPermission(SchemeDetailsActivity.this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED)
+            return;
+
+        if (ActivityCompat.shouldShowRequestPermissionRationale(SchemeDetailsActivity.this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+            //If the user has denied the permission previously your code will come to this block
+            //Here you can explain why you need this permission
+            //Explain here why you need this permission
+            requestStoragePermission();
+        }
+        //And finally ask for the permission
+        ActivityCompat.requestPermissions(SchemeDetailsActivity.this, new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE}, STORAGE_PERMISSION_CODE);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+
+        //Checking the request code of our request
+        if (requestCode == STORAGE_PERMISSION_CODE) {
+
+            //If permission is granted
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                //Displaying a toast
+
+                //  Toast.makeText(this, "Permission granted now you can read the storage", Toast.LENGTH_LONG).show();
+            } else {
+                //Displaying another toast if permission is not granted
+                Toast.makeText(SchemeDetailsActivity.this, "Oops you just denied the permission", Toast.LENGTH_LONG).show();
+            }
+        }
     }
 
     @Override
@@ -246,6 +312,7 @@ public class SchemeDetailsActivity extends BaseActivity {
         String desc = mScheme.getDescription();
         if (!mApp.getUtils().isStringEmpty(url)) {
             schemeDesc = url;
+            file_url=url;
         } else if (mApp.getUtils().isStringEmpty(desc)) {
             schemeDesc = getString(R.string.Specifications_Not_Available);
         }
@@ -364,4 +431,105 @@ public class SchemeDetailsActivity extends BaseActivity {
             }
         }
     }
+
+
+    /**
+     * Background Async Task to download file
+     * */
+    class DownloadFileFromURL extends AsyncTask<String, String, String> {
+
+        /**
+         * Before starting background thread
+         * Show Progress Bar Dialog
+         * */
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            /**
+             * Showing Dialog
+             * */
+            cDialog = new ProgressDialog(SchemeDetailsActivity.this);
+            cDialog.setMessage("Downloading file. Please wait...");
+            cDialog.setIndeterminate(false);
+            cDialog.setMax(100);
+            cDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+            cDialog.setCancelable(true);
+            cDialog.show();
+        }
+
+        /**
+         * Downloading file in background thread
+         * */
+        @Override
+        protected String doInBackground(String... f_url) {
+            if (new CheckForSDCard().isSDCardPresent()) {
+                try{
+                    Uri uri = Uri.parse(f_url[0]);
+                    Log.e("Check", uri.toString());
+                    DownloadManager.Request request = new DownloadManager.Request(uri);
+                    Random rand = new Random();
+                    int randomNum = rand.nextInt(50) + 1;
+                    request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, "MyDukan_"+ mScheme.getName()+"_"+randomNum+".csv");
+                    request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED); // to notify when download is complete
+                    request.allowScanningByMediaScanner();// if you want to be available from media players
+                    DownloadManager manager = (DownloadManager)  SchemeDetailsActivity.this.getSystemService(DOWNLOAD_SERVICE);
+                    manager.enqueue(request);
+
+                }catch (Exception e){
+                    e.printStackTrace();
+                    Handler mHandler = new Handler(Looper.getMainLooper()) {
+                        @Override
+                        public void handleMessage(Message message) {
+                            // This is where you do your work in the UI thread.
+                            // Your worker tells you in the message what to do.
+                            Toast.makeText(SchemeDetailsActivity.this, "Sorry, Unable to download the file in your device. ", Toast.LENGTH_LONG).show();
+                        }
+
+                    };
+
+                }
+                return null;
+            }else{
+
+                Toast.makeText(SchemeDetailsActivity.this, "SD-CARD is not present in your device. ", Toast.LENGTH_LONG).show();
+            }
+            return null;
+        }
+
+        /**
+         * Updating progress bar
+         * */
+        protected void onProgressUpdate(String... progress) {
+            // setting progress percentage
+            cDialog.setProgress(Integer.parseInt(progress[0]));
+        }
+
+        /**
+         * After completing background task
+         * Dismiss the progress dialog
+         * **/
+        @Override
+        protected void onPostExecute(String file_url) {
+            // dismiss the dialog after the file was downloaded
+            cDialog.dismiss();
+
+            // Displaying downloaded image into image view
+            // Reading image path from sdcard
+           // String imagePath = Environment.getExternalStorageDirectory().toString() + "/downloadedfile.jpg";
+
+        }
+
+    }
+
+    public class CheckForSDCard {
+        //Check If SD Card is present or not method
+        public boolean isSDCardPresent() {
+            if (Environment.getExternalStorageState().equals(
+                    Environment.MEDIA_MOUNTED)) {
+                return true;
+            }
+            return false;
+        }
+    }
+
 }
