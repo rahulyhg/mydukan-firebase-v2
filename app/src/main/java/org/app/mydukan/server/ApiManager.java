@@ -50,7 +50,6 @@ import org.app.mydukan.data.Supplier;
 import org.app.mydukan.data.SupplierBindData;
 import org.app.mydukan.data.SupplierGroups;
 import org.app.mydukan.data.User;
-import org.app.mydukan.data.Videos;
 import org.app.mydukan.utils.AppContants;
 
 import java.io.IOException;
@@ -1813,7 +1812,7 @@ public class ApiManager {
             }
         });
     }
-    public void getVideosList(final ApiResult result) {
+   /* public void getVideosList(final ApiResult result) {
         final ArrayList<Videos> videosList = new ArrayList<>();
 
         DatabaseReference categoryRef = FirebaseDatabase.getInstance().getReference("MyDukan_BroadCast/videos");
@@ -1838,7 +1837,7 @@ public class ApiManager {
                 result.onFailure(mctx.getString(R.string.status_failed));
             }
         });
-    }
+    }*/
 
 
     public void getOrderList(final String supplierId, String uid, final ApiResult result) {
