@@ -124,6 +124,8 @@ public class LaunchActivity extends BaseActivity   {
                            Answers.getInstance().logCustom(new CustomEvent("Launcher_OpenPage")
                                    .putCustomAttribute("UserId", mUid));
 
+                           mApp.checkAndSendToken();
+
                            String mob_vrify= user.getVrified_mobilenum();
                            String location_verfy=user.getVerified_location();
 //                           String cmpnyInfo_vrify= user.getVerified_CompanyInfo();
