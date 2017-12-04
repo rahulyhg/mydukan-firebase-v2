@@ -160,7 +160,7 @@
             android:textColor="@color/new_btn_blue"
             android:text="Download"
             android:ellipsize="middle"
-            android:visibility="gone"
+            android:visibility="visible"
             android:lines="1"
             android:textSize="12sp"
             tools:ignore="EllipsizeMaxLines" />
