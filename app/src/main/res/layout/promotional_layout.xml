@@ -81,12 +81,12 @@
             android:background="@color/new_btn_blue"
             android:gravity="center_horizontal"
             android:orientation="vertical"
-            android:padding="2dp"
+            android:padding="6dp"
             android:visibility="visible">
 
             <ImageView
                 android:layout_width="20dp"
-                android:layout_height="20dp"
+                android:layout_height="30dp"
                 android:src="@drawable/ic_service_center_white"
                 tools:ignore="ContentDescription" />
 
@@ -111,11 +111,11 @@
             android:layout_margin="1dp"
             android:background="@color/new_btn_blue"
             android:gravity="center_horizontal"
-            android:padding="2dp">
+            android:padding="6dp">
 
             <ImageView
                 android:layout_width="20dp"
-                android:layout_height="20dp"
+                android:layout_height="30dp"
                 android:src="@drawable/ic_network_64"
                 tools:ignore="ContentDescription" />
 
@@ -140,11 +140,11 @@
             android:visibility="visible"
             android:background="@color/new_btn_blue"
             android:gravity="center_horizontal"
-            android:padding="2dp">
+            android:padding="6dp">
 
             <ImageView
                 android:layout_width="20dp"
-                android:layout_height="20dp"
+                android:layout_height="30dp"
                 android:src="@drawable/ic_chat_ask_raju"
                 tools:ignore="ContentDescription" />
             <TextView
