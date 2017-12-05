@@ -20,6 +20,7 @@ import org.app.mydukan.application.MyDukan;
 import org.app.mydukan.data.AppStateContants;
 import org.app.mydukan.data.User;
 import org.app.mydukan.utils.AppContants;
+import org.app.mydukan.utils.AppPreference;
 import org.app.mydukan.utils.NotificationUtils;
 
 import java.io.File;
@@ -120,36 +121,37 @@ public class LaunchActivity extends BaseActivity {
         referenceUser.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                if (dataSnapshot != null) {
-                    user = dataSnapshot.getValue(User.class);
-                    if (user != null) {
-                        Answers.getInstance().logCustom(new CustomEvent("Launcher_OpenPage")
-                                .putCustomAttribute("UserId", mUid));
+                try {
+                    if (dataSnapshot != null) {
+                        user = dataSnapshot.getValue(User.class);
+                        if (user != null) {
+                            Answers.getInstance().logCustom(new CustomEvent("Launcher_OpenPage")
+                                    .putCustomAttribute("UserId", mUid));
 
-                        String mob_vrify = user.getVrified_mobilenum();
-                        String location_verfy = user.getVerified_location();
+                            String mob_vrify = user.getVrified_mobilenum();
+                            String location_verfy = user.getVerified_location();
 //                           String cmpnyInfo_vrify= user.getVerified_CompanyInfo();
 
 
-                        if (user.getVrified_mobilenum() == null && mob_vrify.equals("false")) {
+                            if (user.getVrified_mobilenum() == null && mob_vrify.equals("false")) {
 
-                            Answers.getInstance().logCustom(new CustomEvent("Launcher_OpenPage")
-                                    .putCustomAttribute("UserId_NewSignUpActivity", mUid));
+                                Answers.getInstance().logCustom(new CustomEvent("Launcher_OpenPage")
+                                        .putCustomAttribute("UserId_NewSignUpActivity", mUid));
 
-                            Intent intent = new Intent(LaunchActivity.this, NewSignUpActivity.class);
-                            intent.putExtra(AppContants.VIEW_TYPE, AppContants.SIGN_UP);
-                            startActivity(intent);
-                            finish();
-                        } else if (user.getVerified_location() == null && location_verfy.equals("false")) {
+                                Intent intent = new Intent(LaunchActivity.this, NewSignUpActivity.class);
+                                intent.putExtra(AppContants.VIEW_TYPE, AppContants.SIGN_UP);
+                                startActivity(intent);
+                                finish();
+                            } else if (user.getVerified_location() == null && location_verfy.equals("false")) {
 
-                            Answers.getInstance().logCustom(new CustomEvent("Launcher_OpenPage")
-                                    .putCustomAttribute("UserId_UsersLocationAddress", mUid));
+                                Answers.getInstance().logCustom(new CustomEvent("Launcher_OpenPage")
+                                        .putCustomAttribute("UserId_UsersLocationAddress", mUid));
 
-                            Intent intent = new Intent(LaunchActivity.this, UsersLocationAddress.class);
-                            intent.putExtra(AppContants.VIEW_TYPE, AppContants.SIGN_UP);
-                            startActivity(intent);
-                            finish();
-                        }
+                                Intent intent = new Intent(LaunchActivity.this, UsersLocationAddress.class);
+                                intent.putExtra(AppContants.VIEW_TYPE, AppContants.SIGN_UP);
+                                startActivity(intent);
+                                finish();
+                            }
 
 
                       /* else if(cmpnyInfo_vrify.equals("false")){
@@ -159,28 +161,35 @@ public class LaunchActivity extends BaseActivity {
                            finish();
 
                        }*/
-                        else {
+                            else {
 
+                                Boolean checkIsSubscribe =  new AppPreference().getSubscribing(getApplicationContext());
+                                if(!checkIsSubscribe) {
+                                    Answers.getInstance().logCustom(new CustomEvent("Launcher_Page")
+                                            .putCustomAttribute("UserId", mUid));
+                                    Intent intent = new Intent(LaunchActivity.this, MainActivity.class);
+                                    intent.putExtra(AppContants.NOTIFICATION, notificationInfo);
+                                    startActivity(intent);
+                                    finish();
+                                }else{
+                                    new AppPreference().setSubscribing(getApplicationContext(),false);
+                                }
+
+                            }
+                        } else {
 
                             Answers.getInstance().logCustom(new CustomEvent("Launcher_Page")
-                                    .putCustomAttribute("UserId", mUid));
-                            Intent intent = new Intent(LaunchActivity.this, MainActivity.class);
-                            intent.putExtra(AppContants.NOTIFICATION, notificationInfo);
-                            startActivity(intent);
+                                    .putCustomAttribute("UserId_Null", mUid));
+
+                            startActivity(new Intent(LaunchActivity.this, LoginActivity.class));
                             finish();
-
                         }
-                    } else {
-
-                        Answers.getInstance().logCustom(new CustomEvent("Launcher_Page")
-                                .putCustomAttribute("UserId_Null", mUid));
-
-                        startActivity(new Intent(LaunchActivity.this, LoginActivity.class));
-                        finish();
                     }
+                }catch (Exception e){
+                    e.printStackTrace();
                 }
-            }
 
+            }
             @Override
             public void onCancelled(DatabaseError databaseError) {
 

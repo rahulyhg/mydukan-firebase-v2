@@ -4,16 +4,15 @@ package org.app.mydukan.activities;
  * Created by vaibhavkumar on 09/10/17.
  */
 
-import android.*;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
+import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
@@ -31,6 +30,18 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
+
+import org.app.mydukan.R;
+import org.app.mydukan.application.MyDukan;
+import org.app.mydukan.data.ChatData;
+import org.app.mydukan.data.DatabaseHandler;
+
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Map;
 
 import ai.api.AIDataService;
 import ai.api.AIListener;
@@ -41,20 +52,6 @@ import ai.api.model.AIError;
 import ai.api.model.AIRequest;
 import ai.api.model.AIResponse;
 import ai.api.model.Result;
-
-import com.google.firebase.database.Query;
-import com.google.firebase.database.ValueEventListener;
-import com.google.gson.JsonElement;
-
-import org.app.mydukan.application.MyDukan;
-import org.app.mydukan.R;
-import org.app.mydukan.data.ChatData;
-import org.app.mydukan.data.DatabaseHandler;
-
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.Map;
 
 
 
@@ -84,208 +81,211 @@ public class ChatActivity extends AppCompatActivity implements AIListener{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_chat);
-        sqlDb = new DatabaseHandler(this);
-        isSubscribed =  getIntent().getBooleanExtra("IS_SUBSCRIBED", false);
-        Log.e("Is Susbscribed", String.valueOf(isSubscribed));
-        ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.RECORD_AUDIO},1);
 
-        mApp = (MyDukan) getApplicationContext();
-        recyclerView = (RecyclerView)findViewById(R.id.recyclerView);
-        editText = (EditText)findViewById(R.id.editText);
-        addBtn = (RelativeLayout)findViewById(R.id.addBtn);
+        try {
+            sqlDb = new DatabaseHandler(this);
+            isSubscribed = getIntent().getBooleanExtra("IS_SUBSCRIBED", false);
+            Log.e("Is Susbscribed", String.valueOf(isSubscribed));
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.RECORD_AUDIO}, 1);
 
-        recyclerView.setHasFixedSize(true);
-        final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
-        linearLayoutManager.setStackFromEnd(true);
-        recyclerView.setLayoutManager(linearLayoutManager);
+            mApp = (MyDukan) getApplicationContext();
+            recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
+            editText = (EditText) findViewById(R.id.editText);
+            addBtn = (RelativeLayout) findViewById(R.id.addBtn);
 
-        ref = FirebaseDatabase.getInstance().getReference();
-        ref.keepSynced(true);
-        chat_ref = ref.child("chat");
-        count_ref = ref.child("chatCount");
-        chat_ref.keepSynced(true);
-        uid= mApp.getFirebaseAuth().getCurrentUser().getUid();
-        Calendar c = Calendar.getInstance();
-        SimpleDateFormat df = new SimpleDateFormat("dd-MMM-yyyy");
-        formattedDate = df.format(c.getTime());
+            recyclerView.setHasFixedSize(true);
+            final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
+            linearLayoutManager.setStackFromEnd(true);
+            recyclerView.setLayoutManager(linearLayoutManager);
 
-        Log.d("%%%%%ChatUID%%%%%", uid);
-        ChatData entry = sqlDb.getEntry(formattedDate);
-        if(entry==null){
-            sqlDb.addEntry(new ChatData(formattedDate));
-            Log.d("SQL Entry", "Writing to SQL");
-            ChatMessage chatMessage = new ChatMessage(welcome_msg, "bot");
-            chat_ref.child(uid).push().setValue(chatMessage);
-            ChatMessage chatMessageHindi = new ChatMessage(welcome_msg_hindi, "bot");
-            chat_ref.child(uid).push().setValue(chatMessageHindi);
-        }else{
-            Log.d("Entry Already There", "Skipping");
-        }
+            ref = FirebaseDatabase.getInstance().getReference();
+            ref.keepSynced(true);
+            chat_ref = ref.child("chat");
+            count_ref = ref.child("chatCount");
+            chat_ref.keepSynced(true);
+            uid = mApp.getFirebaseAuth().getCurrentUser().getUid();
+            Calendar c = Calendar.getInstance();
+            SimpleDateFormat df = new SimpleDateFormat("dd-MMM-yyyy");
+            formattedDate = df.format(c.getTime());
 
-        final AIConfiguration config = new AIConfiguration("0938020266a14f36a2bab54e37842b6c",
-                AIConfiguration.SupportedLanguages.English,
-                AIConfiguration.RecognitionEngine.System);
+            Log.d("%%%%%ChatUID%%%%%", uid);
+            ChatData entry = sqlDb.getEntry(formattedDate);
+            if (entry == null) {
+                sqlDb.addEntry(new ChatData(formattedDate));
+                Log.d("SQL Entry", "Writing to SQL");
+                ChatMessage chatMessage = new ChatMessage(welcome_msg, "bot");
+                chat_ref.child(uid).push().setValue(chatMessage);
+                ChatMessage chatMessageHindi = new ChatMessage(welcome_msg_hindi, "bot");
+                chat_ref.child(uid).push().setValue(chatMessageHindi);
+            } else {
+                Log.d("Entry Already There", "Skipping");
+            }
 
-        aiService = AIService.getService(this, config);
-        aiService.setListener(this);
+            final AIConfiguration config = new AIConfiguration("0938020266a14f36a2bab54e37842b6c",
+                    AIConfiguration.SupportedLanguages.English,
+                    AIConfiguration.RecognitionEngine.System);
 
-        final AIDataService aiDataService = new AIDataService(config);
+            aiService = AIService.getService(this, config);
+            aiService.setListener(this);
 
-        final AIRequest aiRequest = new AIRequest();
+            final AIDataService aiDataService = new AIDataService(config);
 
-        addBtn.setOnClickListener(new View.OnClickListener() {
-            @SuppressLint("StaticFieldLeak")
-            @Override
-            public void onClick(View view) {
+            final AIRequest aiRequest = new AIRequest();
 
-                String message = editText.getText().toString().trim();
-                DatabaseReference tmp = count_ref.child(uid).child(formattedDate);
-                tmp.addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        if(dataSnapshot.exists()){
-                            msgCount[0] = dataSnapshot.getValue(Integer.class);
-                            msgCount[0] += 1;
-                            count_ref.child(uid).child(formattedDate).setValue(msgCount[0]);
-                            Log.e("Updating entry", Integer.toString(msgCount[0]));
+            addBtn.setOnClickListener(new View.OnClickListener() {
+                @SuppressLint("StaticFieldLeak")
+                @Override
+                public void onClick(View view) {
+
+                    String message = editText.getText().toString().trim();
+                    DatabaseReference tmp = count_ref.child(uid).child(formattedDate);
+                    tmp.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            if (dataSnapshot.exists()) {
+                                msgCount[0] = dataSnapshot.getValue(Integer.class);
+                                msgCount[0] += 1;
+                                count_ref.child(uid).child(formattedDate).setValue(msgCount[0]);
+                                Log.e("Updating entry", Integer.toString(msgCount[0]));
+                            }
                         }
-                    }
 
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
-                        Log.e("Failed", databaseError.getMessage());
-                    }
-                });
-                if(msgCount[0] ==0) {
-                    Map<String, Object> childUpdates = new HashMap<>();
-                    childUpdates.put("/chatCount/" + uid + "/" + formattedDate + "/", 1);
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+                            Log.e("Failed", databaseError.getMessage());
+                        }
+                    });
+                    if (msgCount[0] == 0) {
+                        Map<String, Object> childUpdates = new HashMap<>();
+                        childUpdates.put("/chatCount/" + uid + "/" + formattedDate + "/", 1);
 
-                    FirebaseDatabase.getInstance().getReference().updateChildren(childUpdates,
-                            new DatabaseReference.CompletionListener() {
-                                @Override
-                                public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
-                                    if (databaseError == null) {
-                                        Log.e("Chatbot firebase init:", "failure");
-                                    } else {
-                                        msgCount[0] += 1;
+                        FirebaseDatabase.getInstance().getReference().updateChildren(childUpdates,
+                                new DatabaseReference.CompletionListener() {
+                                    @Override
+                                    public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+                                        if (databaseError == null) {
+                                            Log.e("Chatbot firebase init:", "failure");
+                                        } else {
+                                            msgCount[0] += 1;
+                                        }
                                     }
+                                });
+                    }
+                    if (msgCount[0] >= freeLimit && !isSubscribed) {
+                        ChatMessage chatMessage = new ChatMessage(notSubscribed, "bot");
+                        chat_ref.child(uid).push().setValue(chatMessage);
+                        return;
+                    }
+
+                    if (!message.equals("")) {
+                        Log.e("Message", message);
+                        ChatMessage chatMessage = new ChatMessage(message, "user");
+                        chat_ref.child(uid).push().setValue(chatMessage);
+
+                        aiRequest.setQuery(message);
+                        new AsyncTask<AIRequest, Void, AIResponse>() {
+
+                            @Override
+                            protected AIResponse doInBackground(AIRequest... aiRequests) {
+                                final AIRequest request = aiRequests[0];
+                                try {
+                                    final AIResponse response = aiDataService.request(aiRequest);
+                                    return response;
+                                } catch (AIServiceException e) {
                                 }
-                            });
-                }
-                if(msgCount[0]>=freeLimit && !isSubscribed){
-                    ChatMessage chatMessage = new ChatMessage(notSubscribed, "bot");
-                    chat_ref.child(uid).push().setValue(chatMessage);
-                    return;
-                }
-
-                if (!message.equals("")) {
-                    Log.e("Message", message);
-                    ChatMessage chatMessage = new ChatMessage(message, "user");
-                    chat_ref.child(uid).push().setValue(chatMessage);
-
-                    aiRequest.setQuery(message);
-                    new AsyncTask<AIRequest,Void,AIResponse>(){
-
-                        @Override
-                        protected AIResponse doInBackground(AIRequest... aiRequests) {
-                            final AIRequest request = aiRequests[0];
-                            try {
-                                final AIResponse response = aiDataService.request(aiRequest);
-                                return response;
-                            } catch (AIServiceException e) {
+                                return null;
                             }
-                            return null;
-                        }
-                        @Override
-                        protected void onPostExecute(AIResponse response) {
-                            if (response != null) {
-                                Result result = response.getResult();
-                                String reply = result.getFulfillment().getSpeech();
-                                ChatMessage chatMessage = new ChatMessage(reply, "bot");
-                                chat_ref.child(uid).push().setValue(chatMessage);
+
+                            @Override
+                            protected void onPostExecute(AIResponse response) {
+                                if (response != null) {
+                                    Result result = response.getResult();
+                                    String reply = result.getFulfillment().getSpeech();
+                                    ChatMessage chatMessage = new ChatMessage(reply, "bot");
+                                    chat_ref.child(uid).push().setValue(chatMessage);
+                                }
                             }
-                        }
-                    }.execute(aiRequest);
-                }
-                else {
-                    aiService.startListening();
-                }
+                        }.execute(aiRequest);
+                    } else {
+                        aiService.startListening();
+                    }
 
-                editText.setText("");
-
-            }
-        });
-
-
-
-        editText.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                ImageView fab_img = (ImageView)findViewById(R.id.fab_img);
-                Bitmap img = BitmapFactory.decodeResource(getResources(),R.drawable.ic_send_white_24dp);
-                Bitmap img1 = BitmapFactory.decodeResource(getResources(),R.drawable.ic_mic_white_24dp);
-
-
-                if (s.toString().trim().length()!=0 && flagFab){
-                    ImageViewAnimatedChange(ChatActivity.this,fab_img,img);
-                    flagFab=false;
+                    editText.setText("");
 
                 }
-                else if (s.toString().trim().length()==0){
-                    ImageViewAnimatedChange(ChatActivity.this,fab_img,img1);
-                    flagFab=true;
-                }
+            });
 
-            }
 
-            @Override
-            public void afterTextChanged(Editable s) {
-
-            }
-        });
-        Query query = chat_ref.child(uid).limitToLast(50);
-        adapter = new FirebaseRecyclerAdapter<ChatMessage, chat_rec>(ChatMessage.class,R.layout.msglist,chat_rec.class,query) {
-            @Override
-            protected void populateViewHolder(chat_rec viewHolder, ChatMessage model, int position) {
-                if (model.getMsgUser().equals("user")) {
-                    viewHolder.rightText.setText(model.getMsgText());
-                    viewHolder.rightText.setVisibility(View.VISIBLE);
-                    viewHolder.leftText.setVisibility(View.GONE);
-                    viewHolder.welcomeText.setVisibility(View.GONE);
-                }else {
-                    viewHolder.leftText.setText(model.getMsgText());
-                    viewHolder.rightText.setVisibility(View.GONE);
-                    viewHolder.leftText.setVisibility(View.VISIBLE);
-                    viewHolder.welcomeText.setVisibility(View.GONE);
-                }
-
-            }
-        };
-
-        adapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
-            @Override
-            public void onItemRangeInserted(int positionStart, int itemCount) {
-                super.onItemRangeInserted(positionStart, itemCount);
-
-                int msgCount = adapter.getItemCount();
-                int lastVisiblePosition = linearLayoutManager.findLastCompletelyVisibleItemPosition();
-
-                if (lastVisiblePosition == -1 ||
-                        (positionStart >= (msgCount - 1) &&
-                                lastVisiblePosition == (positionStart - 1))) {
-                    recyclerView.scrollToPosition(positionStart);
+            editText.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
                 }
 
-            }
-        });
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+                    ImageView fab_img = (ImageView) findViewById(R.id.fab_img);
+                    Bitmap img = BitmapFactory.decodeResource(getResources(), R.drawable.ic_send_white_24dp);
+                    Bitmap img1 = BitmapFactory.decodeResource(getResources(), R.drawable.ic_mic_white_24dp);
 
-        recyclerView.setAdapter(adapter);
+
+                    if (s.toString().trim().length() != 0 && flagFab) {
+                        ImageViewAnimatedChange(ChatActivity.this, fab_img, img);
+                        flagFab = false;
+
+                    } else if (s.toString().trim().length() == 0) {
+                        ImageViewAnimatedChange(ChatActivity.this, fab_img, img1);
+                        flagFab = true;
+                    }
+
+                }
+
+                @Override
+                public void afterTextChanged(Editable s) {
+
+                }
+            });
+            Query query = chat_ref.child(uid).limitToLast(50);
+            adapter = new FirebaseRecyclerAdapter<ChatMessage, chat_rec>(ChatMessage.class, R.layout.msglist, chat_rec.class, query) {
+                @Override
+                protected void populateViewHolder(chat_rec viewHolder, ChatMessage model, int position) {
+                    if (model.getMsgUser().equals("user")) {
+                        viewHolder.rightText.setText(model.getMsgText());
+                        viewHolder.rightText.setVisibility(View.VISIBLE);
+                        viewHolder.leftText.setVisibility(View.GONE);
+                        viewHolder.welcomeText.setVisibility(View.GONE);
+                    } else {
+                        viewHolder.leftText.setText(model.getMsgText());
+                        viewHolder.rightText.setVisibility(View.GONE);
+                        viewHolder.leftText.setVisibility(View.VISIBLE);
+                        viewHolder.welcomeText.setVisibility(View.GONE);
+                    }
+
+                }
+            };
+
+            adapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
+                @Override
+                public void onItemRangeInserted(int positionStart, int itemCount) {
+                    super.onItemRangeInserted(positionStart, itemCount);
+
+                    int msgCount = adapter.getItemCount();
+                    int lastVisiblePosition = linearLayoutManager.findLastCompletelyVisibleItemPosition();
+
+                    if (lastVisiblePosition == -1 ||
+                            (positionStart >= (msgCount - 1) &&
+                                    lastVisiblePosition == (positionStart - 1))) {
+                        recyclerView.scrollToPosition(positionStart);
+
+                    }
+
+                }
+            });
+
+            recyclerView.setAdapter(adapter);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
 
     }
     public void ImageViewAnimatedChange(Context c, final ImageView v, final Bitmap new_image) {

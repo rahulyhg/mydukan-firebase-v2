@@ -148,6 +148,9 @@ public class MyNetworksActivity extends AppCompatActivity {
     private void getCurrentUserData(FirebaseUser auth) {
         //showProgress(true);
         mList = new ArrayList<>();
+        if(auth == null || auth.getUid() == null || auth.getUid().isEmpty())
+            return;
+
         DatabaseReference feedReference = FirebaseDatabase.getInstance().getReference("chat_USER/" + auth.getUid());
         feedReference.addValueEventListener(new ValueEventListener() {
             @Override
@@ -177,24 +180,26 @@ public class MyNetworksActivity extends AppCompatActivity {
     }
 
     private void InitProfileView(ChattUser chattUser) {
-
-        profileName.setText(chattUser.getName());
-        profileEmail.setText(chattUser.getEmail());
-        if( chattUser.getPhotoUrl()!=null)
-        {
-            Glide.with(this)
-                    .load( chattUser.getPhotoUrl() )
-                    .centerCrop()
-                    .transform(new CircleTransform(this))
-                    .override(50,50)
-                    .into(profileIMG);
-        }else{
-            Glide.with(this)
-                    .load( R.mipmap.ic_launcher )
-                    .centerCrop()
-                    .transform(new CircleTransform(this))
-                    .override(50,50)
-                    .into(profileIMG);
+        try {
+            profileName.setText(chattUser.getName());
+            profileEmail.setText(chattUser.getEmail());
+            if (chattUser.getPhotoUrl() != null) {
+                Glide.with(getApplicationContext())
+                        .load(chattUser.getPhotoUrl())
+                        .centerCrop()
+                        .transform(new CircleTransform(this))
+                        .override(50, 50)
+                        .into(profileIMG);
+            } else {
+                Glide.with(getApplicationContext())
+                        .load(R.mipmap.ic_launcher)
+                        .centerCrop()
+                        .transform(new CircleTransform(this))
+                        .override(50, 50)
+                        .into(profileIMG);
+            }
+        }catch (Exception e){
+            e.printStackTrace();
         }
     }
 

@@ -152,6 +152,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     private int mViewType = 1;
     private HashMap mNotification;
     private ArrayList<String> list_BannerImg = new ArrayList<>();
+
     /*
       private static final String INTRO_CARD = "fab_intro";
       private static final String INTRO_SWITCH = "switch_intro";
@@ -170,9 +171,10 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         mApp = (MyDukan) getApplicationContext();
 
         final FirebaseUser userid = FirebaseAuth.getInstance().getCurrentUser();
-        if (userid != null) {
-            userID = userid.getUid();
-        } else {
+
+        if(userid != null && userid.getUid() != null && !userid.getUid().isEmpty()){
+            userID=userid.getUid();
+        }else{
             userID = mApp.getUserId();
         }
 
@@ -295,8 +297,9 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         askRaju_layout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Answers.getInstance().logCustom(new CustomEvent("ASK_RAJU click")
-                        .putCustomAttribute("USER_ID/ USER_Email:", userID + "/" + userdetails.getUserinfo().getEmailid()));
+                if(userdetails != null && userdetails.getUserinfo() != null && userdetails.getUserinfo().getEmailid() != null && !userdetails.getUserinfo().getEmailid().isEmpty())
+                    Answers.getInstance().logCustom(new CustomEvent("ASK_RAJU click")
+                            .putCustomAttribute("USER_ID/ USER_Email:", userID + "/" + userdetails.getUserinfo().getEmailid()));
 
                 Intent nIntent = new Intent(MainActivity.this, ChatActivity.class);
                 nIntent.putExtra("IS_SUBSCRIBED", isSubscribed);
@@ -510,52 +513,56 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     private void initViewPager() {
 
         // mPager = (ViewPager) findViewById(R.mCatId.pager);
-        mPager.setAdapter(new SlidingImage_Adapter(MainActivity.this, imageModelArrayList, userdetails, userdetails.getId()));
-        CirclePageIndicator indicator = (CirclePageIndicator) findViewById(R.id.indicator);
-        indicator.setViewPager(mPager);
+        try {
+            mPager.setAdapter(new SlidingImage_Adapter(MainActivity.this, imageModelArrayList, userdetails, userdetails.getId()));
+            CirclePageIndicator indicator = (CirclePageIndicator) findViewById(R.id.indicator);
+            indicator.setViewPager(mPager);
 
-        final float density = getResources().getDisplayMetrics().density;
+            final float density = getResources().getDisplayMetrics().density;
 
 //Set circle indicator radius
-        indicator.setRadius(5 * density);
+            indicator.setRadius(5 * density);
 
-        NUM_PAGES = imageModelArrayList.size();
+            NUM_PAGES = imageModelArrayList.size();
 
-        // Auto start of viewpager
-        final Handler handler = new Handler();
-        final Runnable Update = new Runnable() {
-            public void run() {
-                if (currentPage == NUM_PAGES) {
-                    currentPage = 0;
+            // Auto start of viewpager
+            final Handler handler = new Handler();
+            final Runnable Update = new Runnable() {
+                public void run() {
+                    if (currentPage == NUM_PAGES) {
+                        currentPage = 0;
+                    }
+                    mPager.setCurrentItem(currentPage++, true);
                 }
-                mPager.setCurrentItem(currentPage++, true);
-            }
-        };
-        Timer swipeTimer = new Timer();
-        swipeTimer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                handler.post(Update);
-            }
-        }, 10000, 10000);
+            };
+            Timer swipeTimer = new Timer();
+            swipeTimer.schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    handler.post(Update);
+                }
+            }, 8000, 8000);
 
-        // Pager listener over indicator
-        indicator.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-            @Override
-            public void onPageSelected(int position) {
-                currentPage = position;
-            }
+            // Pager listener over indicator
+            indicator.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+                @Override
+                public void onPageSelected(int position) {
+                    currentPage = position;
+                }
 
-            @Override
-            public void onPageScrolled(int pos, float arg1, int arg2) {
+                @Override
+                public void onPageScrolled(int pos, float arg1, int arg2) {
 
-            }
+                }
 
-            @Override
-            public void onPageScrollStateChanged(int pos) {
+                @Override
+                public void onPageScrollStateChanged(int pos) {
 
-            }
-        });
+                }
+            });
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
 
@@ -707,24 +714,27 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         userInfo.put(AppContants.SUBSCRIPTION_EXTRAINFO, appSubscriptionInfo.getSubcription_EXTRAINFO());
         userInfo.put(AppContants.SUBSCRIPTION_USERID, appSubscriptionInfo.getSubscription_USERID());
         //Initialize AppDukan
-        ApiManager.getInstance(mContext).updateUserSubscription(mApp.getFirebaseAuth().getCurrentUser().getUid(),
-                userInfo, new ApiResult() {
-                    @Override
-                    public void onSuccess(Object data) {
-                        Log.i(MyDukan.LOGTAG, "User updated successfully");
-                        if (userdetails != null) {
-                            if (userdetails.getAppSubscriptionInfo() != null) {
-                                subscribeAleartLayout.setVisibility(View.GONE);
-                                return;
+        final FirebaseUser firebaseUser = mApp.getFirebaseAuth().getCurrentUser();
+        if(firebaseUser != null && firebaseUser.getUid() != null && !firebaseUser.getUid().isEmpty()) {
+            ApiManager.getInstance(mContext).updateUserSubscription(firebaseUser.getUid(),
+                    userInfo, new ApiResult() {
+                        @Override
+                        public void onSuccess(Object data) {
+                            Log.i(MyDukan.LOGTAG, "User updated successfully");
+                            if (userdetails != null) {
+                                if (userdetails.getAppSubscriptionInfo() != null) {
+                                    subscribeAleartLayout.setVisibility(View.GONE);
+                                    return;
+                                }
                             }
                         }
-                    }
 
-                    @Override
-                    public void onFailure(String response) {
-                        Log.i(MyDukan.LOGTAG, "Failed to update user profile");
-                    }
-                });
+                        @Override
+                        public void onFailure(String response) {
+                            Log.i(MyDukan.LOGTAG, "Failed to update user profile");
+                        }
+                    });
+        }
     }
 
 
@@ -743,52 +753,61 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         if (mViewType == AppContants.SIGN_UP) {
             mApp.getPreference().setAppState(MainActivity.this, new AppStateContants().HOME_SCREEN);
         }
-        if (mApp.getFirebaseAuth().getCurrentUser() == null) {
+        /*if (mApp.getFirebaseAuth().getCurrentUser() == null) {
             return;
-        }
-        ApiManager.getInstance(MainActivity.this).getUserProfile(mApp.getFirebaseAuth().getCurrentUser().getUid(), new ApiResult() {
-            @Override
-            public void onSuccess(Object data) {
-                if (data != null) {
-                    userdetails = (User) data;
+        }*/
 
-                    //Store in Preference its very Important to add the suppliers to User.
-                    mApp.getPreference().setUser(MainActivity.this, userdetails);
+        final FirebaseUser firebaseUser = mApp.getFirebaseAuth().getCurrentUser();
+        if(firebaseUser != null && firebaseUser.getUid() != null && !firebaseUser.getUid().isEmpty()) {
+            ApiManager.getInstance(MainActivity.this).getUserProfile(firebaseUser.getUid(), new ApiResult() {
+                @Override
+                public void onSuccess(Object data) {
+                    try {
+                        if (data != null) {
+                            userdetails = (User) data;
 
-                    checkUserSubscription(userdetails);
-                    getUserSubscription();
-                    setChatUserData();
-                    getBannerImages();
-                    isSubscribed = isUserSubscribed(userdetails);
-                    if (userdetails != null && userdetails.getCompanyinfo() == null) {
-                        new android.support.v7.app.AlertDialog.Builder(MainActivity.this)
-                                .setTitle("Info")
-                                .setMessage("Please fill the Company / Outlet Details to Continue..")
-                                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        // continue
-                                        Intent intent = new Intent(MainActivity.this, CompanyDetails.class);
-                                        startActivity(intent);
-                                        finish();
-                                        dialog.dismiss();
-                                    }
-                                })
-                                .setCancelable(false)
-                                .setIcon(android.R.drawable.ic_dialog_alert)
-                                .show();
+                            //Store in Preference its very Important to add the suppliers to User.
+                            mApp.getPreference().setUser(MainActivity.this, userdetails);
+
+                            checkUserSubscription(userdetails);
+                            getUserSubscription();
+                            setChatUserData();
+                            getBannerImages();
+                            isSubscribed = isUserSubscribed(userdetails);
+                            if (userdetails != null && userdetails.getCompanyinfo() == null) {
+                                new android.support.v7.app.AlertDialog.Builder(MainActivity.this)
+                                        .setTitle("Info")
+                                        .setMessage("Please fill the Company / Outlet Details to Continue..")
+                                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                            public void onClick(DialogInterface dialog, int which) {
+                                                // continue
+                                                Intent intent = new Intent(MainActivity.this, CompanyDetails.class);
+                                                startActivity(intent);
+                                                finish();
+                                                dialog.dismiss();
+                                            }
+                                        })
+                                        .setCancelable(false)
+                                        .setIcon(android.R.drawable.ic_dialog_alert)
+                                        .show();
+                            }
+                            return;
+                        }
+                    }catch (Exception e){
+                        e.printStackTrace();
                     }
-                    return;
                 }
-            }
 
-            @Override
-            public void onFailure(String response) {
-                //Do when there is no data present in firebase
-                dismissProgress();
-                Toast.makeText(MainActivity.this, "Please update your profile details.", Toast.LENGTH_SHORT).show();
 
-            }
-        });
+                @Override
+                public void onFailure(String response) {
+                    //Do when there is no data present in firebase
+                    dismissProgress();
+                    Toast.makeText(MainActivity.this, "Please update your profile details.", Toast.LENGTH_SHORT).show();
+
+                }
+            });
+        }
 
     }
 
@@ -796,24 +815,34 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         if (userdetails != null) {
             try {
                 FirebaseUser auth = FirebaseAuth.getInstance().getCurrentUser();
-                final DatabaseReference referenceFollow = FirebaseDatabase.getInstance().getReference().child("chat_USER/" + userID);
-                String userROLE = userdetails.getOtherinfo().getRole();
-                if (userROLE != null) {
+                final DatabaseReference referenceFollow = FirebaseDatabase.getInstance().getReference().child("chat_USER/" +  userID);
+                String userROLE = null;
+                if(userdetails != null && userdetails.getOtherinfo() != null && userdetails.getOtherinfo().getRole() != null)
+                    userROLE=userdetails.getOtherinfo().getRole();
+                if(userROLE!=null){
                     referenceFollow.child("userType").setValue(userdetails.getOtherinfo().getRole());
                 } else {
 //                    Toast.makeText(MainActivity.this, "Please update your profile details to use MyNetwork feature.", Toast.LENGTH_SHORT).show();
                     referenceFollow.child("userType").setValue("");
                 }
-                String userNUMBER = userdetails.getUserinfo().getNumber();
-                if (userNUMBER != null) {
+                String userNUMBER=null;
+                if(userdetails != null && userdetails.getUserinfo() != null && userdetails.getUserinfo().getNumber() != null && !userdetails.getUserinfo().getNumber().isEmpty())
+                    userNUMBER=userdetails.getUserinfo().getNumber();
+
+                if(userNUMBER!=null){
                     referenceFollow.child("phoneNumber").setValue(userdetails.getUserinfo().getNumber());
                 } else {
                     referenceFollow.child("phoneNumber").setValue("");
 //                    Toast.makeText(MainActivity.this, "Please update your profile details to use MyNetwork feature.", Toast.LENGTH_SHORT).show();
                 }
-                referenceFollow.child("addressinfo").setValue(userdetails.getUserinfo().getAddressinfo());
-                referenceFollow.child("companyinfo").setValue(userdetails.getCompanyinfo());
-                referenceFollow.child("name").setValue(userdetails.getCompanyinfo().getName());
+
+                if(userdetails != null && userdetails.getUserinfo() != null && userdetails.getUserinfo().getAddressinfo() != null)
+                    referenceFollow.child("addressinfo").setValue(userdetails.getUserinfo().getAddressinfo());
+                if(userdetails != null && userdetails.getCompanyinfo() != null)
+                    referenceFollow.child("companyinfo").setValue(userdetails.getCompanyinfo());
+                if(userdetails != null && userdetails.getCompanyinfo() != null && userdetails.getCompanyinfo().getName() != null)
+                    referenceFollow.child("name").setValue(userdetails.getCompanyinfo().getName());
+
                 final DatabaseReference addFollow = FirebaseDatabase.getInstance().getReference().child(FOLLOW_ROOT);
                 addFollow.child(userID).child(userID).setValue(true);
             } catch (Exception e) {
@@ -829,29 +858,32 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         if (mViewType == AppContants.SIGN_UP) {
             mApp.getPreference().setAppState(MainActivity.this, new AppStateContants().HOME_SCREEN);
         }
-        if (mApp.getFirebaseAuth().getCurrentUser() == null) {
+        /*if (mApp.getFirebaseAuth().getCurrentUser() == null) {
             return;
-        }
-        ApiManager.getInstance(MainActivity.this).getSubscriptionInfo(mApp.getFirebaseAuth().getCurrentUser().getUid(), new ApiResult() {
-            @Override
-            public void onSuccess(Object data) {
-                if (data != null) {
-                    String subscription_PLAN = String.valueOf(data);
-                    appSubscriptionInfo.setSubscription_PLAN(subscription_PLAN);
-                    // userdetails.setAppSubscriptionInfo(appSubscriptionInfo);
-                    checkUserSubscription(userdetails);
-                    isSubscribed = isUserSubscribed(userdetails);
-                    dismissProgress();
-                    return;
+        }*/
+        final FirebaseUser firebaseUser = mApp.getFirebaseAuth().getCurrentUser();
+        if(firebaseUser != null && firebaseUser.getUid() != null && !firebaseUser.getUid().isEmpty()) {
+            ApiManager.getInstance(MainActivity.this).getSubscriptionInfo(firebaseUser.getUid(), new ApiResult() {
+                @Override
+                public void onSuccess(Object data) {
+                    if (data != null) {
+                        String subscription_PLAN = String.valueOf(data);
+                        appSubscriptionInfo.setSubscription_PLAN(subscription_PLAN);
+                        // userdetails.setAppSubscriptionInfo(appSubscriptionInfo);
+                        checkUserSubscription(userdetails);
+                        isSubscribed = isUserSubscribed(userdetails);
+                        dismissProgress();
+                        return;
+                    }
                 }
-            }
 
-            @Override
-            public void onFailure(String response) {
-                //Do when there is no data present in firebase
-                dismissProgress();
-            }
-        });
+                @Override
+                public void onFailure(String response) {
+                    //Do when there is no data present in firebase
+                    dismissProgress();
+                }
+            });
+        }
     }
 
     //==============================================================================
@@ -1044,11 +1076,8 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         TextView headerText = (TextView) navigationView.getHeaderView(0).findViewById(R.id.emailID);
         FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-        if (firebaseUser != null) {
+        if(firebaseUser != null && firebaseUser.getEmail() != null && !firebaseUser.getEmail().isEmpty())
             headerText.setText(firebaseUser.getEmail());
-        } else {
-            headerText.setText("");
-        }
        /* User user = mApp.getPreference().getUser(MainActivity.this);
         if (user != null && user.getUserinfo() != null) {
             if (!mApp.getUtils().isStringEmpty(user.getUserinfo().getEmailid())) {
@@ -1061,16 +1090,18 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     private void checkUserPresentInDatabase() {
         showProgress();
         try {
-            ApiManager.getInstance(MainActivity.this).checkUserProfle(mApp.getFirebaseAuth().getCurrentUser().getUid(), new ApiResult() {
-                @Override
-                public void onSuccess(Object data) {
-                    //do nothing if all things where correct
-                    dismissProgress();
-                }
+            final FirebaseUser firebaseUser = mApp.getFirebaseAuth().getCurrentUser();
+            if(firebaseUser != null && firebaseUser.getUid() != null && !firebaseUser.getUid().isEmpty()) {
+                ApiManager.getInstance(MainActivity.this).checkUserProfle(firebaseUser.getUid(), new ApiResult() {
+                    @Override
+                    public void onSuccess(Object data) {
+                        //do nothing if all things where correct
+                        dismissProgress();
+                    }
 
-                @Override
-                public void onFailure(String response) {
-                    dismissProgress();
+                    @Override
+                    public void onFailure(String response) {
+                        dismissProgress();
                     /*new android.support.v7.app.AlertDialog.Builder(MainActivity.this)
                             .setTitle("Info")
                             .setMessage("Please fill the Company Details to enter myDukan")
@@ -1087,8 +1118,9 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                             .setIcon(android.R.drawable.ic_dialog_alert)
                             .show();*/
 //                    logoutUser();
-                }
-            });
+                    }
+                });
+            }
         } catch (Exception e) {
             dismissProgress();
         }
@@ -1123,38 +1155,41 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         clearTheData();
         showProgress();
         try {
-            ApiManager.getInstance(MainActivity.this).getUserSupplierlist(mApp.getFirebaseAuth().getCurrentUser().getUid(), new ApiResult() {
-                @Override
-                public void onSuccess(Object data) {
-                    mSupplerlist = new ArrayList<Supplier>();
-                    mSupplerlist = (ArrayList<Supplier>) data;
+            final FirebaseUser firebaseUser = mApp.getFirebaseAuth().getCurrentUser();
+            if(firebaseUser != null && firebaseUser.getUid() != null && !firebaseUser.getUid().isEmpty()) {
+                ApiManager.getInstance(MainActivity.this).getUserSupplierlist(firebaseUser.getUid(), new ApiResult() {
+                    @Override
+                    public void onSuccess(Object data) {
+                        mSupplerlist = new ArrayList<Supplier>();
+                        mSupplerlist = (ArrayList<Supplier>) data;
 
-                    if (mSupplerlist.isEmpty()) {
+                        if (mSupplerlist.isEmpty()) {
+                            mSupplierEmptyView.setVisibility(View.VISIBLE);
+                            mSupplierEmptyView.setText(getString(R.string.my_supplier_empty_text));
+                            dismissProgress();
+                            return;
+                        } else {
+                            mSupplierEmptyView.setVisibility(View.GONE);
+                        }
+                        if (mSupplierAdapter != null) {
+                            mSupplierAdapter.clearsupplier();
+                        }
+
+                        mSupplierAdapter.addsupplier(mSupplerlist);
+                        mSupplierAdapter.notifyDataSetChanged();
+                        dismissProgress();
+                    }
+
+                    @Override
+                    public void onFailure(String response) {
+                        dismissProgress();
                         mSupplierEmptyView.setVisibility(View.VISIBLE);
                         mSupplierEmptyView.setText(getString(R.string.my_supplier_empty_text));
-                        dismissProgress();
-                        return;
-                    } else {
-                        mSupplierEmptyView.setVisibility(View.GONE);
-                    }
-                    if (mSupplierAdapter != null) {
-                        mSupplierAdapter.clearsupplier();
                     }
 
-                    mSupplierAdapter.addsupplier(mSupplerlist);
-                    mSupplierAdapter.notifyDataSetChanged();
-                    dismissProgress();
-                }
 
-                @Override
-                public void onFailure(String response) {
-                    dismissProgress();
-                    mSupplierEmptyView.setVisibility(View.VISIBLE);
-                    mSupplierEmptyView.setText(getString(R.string.my_supplier_empty_text));
-                }
-
-
-            });
+                });
+            }
         } catch (Exception e) {
             dismissProgress();
         }
@@ -1201,20 +1236,23 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     public void addSupplier(String supplierid) {
         showProgress();
         try {
-            ApiManager.getInstance(MainActivity.this).addSupplier(mApp.getFirebaseAuth().getCurrentUser().getUid(), supplierid, new ApiResult() {
-                @Override
-                public void onSuccess(Object data) {
-                    Log.i(mApp.LOGTAG, "Success");
-                    dismissProgress();
-                    fetchSupplierdata();
-                }
+            final FirebaseUser firebaseUser = mApp.getFirebaseAuth().getCurrentUser();
+            if(firebaseUser != null && firebaseUser.getUid() != null && !firebaseUser.getUid().isEmpty()) {
+                ApiManager.getInstance(MainActivity.this).addSupplier(firebaseUser.getUid(), supplierid, new ApiResult() {
+                    @Override
+                    public void onSuccess(Object data) {
+                        Log.i(mApp.LOGTAG, "Success");
+                        dismissProgress();
+                        fetchSupplierdata();
+                    }
 
-                @Override
-                public void onFailure(String response) {
-                    showErrorToast(MainActivity.this, response);
-                    dismissProgress();
-                }
-            });
+                    @Override
+                    public void onFailure(String response) {
+                        showErrorToast(MainActivity.this, response);
+                        dismissProgress();
+                    }
+                });
+            }
         } catch (Exception e) {
             dismissProgress();
         }
@@ -1231,7 +1269,8 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         if (mInterstitialAd.isLoaded()) {
             mInterstitialAd.show();
         }
-        openTheSupplier(mSupplerlist.get(position));
+        if(mSupplerlist.size() > position)
+            openTheSupplier(mSupplerlist.get(position));
     }
 
     private void showPermissions() {

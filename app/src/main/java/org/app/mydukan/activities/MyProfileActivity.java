@@ -1,7 +1,6 @@
 package org.app.mydukan.activities;
 
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -15,7 +14,6 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Base64;
@@ -231,7 +229,7 @@ public class MyProfileActivity extends BaseActivity implements MyFeedAdapter.OnC
         btn_Following.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(profileUID.isEmpty()||(profileUID)==null){
+                if(profileUID == null || profileUID.isEmpty()){
                     return;
                 }
                 Intent activityintent = new Intent( MyProfileActivity.this, FeedProfileFollowActivity.class);
@@ -548,7 +546,12 @@ public class MyProfileActivity extends BaseActivity implements MyFeedAdapter.OnC
                         break;
                     }
                 }
-                if (dataSnapshot.child(followKey).hasChild(mApp.getFirebaseAuth().getCurrentUser().getUid())) {
+                String userId = "";
+                FirebaseUser firebaseUser = mApp.getFirebaseAuth().getCurrentUser();
+                if(firebaseUser != null && firebaseUser.getUid() != null)
+                    userId = mApp.getFirebaseAuth().getCurrentUser().getUid();
+
+                if (dataSnapshot.child(followKey).hasChild(userId)) {
                     // ta curtido
                     btn_Follow.setText("Unfollow");
                     showProgress(false);
@@ -650,8 +653,17 @@ public class MyProfileActivity extends BaseActivity implements MyFeedAdapter.OnC
         }else{
             tv_ProfileType.setVisibility(View.GONE);
         }
+        String res = "";
+        if(profileDetails != null && profileDetails.getUserinfo() != null){
 
-        tv_profilrEmail.setText(profileDetails.getUserinfo().getEmailid() + " " + profileDetails.getUserinfo().getNumber());
+            if(profileDetails.getUserinfo().getEmailid() != null && !profileDetails.getUserinfo().getEmailid().isEmpty()){
+                res = profileDetails.getUserinfo().getEmailid() + " ";
+            }
+            if(profileDetails.getUserinfo().getNumber() != null && !profileDetails.getUserinfo().getNumber().isEmpty()){
+                res = res + profileDetails.getUserinfo().getNumber();
+            }
+        }
+        tv_profilrEmail.setText(res);
         Answers.getInstance().logCustom(new CustomEvent("My Profile ")
                 .putCustomAttribute("profileDetails.getUserinfo().getEmailid()", "Profile Viewed"));
   /*

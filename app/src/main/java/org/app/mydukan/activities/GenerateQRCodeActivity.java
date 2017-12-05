@@ -30,7 +30,6 @@ import com.squareup.picasso.Picasso;
 
 import org.app.mydukan.R;
 import org.app.mydukan.application.MyDukan;
-import org.app.mydukan.data.AppStateContants;
 import org.app.mydukan.data.User;
 import org.app.mydukan.server.ApiManager;
 import org.app.mydukan.server.ApiResult;
@@ -58,7 +57,7 @@ public class GenerateQRCodeActivity extends BaseActivity implements OnClickListe
     LinearLayout shopimage_layout;
     LinearLayout bottomBar_LayoutButtons;
     private Button saveBtn,shareBtn,nextBtn;
-   TextView printName,printAddress,printPhoneNumber;
+    TextView printName,printAddress,printPhoneNumber;
 
     File file;
     private static Bitmap bitMap;
@@ -87,17 +86,17 @@ public class GenerateQRCodeActivity extends BaseActivity implements OnClickListe
         saveBtn.setOnClickListener(this);
         shareBtn.setOnClickListener(this);
         bottomBar_LayoutButtons.setVisibility(View.GONE);
-      //  myDukhan_UserId = mApp.getFirebaseAuth().getCurrentUser().getUid();
+        //  myDukhan_UserId = mApp.getFirebaseAuth().getCurrentUser().getUid();
 
-       Bundle extras = getIntent().getExtras();
+        Bundle extras = getIntent().getExtras();
         if (extras != null) {
-          //  userdetails =  getIntent().getExtras().getParcelable("UserDetails"); //The key argument here must match that used in the other activity
+            //  userdetails =  getIntent().getExtras().getParcelable("UserDetails"); //The key argument here must match that used in the other activity
             myDukhan_UserId =extras.getString("MyDhukhan_UserId");
             userdetails = (User) getIntent().getExtras().getSerializable("UserDetails");
-          if (userdetails!=null){
-              initView(GenerateQRCodeActivity.this, myDukhan_UserId, userdetails);//Initialise the Activity View.
-            //  upLoadQRCode(bitmap);
-          }
+            if (userdetails!=null){
+                initView(GenerateQRCodeActivity.this, myDukhan_UserId, userdetails);//Initialise the Activity View.
+                //  upLoadQRCode(bitmap);
+            }
         }else{
             getUserProfile();
         }
@@ -157,12 +156,28 @@ public class GenerateQRCodeActivity extends BaseActivity implements OnClickListe
 
     private void initView(Context context, String myDhukhan_userId, User userdetails) {
         showProgress();
+        String myDhukhan_UserAddress="";
+        if(userdetails != null && userdetails.getUserinfo() != null && userdetails.getUserinfo().getAddressinfo() != null) {
+            if(userdetails.getUserinfo().getAddressinfo().getStreet() != null && !userdetails.getUserinfo().getAddressinfo().getStreet().isEmpty())
+                myDhukhan_UserAddress = userdetails.getUserinfo().getAddressinfo().getStreet().toString().trim() + ",";
 
-        String myDhukhan_UserAddress=userdetails.getUserinfo().getAddressinfo().getStreet().toString().trim() +
-                "," + userdetails.getUserinfo().getAddressinfo().getCity().toString().trim()+
-                "," + userdetails.getUserinfo().getAddressinfo().getState().toString().trim() +
-                "," + userdetails.getUserinfo().getAddressinfo().getCountry().toString().trim() +
-                "," + userdetails.getUserinfo().getAddressinfo().getPincode().toString().trim();
+            if(userdetails.getUserinfo().getAddressinfo().getCity() != null && !userdetails.getUserinfo().getAddressinfo().getCity().isEmpty())
+                myDhukhan_UserAddress = myDhukhan_UserAddress + userdetails.getUserinfo().getAddressinfo().getCity().toString().trim() + ",";
+
+            if(userdetails.getUserinfo().getAddressinfo().getState() != null && !userdetails.getUserinfo().getAddressinfo().getState().isEmpty())
+                myDhukhan_UserAddress = myDhukhan_UserAddress + userdetails.getUserinfo().getAddressinfo().getState().toString().trim() + ",";
+
+            if(userdetails.getUserinfo().getAddressinfo().getCountry() != null && !userdetails.getUserinfo().getAddressinfo().getCountry().isEmpty())
+                myDhukhan_UserAddress = myDhukhan_UserAddress + userdetails.getUserinfo().getAddressinfo().getCountry().toString().trim() + ",";
+
+            if(userdetails.getUserinfo().getAddressinfo().getPincode() != null && !userdetails.getUserinfo().getAddressinfo().getPincode().isEmpty())
+                myDhukhan_UserAddress = myDhukhan_UserAddress + userdetails.getUserinfo().getAddressinfo().getPincode().toString().trim();
+
+            if (myDhukhan_UserAddress != null && myDhukhan_UserAddress.length() > 0 && myDhukhan_UserAddress.charAt(myDhukhan_UserAddress.length() - 1) == ',') {
+                myDhukhan_UserAddress = myDhukhan_UserAddress.substring(0, myDhukhan_UserAddress.length() - 1);
+            }
+
+        }
 
         String qrInputText =userdetails.getUserinfo().getName().toString()+" ||| "+ myDukhan_UserId +" ||| "+myDhukhan_UserAddress + " ||| " + userdetails.getUserinfo().getNumber().toString();
         Log.v(LOG_TAG, qrInputText);
@@ -183,28 +198,28 @@ public class GenerateQRCodeActivity extends BaseActivity implements OnClickListe
                 Picasso.with(this).load(userdetails.getCompanyinfo().getCardurl())
                         .resize(400,400).placeholder(R.drawable.ic_loading)                      // optional
                         .into(shop_Image,new com.squareup.picasso.Callback() {
-                    @Override
-                    public void onSuccess() {
-                        //Success image already loaded into the view
-                        dismissProgress();
-                        bottomBar_LayoutButtons.setVisibility(View.VISIBLE);
-                    }
+                                    @Override
+                                    public void onSuccess() {
+                                        //Success image already loaded into the view
+                                        dismissProgress();
+                                        bottomBar_LayoutButtons.setVisibility(View.VISIBLE);
+                                    }
 
-                    @Override
-                    public void onError() {
-                        //Error placeholder image already loaded into the view, do further handling of this situation here
-                        //shopimage_layout.setVisibility(View.GONE);
-                        bottomBar_LayoutButtons.setVisibility(View.VISIBLE);
-                        dismissProgress();
-                    }
-                }
-                );
+                                    @Override
+                                    public void onError() {
+                                        //Error placeholder image already loaded into the view, do further handling of this situation here
+                                        //shopimage_layout.setVisibility(View.GONE);
+                                        bottomBar_LayoutButtons.setVisibility(View.VISIBLE);
+                                        dismissProgress();
+                                    }
+                                }
+                        );
             }else{
-               // shopimage_layout.setVisibility(View.GONE);
+                // shopimage_layout.setVisibility(View.GONE);
                 bottomBar_LayoutButtons.setVisibility(View.VISIBLE);
             }
         }else{
-           // shopimage_layout.setVisibility(View.GONE);
+            // shopimage_layout.setVisibility(View.GONE);
             bottomBar_LayoutButtons.setVisibility(View.VISIBLE);
         }
         //Loading QRCOde from URL
@@ -222,23 +237,23 @@ public class GenerateQRCodeActivity extends BaseActivity implements OnClickListe
 
     private void dwawQRCode(Context context, String qrInputText) {
         try { //Find screen size
-        WindowManager manager = (WindowManager) getSystemService(WINDOW_SERVICE);
-        Display display = manager.getDefaultDisplay();
-        Point point = new Point();
-        display.getSize(point);
-        int width = point.x;
-        int height = point.y;
-        int smallerDimension = width < height ? width : height;
-        smallerDimension = smallerDimension * 3 / 4;
+            WindowManager manager = (WindowManager) getSystemService(WINDOW_SERVICE);
+            Display display = manager.getDefaultDisplay();
+            Point point = new Point();
+            display.getSize(point);
+            int width = point.x;
+            int height = point.y;
+            int smallerDimension = width < height ? width : height;
+            smallerDimension = smallerDimension * 3 / 4;
 
-        //Encode with a QR Code image
-        QRCodeEncoder qrCodeEncoder = new QRCodeEncoder(qrInputText,
-                null,
-                Contents.Type.TEXT,
-                BarcodeFormat.QR_CODE.toString(),
-                smallerDimension);
+            //Encode with a QR Code image
+            QRCodeEncoder qrCodeEncoder = new QRCodeEncoder(qrInputText,
+                    null,
+                    Contents.Type.TEXT,
+                    BarcodeFormat.QR_CODE.toString(),
+                    smallerDimension);
 
-             bitmap = qrCodeEncoder.encodeAsBitmap();
+            bitmap = qrCodeEncoder.encodeAsBitmap();
             qrcode_Image.setImageBitmap(bitmap);
 
             dismissProgress();
@@ -280,7 +295,7 @@ public class GenerateQRCodeActivity extends BaseActivity implements OnClickListe
                 File file = new File(dir, bitmap + ".png"); // Imagename.png
                 // Falcon.takeScreenshot(this,saveBitMap(GenerateQRCodeActivity.this));
               */
-               takeScreenshot();
+                takeScreenshot();
                 bottomBar_LayoutButtons.setVisibility(View.VISIBLE);
 
             }
@@ -318,7 +333,7 @@ public class GenerateQRCodeActivity extends BaseActivity implements OnClickListe
 
         Falcon.takeScreenshot(this, screenshotFile);
 
-       // String message = "Screenshot captured to " + screenshotFile.getAbsolutePath();
+        // String message = "Screenshot captured to " + screenshotFile.getAbsolutePath();
         Toast.makeText(this, " Image has been saved successfully", Toast.LENGTH_LONG).show();
 
         Uri uri = Uri.fromFile(screenshotFile);
