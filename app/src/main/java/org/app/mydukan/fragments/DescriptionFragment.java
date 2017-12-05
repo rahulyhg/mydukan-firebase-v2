@@ -402,7 +402,7 @@ public class DescriptionFragment extends Fragment {
 
             // Displaying downloaded image into image view
             // Reading image path from sdcard
-            String imagePath = Environment.getExternalStorageDirectory().toString() + "/downloadedfile.jpg";
+         //   String imagePath = Environment.getExternalStorageDirectory().toString() + "/downloadedfile.jpg";
 
         }
 

@@ -42,18 +42,15 @@ import static org.app.mydukan.activities.ProductDescriptionActivity.mApp;
 public class PricePlatformAdapter extends BaseAdapter {
     private final ArrayList mData;
     private MyDukan mApp;
-    HashMap<String, PlatForm_Info> mItem;
-    public PricePlatformAdapter(Context context,HashMap<String, PlatForm_Info> map) {
+    HashMap<String, HashMap<String, String>> mItem;
+    public PricePlatformAdapter(Context context, HashMap<String, HashMap<String, String>> map) {
         mData = new ArrayList();
         mItem= new HashMap<>();
         mApp = (MyDukan) context.getApplicationContext();
 
         mData.addAll(map.keySet());
         mItem=map;
-
         }
-
-
 
     @Override
     public int getCount() {
@@ -78,12 +75,10 @@ public class PricePlatformAdapter extends BaseAdapter {
 
         if (convertView == null) {
             result = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_priceplatformfragment, parent, false);
-
         } else {
             result = convertView;
 
         }
-
 
 
         /* if(!mApp.getUtils().isStringEmpty(value)){
@@ -149,7 +144,10 @@ public class PricePlatformAdapter extends BaseAdapter {
 
             ((TextView) result.findViewById(android.R.id.text1)).setText(mApp.getUtils().toCamelCase(item));
             if(mItem.size()>0){
-                ((TextView) result.findViewById(android.R.id.text2)).setText("₹ "+mItem.get(item).getPrice());
+               String mprice= mItem.get(item).get("price");
+               if(mprice!=null){
+                   ((TextView) result.findViewById(android.R.id.text2)).setText("₹ "+mItem.get(item).get("price"));
+               }
             }else{
                 ((TextView) result.findViewById(android.R.id.text2)).setText("-");
             }

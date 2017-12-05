@@ -215,7 +215,7 @@ public class ProductsAdapter extends
             Set<String> platformName=currentProduct.getmPlatforms().keySet();
             for (String mplatform:currentProduct.getmPlatforms().keySet()) {
                // currentProduct.getmPlatforms().get(mplatform).getPrice()
-                comparePrice=comparePrice+" "+mplatform+": "+"₹ "+currentProduct.getmPlatforms().get(mplatform).getPrice()+" | ";
+                comparePrice=comparePrice+" "+mplatform+": "+"₹ "+currentProduct.getmPlatforms().get(mplatform).get("price")+" | ";
             }
             holder.mpricePlatform.setText( mApp.getUtils().toCamelCase(comparePrice));
            holder.mpricePlatform.setSelected(true);
