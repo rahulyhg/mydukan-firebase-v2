@@ -280,73 +280,76 @@ public class UsersLocationAddress extends BaseActivity implements View.OnClickLi
     private void enableLoc() {
 
         //
+        try {
+            if (mClient == null) {
+                mClient = new GoogleApiClient.Builder(UsersLocationAddress.this)
+                        .addApi(LocationServices.API)
+                        .addConnectionCallbacks(new GoogleApiClient.ConnectionCallbacks() {
+                            @RequiresApi(api = Build.VERSION_CODES.M)
+                            @Override
+                            public void onConnected(Bundle bundle) {
 
-        if (mClient == null) {
-            mClient = new GoogleApiClient.Builder(UsersLocationAddress.this)
-                    .addApi(LocationServices.API)
-                    .addConnectionCallbacks(new GoogleApiClient.ConnectionCallbacks() {
-                        @RequiresApi(api = Build.VERSION_CODES.M)
-                        @Override
-                        public void onConnected(Bundle bundle) {
-
-                            if (!canAccessLocation() || !canAccessCoreLocation()) {
+                                if (!canAccessLocation() || !canAccessCoreLocation()) {
+                                    checkLocationPermission();
+                                }
                                 checkLocationPermission();
                             }
-                            checkLocationPermission();
-                        }
 
-                        @Override
-                        public void onConnectionSuspended(int i) {
-                            mClient.connect();
-                            Toast.makeText(UsersLocationAddress.this, "please enable your GPS1 and Try again", Toast.LENGTH_SHORT).show();
-                            dismissProgress();
-                            Log.d("Location error", "Location connection suspended");
-                        }
-                    })
-                    .addOnConnectionFailedListener(new GoogleApiClient.OnConnectionFailedListener() {
-                        @Override
-                        public void onConnectionFailed(ConnectionResult connectionResult) {
-                            Toast.makeText(UsersLocationAddress.this, "please enable your GPS2 and Try again", Toast.LENGTH_SHORT).show();
-                            Log.d("Location error", "Location error " + connectionResult.getErrorCode());
-                            dismissProgress();
-                        }
-                    })
-                    .build();
-            mClient.connect();
+                            @Override
+                            public void onConnectionSuspended(int i) {
+                                mClient.connect();
+                                Toast.makeText(UsersLocationAddress.this, "please enable your GPS1 and Try again", Toast.LENGTH_SHORT).show();
+                                dismissProgress();
+                                Log.d("Location error", "Location connection suspended");
+                            }
+                        })
+                        .addOnConnectionFailedListener(new GoogleApiClient.OnConnectionFailedListener() {
+                            @Override
+                            public void onConnectionFailed(ConnectionResult connectionResult) {
+                                Toast.makeText(UsersLocationAddress.this, "please enable your GPS2 and Try again", Toast.LENGTH_SHORT).show();
+                                Log.d("Location error", "Location error " + connectionResult.getErrorCode());
+                                dismissProgress();
+                            }
+                        })
+                        .build();
+                mClient.connect();
 
-            LocationRequest locationRequest = LocationRequest.create();
-            locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-            locationRequest.setInterval(10 * 1000);
-            locationRequest.setFastestInterval(5 * 1000);
-            LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder()
-                    .addLocationRequest(locationRequest);
+                LocationRequest locationRequest = LocationRequest.create();
+                locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+                locationRequest.setInterval(10 * 1000);
+                locationRequest.setFastestInterval(5 * 1000);
+                LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder()
+                        .addLocationRequest(locationRequest);
 
-            builder.setAlwaysShow(true);
+                builder.setAlwaysShow(true);
 
-            PendingResult<LocationSettingsResult> result =
-                    LocationServices.SettingsApi.checkLocationSettings(mClient, builder.build());
-            result.setResultCallback(new ResultCallback<LocationSettingsResult>() {
-                @RequiresApi(api = Build.VERSION_CODES.M)
-                @Override
-                public void onResult(LocationSettingsResult result) {
-                    final Status status = result.getStatus();
-                    switch (status.getStatusCode()) {
-                        case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
-                            try {
-                                // Show the dialog by calling startResolutionForResult(),
-                                // and check the result in onActivityResult().
+                PendingResult<LocationSettingsResult> result =
+                        LocationServices.SettingsApi.checkLocationSettings(mClient, builder.build());
+                result.setResultCallback(new ResultCallback<LocationSettingsResult>() {
+                    @RequiresApi(api = Build.VERSION_CODES.M)
+                    @Override
+                    public void onResult(LocationSettingsResult result) {
+                        final Status status = result.getStatus();
+                        switch (status.getStatusCode()) {
+                            case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
+                                try {
+                                    // Show the dialog by calling startResolutionForResult(),
+                                    // and check the result in onActivityResult().
 //                                Toast.makeText(UsersLocationAddress.this, "Done.", Toast.LENGTH_SHORT).show();
 //                                requestPermissions(INITIAL_PERMS, INITIAL_REQUEST);
-                                status.startResolutionForResult(UsersLocationAddress.this, REQUEST_LOCATION);
+                                    status.startResolutionForResult(UsersLocationAddress.this, REQUEST_LOCATION);
 
 //                                finish();
-                            } catch (IntentSender.SendIntentException e) {
-                                // Ignore the error.
-                            }
-                            break;
+                                } catch (IntentSender.SendIntentException e) {
+                                    // Ignore the error.
+                                }
+                                break;
+                        }
                     }
-                }
-            });
+                });
+            }
+        }catch (Exception e){
+            e.printStackTrace();
         }
     }
 

@@ -1,19 +1,16 @@
 package org.app.mydukan.activities;
 
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -40,9 +37,6 @@ import org.app.mydukan.utils.AppContants;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-
-import uk.co.deanwild.materialshowcaseview.MaterialShowcaseSequence;
-import uk.co.deanwild.materialshowcaseview.ShowcaseConfig;
 
 public class MyNetworksActivity extends AppCompatActivity {
 
@@ -154,6 +148,9 @@ public class MyNetworksActivity extends AppCompatActivity {
     private void getCurrentUserData(FirebaseUser auth) {
         //showProgress(true);
         mList = new ArrayList<>();
+        if(auth == null || auth.getUid() == null || auth.getUid().isEmpty())
+            return;
+
         DatabaseReference feedReference = FirebaseDatabase.getInstance().getReference("chat_USER/" + auth.getUid());
         feedReference.addValueEventListener(new ValueEventListener() {
             @Override
@@ -183,24 +180,26 @@ public class MyNetworksActivity extends AppCompatActivity {
     }
 
     private void InitProfileView(ChattUser chattUser) {
-
-        profileName.setText(chattUser.getName());
-        profileEmail.setText(chattUser.getEmail());
-        if( chattUser.getPhotoUrl()!=null)
-        {
-            Glide.with(this)
-                    .load( chattUser.getPhotoUrl() )
-                    .centerCrop()
-                    .transform(new CircleTransform(this))
-                    .override(50,50)
-                    .into(profileIMG);
-        }else{
-            Glide.with(this)
-                    .load( R.mipmap.ic_launcher )
-                    .centerCrop()
-                    .transform(new CircleTransform(this))
-                    .override(50,50)
-                    .into(profileIMG);
+        try {
+            profileName.setText(chattUser.getName());
+            profileEmail.setText(chattUser.getEmail());
+            if (chattUser.getPhotoUrl() != null) {
+                Glide.with(getApplicationContext())
+                        .load(chattUser.getPhotoUrl())
+                        .centerCrop()
+                        .transform(new CircleTransform(this))
+                        .override(50, 50)
+                        .into(profileIMG);
+            } else {
+                Glide.with(getApplicationContext())
+                        .load(R.mipmap.ic_launcher)
+                        .centerCrop()
+                        .transform(new CircleTransform(this))
+                        .override(50, 50)
+                        .into(profileIMG);
+            }
+        }catch (Exception e){
+            e.printStackTrace();
         }
     }
 

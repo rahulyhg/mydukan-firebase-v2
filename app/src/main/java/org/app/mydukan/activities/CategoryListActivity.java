@@ -42,6 +42,7 @@ import com.crystal.crystalrangeseekbar.interfaces.OnRangeSeekbarFinalValueListen
 import com.crystal.crystalrangeseekbar.widgets.CrystalRangeSeekbar;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings;
 
@@ -141,7 +142,9 @@ public class CategoryListActivity extends BaseActivity implements CategoryAdapte
             }
         }
         mApp = (MyDukan) getApplicationContext();
-        userID = mApp.getFirebaseAuth().getCurrentUser().getUid();
+        FirebaseUser firebaseUser = mApp.getFirebaseAuth().getCurrentUser();
+        if(firebaseUser != null && firebaseUser.getUid() != null)
+            userID = mApp.getFirebaseAuth().getCurrentUser().getUid();
         networkUtil = new NetworkUtil();
 
         mWhatsAppBtn_payment = (FloatingActionButton) findViewById(R.id.whatsAppBtn_payment);
@@ -237,6 +240,7 @@ public class CategoryListActivity extends BaseActivity implements CategoryAdapte
         btn_Subscribe.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if(userdetails != null && userdetails.getUserinfo() != null && userdetails.getUserinfo().getEmailid() != null && !userdetails.getUserinfo().getEmailid().isEmpty())
                 Answers.getInstance().logCustom(new CustomEvent("PaytmButton click")
                         .putCustomAttribute("USER_ID/ USER_Email:", userID + "/" + userdetails.getUserinfo().getEmailid()));
 
@@ -250,7 +254,7 @@ public class CategoryListActivity extends BaseActivity implements CategoryAdapte
         btn_Trial.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                if(userdetails != null && userdetails.getUserinfo() != null && userdetails.getUserinfo().getEmailid() != null && !userdetails.getUserinfo().getEmailid().isEmpty())
                 Answers.getInstance().logCustom(new CustomEvent("PriceDropTrial click")
                         .putCustomAttribute("USER_ID/ USER_Email:", userID + "/" + userdetails.getUserinfo().getEmailid()));
                 mlayout.setVisibility(View.VISIBLE);
@@ -275,6 +279,7 @@ public class CategoryListActivity extends BaseActivity implements CategoryAdapte
                     //open_PageName="schemes";
                     switch (open_PageName) {
                         case "category":
+                            if(userdetails != null && userdetails.getUserinfo() != null && userdetails.getUserinfo().getEmailid() != null && !userdetails.getUserinfo().getEmailid().isEmpty())
                             Answers.getInstance().logCustom(new CustomEvent("FreeUseBTN")
                                     .putCustomAttribute("USER_ID/ USER_Email:", userID + "/" + userdetails.getUserinfo().getEmailid()));
 
@@ -308,6 +313,7 @@ public class CategoryListActivity extends BaseActivity implements CategoryAdapte
                             startActivity(schemeIntent);
                             break;
                         default:
+                            if(userdetails != null && userdetails.getUserinfo() != null && userdetails.getUserinfo().getEmailid() != null && !userdetails.getUserinfo().getEmailid().isEmpty())
                             Answers.getInstance().logCustom(new CustomEvent("FreeUseBTN_Default")
                                     .putCustomAttribute("USER_ID/ USER_Email:", userID + "/" + userdetails.getUserinfo().getEmailid()));
 
@@ -551,6 +557,7 @@ public class CategoryListActivity extends BaseActivity implements CategoryAdapte
                     }
                     categAdapter.notifyDataSetChanged();
                 }
+                if(userdetails != null && userdetails.getUserinfo() != null && userdetails.getUserinfo().getEmailid() != null && !userdetails.getUserinfo().getEmailid().isEmpty())
                 Answers.getInstance().logCustom(new CustomEvent(supplierData.getName())
                         .putCustomAttribute("USER_ID/ USER_Email:", userID + "/" + userdetails.getUserinfo().getEmailid()));
 
@@ -649,602 +656,616 @@ public class CategoryListActivity extends BaseActivity implements CategoryAdapte
                     if (networkUtil.isConnectingToInternet(CategoryListActivity.this)) {
                         //checkPrimeCategory();
                         open_PageName = "category_filter"; // this will tell us which page has to open
-                        mCatId = mCategoryList.get(index).getId();
+                        if (mCategoryList.size() > index) {
+                            mCatId = mCategoryList.get(index).getId();
 
-                        switch (mCatId) {
-                            case "-KX41ilBK4hjaSDIV419":
-                                //PRICE DROP
-                                if (showSubscriptionPage(CategoryListActivity.this, userID, userdetails)) {
-                                    subscribeAleartLayout.setVisibility(View.VISIBLE);
+                            switch (mCatId) {
+                                case "-KX41ilBK4hjaSDIV419":
+                                    //PRICE DROP
+                                    if (showSubscriptionPage(CategoryListActivity.this, userID, userdetails)) {
+                                        subscribeAleartLayout.setVisibility(View.VISIBLE);
+                                        if(userdetails != null && userdetails.getUserinfo() != null && userdetails.getUserinfo().getEmailid() != null && !userdetails.getUserinfo().getEmailid().isEmpty())
+                                        Answers.getInstance().logCustom(new CustomEvent(mCategoryList.get(index).getName())
+                                                .putCustomAttribute("USER_ID/ USER_Email:", userID + "/" + userdetails.getUserinfo().getEmailid()));
+                                        HashMap<String, Integer> minMax = new HashMap<String, Integer>();
+                                        minMax.put("Min", Integer.parseInt((String) tvMin.getText()));
+                                        minRange = Integer.parseInt((String) tvMin.getText());
+                                        if (tvMax.getText().equals(AppContants.RANGE_MAX)) {
 
-                                    Answers.getInstance().logCustom(new CustomEvent(mCategoryList.get(index).getName())
-                                            .putCustomAttribute("USER_ID/ USER_Email:", userID + "/" + userdetails.getUserinfo().getEmailid()));
-                                    HashMap<String, Integer> minMax = new HashMap<String, Integer>();
-                                    minMax.put("Min", Integer.parseInt((String) tvMin.getText()));
-                                    minRange=Integer.parseInt((String) tvMin.getText());
-                                    if (tvMax.getText().equals(AppContants.RANGE_MAX)) {
+                                            maxRange = AppContants.PRICE_MAX;
+                                            minMax.put("Max", AppContants.PRICE_MAX);
+                                        } else {
+                                            maxRange = Integer.parseInt((String) tvMax.getText());
+                                            minMax.put("Max", Integer.parseInt((String) tvMax.getText()));
+                                        }
+                                        Log.e("Maxxx", (String) tvMax.getText());
+                                        price_Type = pricespinner.getSelectedItem().toString();
+                                        connectivity_Type = connectivity_type_spinner.getSelectedItem().toString();
 
-                                        maxRange=AppContants.PRICE_MAX;
-                                        minMax.put("Max", AppContants.PRICE_MAX);
                                     } else {
-                                        maxRange=Integer.parseInt((String) tvMax.getText());
-                                        minMax.put("Max", Integer.parseInt((String) tvMax.getText()));
+                                        if(userdetails != null && userdetails.getUserinfo() != null && userdetails.getUserinfo().getEmailid() != null && !userdetails.getUserinfo().getEmailid().isEmpty())
+                                        Answers.getInstance().logCustom(new CustomEvent(mCategoryList.get(index).getName())
+                                                .putCustomAttribute("USER_ID/ USER_Email:", userID + "/" + userdetails.getUserinfo().getEmailid()));
+
+                                        Intent intent = new Intent(CategoryListActivity.this, ProductListActivity.class);
+                                        intent.putExtra(AppContants.CATEGORY_ID, mCatId);
+                                        intent.putExtra(AppContants.SUPPLIER, supplierData);
+                                        intent.putExtra(AppContants.USER_DETAILS, userdetails);
+                                        HashMap<String, Integer> minMax = new HashMap<String, Integer>();
+
+                                        minMax.put("Min", Integer.parseInt((String) tvMin.getText()));
+                                        minRange = Integer.parseInt((String) tvMin.getText());
+                                        if (tvMax.getText().equals(AppContants.RANGE_MAX)) {
+
+                                            maxRange = AppContants.PRICE_MAX;
+                                            minMax.put("Max", AppContants.PRICE_MAX);
+                                        } else {
+                                            maxRange = Integer.parseInt((String) tvMax.getText());
+                                            minMax.put("Max", Integer.parseInt((String) tvMax.getText()));
+                                        }
+                                        Log.e("Maxxx", (String) tvMax.getText());
+                                        intent.putExtra(AppContants.PRICE_RANGE, minMax);
+                                        price_Type = pricespinner.getSelectedItem().toString();
+                                        connectivity_Type = connectivity_type_spinner.getSelectedItem().toString();
+                                        intent.putExtra(AppContants.PRICE_TYPE, pricespinner.getSelectedItem().toString());
+                                        intent.putExtra(AppContants.CONNECTIVITY_TYPE, connectivity_type_spinner.getSelectedItem().toString());
+                                        startActivity(intent);
+
                                     }
-                                    Log.e("Maxxx", (String) tvMax.getText());
-                                    price_Type= pricespinner.getSelectedItem().toString();
-                                    connectivity_Type= connectivity_type_spinner.getSelectedItem().toString();
+                                    break;
 
-                                } else {
+                                case "-KTTV8BvY0PpRUOEyKOo":
+                                    //SAMSUNG
+                                    if (showSubscriptionPage(CategoryListActivity.this, userID, userdetails)) {
+                                        subscribeAleartLayout.setVisibility(View.VISIBLE);
+                                        if(userdetails != null && userdetails.getUserinfo() != null && userdetails.getUserinfo().getEmailid() != null && !userdetails.getUserinfo().getEmailid().isEmpty())
+                                        Answers.getInstance().logCustom(new CustomEvent(mCategoryList.get(index).getName())
+                                                .putCustomAttribute("USER_ID/ USER_Email:", userID + "/" + userdetails.getUserinfo().getEmailid()));
+                                        HashMap<String, Integer> minMax = new HashMap<String, Integer>();
+                                        minMax.put("Min", Integer.parseInt((String) tvMin.getText()));
+                                        minRange = Integer.parseInt((String) tvMin.getText());
+                                        if (tvMax.getText().equals(AppContants.RANGE_MAX)) {
 
+                                            maxRange = AppContants.PRICE_MAX;
+                                            minMax.put("Max", AppContants.PRICE_MAX);
+                                        } else {
+                                            maxRange = Integer.parseInt((String) tvMax.getText());
+                                            minMax.put("Max", Integer.parseInt((String) tvMax.getText()));
+                                        }
+                                        Log.e("Maxxx", (String) tvMax.getText());
+                                        price_Type = pricespinner.getSelectedItem().toString();
+                                        connectivity_Type = connectivity_type_spinner.getSelectedItem().toString();
+
+                                    } else {
+                                        if(userdetails != null && userdetails.getUserinfo() != null && userdetails.getUserinfo().getEmailid() != null && !userdetails.getUserinfo().getEmailid().isEmpty())
+                                        Answers.getInstance().logCustom(new CustomEvent(mCategoryList.get(index).getName())
+                                                .putCustomAttribute("USER_ID/ USER_Email:", userID + "/" + userdetails.getUserinfo().getEmailid()));
+
+                                        Intent intent = new Intent(CategoryListActivity.this, ProductListActivity.class);
+                                        intent.putExtra(AppContants.CATEGORY_ID, mCatId);
+                                        intent.putExtra(AppContants.SUPPLIER, supplierData);
+                                        intent.putExtra(AppContants.USER_DETAILS, userdetails);
+                                        HashMap<String, Integer> minMax = new HashMap<String, Integer>();
+
+                                        minMax.put("Min", Integer.parseInt((String) tvMin.getText()));
+                                        minRange = Integer.parseInt((String) tvMin.getText());
+                                        if (tvMax.getText().equals(AppContants.RANGE_MAX)) {
+
+                                            maxRange = AppContants.PRICE_MAX;
+                                            minMax.put("Max", AppContants.PRICE_MAX);
+                                        } else {
+                                            maxRange = Integer.parseInt((String) tvMax.getText());
+                                            minMax.put("Max", Integer.parseInt((String) tvMax.getText()));
+                                        }
+                                        Log.e("Maxxx", (String) tvMax.getText());
+                                        intent.putExtra(AppContants.PRICE_RANGE, minMax);
+                                        price_Type = pricespinner.getSelectedItem().toString();
+                                        connectivity_Type = connectivity_type_spinner.getSelectedItem().toString();
+                                        intent.putExtra(AppContants.PRICE_TYPE, pricespinner.getSelectedItem().toString());
+                                        intent.putExtra(AppContants.CONNECTIVITY_TYPE, connectivity_type_spinner.getSelectedItem().toString());
+                                        startActivity(intent);
+                                    }
+                                    break;
+                                case "-KTmmfHzpn5Nn-ZZ0N1A":
+                                    // GIONEE=  -KTmmfHzpn5Nn-ZZ0N1A
+                                    if (showSubscriptionPage(CategoryListActivity.this, userID, userdetails)) {
+                                        subscribeAleartLayout.setVisibility(View.VISIBLE);
+                                        if(userdetails != null && userdetails.getUserinfo() != null && userdetails.getUserinfo().getEmailid() != null && !userdetails.getUserinfo().getEmailid().isEmpty())
+                                        Answers.getInstance().logCustom(new CustomEvent(mCategoryList.get(index).getName())
+                                                .putCustomAttribute("USER_ID/ USER_Email:", userID + "/" + userdetails.getUserinfo().getEmailid()));
+                                        HashMap<String, Integer> minMax = new HashMap<String, Integer>();
+                                        minMax.put("Min", Integer.parseInt((String) tvMin.getText()));
+                                        minRange = Integer.parseInt((String) tvMin.getText());
+                                        if (tvMax.getText().equals(AppContants.RANGE_MAX)) {
+
+                                            maxRange = AppContants.PRICE_MAX;
+                                            minMax.put("Max", AppContants.PRICE_MAX);
+                                        } else {
+                                            maxRange = Integer.parseInt((String) tvMax.getText());
+                                            minMax.put("Max", Integer.parseInt((String) tvMax.getText()));
+                                        }
+                                        Log.e("Maxxx", (String) tvMax.getText());
+                                        price_Type = pricespinner.getSelectedItem().toString();
+                                        connectivity_Type = connectivity_type_spinner.getSelectedItem().toString();
+
+
+                                    } else {
+                                        if(userdetails != null && userdetails.getUserinfo() != null && userdetails.getUserinfo().getEmailid() != null && !userdetails.getUserinfo().getEmailid().isEmpty())
+                                        Answers.getInstance().logCustom(new CustomEvent(mCategoryList.get(index).getName())
+                                                .putCustomAttribute("USER_ID/ USER_Email:", userID + "/" + userdetails.getUserinfo().getEmailid()));
+
+                                        Intent intent = new Intent(CategoryListActivity.this, ProductListActivity.class);
+                                        intent.putExtra(AppContants.CATEGORY_ID, mCatId);
+                                        intent.putExtra(AppContants.SUPPLIER, supplierData);
+                                        intent.putExtra(AppContants.USER_DETAILS, userdetails);
+                                        HashMap<String, Integer> minMax = new HashMap<String, Integer>();
+
+                                        minMax.put("Min", Integer.parseInt((String) tvMin.getText()));
+                                        minRange = Integer.parseInt((String) tvMin.getText());
+                                        if (tvMax.getText().equals(AppContants.RANGE_MAX)) {
+
+                                            maxRange = AppContants.PRICE_MAX;
+                                            minMax.put("Max", AppContants.PRICE_MAX);
+                                        } else {
+                                            maxRange = Integer.parseInt((String) tvMax.getText());
+                                            minMax.put("Max", Integer.parseInt((String) tvMax.getText()));
+                                        }
+                                        Log.e("Maxxx", (String) tvMax.getText());
+                                        intent.putExtra(AppContants.PRICE_RANGE, minMax);
+                                        price_Type = pricespinner.getSelectedItem().toString();
+                                        connectivity_Type = connectivity_type_spinner.getSelectedItem().toString();
+                                        intent.putExtra(AppContants.PRICE_TYPE, pricespinner.getSelectedItem().toString());
+                                        intent.putExtra(AppContants.CONNECTIVITY_TYPE, connectivity_type_spinner.getSelectedItem().toString());
+                                        startActivity(intent);
+                                    }
+                                    break;
+                                case "-KTwazqP9cmccZNbt9hb":
+                                    // LAVA = -KTwazqP9cmccZNbt9hb
+                                    if (showSubscriptionPage(CategoryListActivity.this, userID, userdetails)) {
+                                        subscribeAleartLayout.setVisibility(View.VISIBLE);
+                                        if(userdetails != null && userdetails.getUserinfo() != null && userdetails.getUserinfo().getEmailid() != null && !userdetails.getUserinfo().getEmailid().isEmpty())
+                                        Answers.getInstance().logCustom(new CustomEvent(mCategoryList.get(index).getName())
+                                                .putCustomAttribute("USER_ID/ USER_Email:", userID + "/" + userdetails.getUserinfo().getEmailid()));
+                                        HashMap<String, Integer> minMax = new HashMap<String, Integer>();
+                                        minMax.put("Min", Integer.parseInt((String) tvMin.getText()));
+                                        minRange = Integer.parseInt((String) tvMin.getText());
+                                        if (tvMax.getText().equals(AppContants.RANGE_MAX)) {
+
+                                            maxRange = AppContants.PRICE_MAX;
+                                            minMax.put("Max", AppContants.PRICE_MAX);
+                                        } else {
+                                            maxRange = Integer.parseInt((String) tvMax.getText());
+                                            minMax.put("Max", Integer.parseInt((String) tvMax.getText()));
+                                        }
+                                        Log.e("Maxxx", (String) tvMax.getText());
+                                        price_Type = pricespinner.getSelectedItem().toString();
+                                        connectivity_Type = connectivity_type_spinner.getSelectedItem().toString();
+
+
+                                    } else {
+                                        if(userdetails != null && userdetails.getUserinfo() != null && userdetails.getUserinfo().getEmailid() != null && !userdetails.getUserinfo().getEmailid().isEmpty())
+                                        Answers.getInstance().logCustom(new CustomEvent(mCategoryList.get(index).getName())
+                                                .putCustomAttribute("USER_ID/ USER_Email:", userID + "/" + userdetails.getUserinfo().getEmailid()));
+
+                                        Intent intent = new Intent(CategoryListActivity.this, ProductListActivity.class);
+                                        intent.putExtra(AppContants.CATEGORY_ID, mCatId);
+                                        intent.putExtra(AppContants.SUPPLIER, supplierData);
+                                        intent.putExtra(AppContants.USER_DETAILS, userdetails);
+                                        HashMap<String, Integer> minMax = new HashMap<String, Integer>();
+
+                                        minMax.put("Min", Integer.parseInt((String) tvMin.getText()));
+                                        minRange = Integer.parseInt((String) tvMin.getText());
+                                        if (tvMax.getText().equals(AppContants.RANGE_MAX)) {
+
+                                            maxRange = AppContants.PRICE_MAX;
+                                            minMax.put("Max", AppContants.PRICE_MAX);
+                                        } else {
+                                            maxRange = Integer.parseInt((String) tvMax.getText());
+                                            minMax.put("Max", Integer.parseInt((String) tvMax.getText()));
+                                        }
+                                        Log.e("Maxxx", (String) tvMax.getText());
+                                        intent.putExtra(AppContants.PRICE_RANGE, minMax);
+                                        price_Type = pricespinner.getSelectedItem().toString();
+                                        connectivity_Type = connectivity_type_spinner.getSelectedItem().toString();
+                                        intent.putExtra(AppContants.PRICE_TYPE, pricespinner.getSelectedItem().toString());
+                                        intent.putExtra(AppContants.CONNECTIVITY_TYPE, connectivity_type_spinner.getSelectedItem().toString());
+                                        startActivity(intent);
+                                    }
+                                    break;
+                                case "-KU2hE65nFcTF0eYa0u_":
+                                    // VIVO= -KU2hE65nFcTF0eYa0u_
+                                    if (showSubscriptionPage(CategoryListActivity.this, userID, userdetails)) {
+                                        subscribeAleartLayout.setVisibility(View.VISIBLE);
+                                        if(userdetails != null && userdetails.getUserinfo() != null && userdetails.getUserinfo().getEmailid() != null && !userdetails.getUserinfo().getEmailid().isEmpty())
+                                        Answers.getInstance().logCustom(new CustomEvent(mCategoryList.get(index).getName())
+                                                .putCustomAttribute("USER_ID/ USER_Email:", userID + "/" + userdetails.getUserinfo().getEmailid()));
+                                        HashMap<String, Integer> minMax = new HashMap<String, Integer>();
+                                        minMax.put("Min", Integer.parseInt((String) tvMin.getText()));
+                                        minRange = Integer.parseInt((String) tvMin.getText());
+                                        if (tvMax.getText().equals(AppContants.RANGE_MAX)) {
+
+                                            maxRange = AppContants.PRICE_MAX;
+                                            minMax.put("Max", AppContants.PRICE_MAX);
+                                        } else {
+                                            maxRange = Integer.parseInt((String) tvMax.getText());
+                                            minMax.put("Max", Integer.parseInt((String) tvMax.getText()));
+                                        }
+                                        Log.e("Maxxx", (String) tvMax.getText());
+                                        price_Type = pricespinner.getSelectedItem().toString();
+                                        connectivity_Type = connectivity_type_spinner.getSelectedItem().toString();
+
+
+                                    } else {
+                                        if(userdetails != null && userdetails.getUserinfo() != null && userdetails.getUserinfo().getEmailid() != null && !userdetails.getUserinfo().getEmailid().isEmpty())
+                                        Answers.getInstance().logCustom(new CustomEvent(mCategoryList.get(index).getName())
+                                                .putCustomAttribute("USER_ID/ USER_Email:", userID + "/" + userdetails.getUserinfo().getEmailid()));
+
+                                        Intent intent = new Intent(CategoryListActivity.this, ProductListActivity.class);
+                                        intent.putExtra(AppContants.CATEGORY_ID, mCatId);
+                                        intent.putExtra(AppContants.SUPPLIER, supplierData);
+                                        intent.putExtra(AppContants.USER_DETAILS, userdetails);
+                                        HashMap<String, Integer> minMax = new HashMap<String, Integer>();
+
+                                        minMax.put("Min", Integer.parseInt((String) tvMin.getText()));
+                                        minRange = Integer.parseInt((String) tvMin.getText());
+                                        if (tvMax.getText().equals(AppContants.RANGE_MAX)) {
+
+                                            maxRange = AppContants.PRICE_MAX;
+                                            minMax.put("Max", AppContants.PRICE_MAX);
+                                        } else {
+                                            maxRange = Integer.parseInt((String) tvMax.getText());
+                                            minMax.put("Max", Integer.parseInt((String) tvMax.getText()));
+                                        }
+                                        Log.e("Maxxx", (String) tvMax.getText());
+                                        intent.putExtra(AppContants.PRICE_RANGE, minMax);
+                                        price_Type = pricespinner.getSelectedItem().toString();
+                                        connectivity_Type = connectivity_type_spinner.getSelectedItem().toString();
+                                        intent.putExtra(AppContants.PRICE_TYPE, pricespinner.getSelectedItem().toString());
+                                        intent.putExtra(AppContants.CONNECTIVITY_TYPE, connectivity_type_spinner.getSelectedItem().toString());
+                                        startActivity(intent);
+                                    }
+                                    break;
+                                case "-KTwlJGRrjcnqumXCzGV":
+                                    // LENOVO =-KTwlJGRrjcnqumXCzGV
+                                    if (showSubscriptionPage(CategoryListActivity.this, userID, userdetails)) {
+                                        subscribeAleartLayout.setVisibility(View.VISIBLE);
+                                        if(userdetails != null && userdetails.getUserinfo() != null && userdetails.getUserinfo().getEmailid() != null && !userdetails.getUserinfo().getEmailid().isEmpty())
+                                        Answers.getInstance().logCustom(new CustomEvent(mCategoryList.get(index).getName())
+                                                .putCustomAttribute("USER_ID/ USER_Email:", userID + "/" + userdetails.getUserinfo().getEmailid()));
+                                        HashMap<String, Integer> minMax = new HashMap<String, Integer>();
+                                        minMax.put("Min", Integer.parseInt((String) tvMin.getText()));
+                                        minRange = Integer.parseInt((String) tvMin.getText());
+                                        if (tvMax.getText().equals(AppContants.RANGE_MAX)) {
+
+                                            maxRange = AppContants.PRICE_MAX;
+                                            minMax.put("Max", AppContants.PRICE_MAX);
+                                        } else {
+                                            maxRange = Integer.parseInt((String) tvMax.getText());
+                                            minMax.put("Max", Integer.parseInt((String) tvMax.getText()));
+                                        }
+                                        Log.e("Maxxx", (String) tvMax.getText());
+                                        price_Type = pricespinner.getSelectedItem().toString();
+                                        connectivity_Type = connectivity_type_spinner.getSelectedItem().toString();
+
+
+                                    } else {
+                                        if(userdetails != null && userdetails.getUserinfo() != null && userdetails.getUserinfo().getEmailid() != null && !userdetails.getUserinfo().getEmailid().isEmpty())
+                                        Answers.getInstance().logCustom(new CustomEvent(mCategoryList.get(index).getName())
+                                                .putCustomAttribute("USER_ID/ USER_Email:", userID + "/" + userdetails.getUserinfo().getEmailid()));
+
+                                        Intent intent = new Intent(CategoryListActivity.this, ProductListActivity.class);
+                                        intent.putExtra(AppContants.CATEGORY_ID, mCatId);
+                                        intent.putExtra(AppContants.SUPPLIER, supplierData);
+                                        intent.putExtra(AppContants.USER_DETAILS, userdetails);
+                                        HashMap<String, Integer> minMax = new HashMap<String, Integer>();
+
+                                        minMax.put("Min", Integer.parseInt((String) tvMin.getText()));
+                                        minRange = Integer.parseInt((String) tvMin.getText());
+                                        if (tvMax.getText().equals(AppContants.RANGE_MAX)) {
+
+                                            maxRange = AppContants.PRICE_MAX;
+                                            minMax.put("Max", AppContants.PRICE_MAX);
+                                        } else {
+                                            maxRange = Integer.parseInt((String) tvMax.getText());
+                                            minMax.put("Max", Integer.parseInt((String) tvMax.getText()));
+                                        }
+                                        Log.e("Maxxx", (String) tvMax.getText());
+                                        intent.putExtra(AppContants.PRICE_RANGE, minMax);
+                                        price_Type = pricespinner.getSelectedItem().toString();
+                                        connectivity_Type = connectivity_type_spinner.getSelectedItem().toString();
+                                        intent.putExtra(AppContants.PRICE_TYPE, pricespinner.getSelectedItem().toString());
+                                        intent.putExtra(AppContants.CONNECTIVITY_TYPE, connectivity_type_spinner.getSelectedItem().toString());
+                                        startActivity(intent);
+                                    }
+                                    break;
+                                case "-KUIMuoS_jziNt_deTkv":
+                                    // ITEL = -KUIMuoS_jziNt_deTkv
+                                    if (showSubscriptionPage(CategoryListActivity.this, userID, userdetails)) {
+                                        subscribeAleartLayout.setVisibility(View.VISIBLE);
+                                        if(userdetails != null && userdetails.getUserinfo() != null && userdetails.getUserinfo().getEmailid() != null && !userdetails.getUserinfo().getEmailid().isEmpty())
+                                        Answers.getInstance().logCustom(new CustomEvent(mCategoryList.get(index).getName())
+                                                .putCustomAttribute("USER_ID/ USER_Email:", userID + "/" + userdetails.getUserinfo().getEmailid()));
+                                        HashMap<String, Integer> minMax = new HashMap<String, Integer>();
+                                        minMax.put("Min", Integer.parseInt((String) tvMin.getText()));
+                                        minRange = Integer.parseInt((String) tvMin.getText());
+                                        if (tvMax.getText().equals(AppContants.RANGE_MAX)) {
+
+                                            maxRange = AppContants.PRICE_MAX;
+                                            minMax.put("Max", AppContants.PRICE_MAX);
+                                        } else {
+                                            maxRange = Integer.parseInt((String) tvMax.getText());
+                                            minMax.put("Max", Integer.parseInt((String) tvMax.getText()));
+                                        }
+                                        Log.e("Maxxx", (String) tvMax.getText());
+                                        price_Type = pricespinner.getSelectedItem().toString();
+                                        connectivity_Type = connectivity_type_spinner.getSelectedItem().toString();
+
+
+                                    } else {
+                                        if(userdetails != null && userdetails.getUserinfo() != null && userdetails.getUserinfo().getEmailid() != null && !userdetails.getUserinfo().getEmailid().isEmpty())
+                                        Answers.getInstance().logCustom(new CustomEvent(mCategoryList.get(index).getName())
+                                                .putCustomAttribute("USER_ID/ USER_Email:", userID + "/" + userdetails.getUserinfo().getEmailid()));
+
+                                        Intent intent = new Intent(CategoryListActivity.this, ProductListActivity.class);
+                                        intent.putExtra(AppContants.CATEGORY_ID, mCatId);
+                                        intent.putExtra(AppContants.SUPPLIER, supplierData);
+                                        intent.putExtra(AppContants.USER_DETAILS, userdetails);
+                                        HashMap<String, Integer> minMax = new HashMap<String, Integer>();
+
+                                        minMax.put("Min", Integer.parseInt((String) tvMin.getText()));
+                                        minRange = Integer.parseInt((String) tvMin.getText());
+                                        if (tvMax.getText().equals(AppContants.RANGE_MAX)) {
+
+                                            maxRange = AppContants.PRICE_MAX;
+                                            minMax.put("Max", AppContants.PRICE_MAX);
+                                        } else {
+                                            maxRange = Integer.parseInt((String) tvMax.getText());
+                                            minMax.put("Max", Integer.parseInt((String) tvMax.getText()));
+                                        }
+                                        Log.e("Maxxx", (String) tvMax.getText());
+                                        intent.putExtra(AppContants.PRICE_RANGE, minMax);
+                                        price_Type = pricespinner.getSelectedItem().toString();
+                                        connectivity_Type = connectivity_type_spinner.getSelectedItem().toString();
+                                        intent.putExtra(AppContants.PRICE_TYPE, pricespinner.getSelectedItem().toString());
+                                        intent.putExtra(AppContants.CONNECTIVITY_TYPE, connectivity_type_spinner.getSelectedItem().toString());
+                                        startActivity(intent);
+                                    }
+                                    break;
+                                case "-KTlvtThlXhnokm3hux3":
+                                    //INTEX= -KTlvtThlXhnokm3hux3
+                                    if (showSubscriptionPage(CategoryListActivity.this, userID, userdetails)) {
+                                        subscribeAleartLayout.setVisibility(View.VISIBLE);
+                                        if(userdetails != null && userdetails.getUserinfo() != null && userdetails.getUserinfo().getEmailid() != null && !userdetails.getUserinfo().getEmailid().isEmpty())
+                                        Answers.getInstance().logCustom(new CustomEvent(mCategoryList.get(index).getName())
+                                                .putCustomAttribute("USER_ID/ USER_Email:", userID + "/" + userdetails.getUserinfo().getEmailid()));
+                                        HashMap<String, Integer> minMax = new HashMap<String, Integer>();
+                                        minMax.put("Min", Integer.parseInt((String) tvMin.getText()));
+                                        minRange = Integer.parseInt((String) tvMin.getText());
+                                        if (tvMax.getText().equals(AppContants.RANGE_MAX)) {
+
+                                            maxRange = AppContants.PRICE_MAX;
+                                            minMax.put("Max", AppContants.PRICE_MAX);
+                                        } else {
+                                            maxRange = Integer.parseInt((String) tvMax.getText());
+                                            minMax.put("Max", Integer.parseInt((String) tvMax.getText()));
+                                        }
+                                        Log.e("Maxxx", (String) tvMax.getText());
+                                        price_Type = pricespinner.getSelectedItem().toString();
+                                        connectivity_Type = connectivity_type_spinner.getSelectedItem().toString();
+
+                                    } else {
+                                        if(userdetails != null && userdetails.getUserinfo() != null && userdetails.getUserinfo().getEmailid() != null && !userdetails.getUserinfo().getEmailid().isEmpty())
+                                        Answers.getInstance().logCustom(new CustomEvent(mCategoryList.get(index).getName())
+                                                .putCustomAttribute("USER_ID/ USER_Email:", userID + "/" + userdetails.getUserinfo().getEmailid()));
+
+                                        Intent intent = new Intent(CategoryListActivity.this, ProductListActivity.class);
+                                        intent.putExtra(AppContants.CATEGORY_ID, mCatId);
+                                        intent.putExtra(AppContants.SUPPLIER, supplierData);
+                                        intent.putExtra(AppContants.USER_DETAILS, userdetails);
+                                        HashMap<String, Integer> minMax = new HashMap<String, Integer>();
+
+                                        minMax.put("Min", Integer.parseInt((String) tvMin.getText()));
+                                        minRange = Integer.parseInt((String) tvMin.getText());
+                                        if (tvMax.getText().equals(AppContants.RANGE_MAX)) {
+
+                                            maxRange = AppContants.PRICE_MAX;
+                                            minMax.put("Max", AppContants.PRICE_MAX);
+                                        } else {
+                                            maxRange = Integer.parseInt((String) tvMax.getText());
+                                            minMax.put("Max", Integer.parseInt((String) tvMax.getText()));
+                                        }
+                                        Log.e("Maxxx", (String) tvMax.getText());
+                                        intent.putExtra(AppContants.PRICE_RANGE, minMax);
+                                        price_Type = pricespinner.getSelectedItem().toString();
+                                        connectivity_Type = connectivity_type_spinner.getSelectedItem().toString();
+                                        intent.putExtra(AppContants.PRICE_TYPE, pricespinner.getSelectedItem().toString());
+                                        intent.putExtra(AppContants.CONNECTIVITY_TYPE, connectivity_type_spinner.getSelectedItem().toString());
+                                        startActivity(intent);
+                                    }
+                                    break;
+
+                                case "-KTxmDYOCC_MxyRtu83V":
+                                    //OPPO= -KTxmDYOCC_MxyRtu83V
+                                    if (showSubscriptionPage(CategoryListActivity.this, userID, userdetails)) {
+                                        subscribeAleartLayout.setVisibility(View.VISIBLE);
+                                        if(userdetails != null && userdetails.getUserinfo() != null && userdetails.getUserinfo().getEmailid() != null && !userdetails.getUserinfo().getEmailid().isEmpty())
+                                        Answers.getInstance().logCustom(new CustomEvent(mCategoryList.get(index).getName())
+                                                .putCustomAttribute("USER_ID/ USER_Email:", userID + "/" + userdetails.getUserinfo().getEmailid()));
+                                        HashMap<String, Integer> minMax = new HashMap<String, Integer>();
+                                        minMax.put("Min", Integer.parseInt((String) tvMin.getText()));
+                                        minRange = Integer.parseInt((String) tvMin.getText());
+                                        if (tvMax.getText().equals(AppContants.RANGE_MAX)) {
+
+                                            maxRange = AppContants.PRICE_MAX;
+                                            minMax.put("Max", AppContants.PRICE_MAX);
+                                        } else {
+                                            maxRange = Integer.parseInt((String) tvMax.getText());
+                                            minMax.put("Max", Integer.parseInt((String) tvMax.getText()));
+                                        }
+                                        Log.e("Maxxx", (String) tvMax.getText());
+                                        price_Type = pricespinner.getSelectedItem().toString();
+                                        connectivity_Type = connectivity_type_spinner.getSelectedItem().toString();
+
+
+                                    } else {
+                                        if(userdetails != null && userdetails.getUserinfo() != null && userdetails.getUserinfo().getEmailid() != null && !userdetails.getUserinfo().getEmailid().isEmpty())
+                                        Answers.getInstance().logCustom(new CustomEvent(mCategoryList.get(index).getName())
+                                                .putCustomAttribute("USER_ID/ USER_Email:", userID + "/" + userdetails.getUserinfo().getEmailid()));
+
+                                        Intent intent = new Intent(CategoryListActivity.this, ProductListActivity.class);
+                                        intent.putExtra(AppContants.CATEGORY_ID, mCatId);
+                                        intent.putExtra(AppContants.SUPPLIER, supplierData);
+                                        intent.putExtra(AppContants.USER_DETAILS, userdetails);
+                                        HashMap<String, Integer> minMax = new HashMap<String, Integer>();
+
+                                        minMax.put("Min", Integer.parseInt((String) tvMin.getText()));
+                                        minRange = Integer.parseInt((String) tvMin.getText());
+                                        if (tvMax.getText().equals(AppContants.RANGE_MAX)) {
+
+                                            maxRange = AppContants.PRICE_MAX;
+                                            minMax.put("Max", AppContants.PRICE_MAX);
+                                        } else {
+                                            maxRange = Integer.parseInt((String) tvMax.getText());
+                                            minMax.put("Max", Integer.parseInt((String) tvMax.getText()));
+                                        }
+                                        Log.e("Maxxx", (String) tvMax.getText());
+                                        intent.putExtra(AppContants.PRICE_RANGE, minMax);
+                                        price_Type = pricespinner.getSelectedItem().toString();
+                                        connectivity_Type = connectivity_type_spinner.getSelectedItem().toString();
+                                        intent.putExtra(AppContants.PRICE_TYPE, pricespinner.getSelectedItem().toString());
+                                        intent.putExtra(AppContants.CONNECTIVITY_TYPE, connectivity_type_spinner.getSelectedItem().toString());
+                                        startActivity(intent);
+                                    }
+                                    break;
+                                case "-KU1r_NUU5DdFPJLS1C2":
+                                    //XIAOMI= -KU1r_NUU5DdFPJLS1C2
+                                    if (showSubscriptionPage(CategoryListActivity.this, userID, userdetails)) {
+                                        subscribeAleartLayout.setVisibility(View.VISIBLE);
+                                        if(userdetails != null && userdetails.getUserinfo() != null && userdetails.getUserinfo().getEmailid() != null && !userdetails.getUserinfo().getEmailid().isEmpty())
+                                        Answers.getInstance().logCustom(new CustomEvent(mCategoryList.get(index).getName())
+                                                .putCustomAttribute("USER_ID/ USER_Email:", userID + "/" + userdetails.getUserinfo().getEmailid()));
+                                        HashMap<String, Integer> minMax = new HashMap<String, Integer>();
+                                        minMax.put("Min", Integer.parseInt((String) tvMin.getText()));
+                                        minRange = Integer.parseInt((String) tvMin.getText());
+                                        if (tvMax.getText().equals(AppContants.RANGE_MAX)) {
+
+                                            maxRange = AppContants.PRICE_MAX;
+                                            minMax.put("Max", AppContants.PRICE_MAX);
+                                        } else {
+                                            maxRange = Integer.parseInt((String) tvMax.getText());
+                                            minMax.put("Max", Integer.parseInt((String) tvMax.getText()));
+                                        }
+                                        Log.e("Maxxx", (String) tvMax.getText());
+                                        price_Type = pricespinner.getSelectedItem().toString();
+                                        connectivity_Type = connectivity_type_spinner.getSelectedItem().toString();
+
+
+                                    } else {
+                                        if(userdetails != null && userdetails.getUserinfo() != null && userdetails.getUserinfo().getEmailid() != null && !userdetails.getUserinfo().getEmailid().isEmpty())
+                                        Answers.getInstance().logCustom(new CustomEvent(mCategoryList.get(index).getName())
+                                                .putCustomAttribute("USER_ID/ USER_Email:", userID + "/" + userdetails.getUserinfo().getEmailid()));
+
+                                        Intent intent = new Intent(CategoryListActivity.this, ProductListActivity.class);
+                                        intent.putExtra(AppContants.CATEGORY_ID, mCatId);
+                                        intent.putExtra(AppContants.SUPPLIER, supplierData);
+                                        intent.putExtra(AppContants.USER_DETAILS, userdetails);
+                                        HashMap<String, Integer> minMax = new HashMap<String, Integer>();
+
+                                        minMax.put("Min", Integer.parseInt((String) tvMin.getText()));
+                                        minRange = Integer.parseInt((String) tvMin.getText());
+                                        if (tvMax.getText().equals(AppContants.RANGE_MAX)) {
+
+                                            maxRange = AppContants.PRICE_MAX;
+                                            minMax.put("Max", AppContants.PRICE_MAX);
+                                        } else {
+                                            maxRange = Integer.parseInt((String) tvMax.getText());
+                                            minMax.put("Max", Integer.parseInt((String) tvMax.getText()));
+                                        }
+                                        Log.e("Maxxx", (String) tvMax.getText());
+                                        intent.putExtra(AppContants.PRICE_RANGE, minMax);
+                                        price_Type = pricespinner.getSelectedItem().toString();
+                                        connectivity_Type = connectivity_type_spinner.getSelectedItem().toString();
+                                        intent.putExtra(AppContants.PRICE_TYPE, pricespinner.getSelectedItem().toString());
+                                        intent.putExtra(AppContants.CONNECTIVITY_TYPE, connectivity_type_spinner.getSelectedItem().toString());
+                                        startActivity(intent);
+                                    }
+                                    break;
+                                case "-KZkiZ785mct3R2ROHlf":
+                                    //NEW LAUNCH= -KZkiZ785mct3R2ROHlf
+                                    if (showSubscriptionPage(CategoryListActivity.this, userID, userdetails)) {
+                                        subscribeAleartLayout.setVisibility(View.VISIBLE);
+                                        if(userdetails != null && userdetails.getUserinfo() != null && userdetails.getUserinfo().getEmailid() != null && !userdetails.getUserinfo().getEmailid().isEmpty())
+                                        Answers.getInstance().logCustom(new CustomEvent(mCategoryList.get(index).getName())
+                                                .putCustomAttribute("USER_ID/ USER_Email:", userID + "/" + userdetails.getUserinfo().getEmailid()));
+                                        HashMap<String, Integer> minMax = new HashMap<String, Integer>();
+                                        minMax.put("Min", Integer.parseInt((String) tvMin.getText()));
+                                        minRange = Integer.parseInt((String) tvMin.getText());
+                                        if (tvMax.getText().equals(AppContants.RANGE_MAX)) {
+
+                                            maxRange = AppContants.PRICE_MAX;
+                                            minMax.put("Max", AppContants.PRICE_MAX);
+                                        } else {
+                                            maxRange = Integer.parseInt((String) tvMax.getText());
+                                            minMax.put("Max", Integer.parseInt((String) tvMax.getText()));
+                                        }
+                                        Log.e("Maxxx", (String) tvMax.getText());
+                                        price_Type = pricespinner.getSelectedItem().toString();
+                                        connectivity_Type = connectivity_type_spinner.getSelectedItem().toString();
+
+
+                                    } else {
+                                        if(userdetails != null && userdetails.getUserinfo() != null && userdetails.getUserinfo().getEmailid() != null && !userdetails.getUserinfo().getEmailid().isEmpty())
+                                        Answers.getInstance().logCustom(new CustomEvent(mCategoryList.get(index).getName())
+                                                .putCustomAttribute("USER_ID/ USER_Email:", userID + "/" + userdetails.getUserinfo().getEmailid()));
+
+                                        Intent intent = new Intent(CategoryListActivity.this, ProductListActivity.class);
+                                        intent.putExtra(AppContants.CATEGORY_ID, mCatId);
+                                        intent.putExtra(AppContants.SUPPLIER, supplierData);
+                                        intent.putExtra(AppContants.USER_DETAILS, userdetails);
+                                        HashMap<String, Integer> minMax = new HashMap<String, Integer>();
+
+                                        minMax.put("Min", Integer.parseInt((String) tvMin.getText()));
+                                        minRange = Integer.parseInt((String) tvMin.getText());
+                                        if (tvMax.getText().equals(AppContants.RANGE_MAX)) {
+
+                                            maxRange = AppContants.PRICE_MAX;
+                                            minMax.put("Max", AppContants.PRICE_MAX);
+                                        } else {
+                                            maxRange = Integer.parseInt((String) tvMax.getText());
+                                            minMax.put("Max", Integer.parseInt((String) tvMax.getText()));
+                                        }
+                                        Log.e("Maxxx", (String) tvMax.getText());
+                                        intent.putExtra(AppContants.PRICE_RANGE, minMax);
+                                        price_Type = pricespinner.getSelectedItem().toString();
+                                        connectivity_Type = connectivity_type_spinner.getSelectedItem().toString();
+                                        intent.putExtra(AppContants.PRICE_TYPE, pricespinner.getSelectedItem().toString());
+                                        intent.putExtra(AppContants.CONNECTIVITY_TYPE, connectivity_type_spinner.getSelectedItem().toString());
+                                        startActivity(intent);
+                                    }
+                                    break;
+
+                                default:
+                                    if(userdetails != null && userdetails.getUserinfo() != null && userdetails.getUserinfo().getEmailid() != null && !userdetails.getUserinfo().getEmailid().isEmpty())
                                     Answers.getInstance().logCustom(new CustomEvent(mCategoryList.get(index).getName())
                                             .putCustomAttribute("USER_ID/ USER_Email:", userID + "/" + userdetails.getUserinfo().getEmailid()));
-
                                     Intent intent = new Intent(CategoryListActivity.this, ProductListActivity.class);
                                     intent.putExtra(AppContants.CATEGORY_ID, mCatId);
                                     intent.putExtra(AppContants.SUPPLIER, supplierData);
                                     intent.putExtra(AppContants.USER_DETAILS, userdetails);
                                     HashMap<String, Integer> minMax = new HashMap<String, Integer>();
-
                                     minMax.put("Min", Integer.parseInt((String) tvMin.getText()));
-                                    minRange=Integer.parseInt((String) tvMin.getText());
                                     if (tvMax.getText().equals(AppContants.RANGE_MAX)) {
-
-                                        maxRange=AppContants.PRICE_MAX;
                                         minMax.put("Max", AppContants.PRICE_MAX);
                                     } else {
-                                        maxRange=Integer.parseInt((String) tvMax.getText());
                                         minMax.put("Max", Integer.parseInt((String) tvMax.getText()));
                                     }
                                     Log.e("Maxxx", (String) tvMax.getText());
                                     intent.putExtra(AppContants.PRICE_RANGE, minMax);
-                                    price_Type= pricespinner.getSelectedItem().toString();
-                                    connectivity_Type= connectivity_type_spinner.getSelectedItem().toString();
                                     intent.putExtra(AppContants.PRICE_TYPE, pricespinner.getSelectedItem().toString());
                                     intent.putExtra(AppContants.CONNECTIVITY_TYPE, connectivity_type_spinner.getSelectedItem().toString());
                                     startActivity(intent);
-
-                                }
-                                break;
-
-                            case "-KTTV8BvY0PpRUOEyKOo":
-                                //SAMSUNG
-                                if (showSubscriptionPage(CategoryListActivity.this, userID, userdetails)) {
-                                    subscribeAleartLayout.setVisibility(View.VISIBLE);
-
-                                    Answers.getInstance().logCustom(new CustomEvent(mCategoryList.get(index).getName())
-                                            .putCustomAttribute("USER_ID/ USER_Email:", userID + "/" + userdetails.getUserinfo().getEmailid()));
-                                    HashMap<String, Integer> minMax = new HashMap<String, Integer>();
-                                    minMax.put("Min", Integer.parseInt((String) tvMin.getText()));
-                                    minRange=Integer.parseInt((String) tvMin.getText());
-                                    if (tvMax.getText().equals(AppContants.RANGE_MAX)) {
-
-                                        maxRange=AppContants.PRICE_MAX;
-                                        minMax.put("Max", AppContants.PRICE_MAX);
-                                    } else {
-                                        maxRange=Integer.parseInt((String) tvMax.getText());
-                                        minMax.put("Max", Integer.parseInt((String) tvMax.getText()));
-                                    }
-                                    Log.e("Maxxx", (String) tvMax.getText());
-                                    price_Type= pricespinner.getSelectedItem().toString();
-                                    connectivity_Type= connectivity_type_spinner.getSelectedItem().toString();
-
-                                } else {
-                                  Answers.getInstance().logCustom(new CustomEvent(mCategoryList.get(index).getName())
-                                            .putCustomAttribute("USER_ID/ USER_Email:", userID + "/" + userdetails.getUserinfo().getEmailid()));
-
-                                    Intent intent = new Intent(CategoryListActivity.this, ProductListActivity.class);
-                                    intent.putExtra(AppContants.CATEGORY_ID, mCatId);
-                                    intent.putExtra(AppContants.SUPPLIER, supplierData);
-                                    intent.putExtra(AppContants.USER_DETAILS, userdetails);
-                                    HashMap<String, Integer> minMax = new HashMap<String, Integer>();
-
-                                    minMax.put("Min", Integer.parseInt((String) tvMin.getText()));
-                                    minRange=Integer.parseInt((String) tvMin.getText());
-                                    if (tvMax.getText().equals(AppContants.RANGE_MAX)) {
-
-                                        maxRange=AppContants.PRICE_MAX;
-                                        minMax.put("Max", AppContants.PRICE_MAX);
-                                    } else {
-                                        maxRange=Integer.parseInt((String) tvMax.getText());
-                                        minMax.put("Max", Integer.parseInt((String) tvMax.getText()));
-                                    }
-                                    Log.e("Maxxx", (String) tvMax.getText());
-                                    intent.putExtra(AppContants.PRICE_RANGE, minMax);
-                                    price_Type= pricespinner.getSelectedItem().toString();
-                                    connectivity_Type= connectivity_type_spinner.getSelectedItem().toString();
-                                    intent.putExtra(AppContants.PRICE_TYPE, pricespinner.getSelectedItem().toString());
-                                    intent.putExtra(AppContants.CONNECTIVITY_TYPE, connectivity_type_spinner.getSelectedItem().toString());
-                                    startActivity(intent);
-                                }
-                                break;
-                            case "-KTmmfHzpn5Nn-ZZ0N1A":
-                                // GIONEE=  -KTmmfHzpn5Nn-ZZ0N1A
-                                if (showSubscriptionPage(CategoryListActivity.this, userID, userdetails)) {
-                                    subscribeAleartLayout.setVisibility(View.VISIBLE);
-                                    Answers.getInstance().logCustom(new CustomEvent(mCategoryList.get(index).getName())
-                                            .putCustomAttribute("USER_ID/ USER_Email:", userID + "/" + userdetails.getUserinfo().getEmailid()));
-                                    HashMap<String, Integer> minMax = new HashMap<String, Integer>();
-                                    minMax.put("Min", Integer.parseInt((String) tvMin.getText()));
-                                    minRange=Integer.parseInt((String) tvMin.getText());
-                                    if (tvMax.getText().equals(AppContants.RANGE_MAX)) {
-
-                                        maxRange=AppContants.PRICE_MAX;
-                                        minMax.put("Max", AppContants.PRICE_MAX);
-                                    } else {
-                                        maxRange=Integer.parseInt((String) tvMax.getText());
-                                        minMax.put("Max", Integer.parseInt((String) tvMax.getText()));
-                                    }
-                                    Log.e("Maxxx", (String) tvMax.getText());
-                                    price_Type= pricespinner.getSelectedItem().toString();
-                                    connectivity_Type= connectivity_type_spinner.getSelectedItem().toString();
-
-
-                                } else {
-                                    Answers.getInstance().logCustom(new CustomEvent(mCategoryList.get(index).getName())
-                                            .putCustomAttribute("USER_ID/ USER_Email:", userID + "/" + userdetails.getUserinfo().getEmailid()));
-
-                                    Intent intent = new Intent(CategoryListActivity.this, ProductListActivity.class);
-                                    intent.putExtra(AppContants.CATEGORY_ID, mCatId);
-                                    intent.putExtra(AppContants.SUPPLIER, supplierData);
-                                    intent.putExtra(AppContants.USER_DETAILS, userdetails);
-                                    HashMap<String, Integer> minMax = new HashMap<String, Integer>();
-
-                                    minMax.put("Min", Integer.parseInt((String) tvMin.getText()));
-                                    minRange=Integer.parseInt((String) tvMin.getText());
-                                    if (tvMax.getText().equals(AppContants.RANGE_MAX)) {
-
-                                        maxRange=AppContants.PRICE_MAX;
-                                        minMax.put("Max", AppContants.PRICE_MAX);
-                                    } else {
-                                        maxRange=Integer.parseInt((String) tvMax.getText());
-                                        minMax.put("Max", Integer.parseInt((String) tvMax.getText()));
-                                    }
-                                    Log.e("Maxxx", (String) tvMax.getText());
-                                    intent.putExtra(AppContants.PRICE_RANGE, minMax);
-                                    price_Type= pricespinner.getSelectedItem().toString();
-                                    connectivity_Type= connectivity_type_spinner.getSelectedItem().toString();
-                                    intent.putExtra(AppContants.PRICE_TYPE, pricespinner.getSelectedItem().toString());
-                                    intent.putExtra(AppContants.CONNECTIVITY_TYPE, connectivity_type_spinner.getSelectedItem().toString());
-                                    startActivity(intent);
-                                }
-                                break;
-                            case "-KTwazqP9cmccZNbt9hb":
-                                // LAVA = -KTwazqP9cmccZNbt9hb
-                                if (showSubscriptionPage(CategoryListActivity.this, userID, userdetails)) {
-                                    subscribeAleartLayout.setVisibility(View.VISIBLE);
-
-                                    Answers.getInstance().logCustom(new CustomEvent(mCategoryList.get(index).getName())
-                                            .putCustomAttribute("USER_ID/ USER_Email:", userID + "/" + userdetails.getUserinfo().getEmailid()));
-                                    HashMap<String, Integer> minMax = new HashMap<String, Integer>();
-                                    minMax.put("Min", Integer.parseInt((String) tvMin.getText()));
-                                    minRange=Integer.parseInt((String) tvMin.getText());
-                                    if (tvMax.getText().equals(AppContants.RANGE_MAX)) {
-
-                                        maxRange=AppContants.PRICE_MAX;
-                                        minMax.put("Max", AppContants.PRICE_MAX);
-                                    } else {
-                                        maxRange=Integer.parseInt((String) tvMax.getText());
-                                        minMax.put("Max", Integer.parseInt((String) tvMax.getText()));
-                                    }
-                                    Log.e("Maxxx", (String) tvMax.getText());
-                                    price_Type= pricespinner.getSelectedItem().toString();
-                                    connectivity_Type= connectivity_type_spinner.getSelectedItem().toString();
-
-
-                                } else {
-                                    Answers.getInstance().logCustom(new CustomEvent(mCategoryList.get(index).getName())
-                                            .putCustomAttribute("USER_ID/ USER_Email:", userID + "/" + userdetails.getUserinfo().getEmailid()));
-
-                                    Intent intent = new Intent(CategoryListActivity.this, ProductListActivity.class);
-                                    intent.putExtra(AppContants.CATEGORY_ID, mCatId);
-                                    intent.putExtra(AppContants.SUPPLIER, supplierData);
-                                    intent.putExtra(AppContants.USER_DETAILS, userdetails);
-                                    HashMap<String, Integer> minMax = new HashMap<String, Integer>();
-
-                                    minMax.put("Min", Integer.parseInt((String) tvMin.getText()));
-                                    minRange=Integer.parseInt((String) tvMin.getText());
-                                    if (tvMax.getText().equals(AppContants.RANGE_MAX)) {
-
-                                        maxRange=AppContants.PRICE_MAX;
-                                        minMax.put("Max", AppContants.PRICE_MAX);
-                                    } else {
-                                        maxRange=Integer.parseInt((String) tvMax.getText());
-                                        minMax.put("Max", Integer.parseInt((String) tvMax.getText()));
-                                    }
-                                    Log.e("Maxxx", (String) tvMax.getText());
-                                    intent.putExtra(AppContants.PRICE_RANGE, minMax);
-                                    price_Type= pricespinner.getSelectedItem().toString();
-                                    connectivity_Type= connectivity_type_spinner.getSelectedItem().toString();
-                                    intent.putExtra(AppContants.PRICE_TYPE, pricespinner.getSelectedItem().toString());
-                                    intent.putExtra(AppContants.CONNECTIVITY_TYPE, connectivity_type_spinner.getSelectedItem().toString());
-                                    startActivity(intent);
-                                }
-                                break;
-                            case "-KU2hE65nFcTF0eYa0u_":
-                                // VIVO= -KU2hE65nFcTF0eYa0u_
-                                if (showSubscriptionPage(CategoryListActivity.this, userID, userdetails)) {
-                                    subscribeAleartLayout.setVisibility(View.VISIBLE);
-
-                                    Answers.getInstance().logCustom(new CustomEvent(mCategoryList.get(index).getName())
-                                            .putCustomAttribute("USER_ID/ USER_Email:", userID + "/" + userdetails.getUserinfo().getEmailid()));
-                                    HashMap<String, Integer> minMax = new HashMap<String, Integer>();
-                                    minMax.put("Min", Integer.parseInt((String) tvMin.getText()));
-                                    minRange=Integer.parseInt((String) tvMin.getText());
-                                    if (tvMax.getText().equals(AppContants.RANGE_MAX)) {
-
-                                        maxRange=AppContants.PRICE_MAX;
-                                        minMax.put("Max", AppContants.PRICE_MAX);
-                                    } else {
-                                        maxRange=Integer.parseInt((String) tvMax.getText());
-                                        minMax.put("Max", Integer.parseInt((String) tvMax.getText()));
-                                    }
-                                    Log.e("Maxxx", (String) tvMax.getText());
-                                    price_Type= pricespinner.getSelectedItem().toString();
-                                    connectivity_Type= connectivity_type_spinner.getSelectedItem().toString();
-
-
-                                } else {
-                                    Answers.getInstance().logCustom(new CustomEvent(mCategoryList.get(index).getName())
-                                            .putCustomAttribute("USER_ID/ USER_Email:", userID + "/" + userdetails.getUserinfo().getEmailid()));
-
-                                    Intent intent = new Intent(CategoryListActivity.this, ProductListActivity.class);
-                                    intent.putExtra(AppContants.CATEGORY_ID, mCatId);
-                                    intent.putExtra(AppContants.SUPPLIER, supplierData);
-                                    intent.putExtra(AppContants.USER_DETAILS, userdetails);
-                                    HashMap<String, Integer> minMax = new HashMap<String, Integer>();
-
-                                    minMax.put("Min", Integer.parseInt((String) tvMin.getText()));
-                                    minRange=Integer.parseInt((String) tvMin.getText());
-                                    if (tvMax.getText().equals(AppContants.RANGE_MAX)) {
-
-                                        maxRange=AppContants.PRICE_MAX;
-                                        minMax.put("Max", AppContants.PRICE_MAX);
-                                    } else {
-                                        maxRange=Integer.parseInt((String) tvMax.getText());
-                                        minMax.put("Max", Integer.parseInt((String) tvMax.getText()));
-                                    }
-                                    Log.e("Maxxx", (String) tvMax.getText());
-                                    intent.putExtra(AppContants.PRICE_RANGE, minMax);
-                                    price_Type= pricespinner.getSelectedItem().toString();
-                                    connectivity_Type= connectivity_type_spinner.getSelectedItem().toString();
-                                    intent.putExtra(AppContants.PRICE_TYPE, pricespinner.getSelectedItem().toString());
-                                    intent.putExtra(AppContants.CONNECTIVITY_TYPE, connectivity_type_spinner.getSelectedItem().toString());
-                                    startActivity(intent);
-                                }
-                                break;
-                            case "-KTwlJGRrjcnqumXCzGV":
-                                // LENOVO =-KTwlJGRrjcnqumXCzGV
-                                if (showSubscriptionPage(CategoryListActivity.this, userID, userdetails)) {
-                                    subscribeAleartLayout.setVisibility(View.VISIBLE);
-
-                                    Answers.getInstance().logCustom(new CustomEvent(mCategoryList.get(index).getName())
-                                            .putCustomAttribute("USER_ID/ USER_Email:", userID + "/" + userdetails.getUserinfo().getEmailid()));
-                                    HashMap<String, Integer> minMax = new HashMap<String, Integer>();
-                                    minMax.put("Min", Integer.parseInt((String) tvMin.getText()));
-                                    minRange=Integer.parseInt((String) tvMin.getText());
-                                    if (tvMax.getText().equals(AppContants.RANGE_MAX)) {
-
-                                        maxRange=AppContants.PRICE_MAX;
-                                        minMax.put("Max", AppContants.PRICE_MAX);
-                                    } else {
-                                        maxRange=Integer.parseInt((String) tvMax.getText());
-                                        minMax.put("Max", Integer.parseInt((String) tvMax.getText()));
-                                    }
-                                    Log.e("Maxxx", (String) tvMax.getText());
-                                    price_Type= pricespinner.getSelectedItem().toString();
-                                    connectivity_Type= connectivity_type_spinner.getSelectedItem().toString();
-
-
-                                } else {
-                                    Answers.getInstance().logCustom(new CustomEvent(mCategoryList.get(index).getName())
-                                            .putCustomAttribute("USER_ID/ USER_Email:", userID + "/" + userdetails.getUserinfo().getEmailid()));
-
-                                    Intent intent = new Intent(CategoryListActivity.this, ProductListActivity.class);
-                                    intent.putExtra(AppContants.CATEGORY_ID, mCatId);
-                                    intent.putExtra(AppContants.SUPPLIER, supplierData);
-                                    intent.putExtra(AppContants.USER_DETAILS, userdetails);
-                                    HashMap<String, Integer> minMax = new HashMap<String, Integer>();
-
-                                    minMax.put("Min", Integer.parseInt((String) tvMin.getText()));
-                                    minRange=Integer.parseInt((String) tvMin.getText());
-                                    if (tvMax.getText().equals(AppContants.RANGE_MAX)) {
-
-                                        maxRange=AppContants.PRICE_MAX;
-                                        minMax.put("Max", AppContants.PRICE_MAX);
-                                    } else {
-                                        maxRange=Integer.parseInt((String) tvMax.getText());
-                                        minMax.put("Max", Integer.parseInt((String) tvMax.getText()));
-                                    }
-                                    Log.e("Maxxx", (String) tvMax.getText());
-                                    intent.putExtra(AppContants.PRICE_RANGE, minMax);
-                                    price_Type= pricespinner.getSelectedItem().toString();
-                                    connectivity_Type= connectivity_type_spinner.getSelectedItem().toString();
-                                    intent.putExtra(AppContants.PRICE_TYPE, pricespinner.getSelectedItem().toString());
-                                    intent.putExtra(AppContants.CONNECTIVITY_TYPE, connectivity_type_spinner.getSelectedItem().toString());
-                                    startActivity(intent);
-                                }
-                                break;
-                            case "-KUIMuoS_jziNt_deTkv":
-                                // ITEL = -KUIMuoS_jziNt_deTkv
-                                if (showSubscriptionPage(CategoryListActivity.this, userID, userdetails)) {
-                                    subscribeAleartLayout.setVisibility(View.VISIBLE);
-
-                                    Answers.getInstance().logCustom(new CustomEvent(mCategoryList.get(index).getName())
-                                            .putCustomAttribute("USER_ID/ USER_Email:", userID + "/" + userdetails.getUserinfo().getEmailid()));
-                                    HashMap<String, Integer> minMax = new HashMap<String, Integer>();
-                                    minMax.put("Min", Integer.parseInt((String) tvMin.getText()));
-                                    minRange=Integer.parseInt((String) tvMin.getText());
-                                    if (tvMax.getText().equals(AppContants.RANGE_MAX)) {
-
-                                        maxRange=AppContants.PRICE_MAX;
-                                        minMax.put("Max", AppContants.PRICE_MAX);
-                                    } else {
-                                        maxRange=Integer.parseInt((String) tvMax.getText());
-                                        minMax.put("Max", Integer.parseInt((String) tvMax.getText()));
-                                    }
-                                    Log.e("Maxxx", (String) tvMax.getText());
-                                    price_Type= pricespinner.getSelectedItem().toString();
-                                    connectivity_Type= connectivity_type_spinner.getSelectedItem().toString();
-
-
-                                } else {
-                                    Answers.getInstance().logCustom(new CustomEvent(mCategoryList.get(index).getName())
-                                            .putCustomAttribute("USER_ID/ USER_Email:", userID + "/" + userdetails.getUserinfo().getEmailid()));
-
-                                    Intent intent = new Intent(CategoryListActivity.this, ProductListActivity.class);
-                                    intent.putExtra(AppContants.CATEGORY_ID, mCatId);
-                                    intent.putExtra(AppContants.SUPPLIER, supplierData);
-                                    intent.putExtra(AppContants.USER_DETAILS, userdetails);
-                                    HashMap<String, Integer> minMax = new HashMap<String, Integer>();
-
-                                    minMax.put("Min", Integer.parseInt((String) tvMin.getText()));
-                                    minRange=Integer.parseInt((String) tvMin.getText());
-                                    if (tvMax.getText().equals(AppContants.RANGE_MAX)) {
-
-                                        maxRange=AppContants.PRICE_MAX;
-                                        minMax.put("Max", AppContants.PRICE_MAX);
-                                    } else {
-                                        maxRange=Integer.parseInt((String) tvMax.getText());
-                                        minMax.put("Max", Integer.parseInt((String) tvMax.getText()));
-                                    }
-                                    Log.e("Maxxx", (String) tvMax.getText());
-                                    intent.putExtra(AppContants.PRICE_RANGE, minMax);
-                                    price_Type= pricespinner.getSelectedItem().toString();
-                                    connectivity_Type= connectivity_type_spinner.getSelectedItem().toString();
-                                    intent.putExtra(AppContants.PRICE_TYPE, pricespinner.getSelectedItem().toString());
-                                    intent.putExtra(AppContants.CONNECTIVITY_TYPE, connectivity_type_spinner.getSelectedItem().toString());
-                                    startActivity(intent);
-                                }
-                                break;
-                            case "-KTlvtThlXhnokm3hux3":
-                                //INTEX= -KTlvtThlXhnokm3hux3
-                                if (showSubscriptionPage(CategoryListActivity.this, userID, userdetails)) {
-                                    subscribeAleartLayout.setVisibility(View.VISIBLE);
-                                    Answers.getInstance().logCustom(new CustomEvent(mCategoryList.get(index).getName())
-                                            .putCustomAttribute("USER_ID/ USER_Email:", userID + "/" + userdetails.getUserinfo().getEmailid()));
-                                    HashMap<String, Integer> minMax = new HashMap<String, Integer>();
-                                    minMax.put("Min", Integer.parseInt((String) tvMin.getText()));
-                                    minRange=Integer.parseInt((String) tvMin.getText());
-                                    if (tvMax.getText().equals(AppContants.RANGE_MAX)) {
-
-                                        maxRange=AppContants.PRICE_MAX;
-                                        minMax.put("Max", AppContants.PRICE_MAX);
-                                    } else {
-                                        maxRange=Integer.parseInt((String) tvMax.getText());
-                                        minMax.put("Max", Integer.parseInt((String) tvMax.getText()));
-                                    }
-                                    Log.e("Maxxx", (String) tvMax.getText());
-                                    price_Type= pricespinner.getSelectedItem().toString();
-                                    connectivity_Type= connectivity_type_spinner.getSelectedItem().toString();
-
-                                } else {
-                                    Answers.getInstance().logCustom(new CustomEvent(mCategoryList.get(index).getName())
-                                            .putCustomAttribute("USER_ID/ USER_Email:", userID + "/" + userdetails.getUserinfo().getEmailid()));
-
-                                    Intent intent = new Intent(CategoryListActivity.this, ProductListActivity.class);
-                                    intent.putExtra(AppContants.CATEGORY_ID, mCatId);
-                                    intent.putExtra(AppContants.SUPPLIER, supplierData);
-                                    intent.putExtra(AppContants.USER_DETAILS, userdetails);
-                                    HashMap<String, Integer> minMax = new HashMap<String, Integer>();
-
-                                    minMax.put("Min", Integer.parseInt((String) tvMin.getText()));
-                                    minRange=Integer.parseInt((String) tvMin.getText());
-                                    if (tvMax.getText().equals(AppContants.RANGE_MAX)) {
-
-                                        maxRange=AppContants.PRICE_MAX;
-                                        minMax.put("Max", AppContants.PRICE_MAX);
-                                    } else {
-                                        maxRange=Integer.parseInt((String) tvMax.getText());
-                                        minMax.put("Max", Integer.parseInt((String) tvMax.getText()));
-                                    }
-                                    Log.e("Maxxx", (String) tvMax.getText());
-                                    intent.putExtra(AppContants.PRICE_RANGE, minMax);
-                                    price_Type= pricespinner.getSelectedItem().toString();
-                                    connectivity_Type= connectivity_type_spinner.getSelectedItem().toString();
-                                    intent.putExtra(AppContants.PRICE_TYPE, pricespinner.getSelectedItem().toString());
-                                    intent.putExtra(AppContants.CONNECTIVITY_TYPE, connectivity_type_spinner.getSelectedItem().toString());
-                                    startActivity(intent);
-                                }
-                                break;
-
-                            case "-KTxmDYOCC_MxyRtu83V":
-                                //OPPO= -KTxmDYOCC_MxyRtu83V
-                                if (showSubscriptionPage(CategoryListActivity.this, userID, userdetails)) {
-                                    subscribeAleartLayout.setVisibility(View.VISIBLE);
-
-                                    Answers.getInstance().logCustom(new CustomEvent(mCategoryList.get(index).getName())
-                                            .putCustomAttribute("USER_ID/ USER_Email:", userID + "/" + userdetails.getUserinfo().getEmailid()));
-                                    HashMap<String, Integer> minMax = new HashMap<String, Integer>();
-                                    minMax.put("Min", Integer.parseInt((String) tvMin.getText()));
-                                    minRange=Integer.parseInt((String) tvMin.getText());
-                                    if (tvMax.getText().equals(AppContants.RANGE_MAX)) {
-
-                                        maxRange=AppContants.PRICE_MAX;
-                                        minMax.put("Max", AppContants.PRICE_MAX);
-                                    } else {
-                                        maxRange=Integer.parseInt((String) tvMax.getText());
-                                        minMax.put("Max", Integer.parseInt((String) tvMax.getText()));
-                                    }
-                                    Log.e("Maxxx", (String) tvMax.getText());
-                                    price_Type= pricespinner.getSelectedItem().toString();
-                                    connectivity_Type= connectivity_type_spinner.getSelectedItem().toString();
-
-
-                                } else {
-                                    Answers.getInstance().logCustom(new CustomEvent(mCategoryList.get(index).getName())
-                                            .putCustomAttribute("USER_ID/ USER_Email:", userID + "/" + userdetails.getUserinfo().getEmailid()));
-
-                                    Intent intent = new Intent(CategoryListActivity.this, ProductListActivity.class);
-                                    intent.putExtra(AppContants.CATEGORY_ID, mCatId);
-                                    intent.putExtra(AppContants.SUPPLIER, supplierData);
-                                    intent.putExtra(AppContants.USER_DETAILS, userdetails);
-                                    HashMap<String, Integer> minMax = new HashMap<String, Integer>();
-
-                                    minMax.put("Min", Integer.parseInt((String) tvMin.getText()));
-                                    minRange=Integer.parseInt((String) tvMin.getText());
-                                    if (tvMax.getText().equals(AppContants.RANGE_MAX)) {
-
-                                        maxRange=AppContants.PRICE_MAX;
-                                        minMax.put("Max", AppContants.PRICE_MAX);
-                                    } else {
-                                        maxRange=Integer.parseInt((String) tvMax.getText());
-                                        minMax.put("Max", Integer.parseInt((String) tvMax.getText()));
-                                    }
-                                    Log.e("Maxxx", (String) tvMax.getText());
-                                    intent.putExtra(AppContants.PRICE_RANGE, minMax);
-                                    price_Type= pricespinner.getSelectedItem().toString();
-                                    connectivity_Type= connectivity_type_spinner.getSelectedItem().toString();
-                                    intent.putExtra(AppContants.PRICE_TYPE, pricespinner.getSelectedItem().toString());
-                                    intent.putExtra(AppContants.CONNECTIVITY_TYPE, connectivity_type_spinner.getSelectedItem().toString());
-                                    startActivity(intent);
-                                }
-                                break;
-                            case "-KU1r_NUU5DdFPJLS1C2":
-                                //XIAOMI= -KU1r_NUU5DdFPJLS1C2
-                                if (showSubscriptionPage(CategoryListActivity.this, userID, userdetails)) {
-                                    subscribeAleartLayout.setVisibility(View.VISIBLE);
-
-                                    Answers.getInstance().logCustom(new CustomEvent(mCategoryList.get(index).getName())
-                                            .putCustomAttribute("USER_ID/ USER_Email:", userID + "/" + userdetails.getUserinfo().getEmailid()));
-                                    HashMap<String, Integer> minMax = new HashMap<String, Integer>();
-                                    minMax.put("Min", Integer.parseInt((String) tvMin.getText()));
-                                    minRange=Integer.parseInt((String) tvMin.getText());
-                                    if (tvMax.getText().equals(AppContants.RANGE_MAX)) {
-
-                                        maxRange=AppContants.PRICE_MAX;
-                                        minMax.put("Max", AppContants.PRICE_MAX);
-                                    } else {
-                                        maxRange=Integer.parseInt((String) tvMax.getText());
-                                        minMax.put("Max", Integer.parseInt((String) tvMax.getText()));
-                                    }
-                                    Log.e("Maxxx", (String) tvMax.getText());
-                                    price_Type= pricespinner.getSelectedItem().toString();
-                                    connectivity_Type= connectivity_type_spinner.getSelectedItem().toString();
-
-
-                                } else {
-                                    Answers.getInstance().logCustom(new CustomEvent(mCategoryList.get(index).getName())
-                                            .putCustomAttribute("USER_ID/ USER_Email:", userID + "/" + userdetails.getUserinfo().getEmailid()));
-
-                                    Intent intent = new Intent(CategoryListActivity.this, ProductListActivity.class);
-                                    intent.putExtra(AppContants.CATEGORY_ID, mCatId);
-                                    intent.putExtra(AppContants.SUPPLIER, supplierData);
-                                    intent.putExtra(AppContants.USER_DETAILS, userdetails);
-                                    HashMap<String, Integer> minMax = new HashMap<String, Integer>();
-
-                                    minMax.put("Min", Integer.parseInt((String) tvMin.getText()));
-                                    minRange=Integer.parseInt((String) tvMin.getText());
-                                    if (tvMax.getText().equals(AppContants.RANGE_MAX)) {
-
-                                        maxRange=AppContants.PRICE_MAX;
-                                        minMax.put("Max", AppContants.PRICE_MAX);
-                                    } else {
-                                        maxRange=Integer.parseInt((String) tvMax.getText());
-                                        minMax.put("Max", Integer.parseInt((String) tvMax.getText()));
-                                    }
-                                    Log.e("Maxxx", (String) tvMax.getText());
-                                    intent.putExtra(AppContants.PRICE_RANGE, minMax);
-                                    price_Type= pricespinner.getSelectedItem().toString();
-                                    connectivity_Type= connectivity_type_spinner.getSelectedItem().toString();
-                                    intent.putExtra(AppContants.PRICE_TYPE, pricespinner.getSelectedItem().toString());
-                                    intent.putExtra(AppContants.CONNECTIVITY_TYPE, connectivity_type_spinner.getSelectedItem().toString());
-                                    startActivity(intent);
-                                }
-                                break;
-                            case "-KZkiZ785mct3R2ROHlf":
-                                //NEW LAUNCH= -KZkiZ785mct3R2ROHlf
-                                if (showSubscriptionPage(CategoryListActivity.this, userID, userdetails)) {
-                                    subscribeAleartLayout.setVisibility(View.VISIBLE);
-
-                                    Answers.getInstance().logCustom(new CustomEvent(mCategoryList.get(index).getName())
-                                            .putCustomAttribute("USER_ID/ USER_Email:", userID + "/" + userdetails.getUserinfo().getEmailid()));
-                                    HashMap<String, Integer> minMax = new HashMap<String, Integer>();
-                                    minMax.put("Min", Integer.parseInt((String) tvMin.getText()));
-                                    minRange=Integer.parseInt((String) tvMin.getText());
-                                    if (tvMax.getText().equals(AppContants.RANGE_MAX)) {
-
-                                        maxRange=AppContants.PRICE_MAX;
-                                        minMax.put("Max", AppContants.PRICE_MAX);
-                                    } else {
-                                        maxRange=Integer.parseInt((String) tvMax.getText());
-                                        minMax.put("Max", Integer.parseInt((String) tvMax.getText()));
-                                    }
-                                    Log.e("Maxxx", (String) tvMax.getText());
-                                    price_Type= pricespinner.getSelectedItem().toString();
-                                    connectivity_Type= connectivity_type_spinner.getSelectedItem().toString();
-
-
-                                } else {
-                                    Answers.getInstance().logCustom(new CustomEvent(mCategoryList.get(index).getName())
-                                            .putCustomAttribute("USER_ID/ USER_Email:", userID + "/" + userdetails.getUserinfo().getEmailid()));
-
-                                    Intent intent = new Intent(CategoryListActivity.this, ProductListActivity.class);
-                                    intent.putExtra(AppContants.CATEGORY_ID, mCatId);
-                                    intent.putExtra(AppContants.SUPPLIER, supplierData);
-                                    intent.putExtra(AppContants.USER_DETAILS, userdetails);
-                                    HashMap<String, Integer> minMax = new HashMap<String, Integer>();
-
-                                    minMax.put("Min", Integer.parseInt((String) tvMin.getText()));
-                                    minRange=Integer.parseInt((String) tvMin.getText());
-                                    if (tvMax.getText().equals(AppContants.RANGE_MAX)) {
-
-                                        maxRange=AppContants.PRICE_MAX;
-                                        minMax.put("Max", AppContants.PRICE_MAX);
-                                    } else {
-                                        maxRange=Integer.parseInt((String) tvMax.getText());
-                                        minMax.put("Max", Integer.parseInt((String) tvMax.getText()));
-                                    }
-                                    Log.e("Maxxx", (String) tvMax.getText());
-                                    intent.putExtra(AppContants.PRICE_RANGE, minMax);
-                                    price_Type= pricespinner.getSelectedItem().toString();
-                                    connectivity_Type= connectivity_type_spinner.getSelectedItem().toString();
-                                    intent.putExtra(AppContants.PRICE_TYPE, pricespinner.getSelectedItem().toString());
-                                    intent.putExtra(AppContants.CONNECTIVITY_TYPE, connectivity_type_spinner.getSelectedItem().toString());
-                                    startActivity(intent);
-                                }
-                                break;
-
-                            default:
-                                Answers.getInstance().logCustom(new CustomEvent(mCategoryList.get(index).getName())
-                                        .putCustomAttribute("USER_ID/ USER_Email:", userID + "/" + userdetails.getUserinfo().getEmailid()));
-                                Intent intent = new Intent(CategoryListActivity.this, ProductListActivity.class);
-                                intent.putExtra(AppContants.CATEGORY_ID, mCatId);
-                                intent.putExtra(AppContants.SUPPLIER, supplierData);
-                                intent.putExtra(AppContants.USER_DETAILS, userdetails);
-                                HashMap<String, Integer> minMax = new HashMap<String, Integer>();
-                                minMax.put("Min", Integer.parseInt((String) tvMin.getText()));
-                                if (tvMax.getText().equals(AppContants.RANGE_MAX)) {
-                                    minMax.put("Max", AppContants.PRICE_MAX);
-                                } else {
-                                    minMax.put("Max", Integer.parseInt((String) tvMax.getText()));
-                                }
-                                Log.e("Maxxx", (String) tvMax.getText());
-                                intent.putExtra(AppContants.PRICE_RANGE, minMax);
-                                intent.putExtra(AppContants.PRICE_TYPE, pricespinner.getSelectedItem().toString());
-                                intent.putExtra(AppContants.CONNECTIVITY_TYPE, connectivity_type_spinner.getSelectedItem().toString());
-                                startActivity(intent);
-                                break;
-                        }
+                                    break;
+                            }
 
                   /*      if (mCatId.equals("-KX41ilBK4hjaSDIV419")) {
                             if (showSubscriptionPage(CategoryListActivity.this, userID, userdetails)) {
@@ -1291,10 +1312,10 @@ public class CategoryListActivity extends BaseActivity implements CategoryAdapte
                             startActivity(intent);
                         }
 */
-                    } else {
-                        Toast.makeText(CategoryListActivity.this, "Please check Internet Connection.", Toast.LENGTH_LONG).show();
+                        } else {
+                            Toast.makeText(CategoryListActivity.this, "Please check Internet Connection.", Toast.LENGTH_LONG).show();
+                        }
                     }
-
                 }
             }
 //                Toast.makeText(getBaseContext(), "Username: " + user + " Password: " + pass, Toast.LENGTH_SHORT).show();
@@ -1526,187 +1547,200 @@ public class CategoryListActivity extends BaseActivity implements CategoryAdapte
     public void OnClick(int position) {
         if (position >= 0) {
             open_PageName = "category"; // this will tell us which page has to open
-            mCatId = mCategoryList.get(position).getId();
-            if (networkUtil.isConnectingToInternet(CategoryListActivity.this)) {
-                switch (mCatId) {
-                    case "-KX41ilBK4hjaSDIV419":
-                        //PRICE DROP
-                        if (showSubscriptionPage(CategoryListActivity.this, userID, userdetails)) {
-                            subscribeAleartLayout.setVisibility(View.VISIBLE);
-                        } else {
+            if(mCategoryList.size() > position) {
+                mCatId = mCategoryList.get(position).getId();
+                if (networkUtil.isConnectingToInternet(CategoryListActivity.this)) {
+                    switch (mCatId) {
+                        case "-KX41ilBK4hjaSDIV419":
+                            //PRICE DROP
+                            if (showSubscriptionPage(CategoryListActivity.this, userID, userdetails)) {
+                                subscribeAleartLayout.setVisibility(View.VISIBLE);
+                            } else {
+                                if(userdetails != null && userdetails.getUserinfo() != null && userdetails.getUserinfo().getEmailid() != null && !userdetails.getUserinfo().getEmailid().isEmpty())
+                                Answers.getInstance().logCustom(new CustomEvent(mCategoryList.get(position).getName())
+                                        .putCustomAttribute("USER_ID/ USER_Email:", userID + "/" + userdetails.getUserinfo().getEmailid()));
+                                Intent intent = new Intent(CategoryListActivity.this, ProductListActivity.class);
+                                intent.putExtra(AppContants.CATEGORY_ID, mCatId);
+                                intent.putExtra(AppContants.SUPPLIER, supplierData);
+                                intent.putExtra(AppContants.USER_DETAILS, userdetails);
+                                startActivity(intent);
+                            }
+                            break;
+
+                        case "-KTTV8BvY0PpRUOEyKOo":
+                            //SAMSUNG
+                            if (showSubscriptionPage(CategoryListActivity.this, userID, userdetails)) {
+                                subscribeAleartLayout.setVisibility(View.VISIBLE);
+                            } else {
+                                if(userdetails != null && userdetails.getUserinfo() != null && userdetails.getUserinfo().getEmailid() != null && !userdetails.getUserinfo().getEmailid().isEmpty())
+                                Answers.getInstance().logCustom(new CustomEvent(mCategoryList.get(position).getName())
+                                        .putCustomAttribute("USER_ID/ USER_Email:", userID + "/" + userdetails.getUserinfo().getEmailid()));
+
+                                Intent intent = new Intent(CategoryListActivity.this, ProductListActivity.class);
+                                intent.putExtra(AppContants.CATEGORY_ID, mCatId);
+                                intent.putExtra(AppContants.SUPPLIER, supplierData);
+                                intent.putExtra(AppContants.USER_DETAILS, userdetails);
+                                startActivity(intent);
+                            }
+                            break;
+                        case "-KTmmfHzpn5Nn-ZZ0N1A":
+                            // GIONEE=  -KTmmfHzpn5Nn-ZZ0N1A
+                            if (showSubscriptionPage(CategoryListActivity.this, userID, userdetails)) {
+                                subscribeAleartLayout.setVisibility(View.VISIBLE);
+                            } else {
+                                if(userdetails != null && userdetails.getUserinfo() != null && userdetails.getUserinfo().getEmailid() != null && !userdetails.getUserinfo().getEmailid().isEmpty())
+                                Answers.getInstance().logCustom(new CustomEvent(mCategoryList.get(position).getName())
+                                        .putCustomAttribute("USER_ID/ USER_Email:", userID + "/" + userdetails.getUserinfo().getEmailid()));
+
+                                Intent intent = new Intent(CategoryListActivity.this, ProductListActivity.class);
+                                intent.putExtra(AppContants.CATEGORY_ID, mCatId);
+                                intent.putExtra(AppContants.SUPPLIER, supplierData);
+                                intent.putExtra(AppContants.USER_DETAILS, userdetails);
+                                startActivity(intent);
+                            }
+                            break;
+                        case "-KTwazqP9cmccZNbt9hb":
+                            // LAVA = -KTwazqP9cmccZNbt9hb
+                            if (showSubscriptionPage(CategoryListActivity.this, userID, userdetails)) {
+                                subscribeAleartLayout.setVisibility(View.VISIBLE);
+                            } else {
+                                if(userdetails != null && userdetails.getUserinfo() != null && userdetails.getUserinfo().getEmailid() != null && !userdetails.getUserinfo().getEmailid().isEmpty())
+                                Answers.getInstance().logCustom(new CustomEvent(mCategoryList.get(position).getName())
+                                        .putCustomAttribute("USER_ID/ USER_Email:", userID + "/" + userdetails.getUserinfo().getEmailid()));
+
+                                Intent intent = new Intent(CategoryListActivity.this, ProductListActivity.class);
+                                intent.putExtra(AppContants.CATEGORY_ID, mCatId);
+                                intent.putExtra(AppContants.SUPPLIER, supplierData);
+                                intent.putExtra(AppContants.USER_DETAILS, userdetails);
+                                startActivity(intent);
+                            }
+                            break;
+                        case "-KU2hE65nFcTF0eYa0u_":
+                            // VIVO= -KU2hE65nFcTF0eYa0u_
+                            if (showSubscriptionPage(CategoryListActivity.this, userID, userdetails)) {
+                                subscribeAleartLayout.setVisibility(View.VISIBLE);
+                            } else {
+                                if(userdetails != null && userdetails.getUserinfo() != null && userdetails.getUserinfo().getEmailid() != null && !userdetails.getUserinfo().getEmailid().isEmpty())
+                                Answers.getInstance().logCustom(new CustomEvent(mCategoryList.get(position).getName())
+                                        .putCustomAttribute("USER_ID/ USER_Email:", userID + "/" + userdetails.getUserinfo().getEmailid()));
+
+                                Intent intent = new Intent(CategoryListActivity.this, ProductListActivity.class);
+                                intent.putExtra(AppContants.CATEGORY_ID, mCatId);
+                                intent.putExtra(AppContants.SUPPLIER, supplierData);
+                                intent.putExtra(AppContants.USER_DETAILS, userdetails);
+                                startActivity(intent);
+                            }
+                            break;
+                        case "-KTwlJGRrjcnqumXCzGV":
+                            // LENOVO =-KTwlJGRrjcnqumXCzGV
+                            if (showSubscriptionPage(CategoryListActivity.this, userID, userdetails)) {
+                                subscribeAleartLayout.setVisibility(View.VISIBLE);
+                            } else {
+                                if(userdetails != null && userdetails.getUserinfo() != null && userdetails.getUserinfo().getEmailid() != null && !userdetails.getUserinfo().getEmailid().isEmpty())
+                                Answers.getInstance().logCustom(new CustomEvent(mCategoryList.get(position).getName())
+                                        .putCustomAttribute("USER_ID/ USER_Email:", userID + "/" + userdetails.getUserinfo().getEmailid()));
+
+                                Intent intent = new Intent(CategoryListActivity.this, ProductListActivity.class);
+                                intent.putExtra(AppContants.CATEGORY_ID, mCatId);
+                                intent.putExtra(AppContants.SUPPLIER, supplierData);
+                                intent.putExtra(AppContants.USER_DETAILS, userdetails);
+                                startActivity(intent);
+                            }
+                            break;
+                        case "-KUIMuoS_jziNt_deTkv":
+                            // ITEL = -KUIMuoS_jziNt_deTkv
+                            if (showSubscriptionPage(CategoryListActivity.this, userID, userdetails)) {
+                                subscribeAleartLayout.setVisibility(View.VISIBLE);
+                            } else {
+                                if(userdetails != null && userdetails.getUserinfo() != null && userdetails.getUserinfo().getEmailid() != null && !userdetails.getUserinfo().getEmailid().isEmpty())
+                                Answers.getInstance().logCustom(new CustomEvent(mCategoryList.get(position).getName())
+                                        .putCustomAttribute("USER_ID/ USER_Email:", userID + "/" + userdetails.getUserinfo().getEmailid()));
+
+                                Intent intent = new Intent(CategoryListActivity.this, ProductListActivity.class);
+                                intent.putExtra(AppContants.CATEGORY_ID, mCatId);
+                                intent.putExtra(AppContants.SUPPLIER, supplierData);
+                                intent.putExtra(AppContants.USER_DETAILS, userdetails);
+                                startActivity(intent);
+                            }
+                            break;
+                        case "-KTlvtThlXhnokm3hux3":
+                            //INTEX= -KTlvtThlXhnokm3hux3
+                            if (showSubscriptionPage(CategoryListActivity.this, userID, userdetails)) {
+                                subscribeAleartLayout.setVisibility(View.VISIBLE);
+                            } else {
+                                if(userdetails != null && userdetails.getUserinfo() != null && userdetails.getUserinfo().getEmailid() != null && !userdetails.getUserinfo().getEmailid().isEmpty())
+                                Answers.getInstance().logCustom(new CustomEvent(mCategoryList.get(position).getName())
+                                        .putCustomAttribute("USER_ID/ USER_Email:", userID + "/" + userdetails.getUserinfo().getEmailid()));
+
+                                Intent intent = new Intent(CategoryListActivity.this, ProductListActivity.class);
+                                intent.putExtra(AppContants.CATEGORY_ID, mCatId);
+                                intent.putExtra(AppContants.SUPPLIER, supplierData);
+                                intent.putExtra(AppContants.USER_DETAILS, userdetails);
+                                startActivity(intent);
+                            }
+                            break;
+
+                        case "-KTxmDYOCC_MxyRtu83V":
+                            //OPPO= -KTxmDYOCC_MxyRtu83V
+                            if (showSubscriptionPage(CategoryListActivity.this, userID, userdetails)) {
+                                subscribeAleartLayout.setVisibility(View.VISIBLE);
+                            } else {
+                                if(userdetails != null && userdetails.getUserinfo() != null && userdetails.getUserinfo().getEmailid() != null && !userdetails.getUserinfo().getEmailid().isEmpty())
+                                Answers.getInstance().logCustom(new CustomEvent(mCategoryList.get(position).getName())
+                                        .putCustomAttribute("USER_ID/ USER_Email:", userID + "/" + userdetails.getUserinfo().getEmailid()));
+
+                                Intent intent = new Intent(CategoryListActivity.this, ProductListActivity.class);
+                                intent.putExtra(AppContants.CATEGORY_ID, mCatId);
+                                intent.putExtra(AppContants.SUPPLIER, supplierData);
+                                intent.putExtra(AppContants.USER_DETAILS, userdetails);
+                                startActivity(intent);
+                            }
+                            break;
+                        case "-KU1r_NUU5DdFPJLS1C2":
+                            //XIAOMI= -KU1r_NUU5DdFPJLS1C2
+                            if (showSubscriptionPage(CategoryListActivity.this, userID, userdetails)) {
+                                subscribeAleartLayout.setVisibility(View.VISIBLE);
+                            } else {
+                                if(userdetails != null && userdetails.getUserinfo() != null && userdetails.getUserinfo().getEmailid() != null && !userdetails.getUserinfo().getEmailid().isEmpty())
+                                Answers.getInstance().logCustom(new CustomEvent(mCategoryList.get(position).getName())
+                                        .putCustomAttribute("USER_ID/ USER_Email:", userID + "/" + userdetails.getUserinfo().getEmailid()));
+
+                                Intent intent = new Intent(CategoryListActivity.this, ProductListActivity.class);
+                                intent.putExtra(AppContants.CATEGORY_ID, mCatId);
+                                intent.putExtra(AppContants.SUPPLIER, supplierData);
+                                intent.putExtra(AppContants.USER_DETAILS, userdetails);
+                                startActivity(intent);
+                            }
+                            break;
+                        case "-KZkiZ785mct3R2ROHlf":
+                            //NEW LAUNCH= -KZkiZ785mct3R2ROHlf
+                            if (showSubscriptionPage(CategoryListActivity.this, userID, userdetails)) {
+                                subscribeAleartLayout.setVisibility(View.VISIBLE);
+                            } else {
+                                if(userdetails != null && userdetails.getUserinfo() != null && userdetails.getUserinfo().getEmailid() != null && !userdetails.getUserinfo().getEmailid().isEmpty())
+                                Answers.getInstance().logCustom(new CustomEvent(mCategoryList.get(position).getName())
+                                        .putCustomAttribute("USER_ID/ USER_Email:", userID + "/" + userdetails.getUserinfo().getEmailid()));
+
+                                Intent intent = new Intent(CategoryListActivity.this, ProductListActivity.class);
+                                intent.putExtra(AppContants.CATEGORY_ID, mCatId);
+                                intent.putExtra(AppContants.SUPPLIER, supplierData);
+                                intent.putExtra(AppContants.USER_DETAILS, userdetails);
+                                startActivity(intent);
+                            }
+                            break;
+
+                        default:
+                            if(userdetails != null && userdetails.getUserinfo() != null && userdetails.getUserinfo().getEmailid() != null && !userdetails.getUserinfo().getEmailid().isEmpty())
                             Answers.getInstance().logCustom(new CustomEvent(mCategoryList.get(position).getName())
                                     .putCustomAttribute("USER_ID/ USER_Email:", userID + "/" + userdetails.getUserinfo().getEmailid()));
+
                             Intent intent = new Intent(CategoryListActivity.this, ProductListActivity.class);
                             intent.putExtra(AppContants.CATEGORY_ID, mCatId);
                             intent.putExtra(AppContants.SUPPLIER, supplierData);
                             intent.putExtra(AppContants.USER_DETAILS, userdetails);
                             startActivity(intent);
-                        }
-                        break;
-
-                    case "-KTTV8BvY0PpRUOEyKOo":
-                        //SAMSUNG
-                        if (showSubscriptionPage(CategoryListActivity.this, userID, userdetails)) {
-                            subscribeAleartLayout.setVisibility(View.VISIBLE);
-                        } else {
-                            Answers.getInstance().logCustom(new CustomEvent(mCategoryList.get(position).getName())
-                                    .putCustomAttribute("USER_ID/ USER_Email:", userID + "/" + userdetails.getUserinfo().getEmailid()));
-
-                            Intent intent = new Intent(CategoryListActivity.this, ProductListActivity.class);
-                            intent.putExtra(AppContants.CATEGORY_ID, mCatId);
-                            intent.putExtra(AppContants.SUPPLIER, supplierData);
-                            intent.putExtra(AppContants.USER_DETAILS, userdetails);
-                            startActivity(intent);
-                        }
-                        break;
-                    case "-KTmmfHzpn5Nn-ZZ0N1A":
-                        // GIONEE=  -KTmmfHzpn5Nn-ZZ0N1A
-                        if (showSubscriptionPage(CategoryListActivity.this, userID, userdetails)) {
-                            subscribeAleartLayout.setVisibility(View.VISIBLE);
-                        } else {
-                            Answers.getInstance().logCustom(new CustomEvent(mCategoryList.get(position).getName())
-                                    .putCustomAttribute("USER_ID/ USER_Email:", userID + "/" + userdetails.getUserinfo().getEmailid()));
-
-                            Intent intent = new Intent(CategoryListActivity.this, ProductListActivity.class);
-                            intent.putExtra(AppContants.CATEGORY_ID, mCatId);
-                            intent.putExtra(AppContants.SUPPLIER, supplierData);
-                            intent.putExtra(AppContants.USER_DETAILS, userdetails);
-                            startActivity(intent);
-                        }
-                        break;
-                    case "-KTwazqP9cmccZNbt9hb":
-                        // LAVA = -KTwazqP9cmccZNbt9hb
-                        if (showSubscriptionPage(CategoryListActivity.this, userID, userdetails)) {
-                            subscribeAleartLayout.setVisibility(View.VISIBLE);
-                        } else {
-                            Answers.getInstance().logCustom(new CustomEvent(mCategoryList.get(position).getName())
-                                    .putCustomAttribute("USER_ID/ USER_Email:", userID + "/" + userdetails.getUserinfo().getEmailid()));
-
-                            Intent intent = new Intent(CategoryListActivity.this, ProductListActivity.class);
-                            intent.putExtra(AppContants.CATEGORY_ID, mCatId);
-                            intent.putExtra(AppContants.SUPPLIER, supplierData);
-                            intent.putExtra(AppContants.USER_DETAILS, userdetails);
-                            startActivity(intent);
-                        }
-                        break;
-                    case "-KU2hE65nFcTF0eYa0u_":
-                        // VIVO= -KU2hE65nFcTF0eYa0u_
-                        if (showSubscriptionPage(CategoryListActivity.this, userID, userdetails)) {
-                            subscribeAleartLayout.setVisibility(View.VISIBLE);
-                        } else {
-                            Answers.getInstance().logCustom(new CustomEvent(mCategoryList.get(position).getName())
-                                    .putCustomAttribute("USER_ID/ USER_Email:", userID + "/" + userdetails.getUserinfo().getEmailid()));
-
-                            Intent intent = new Intent(CategoryListActivity.this, ProductListActivity.class);
-                            intent.putExtra(AppContants.CATEGORY_ID, mCatId);
-                            intent.putExtra(AppContants.SUPPLIER, supplierData);
-                            intent.putExtra(AppContants.USER_DETAILS, userdetails);
-                            startActivity(intent);
-                        }
-                        break;
-                    case "-KTwlJGRrjcnqumXCzGV":
-                        // LENOVO =-KTwlJGRrjcnqumXCzGV
-                        if (showSubscriptionPage(CategoryListActivity.this, userID, userdetails)) {
-                            subscribeAleartLayout.setVisibility(View.VISIBLE);
-                        } else {
-                            Answers.getInstance().logCustom(new CustomEvent(mCategoryList.get(position).getName())
-                                    .putCustomAttribute("USER_ID/ USER_Email:", userID + "/" + userdetails.getUserinfo().getEmailid()));
-
-                            Intent intent = new Intent(CategoryListActivity.this, ProductListActivity.class);
-                            intent.putExtra(AppContants.CATEGORY_ID, mCatId);
-                            intent.putExtra(AppContants.SUPPLIER, supplierData);
-                            intent.putExtra(AppContants.USER_DETAILS, userdetails);
-                            startActivity(intent);
-                        }
-                        break;
-                    case "-KUIMuoS_jziNt_deTkv":
-                        // ITEL = -KUIMuoS_jziNt_deTkv
-                        if (showSubscriptionPage(CategoryListActivity.this, userID, userdetails)) {
-                            subscribeAleartLayout.setVisibility(View.VISIBLE);
-                        } else {
-                            Answers.getInstance().logCustom(new CustomEvent(mCategoryList.get(position).getName())
-                                    .putCustomAttribute("USER_ID/ USER_Email:", userID + "/" + userdetails.getUserinfo().getEmailid()));
-
-                            Intent intent = new Intent(CategoryListActivity.this, ProductListActivity.class);
-                            intent.putExtra(AppContants.CATEGORY_ID, mCatId);
-                            intent.putExtra(AppContants.SUPPLIER, supplierData);
-                            intent.putExtra(AppContants.USER_DETAILS, userdetails);
-                            startActivity(intent);
-                        }
-                        break;
-                    case "-KTlvtThlXhnokm3hux3":
-                        //INTEX= -KTlvtThlXhnokm3hux3
-                        if (showSubscriptionPage(CategoryListActivity.this, userID, userdetails)) {
-                            subscribeAleartLayout.setVisibility(View.VISIBLE);
-                        } else {
-                            Answers.getInstance().logCustom(new CustomEvent(mCategoryList.get(position).getName())
-                                    .putCustomAttribute("USER_ID/ USER_Email:", userID + "/" + userdetails.getUserinfo().getEmailid()));
-
-                            Intent intent = new Intent(CategoryListActivity.this, ProductListActivity.class);
-                            intent.putExtra(AppContants.CATEGORY_ID, mCatId);
-                            intent.putExtra(AppContants.SUPPLIER, supplierData);
-                            intent.putExtra(AppContants.USER_DETAILS, userdetails);
-                            startActivity(intent);
-                        }
-                        break;
-
-                    case "-KTxmDYOCC_MxyRtu83V":
-                        //OPPO= -KTxmDYOCC_MxyRtu83V
-                        if (showSubscriptionPage(CategoryListActivity.this, userID, userdetails)) {
-                            subscribeAleartLayout.setVisibility(View.VISIBLE);
-                        } else {
-                            Answers.getInstance().logCustom(new CustomEvent(mCategoryList.get(position).getName())
-                                    .putCustomAttribute("USER_ID/ USER_Email:", userID + "/" + userdetails.getUserinfo().getEmailid()));
-
-                            Intent intent = new Intent(CategoryListActivity.this, ProductListActivity.class);
-                            intent.putExtra(AppContants.CATEGORY_ID, mCatId);
-                            intent.putExtra(AppContants.SUPPLIER, supplierData);
-                            intent.putExtra(AppContants.USER_DETAILS, userdetails);
-                            startActivity(intent);
-                        }
-                        break;
-                    case "-KU1r_NUU5DdFPJLS1C2":
-                        //XIAOMI= -KU1r_NUU5DdFPJLS1C2
-                        if (showSubscriptionPage(CategoryListActivity.this, userID, userdetails)) {
-                            subscribeAleartLayout.setVisibility(View.VISIBLE);
-                        } else {
-                            Answers.getInstance().logCustom(new CustomEvent(mCategoryList.get(position).getName())
-                                    .putCustomAttribute("USER_ID/ USER_Email:", userID + "/" + userdetails.getUserinfo().getEmailid()));
-
-                            Intent intent = new Intent(CategoryListActivity.this, ProductListActivity.class);
-                            intent.putExtra(AppContants.CATEGORY_ID, mCatId);
-                            intent.putExtra(AppContants.SUPPLIER, supplierData);
-                            intent.putExtra(AppContants.USER_DETAILS, userdetails);
-                            startActivity(intent);
-                        }
-                        break;
-                    case "-KZkiZ785mct3R2ROHlf":
-                        //NEW LAUNCH= -KZkiZ785mct3R2ROHlf
-                        if (showSubscriptionPage(CategoryListActivity.this, userID, userdetails)) {
-                            subscribeAleartLayout.setVisibility(View.VISIBLE);
-                        } else {
-                            Answers.getInstance().logCustom(new CustomEvent(mCategoryList.get(position).getName())
-                                    .putCustomAttribute("USER_ID/ USER_Email:", userID + "/" + userdetails.getUserinfo().getEmailid()));
-
-                            Intent intent = new Intent(CategoryListActivity.this, ProductListActivity.class);
-                            intent.putExtra(AppContants.CATEGORY_ID, mCatId);
-                            intent.putExtra(AppContants.SUPPLIER, supplierData);
-                            intent.putExtra(AppContants.USER_DETAILS, userdetails);
-                            startActivity(intent);
-                        }
-                        break;
-
-                    default:
-                        Answers.getInstance().logCustom(new CustomEvent(mCategoryList.get(position).getName())
-                                .putCustomAttribute("USER_ID/ USER_Email:", userID + "/" + userdetails.getUserinfo().getEmailid()));
-
-                        Intent intent = new Intent(CategoryListActivity.this, ProductListActivity.class);
-                        intent.putExtra(AppContants.CATEGORY_ID, mCatId);
-                        intent.putExtra(AppContants.SUPPLIER, supplierData);
-                        intent.putExtra(AppContants.USER_DETAILS, userdetails);
-                        startActivity(intent);
-                        break;
-                }
+                            break;
+                    }
 
 /*
                 if (mCatId.equals("-KX41ilBK4hjaSDIV419")) {
@@ -1732,10 +1766,10 @@ public class CategoryListActivity extends BaseActivity implements CategoryAdapte
                     intent.putExtra(AppContants.USER_DETAILS, userdetails);
                     startActivity(intent);
                 }*/
-            } else {
-                Toast.makeText(CategoryListActivity.this, "Please check Internet Connection.", Toast.LENGTH_LONG).show();
+                } else {
+                    Toast.makeText(CategoryListActivity.this, "Please check Internet Connection.", Toast.LENGTH_LONG).show();
+                }
             }
-
         }
     }
 

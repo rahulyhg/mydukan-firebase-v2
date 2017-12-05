@@ -16,9 +16,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import org.app.mydukan.R;
-import org.app.mydukan.activities.BaseActivity;
 import org.app.mydukan.activities.ProductDescriptionActivity;
-import org.app.mydukan.application.MyDukan;
 import org.app.mydukan.data.Product;
 import org.app.mydukan.data.SupplierBindData;
 import org.app.mydukan.server.ApiManager;
@@ -133,6 +131,7 @@ public class DescriptionFragment extends Fragment {
                 new ApiResult() {
                     @Override
                     public void onSuccess(Object data) {
+                        try{
                         product = (Product)data;
                         if(product != null) {
                             mProduct.setDescription(product.getDescription());
@@ -142,12 +141,19 @@ public class DescriptionFragment extends Fragment {
 
                         dismissProgress();
                         setupDescription();
+                        }catch (Exception e){
+                            e.printStackTrace();
+                        }
                     }
 
                     @Override
                     public void onFailure(String response) {
-                        dismissProgress();
-                        setupDescription();
+                        try {
+                            dismissProgress();
+                            setupDescription();
+                        }catch (Exception e){
+                            e.printStackTrace();
+                        }
                     }
                 });
     }
@@ -201,21 +207,29 @@ public class DescriptionFragment extends Fragment {
         @Override
         public void onPageStarted(WebView view, String url, Bitmap favicon) {
             super.onPageStarted(view, url, favicon);
-            mProgress = new ProgressDialog(context);
-          //  mProgress.setTitle(getString(R.string.Please_wait));
-            mProgress.setMessage(getString(R.string.Page_is_loading));
-            mProgress.setCancelable(true);
-            mProgress.show();
+            try {
+                mProgress = new ProgressDialog(context);
+                //  mProgress.setTitle(getString(R.string.Please_wait));
+                mProgress.setMessage(getString(R.string.Page_is_loading));
+                mProgress.setCancelable(true);
+                mProgress.show();
+            }catch (Exception e){
+                e.printStackTrace();
+            }
         }
 
         @Override
         public void onPageFinished(WebView view, String url) {
             super.onPageFinished(view, url);
-            if (mProgress != null) {
-                {
-                    mProgress.dismiss();
+            try {
+                if (mProgress != null && mProgress.isShowing()) {
+                    {
+                        mProgress.dismiss();
+                    }
+                    mProgress = null;
                 }
-                mProgress = null;
+            }catch (Exception e){
+                e.printStackTrace();
             }
         }
     }

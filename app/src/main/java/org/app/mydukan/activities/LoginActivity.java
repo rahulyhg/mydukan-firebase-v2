@@ -13,7 +13,6 @@ import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.View;
@@ -32,7 +31,6 @@ import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
@@ -282,11 +280,20 @@ public class LoginActivity extends BaseActivity implements GoogleApiClient.OnCon
                             checkIfUserExist();
                             acct.getDisplayName();
                             acct.getEmail();
-                            String fullname = acct.getDisplayName();
-                            String email = acct.getEmail();
+                            String fullname = "";
+                            if(acct.getDisplayName() != null && !acct.getDisplayName().isEmpty())
+                            fullname = acct.getDisplayName();
+
+                            String email = "";
+                            if(acct.getEmail() != null && !acct.getEmail().isEmpty())
+                            email = acct.getEmail();
+
+                            if(fullname.isEmpty())
+                                return;
+
                             String[] parts = fullname.split("\\s+");
                             Log.d("Length-->",""+parts.length);
-                            if(parts.length==2) {
+                            if(parts != null && parts.length==2) {
                                 String firstname = parts[0];
                                 String lastname = parts[1];
                                 Log.d("First-->", "" + firstname);
