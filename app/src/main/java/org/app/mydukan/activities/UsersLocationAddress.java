@@ -347,6 +347,7 @@ public class UsersLocationAddress extends BaseActivity implements View.OnClickLi
                         }
                     }
                 });
+
             }
         }catch (Exception e){
             e.printStackTrace();
@@ -366,6 +367,16 @@ public class UsersLocationAddress extends BaseActivity implements View.OnClickLi
                 break;
 
             case R.id.BtnChangeLocation:
+
+                /*
+                Added Amit
+                Before opening Google maps must check GPS permission
+                 */
+                if(ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED){
+                    //Toast.makeText(this, "Please allow MyDukan to access your location", Toast.LENGTH_SHORT).show();
+                    checkLocationPermission();
+                    return;
+                }
 
                 boolean networkPresent = myLocation.getLocation(UsersLocationAddress.this, UsersLocationAddress.this);
                 if (!networkPresent) {
@@ -422,14 +433,25 @@ public class UsersLocationAddress extends BaseActivity implements View.OnClickLi
         if (requestCode == PLACE_PICKER_REQUEST) {
 
             if (resultCode == RESULT_OK) {
-                if (addressInfo==null) {
+                /*if (addressInfo==null) {
                     Toast.makeText(this, "Wait your GPS is turning On.", Toast.LENGTH_SHORT).show();
                     return;
                 }
                 else
                 {
                     addressInfo.clear();
+                }*/
+                /*
+                This code added by amit
+                It will check if GPS Permission is granted or not if not then request to grant again
+                */
+
+                if(ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED){
+                    Toast.makeText(this, "Please allow MyDukan to access your location", Toast.LENGTH_SHORT).show();
+                    checkLocationPermission();
+                    return;
                 }
+                addressInfo.clear();
                 Place place = PlacePicker.getPlace(data, this);
                 double latitude = place.getLatLng().latitude;
                 double longitude = place.getLatLng().longitude;
@@ -641,8 +663,28 @@ public class UsersLocationAddress extends BaseActivity implements View.OnClickLi
 
                     }
                 } else { //Permission is denaided
+                    /*
+                    Code added by amit
+                    Ask user to must allow for location permission
+                     */
                     dismissProgress();
-                    Toast.makeText(this, "Permission is Denaied !", Toast.LENGTH_SHORT).show();
+                    /*if(permissions != null && permissions.length > 0 && permissions[0].equals("android.permission.ACCESS_FINE_LOCATION") || permissions[0].equals("android.permission.ACCESS_COARSE_LOCATION")) {
+                        new android.support.v7.app.AlertDialog.Builder(this)
+                                .setTitle("Info")
+                                .setMessage("To edit your address you must allow MyDukan to access your location. Please click on Edit location button and allow the permission")
+                                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        // continue
+                                        ActivityCompat.requestPermissions(UsersLocationAddress.this, new String[]{Manifest.permission.READ_CONTACTS, Manifest.permission.CALL_PHONE}, 1);
+                                        dialog.dismiss();
+                                    }
+                                })
+                                .setIcon(android.R.drawable.ic_dialog_alert)
+                                .show();
+                    }else {
+                        Toast.makeText(this, "Permission Denied !", Toast.LENGTH_SHORT).show();
+                    }*/
+                    Toast.makeText(this, "Permission Denied !", Toast.LENGTH_SHORT).show();
                 }
                 return;
 

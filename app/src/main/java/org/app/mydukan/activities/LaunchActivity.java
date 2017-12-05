@@ -20,6 +20,7 @@ import org.app.mydukan.application.MyDukan;
 import org.app.mydukan.data.AppStateContants;
 import org.app.mydukan.data.User;
 import org.app.mydukan.utils.AppContants;
+import org.app.mydukan.utils.AppPreference;
 import org.app.mydukan.utils.NotificationUtils;
 
 import java.io.File;
@@ -157,13 +158,17 @@ public class LaunchActivity extends BaseActivity   {
                        }*/
                             else {
 
-
-                                Answers.getInstance().logCustom(new CustomEvent("Launcher_Page")
-                                        .putCustomAttribute("UserId", mUid));
-                                Intent intent = new Intent(LaunchActivity.this, MainActivity.class);
-                                intent.putExtra(AppContants.NOTIFICATION, notificationInfo);
-                                startActivity(intent);
-                                finish();
+                                Boolean checkIsSubscribe =  new AppPreference().getSubscribing(getApplicationContext());
+                                if(!checkIsSubscribe) {
+                                    Answers.getInstance().logCustom(new CustomEvent("Launcher_Page")
+                                            .putCustomAttribute("UserId", mUid));
+                                    Intent intent = new Intent(LaunchActivity.this, MainActivity.class);
+                                    intent.putExtra(AppContants.NOTIFICATION, notificationInfo);
+                                    startActivity(intent);
+                                    finish();
+                                }else{
+                                    new AppPreference().setSubscribing(getApplicationContext(),false);
+                                }
 
                             }
                         } else {

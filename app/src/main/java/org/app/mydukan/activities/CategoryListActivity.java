@@ -60,6 +60,7 @@ import org.app.mydukan.data.User;
 import org.app.mydukan.server.ApiManager;
 import org.app.mydukan.server.ApiResult;
 import org.app.mydukan.utils.AppContants;
+import org.app.mydukan.utils.AppPreference;
 import org.app.mydukan.utils.NetworkUtil;
 import org.app.mydukan.utils.Utils;
 
@@ -366,6 +367,7 @@ public class CategoryListActivity extends BaseActivity implements CategoryAdapte
         userInfo.put(AppContants.SUBSCRIPTION_EXTRAINFO, appSubscriptionInfo.getSubcription_EXTRAINFO());
         userInfo.put(AppContants.SUBSCRIPTION_USERID, userID);
         //Initialize AppDukan
+        new AppPreference().setSubscribing(getApplicationContext(),true);
         ApiManager.getInstance(mContext).updateUserSubscription(mApp.getFirebaseAuth().getCurrentUser().getUid(),
                 userInfo, new ApiResult() {
                     @Override
@@ -373,6 +375,16 @@ public class CategoryListActivity extends BaseActivity implements CategoryAdapte
                         Log.i(MyDukan.LOGTAG, "User updated successfully");
                         if (userdetails != null) {
                             if (userdetails.getAppSubscriptionInfo() != null) {
+                                if(userdetails != null && userdetails.getUserinfo() != null && userdetails.getUserinfo().getEmailid() != null && !userdetails.getUserinfo().getEmailid().isEmpty())
+                                    Answers.getInstance().logCustom(new CustomEvent("FreeUseBTN")
+                                            .putCustomAttribute("USER_ID/ USER_Email:", userID + "/" + userdetails.getUserinfo().getEmailid()));
+
+                                Intent intent = new Intent(CategoryListActivity.this, ProductListActivity.class);
+                                intent.putExtra(AppContants.CATEGORY_ID, mCatId);
+                                intent.putExtra(AppContants.SUPPLIER, supplierData);
+                                intent.putExtra(AppContants.USER_DETAILS, userdetails);
+                                startActivity(intent);
+                                new AppPreference().setSubscribing(getApplicationContext(),false);
                                 return;
                             }
                         }
@@ -381,6 +393,7 @@ public class CategoryListActivity extends BaseActivity implements CategoryAdapte
                     @Override
                     public void onFailure(String response) {
                         Log.i(MyDukan.LOGTAG, "Failed to update user profile");
+                        new AppPreference().setSubscribing(getApplicationContext(),false);
                     }
                 });
     }

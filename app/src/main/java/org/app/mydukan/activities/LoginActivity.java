@@ -468,6 +468,7 @@ public class LoginActivity extends BaseActivity implements GoogleApiClient.OnCon
         // Result returned from launching the Intent from GoogleSignInApi.getSignInIntent(...);
         if (requestCode == GOOGLE_SIGN_IN) {
             if (data!=null){
+
                 GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
                 if (result.isSuccess()) {
                     // Google Sign In was successful, authenticate with Firebase

@@ -15,6 +15,7 @@ public class AppPreference {
     private final String PREF_USER = "user";
     private final String PREF_APP_STATE = "appstate";
     private final String PREF_TOPICS = "notifytopic";
+    private final String PREF_SUBSCRIBE = "subscribe";
 
 
     //This function is used to clear all the preferences.
@@ -121,5 +122,18 @@ public class AppPreference {
             return false;
         return getPreference(context, PREF_TOPICS, false);
     }
+
+    public void setSubscribing(Context context, boolean val) {
+        if (context == null)
+            return;
+        setPreference(context, PREF_SUBSCRIBE, val);
+    }
+
+    public Boolean getSubscribing(Context context) {
+        if (context == null)
+            return false;
+        return getPreference(context, PREF_SUBSCRIBE, false);
+    }
+
 }
 
