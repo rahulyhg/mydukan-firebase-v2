@@ -184,14 +184,14 @@ public class Product_PricePlatformFragment extends Fragment {
             PricePlatformAdapter adapter = new PricePlatformAdapter(context, mProduct.getmPlatforms());
             list_pricePlatform.setAdapter(adapter);
 
-            list_pricePlatform.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+          /*  list_pricePlatform.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 //                    HashMap<String,PlatForm_Info> hashMap= mProduct.getmPlatforms();
 
                     Toast.makeText(getContext(),"Clicked"+" "+position,Toast.LENGTH_SHORT).show();
                 }
-            });
+            });*/
 
         }else{
             mOthersTextView.setVisibility(View.VISIBLE);

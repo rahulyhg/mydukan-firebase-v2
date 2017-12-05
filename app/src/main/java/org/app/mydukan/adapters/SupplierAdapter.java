@@ -77,13 +77,19 @@ public class SupplierAdapter extends
         }
 
         if(mSupplierData.get(position).getId().equalsIgnoreCase("RcJ1L4mWaZeIe2wRO3ejHOmcSxf2")){
+
             holder.mSupplierName.setText("MOBILE DP FREE");
         }
 
-        if (currentSupplier.getUserinfo().getName().contains(AppContants.MOBILE_DP)) {
-            holder.mSupplierimg.setImageResource(R.drawable.ic_mobiledp);
+        if(mSupplierData.get(position).getId().equalsIgnoreCase("WDSLSgxI10eiWVey4RVWY5niElE3")){
+            holder.mSupplierimg.setImageResource(R.drawable.ic_mobiledp_prime);
           //  holder.mSupplierName.setTypeface(Typeface.DEFAULT_BOLD);
-        } else if (currentSupplier.getUserinfo().getName().contains(AppContants.AIRTEL)) {
+        }
+        else  if(mSupplierData.get(position).getId().equalsIgnoreCase("RcJ1L4mWaZeIe2wRO3ejHOmcSxf2")) {
+            holder.mSupplierimg.setImageResource(R.drawable.ic_mobiledp_free);
+            //  holder.mSupplierName.setTypeface(Typeface.DEFAULT_BOLD);
+        }
+        else if (currentSupplier.getUserinfo().getName().contains(AppContants.AIRTEL)) {
             holder.mSupplierimg.setImageResource(R.drawable.ic_airtel);
         } else if (currentSupplier.getUserinfo().getName().contains(AppContants.ASUS)) {
             holder.mSupplierimg.setImageResource(R.drawable.ic_ic_store_black_24dp);
