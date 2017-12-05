@@ -50,6 +50,7 @@ import org.app.mydukan.data.Supplier;
 import org.app.mydukan.data.SupplierBindData;
 import org.app.mydukan.data.SupplierGroups;
 import org.app.mydukan.data.User;
+import org.app.mydukan.data.Videos;
 import org.app.mydukan.utils.AppContants;
 
 import java.io.IOException;
@@ -1285,12 +1286,10 @@ public class ApiManager {
         /*End of logic in change in productkeys list*/
     }
 
-    private void getProductKeysForGroups(String suppliersId, ArrayList<String> groupIds, final String searchStr,
-                                         final ApiResult result) {
+    private void getProductKeysForGroups(String suppliersId, ArrayList<String> groupIds, final String searchStr, final ApiResult result) {
         grpProductCount = groupIds.size();
         Log.d(" **** 01 **** ", String.valueOf(groupIds));
         final HashMap<String, Product> productsList = new HashMap<>();
-
         for (String groupId : groupIds) {
             DatabaseReference groupRef = FirebaseDatabase.getInstance().getReference("groupprice/" + suppliersId + "/" + groupId);
 
@@ -1377,6 +1376,7 @@ public class ApiManager {
 
             /*Logic for product keys group*/
 
+            groupRef.keepSynced(true);
             groupRef.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
@@ -1391,7 +1391,6 @@ public class ApiManager {
                                             .child("isnew").getValue(Boolean.class));
                                 }
                             }
-
 
                             if (searchStr != null) {
                                 if (!(product.getName().contains(searchStr.toLowerCase()))) {
@@ -1409,13 +1408,21 @@ public class ApiManager {
 
                                 if (productSnapshot.hasChild("platforms")) {
                                     try {
-                                          HashMap<String,PlatForm_Info> mPlatforms = new HashMap<>();
-                                        productSnapshot.child("platforms").getChildren();
+                                        HashMap<String,String> cPlatforms = new HashMap<String,String>();
+                                          HashMap<String, HashMap<String, String>> mPlatforms = new HashMap<>();
+
                                         for (DataSnapshot recipe : productSnapshot.child("platforms").getChildren()){
-                                            mPlatforms.put(recipe.getKey(),recipe.getValue(PlatForm_Info.class));
+
+                                            if(recipe!=null){
+                                                cPlatforms = new HashMap<String,String>();
+                                              for (DataSnapshot platform : recipe.getChildren()) {
+                                                  cPlatforms.put(platform.getKey(),platform.getValue(String.class));
+                                              }
+                                            mPlatforms.put(recipe.getKey(),cPlatforms);
+                                            }
+                                           // mPlatforms.put(recipe.getKey(),recipe.getValue(PlatForm_Info.class));
                                         }
                                         product.setmPlatforms(mPlatforms);
-
                                     } catch (Exception e) {
 
                                     }
@@ -1812,7 +1819,8 @@ public class ApiManager {
             }
         });
     }
-   /* public void getVideosList(final ApiResult result) {
+/*
+    public void getVideosList(final ApiResult result) {
         final ArrayList<Videos> videosList = new ArrayList<>();
 
         DatabaseReference categoryRef = FirebaseDatabase.getInstance().getReference("MyDukan_BroadCast/videos");
@@ -1837,7 +1845,8 @@ public class ApiManager {
                 result.onFailure(mctx.getString(R.string.status_failed));
             }
         });
-    }*/
+    }
+*/
 
 
     public void getOrderList(final String supplierId, String uid, final ApiResult result) {
@@ -2918,7 +2927,7 @@ public class ApiManager {
                 });
             }
         }
-        int i = 20;
+
     }
 }
 
