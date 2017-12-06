@@ -35,6 +35,7 @@ import org.app.mydukan.activities.MyProfileActivity;
 import org.app.mydukan.activities.WebViewActivity;
 import org.app.mydukan.adapters.AdapterListFeed;
 import org.app.mydukan.data.Feed;
+import org.app.mydukan.services.VolleyNetworkRequest;
 import org.app.mydukan.utils.AppContants;
 
 import java.io.Serializable;
@@ -44,6 +45,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 
 public class TwoFragment extends Fragment implements AdapterListFeed.OnClickItemFeed, View.OnClickListener {
@@ -66,6 +68,7 @@ public class TwoFragment extends Fragment implements AdapterListFeed.OnClickItem
     private boolean flagFollow;
     Context context;
     AdView mAdView;
+    VolleyNetworkRequest jsonRequest;
     //NC8By7oxjjeYVQxSfjiY3nYWoGq1
     String[] myDukan_Ids = {"NC8By7oxjjeYVQxSfjiY3nYWoGq1","oGNKfltdMsVAfjDN63QjjITGnhw1","hxv73SDWuUNG0IXEMXWO6Lez26u2"};
     public TwoFragment() {
@@ -82,6 +85,7 @@ public class TwoFragment extends Fragment implements AdapterListFeed.OnClickItem
         // Inflate the layout for this fragment
         mView=inflater.inflate(R.layout.fragment_two, container, false);
         context = mView.getContext();
+        jsonRequest = new VolleyNetworkRequest(context);
         initViews();
         retrieveData();
         //initialize ads for the app  - ca-app-pub-1640690939729824/2174590993
@@ -195,6 +199,7 @@ public class TwoFragment extends Fragment implements AdapterListFeed.OnClickItem
                         flagLike = false;
                     } else {
                         referenceLike.child(feed.getIdFeed()).child(auth.getUid()).setValue(true);
+                        getUserToken(feed.getIdUser(), auth.getDisplayName(), feed.getIdFeed());
                         flagLike = false;
                     }
                 }
@@ -206,6 +211,29 @@ public class TwoFragment extends Fragment implements AdapterListFeed.OnClickItem
             }
         });
 
+    }
+
+    public void getUserToken(final String auth, final String name, final String feedId){
+        final DatabaseReference referenceFcm = FirebaseDatabase.getInstance().getReference().child("fcmregistration");
+        referenceFcm.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                HashMap<String, Object> map = new HashMap<>();
+                map = (HashMap<String, Object>) dataSnapshot.getValue();
+                if(map.containsKey(auth)) {
+                    System.out.println("User Token Like: " + map.get(auth));
+                    jsonRequest.JsonObjectRequest((String)map.get(auth), name, "like", feedId);
+                }
+                else{
+                    System.out.println("User Token Comment Negative");
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
     }
 
     private void addFollow(final Feed feed) {

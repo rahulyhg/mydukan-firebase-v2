@@ -4,9 +4,11 @@ import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.support.multidex.MultiDex;
+import android.util.Log;
 
 import com.crashlytics.android.Crashlytics;
 import com.crashlytics.android.answers.Answers;
+import com.crashlytics.android.answers.CustomEvent;
 import com.digits.sdk.android.Digits;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -97,26 +99,26 @@ public class MyDukan extends Application {
         if(mFirebaseAuth.getCurrentUser() != null) {
             ApiManager.getInstance(getApplicationContext()).checkAndSubscribeForTopic();
             String token = FirebaseInstanceId.getInstance().getToken();
+            if(token != null) {
 
-            // Send the Instance ID token to your app server.
-            ApiManager.getInstance(this).sendRegistrationId(mFirebaseAuth.getCurrentUser().getUid(), token, new ApiResult() {
-                @Override
-                public void onSuccess(Object data) {
+                // Send the Instance ID token to your app server.
+                ApiManager.getInstance(this).sendRegistrationId(mFirebaseAuth.getCurrentUser().getUid(), token, new ApiResult() {
+                    @Override
+                    public void onSuccess(Object data) {
+                        Log.i("User Token Registration", "Successful");
+                    }
 
-                }
-
-                @Override
-                public void onFailure(String response) {
-
-                }
-            });
+                    @Override
+                    public void onFailure(String response) {
+                        Log.i("User Token Registration", "Failure");
+                    }
+                });
+            }
+            else{
+                Log.d(MyDukan.LOGTAG, "TOKEN_ID:"+token);
+                Answers.getInstance().logCustom(new CustomEvent("MYDUKAN_APP").putCustomAttribute("TOKENID_NOT_UPDATED", mFirebaseAuth.getCurrentUser().getUid()));
+            }
         }
     }
-
-
-
-
-
-
 
 }

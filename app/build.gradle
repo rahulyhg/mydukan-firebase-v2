@@ -23,7 +23,7 @@ repositories {
 }
 android {
     compileSdkVersion 25
-    buildToolsVersion '26.0.2'
+    buildToolsVersion '27.0.0'
     //useLibrary 'org.apache.http.legacy'
 
     defaultConfig {
@@ -76,9 +76,7 @@ android {
 }
 
 dependencies {
-
     //compile project(':libraries/appdukan')
-
     // Crashlytics Kit
     compile('com.crashlytics.sdk.android:crashlytics:2.6.5@aar') {
         transitive = true
@@ -87,11 +85,9 @@ dependencies {
         transitive = true;
     }
     //Paytm gatewaySdk
-
     // compile files('libs/android SDK/PGSDK_v1.0.1.jar')
     compile files('libs/android SDK/PGSDK_V2.0.jar')
     //Meterial Badge For Notification
-
     //True Caller Sdk for  mobile number verification.
     compile(name: "truesdk-0.5", ext: "aar")
     // Supports Android 4.0.3 and later (API level 15)
@@ -175,9 +171,9 @@ dependencies {
     compile 'com.google.code.gson:gson:2.3.1'
     compile 'swarajsaaj:otpreader:1.1'
     compile files('libs/android SDK/PGSDK_V2.0.jar')
-//    compile 'org.apache.logging.log4j:log4j-api:2.3'
-//    compile 'org.apache.logging.log4j:log4j-core:2.3'
-//    compile 'com.atteq:android-log4j2-support:2.3'
+    //    compile 'org.apache.logging.log4j:log4j-api:2.3'
+    //    compile 'org.apache.logging.log4j:log4j-core:2.3'
+    //    compile 'com.atteq:android-log4j2-support:2.3'
 }
 apply plugin: 'com.google.gms.google-services'
 

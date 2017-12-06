@@ -40,6 +40,7 @@ import org.app.mydukan.data.Feed;
 import org.app.mydukan.data.ServiceCenterInfo;
 import org.app.mydukan.server.ApiManager;
 import org.app.mydukan.server.ApiResult;
+import org.app.mydukan.services.VolleyNetworkRequest;
 import org.app.mydukan.utils.AppContants;
 import org.app.mydukan.utils.SimpleDividerItemDecoration;
 
@@ -50,6 +51,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 
 import static org.app.mydukan.R.id.view;
@@ -75,6 +77,7 @@ public class OneFragment extends Fragment implements AdapterListFeed.OnClickItem
     private boolean flagFollow;
     Context context;
     AdView mAdView;
+    VolleyNetworkRequest jsonRequest;
     private FloatingActionButton appNewPost;
     //Variables
     private AdapterListFeed adapterListFeed;
@@ -93,6 +96,7 @@ public class OneFragment extends Fragment implements AdapterListFeed.OnClickItem
         // Inflate the layout for this fragment
         mView = inflater.inflate(R.layout.fragment_one, container, false);
         context = mView.getContext();
+        jsonRequest = new VolleyNetworkRequest(context);
         initViews();
         retrieveData();
         //initialize ads for the app  - ca-app-pub-1640690939729824/2174590993
@@ -255,9 +259,32 @@ public class OneFragment extends Fragment implements AdapterListFeed.OnClickItem
                     } else {
                         referenceLike.child(feed.getIdFeed()).child(auth.getUid()).setValue(true);
                         flagLike = false;
+                        getUserToken(feed.getIdUser(), auth.getDisplayName(), feed.getIdFeed());
                         Answers.getInstance().logCustom(new CustomEvent("Mynetwork FeedPage")
                                 .putCustomAttribute(feed.getIdFeed(), "unLike Clicked"));
                     }
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    public void getUserToken(final String auth, final String name, final String feedId){
+        final DatabaseReference referenceFcm = FirebaseDatabase.getInstance().getReference().child("fcmregistration");
+        referenceFcm.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                HashMap<String, Object> map = new HashMap<>();
+                map = (HashMap<String, Object>) dataSnapshot.getValue();
+                if(map.containsKey(auth)) {
+                    jsonRequest.JsonObjectRequest((String)map.get(auth), name, "like", feedId);
+                }
+                else{
+                    System.out.println("User Token Comment Negative");
                 }
             }
 

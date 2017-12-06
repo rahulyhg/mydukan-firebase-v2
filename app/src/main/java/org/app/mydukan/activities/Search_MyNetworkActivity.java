@@ -28,8 +28,10 @@ import com.google.firebase.database.ValueEventListener;
 import org.app.mydukan.R;
 import org.app.mydukan.adapters.SearchProfileList;
 import org.app.mydukan.data.ChattUser;
+import org.app.mydukan.services.VolleyNetworkRequest;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import uk.co.deanwild.materialshowcaseview.MaterialShowcaseSequence;
@@ -53,11 +55,13 @@ public class Search_MyNetworkActivity extends AppCompatActivity implements Searc
     private boolean flagFollow;
     private ArrayList<ChattUser> chattUsers;
 
+    VolleyNetworkRequest jsonRequest;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search_mynetwork);
-
+        jsonRequest = new VolleyNetworkRequest(this);
 
         mProgressBar = (ProgressBar) findViewById(R.id.pb);
         searchMobNum = (TextView) findViewById(R.id.searchMobNum);
@@ -322,6 +326,8 @@ public class Search_MyNetworkActivity extends AppCompatActivity implements Searc
                         referenceFollow.child(auth.getUid()).child(chattUser.getuId()).setValue(true);//adding userid to following list  .
                         referenceIFollow.child(chattUser.getuId()).child(auth.getUid()).setValue(true);//adding the user mCatId to distributor following list.
                       //  btn_Follow.setText("UnFollow");
+                        System.out.println("Following User: "+auth.getUid());
+                        getUserToken(chattUser.getuId(), auth.getDisplayName());
                         flagFollow = false;
                         showProgress(false);
                     }
@@ -334,5 +340,26 @@ public class Search_MyNetworkActivity extends AppCompatActivity implements Searc
             }
         });
 
+    }
+
+    public void getUserToken(final String auth, final String name){
+        final DatabaseReference referenceFcm = FirebaseDatabase.getInstance().getReference().child("fcmregistration");
+//        final String auth = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        referenceFcm.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                HashMap<String, Object> map = new HashMap<>();
+                map = (HashMap<String, Object>) dataSnapshot.getValue();
+                if(map.containsKey(auth)) {
+                    System.out.println("User Token Comment: " + map.get(auth));
+                    jsonRequest.JsonObjectRequest((String)map.get(auth), name, "follow", "");
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
     }
 }

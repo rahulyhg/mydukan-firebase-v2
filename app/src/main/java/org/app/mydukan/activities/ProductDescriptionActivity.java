@@ -79,6 +79,10 @@ public class ProductDescriptionActivity extends BaseActivity {
             }
         }
 
+        if(mProduct != null){
+            System.out.println("Product Id: "+mProduct.getProductId());
+        }
+
         setupActionBar();
 
         mNameTextView = (TextView) findViewById(R.id.productname);
@@ -126,7 +130,7 @@ public class ProductDescriptionActivity extends BaseActivity {
         addTocart_Btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(product!=null){
+                if(product!=null && mSupplier != null){
                     showTheCartAlert(product);
                 }
             }
@@ -162,7 +166,7 @@ public class ProductDescriptionActivity extends BaseActivity {
      */
     private void setupTabIcons() {
 
-        if(!mSupplier.getId().equals("RcJ1L4mWaZeIe2wRO3ejHOmcSxf2")){
+        if(mSupplier != null && !mSupplier.getId().equals("RcJ1L4mWaZeIe2wRO3ejHOmcSxf2")){
             // Supplier id for free Version "RcJ1L4mWaZeIe2wRO3ejHOmcSxf2" =====
             final TextView tabOne = (TextView) LayoutInflater.from(this).inflate(R.layout.custom_tab, null);
             tabOne.setText("Key Specifications");
@@ -209,7 +213,7 @@ public class ProductDescriptionActivity extends BaseActivity {
         ProductDescriptionActivity.ViewPagerAdapter adapter = new ProductDescriptionActivity.ViewPagerAdapter(getSupportFragmentManager());
         /*adapter.addFrag(new KeySpecification(), "ONE");
         adapter.addFrag(new DescriptionFragment(), "TWO");*/
-        if(!mSupplier.getId().equals("RcJ1L4mWaZeIe2wRO3ejHOmcSxf2")){
+        if(mSupplier != null && !mSupplier.getId().equals("RcJ1L4mWaZeIe2wRO3ejHOmcSxf2")){
             adapter.addFrag(new KeySpecification(), "ONE");
             adapter.addFrag(new DescriptionFragment(), "TWO");
 
@@ -310,7 +314,9 @@ public class ProductDescriptionActivity extends BaseActivity {
                 String quantity_str = edittext.getText().toString();
                 if(!mApp.getUtils().isStringEmpty(quantity_str)){
                     if(Integer.valueOf(quantity_str) > 0){
-                        addProductToCart(product,Long.valueOf(quantity_str));
+                        if(mSupplier != null){
+                            addProductToCart(product,Long.valueOf(quantity_str));
+                        }
                     } else {
                         showOkAlert(ProductDescriptionActivity.this,getString(R.string.info),
                                 getString(R.string.error_quantity),getString(R.string.ok));

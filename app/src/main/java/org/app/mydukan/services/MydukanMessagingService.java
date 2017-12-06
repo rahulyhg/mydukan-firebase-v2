@@ -26,11 +26,20 @@ import com.moengage.push.PushManager;
 import com.moengage.pushbase.push.MoEngageNotificationUtils;
 
 import org.app.mydukan.R;
+import org.app.mydukan.activities.CommentsActivity;
 import org.app.mydukan.activities.MainActivity;
+import org.app.mydukan.activities.ProductDescriptionActivity;
 import org.app.mydukan.application.MyDukan;
+import org.app.mydukan.data.Feed;
+import org.app.mydukan.data.Product;
 import org.app.mydukan.data.Supplier;
+import org.app.mydukan.data.SupplierBindData;
+import org.app.mydukan.server.ApiManager;
+import org.app.mydukan.server.ApiResult;
 import org.app.mydukan.utils.AppContants;
 import org.app.mydukan.utils.NotificationUtils;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.InputStream;
 import java.math.BigInteger;
@@ -50,6 +59,11 @@ public class MydukanMessagingService extends FirebaseMessagingService {
     private MyDukan mApp;
     private ArrayList<Supplier> mSupplerlist = new ArrayList<>();
     String supplierId = null;
+    String productId = null;
+    Product productData = null;
+    SupplierBindData supplierBindData = null;
+    String feedId = null;
+    Feed feedData = null;
     HashMap<String, Object> notificationInfo;
     RemoteViews contentView;
     @Override
@@ -78,6 +92,23 @@ public class MydukanMessagingService extends FirebaseMessagingService {
             remoteMessage.getTo();
 
 
+        }
+
+        Map<String, String> data = remoteMessage.getData();
+        JSONObject dataObject = new JSONObject(data);
+        if(dataObject.has("feedId")){
+            try {
+                feedId = dataObject.getString("feedId");
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        if(dataObject.has("productId")){
+            try{
+                productId = dataObject.getString("productId");
+            } catch (JSONException e){
+                e.printStackTrace();
+            }
         }
 
         if( null == remoteMessage)return;
@@ -151,7 +182,17 @@ public class MydukanMessagingService extends FirebaseMessagingService {
 //        ShortcutBadger.applyCount(this, 1); //for 1.1.4+
         //==================================================
 
-        if (bitmap != null) {
+        if(feedId == null && productId == null /*&& feedId.equalsIgnoreCase("") && productId.equalsIgnoreCase("")*/) {
+            sendNotification(notificationtitle, pushmessage, bitmap, TrueOrFlase);
+        }
+        else if(productId != null && !productId.equalsIgnoreCase("")){
+            retrieveProductData(notificationtitle, pushmessage, utils);
+        }
+        else {
+            retrieveFeedsData(notificationtitle, pushmessage, utils);
+        }
+
+        /*if (bitmap != null) {
           sendNotification(notificationtitle,notificationtitle, bitmap, TrueOrFlase);
           //  sentBigTextNotification(notificationtitle,notificationtitle,bitmap,TrueOrFlase);
         } else {
@@ -160,9 +201,40 @@ public class MydukanMessagingService extends FirebaseMessagingService {
                 showNotifications(notificationtitle,pushmessage, utils);
                // sentBigTextNotification(notificationtitle,pushmessage,bitmap, String.valueOf(utils));
             }
+        }*/
+    }
+
+    private void retrieveProductData(final String notificationtitle, final String message, final NotificationUtils utils) {
+        try {
+            ApiManager.getInstance(this.getApplicationContext()).getProductDetails(productId,new ApiResult(){
+                @Override
+                public void onSuccess(Object data) {
+                    productData = (Product) data;
+                    sendNotification(notificationtitle, message, bitmap, null);
+                }
+                @Override
+                public void onFailure(String response) {
+                }
+            });
+        } catch (Exception e) {
         }
     }
 
+    private void retrieveFeedsData(final String notificationtitle, final String message, final NotificationUtils utils) {
+        try {
+            ApiManager.getInstance(this.getApplicationContext()).retriveFeedData(feedId,new ApiResult(){
+                @Override
+                public void onSuccess(Object data) {
+                    feedData = (Feed) data;
+                    sendNotification(notificationtitle, message, bitmap, null);
+                }
+                @Override
+                public void onFailure(String response) {
+                }
+            });
+        } catch (Exception e) {
+        }
+    }
 
     private void showNotifications(final String notificationTitle, final String notificationMessage, NotificationUtils utils) {
 
@@ -242,10 +314,57 @@ public class MydukanMessagingService extends FirebaseMessagingService {
 
     private void sendNotification(String title, String message, Bitmap image, String TrueOrFalse) {
 
-        Intent intent = new Intent(this, MainActivity.class);
-        intent.putExtra(AppContants.NOTIFICATION,notificationInfo);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        intent.putExtra("AnotherActivity", TrueOrFalse);
+        Intent intent;
+        if(feedData == null && productData == null) {
+            intent = new Intent(this, MainActivity.class);
+            intent.putExtra(AppContants.NOTIFICATION,notificationInfo);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            intent.putExtra("AnotherActivity", TrueOrFalse);
+        }
+        else if(productData != null){
+            intent = new Intent(this, ProductDescriptionActivity.class);
+            intent.putExtra(AppContants.PRODUCT,productData);
+            intent.putExtra(AppContants.SUPPLIER, supplierBindData);
+        }
+        else{
+            Feed feed = new Feed();
+            System.out.println("Feed data: "+feedData.getName()+", "+feedData.getText()+", "+feedData.getTime()+", "+feedData.getPhotoAvatar()+", "+feedData.getIdFeed()+", "+feedData.getIdUser()+", "+feedData.getPhotoFeed()+", "+feedData.getLink()+", "+feedData.getLikeCount()+".");
+            if(feedData.getName() != null)
+                feed.setName(feedData.getName());
+            else
+                feed.setName("");
+            if(feedData.getTime() != null)
+                feed.setTime(feedData.getTime());
+            else
+                feed.setTime("");
+            if(feedData.getText() != null)
+                feed.setText(feedData.getText());
+            else
+                feed.setText("");
+            if(feedData.getPhotoAvatar() != null)
+                feed.setPhotoAvatar(feedData.getPhotoAvatar());
+            else
+                feed.setPhotoAvatar("");
+            if(feedData.getPhotoFeed() != null)
+                feed.setPhotoFeed(feedData.getPhotoFeed());
+            else
+                feed.setPhotoFeed("");
+            if(feedData.getLink() != null)
+                feed.setLink(feedData.getLink());
+            else
+                feed.setLink("");
+            if(feedData.getIdUser() != null)
+                feed.setIdUser(feedData.getIdUser());
+            else
+                feed.setIdUser("");
+            if(feedData.getIdFeed() != null)
+                feed.setIdFeed(feedData.getIdFeed());
+            else
+                feed.setIdFeed("");
+            intent = new Intent(this, CommentsActivity.class);
+            intent.putExtra(AppContants.FEED, feed);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        }
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, intent,
                 PendingIntent.FLAG_ONE_SHOT);
 
