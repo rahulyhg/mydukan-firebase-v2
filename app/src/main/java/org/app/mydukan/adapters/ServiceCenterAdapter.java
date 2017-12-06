@@ -27,8 +27,9 @@ public class ServiceCenterAdapter extends BaseAdapter {
 
     public ServiceCenterAdapter(Context context, ArrayList<ServiceCenterInfo> servicecenterlist) {
        this. mContext = context;
-        this.servicecenterlist = servicecenterlist;
         inflater = LayoutInflater.from(mContext);
+
+        this.servicecenterlist = servicecenterlist;
         this.arraylist = new ArrayList<ServiceCenterInfo>();
         this.arraylist.addAll(servicecenterlist);
     }
