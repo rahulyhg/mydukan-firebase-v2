@@ -343,7 +343,7 @@ public class ProductsAdapter extends
             super(itemView);
             mProductLayout = (CardView) itemView.findViewById(R.id.product_table);
             
-            mProductLayout.setBackgroundResource(R.drawable.bg_border_rectangle);
+            mProductLayout.setBackgroundResource(R.drawable.bg_product);
 
             mProductName = (TextView) itemView.findViewById(R.id.modelName);
             mStatusPrice = (TextView) itemView.findViewById(R.id.discountPrice);

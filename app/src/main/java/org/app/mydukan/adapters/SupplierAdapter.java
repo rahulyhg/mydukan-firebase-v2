@@ -86,7 +86,7 @@ public class SupplierAdapter extends
           //  holder.mSupplierName.setTypeface(Typeface.DEFAULT_BOLD);
         }
         else  if(mSupplierData.get(position).getId().equalsIgnoreCase("RcJ1L4mWaZeIe2wRO3ejHOmcSxf2")) {
-            holder.mSupplierimg.setImageResource(R.drawable.ic_mobiledp_free);
+            holder.mSupplierimg.setImageResource(R.drawable.ic_mobiledp);
             //  holder.mSupplierName.setTypeface(Typeface.DEFAULT_BOLD);
         }
         else if (currentSupplier.getUserinfo().getName().contains(AppContants.AIRTEL)) {
