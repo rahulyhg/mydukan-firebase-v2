@@ -44,7 +44,7 @@
             android:textAllCaps="false"
             android:textColor="@color/new_btn_blue"
             android:textSize="14sp"
-            android:visibility="visible"
+            android:visibility="gone"
             tools:ignore="EllipsizeMaxLines" />
 
     </RelativeLayout>

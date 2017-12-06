@@ -12,6 +12,9 @@ import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
@@ -147,8 +150,12 @@ public class DescriptionFragment extends Fragment {
 
                 // starting new Async Task
                 if (networkUtil.isConnectingToInternet(getActivity())) {
+                   if(file_url==null || file_url.equals("")){
+                       Toast.makeText(getActivity(), "File Not Available for Download.", Toast.LENGTH_LONG).show();
+                   }else{
+                       new DownloadFileFromURL().execute(file_url);
+                   }
 
-                    new DownloadFileFromURL().execute(file_url);
 
                 } else {
                     Toast.makeText(getActivity(), "Please check network connectivity.", Toast.LENGTH_LONG).show();
@@ -251,12 +258,12 @@ public class DescriptionFragment extends Fragment {
         String url = mProduct.getUrl();
         String desc = mProduct.getDescription();
         String download_File= mProduct.getDownload_file();
-        if (mProduct.getFiletype() != null && (download_File!=null || !download_File.isEmpty() )) {
+        if(download_File==null || download_File.equals("")) {
+            btn_DownloadProductPage.setVisibility(View.GONE);
+        } else {
             fileExtension = CreateFile_EXTENSION(mProduct.getFiletype());
             file_url = download_File;
             btn_DownloadProductPage.setVisibility(View.VISIBLE);
-        } else {
-            btn_DownloadProductPage.setVisibility(View.GONE);
         }
         if (!mApp.getUtils().isStringEmpty(url)) {
             mProductDesc = url;
@@ -489,13 +496,26 @@ public class DescriptionFragment extends Fragment {
                     manager.enqueue(request);
                 } catch (Exception e) {
                     e.printStackTrace();
-                    Toast.makeText(getActivity(), "Sorry, Unable to download the file in your device. ", Toast.LENGTH_LONG).show();
+                    Handler mHandler = new Handler(Looper.getMainLooper()) {
+                        @Override
+                        public void handleMessage(Message message) {
+                            // This is where you do your work in the UI thread.
+                            // Your worker tells you in the message what to do.
+                            Toast.makeText(getActivity(), "Sorry, Unable to download the file in your device. ", Toast.LENGTH_LONG).show();
+                        }
+                    };
                 }
 
                 return null;
             } else {
-
-                Toast.makeText(getActivity(), "SD-CARD is not present in your device. ", Toast.LENGTH_LONG).show();
+                Handler mHandler = new Handler(Looper.getMainLooper()) {
+                    @Override
+                    public void handleMessage(Message message) {
+                        // This is where you do your work in the UI thread.
+                        // Your worker tells you in the message what to do.
+                        Toast.makeText(getActivity(), "SD-CARD is not present in your device. ", Toast.LENGTH_LONG).show();
+                    }
+                };
             }
             return null;
         }
