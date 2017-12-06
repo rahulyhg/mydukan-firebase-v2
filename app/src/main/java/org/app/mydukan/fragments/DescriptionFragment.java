@@ -1,7 +1,6 @@
 package org.app.mydukan.fragments;
 
 
-
 import android.app.DownloadManager;
 import android.content.Context;
 import android.content.pm.PackageManager;
@@ -37,6 +36,7 @@ import org.app.mydukan.server.ApiManager;
 import org.app.mydukan.server.ApiResult;
 import org.app.mydukan.utils.AppContants;
 import org.app.mydukan.utils.NetworkUtil;
+import org.app.mydukan.utils.Utils;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
@@ -63,6 +63,7 @@ import android.widget.Toast;
 import static android.content.Context.DOWNLOAD_SERVICE;
 import static org.app.mydukan.activities.ProductDescriptionActivity.fullpage;
 import static org.app.mydukan.activities.ProductDescriptionActivity.mApp;
+import static org.app.mydukan.utils.Utils.getCurrentdate;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -75,7 +76,9 @@ public class DescriptionFragment extends Fragment {
 
 
     private String mProductDesc;
+    private static String fileExtension = "";
     private SupplierBindData mSupplier;
+
 
     private TextView mNameTextView;
     private TextView mPriceTextView;
@@ -87,7 +90,7 @@ public class DescriptionFragment extends Fragment {
     private WebView mDescWebView;
     private ProgressDialog mProgress;
     Product product;
-    boolean isCartShow=false;
+    boolean isCartShow = false;
     private Button btn_DownloadProductPage;
     // Progress Dialog
     private ProgressDialog pDialog;
@@ -95,11 +98,15 @@ public class DescriptionFragment extends Fragment {
     // Progress dialog type (0 - for Horizontal progress bar)
     public static final int progress_bar_type = 0;
     // File url to download
-   // private static String file_url = "https://api.androidhive.info/progressdialog/hive.jpg";
+    // private static String file_url = "https://api.androidhive.info/progressdialog/hive.jpg";
+
+    //DoWNLOAD REFERENCE PRODUCT INFO : https://mydukan-1024.firebaseio.com/products/-L-eXvrlv67K0JQjnMkW
+
 
     ProductDescriptionActivity productDescriptionActivity;
-    private static String file_url = "https://s3-ap-southeast-1.amazonaws.com/mydukan/A+NOVEMBER+UPDATES/1509290822price_list+(1).xls";
+    private static String file_url = "";
     private static final int STORAGE_PERMISSION_CODE = 555;
+
 
     public DescriptionFragment() {
         // Required empty public constructor
@@ -110,14 +117,14 @@ public class DescriptionFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
     }
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         mView = inflater.inflate(R.layout.fragment_description, container, false);
         context = mView.getContext();
-        networkUtil =new NetworkUtil();
+        networkUtil = new NetworkUtil();
+
         requestStoragePermission();
         Bundle extras = getActivity().getIntent().getExtras();
         if (extras != null) {
@@ -139,9 +146,11 @@ public class DescriptionFragment extends Fragment {
             public void onClick(View v) {
 
                 // starting new Async Task
-                if(networkUtil.isConnectingToInternet(getActivity())){
+                if (networkUtil.isConnectingToInternet(getActivity())) {
+
                     new DownloadFileFromURL().execute(file_url);
-                }else{
+
+                } else {
                     Toast.makeText(getActivity(), "Please check network connectivity.", Toast.LENGTH_LONG).show();
                 }
 
@@ -187,7 +196,6 @@ public class DescriptionFragment extends Fragment {
         }
     }
 
-
     public void showProgress() {
 
         try {
@@ -203,7 +211,7 @@ public class DescriptionFragment extends Fragment {
 
     public void dismissProgress() {
         try {
-            if ( mProgress != null && mProgress.isShowing()) {
+            if (mProgress != null && mProgress.isShowing()) {
                 mProgress.dismiss();
             }
             mProgress = null;
@@ -212,17 +220,19 @@ public class DescriptionFragment extends Fragment {
         }
     }
 
-    private void fetchProductAndShow(){
+    private void fetchProductAndShow() {
         showProgress();
         ApiManager.getInstance(context).getProductDetails(mProduct.getProductId(),
                 new ApiResult() {
                     @Override
                     public void onSuccess(Object data) {
-                        product = (Product)data;
-                        if(product != null) {
+                        product = (Product) data;
+                        if (product != null) {
                             mProduct.setDescription(product.getDescription());
                             mProduct.setUrl(product.getUrl());
                             mProduct.setAttributes(product.getAttributes());
+                            mProduct.setFiletype(product.getFiletype());
+                            mProduct.setDownload_file(product.getDownload_file());
                             fullpage.setVisibility(View.VISIBLE);
                         }
                         dismissProgress();
@@ -237,19 +247,27 @@ public class DescriptionFragment extends Fragment {
                 });
     }
 
-    private void setupDescription(){
+    private void setupDescription() {
         String url = mProduct.getUrl();
         String desc = mProduct.getDescription();
-        if(!mApp.getUtils().isStringEmpty(url)){
+        String download_File= mProduct.getDownload_file();
+        if (mProduct.getFiletype() != null && (download_File!=null || !download_File.isEmpty() )) {
+            fileExtension = CreateFile_EXTENSION(mProduct.getFiletype());
+            file_url = download_File;
+            btn_DownloadProductPage.setVisibility(View.VISIBLE);
+        } else {
+            btn_DownloadProductPage.setVisibility(View.GONE);
+        }
+        if (!mApp.getUtils().isStringEmpty(url)) {
             mProductDesc = url;
-            file_url=url;
-        } else if(mApp.getUtils().isStringEmpty(desc)){
-            if(getActivity()!=null){
-                mProductDesc =getActivity().getResources().getString( R.string.Specifications_Not_Available1 );
+
+        } else if (mApp.getUtils().isStringEmpty(desc)) {
+            if (getActivity() != null) {
+                mProductDesc = getActivity().getResources().getString(R.string.Specifications_Not_Available1);
                 btn_DownloadProductPage.setVisibility(View.GONE);
                 fullpage.setVisibility(View.GONE);
-            }else{
-                mProductDesc="Not_Available";
+            } else {
+                mProductDesc = "Not_Available";
                 btn_DownloadProductPage.setVisibility(View.GONE);
                 fullpage.setVisibility(View.GONE);
 
@@ -265,7 +283,7 @@ public class DescriptionFragment extends Fragment {
         mDescWebView.setScrollbarFadingEnabled(true);
         mDescWebView.getSettings().setLoadsImagesAutomatically(true);
 
-        if(!mApp.getUtils().isStringEmpty(mProductDesc)) {
+        if (!mApp.getUtils().isStringEmpty(mProductDesc)) {
             if (mProductDesc.contains("https://") || mProductDesc.contains("http://")) {
                 mDescWebView.loadUrl(mProductDesc);
             } else {
@@ -273,9 +291,108 @@ public class DescriptionFragment extends Fragment {
             }
         }
 
-        if(!mApp.getUtils().isStringEmpty(desc)){
+        if (!mApp.getUtils().isStringEmpty(desc)) {
             mDescTextView.setText(desc);
         }
+    }
+
+    private String CreateFile_EXTENSION(String filetype) {
+        String myExtension = "";
+        if (filetype != null && !filetype.isEmpty()) {
+
+            switch (filetype) {
+                case ".jpg": {
+                    myExtension = ".jpg";
+                }
+                break;
+                case ".jpeg": {
+                    myExtension = ".jpeg";
+                }
+
+                break;
+                case ".csv": {
+                    myExtension = ".csv";
+                }
+                break;
+                case ".mp4": {
+                    myExtension = ".mp4";
+                }
+                break;
+
+                case ".pps": {
+                    myExtension = ".pps";
+                }
+                break;
+                case "csv": {
+                    myExtension = ".csv";
+                }
+                break;
+                case ".png": {
+                    myExtension = ".png";
+                }
+
+                break;
+                case ".pdf": {
+                    myExtension = ".pdf";
+                }
+                break;
+                case ".xlr": {
+                    myExtension = ".xlr";
+                }
+                break;
+                case ".html": {
+                    myExtension = ".html";
+                }
+                break;
+                case ".htm": {
+                    myExtension = ".htm";
+                }
+                break;
+                case ".xhtml": {
+                    myExtension = ".xhtml";
+                }
+                break;
+                case ".flv": {
+                    myExtension = ".flv";
+                }
+                break;
+                case ".3gp": {
+                    myExtension = ".3gp";
+                }
+                break;
+                case ".mpg": {
+                    myExtension = ".mpg";
+                }
+                break;
+                case ".mpeg": {
+                    myExtension = ".mpeg";
+                }
+                break;
+                case ".xls": {
+                    myExtension = ".xls";
+                }
+                break;
+                case ".xlsx": {
+                    myExtension = ".xlsx";
+                }
+                break;
+                case ".ods": {
+                    myExtension = ".ods";
+                }
+                break;
+                case ".pptx": {
+                    myExtension = ".pptx";
+                }
+                break;
+
+                default: {
+                    myExtension = "";
+                }
+                break;
+            }
+        }
+
+        return myExtension;
     }
 
     private class MyWebViewClient extends WebViewClient {
@@ -289,7 +406,7 @@ public class DescriptionFragment extends Fragment {
         public void onPageStarted(WebView view, String url, Bitmap favicon) {
             super.onPageStarted(view, url, favicon);
             mProgress = new ProgressDialog(context);
-          //  mProgress.setTitle(getString(R.string.Please_wait));
+            //  mProgress.setTitle(getString(R.string.Please_wait));
             mProgress.setMessage(getString(R.string.Page_is_loading));
             mProgress.setCancelable(true);
             mProgress.show();
@@ -330,13 +447,13 @@ public class DescriptionFragment extends Fragment {
 
     /**
      * Background Async Task to download file
-     * */
+     */
     class DownloadFileFromURL extends AsyncTask<String, String, String> {
 
         /**
          * Before starting background thread
          * Show Progress Bar Dialog
-         * */
+         */
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
@@ -355,28 +472,28 @@ public class DescriptionFragment extends Fragment {
 
         /**
          * Downloading file in background thread
-         * */
+         */
         @Override
         protected String doInBackground(String... f_url) {
             if (new CheckForSDCard().isSDCardPresent()) {
-                try{
+                try {
                     Uri uri = Uri.parse(f_url[0]);
                     Log.e("Check", uri.toString());
                     DownloadManager.Request request = new DownloadManager.Request(uri);
                     Random rand = new Random();
                     int randomNum = rand.nextInt(50) + 1;
-                    request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, "MyDukan_"+mProduct.getName()+"_"+randomNum+".csv");
+                    request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, "MyDukan_" + mProduct.getName() + "_" +  Utils.getCurrentdate() +fileExtension);
                     request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED); // to notify when download is complete
                     request.allowScanningByMediaScanner();// if you want to be available from media players
                     DownloadManager manager = (DownloadManager) context.getSystemService(DOWNLOAD_SERVICE);
                     manager.enqueue(request);
-                }catch (Exception e){
+                } catch (Exception e) {
                     e.printStackTrace();
                     Toast.makeText(getActivity(), "Sorry, Unable to download the file in your device. ", Toast.LENGTH_LONG).show();
                 }
 
                 return null;
-            }else{
+            } else {
 
                 Toast.makeText(getActivity(), "SD-CARD is not present in your device. ", Toast.LENGTH_LONG).show();
             }
@@ -385,7 +502,7 @@ public class DescriptionFragment extends Fragment {
 
         /**
          * Updating progress bar
-         * */
+         */
         protected void onProgressUpdate(String... progress) {
             // setting progress percentage
             pDialog.setProgress(Integer.parseInt(progress[0]));
@@ -394,7 +511,7 @@ public class DescriptionFragment extends Fragment {
         /**
          * After completing background task
          * Dismiss the progress dialog
-         * **/
+         **/
         @Override
         protected void onPostExecute(String file_url) {
             // dismiss the dialog after the file was downloaded
@@ -402,7 +519,7 @@ public class DescriptionFragment extends Fragment {
 
             // Displaying downloaded image into image view
             // Reading image path from sdcard
-         //   String imagePath = Environment.getExternalStorageDirectory().toString() + "/downloadedfile.jpg";
+            //   String imagePath = Environment.getExternalStorageDirectory().toString() + "/downloadedfile.jpg";
 
         }
 

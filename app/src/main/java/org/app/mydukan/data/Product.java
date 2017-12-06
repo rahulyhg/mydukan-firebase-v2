@@ -19,13 +19,43 @@ public class Product extends Object implements Serializable {
     private String categoryId = "";
     private String subcategory = "";
     private Long stockremaining = 0l;
-    private HashMap<String,String> attributes = new HashMap<>();
+    private HashMap<String, String> attributes = new HashMap<>();
     private ArrayList<String> subcategoryIds = new ArrayList<>();
     private Boolean isnew = false;
-
     private String dp = "";
     private String mop = "";
     private String mrp = "";
+    private String filetype = "";
+
+    private String download_file="";
+    private String namesearchkey="";
+
+    public String getDownload_file() {
+        return download_file;
+    }
+
+    public void setDownload_file(String download_file) {
+        this.download_file = download_file;
+    }
+
+
+
+
+    public String getFiletype() {
+        return filetype;
+    }
+
+    public void setFiletype(String filetype) {
+        this.filetype = filetype;
+    }
+
+    public String getNamesearchkey() {
+        return namesearchkey;
+    }
+
+    public void setNamesearchkey(String namesearchkey) {
+        this.namesearchkey = namesearchkey;
+    }
 
 
     public HashMap<String, HashMap<String, String>> getmPlatforms() {
@@ -51,11 +81,11 @@ public class Product extends Object implements Serializable {
         return mop;
     }
 
-    public int getMopInt(){
-        if(this.mop.equals("") || this.mop.equals("_")){
+    public int getMopInt() {
+        if (this.mop.equals("") || this.mop.equals("_")) {
             return 0;
         }
-        return (int)Double.parseDouble(this.mop);
+        return (int) Double.parseDouble(this.mop);
     }
 
     public void setMop(String mop) {
@@ -65,12 +95,14 @@ public class Product extends Object implements Serializable {
     public String getDp() {
         return dp;
     }
-    public int getDpInt(){
-        if(this.dp.equals("") || this.dp.equals("_")){
+
+    public int getDpInt() {
+        if (this.dp.equals("") || this.dp.equals("_")) {
             return 0;
         }
-        return (int)Double.parseDouble(this.dp);
+        return (int) Double.parseDouble(this.dp);
     }
+
     public void setDp(String dp) {
         this.dp = dp;
     }
@@ -117,7 +149,7 @@ public class Product extends Object implements Serializable {
     }
 
     public void setPrice(String price) {
-        this.price =price;
+        this.price = price;
     }
     // todo setMOP, MRP
 
@@ -157,7 +189,7 @@ public class Product extends Object implements Serializable {
         return offer;
     }
 
-    public HashMap<String,String> getAttributes() {
+    public HashMap<String, String> getAttributes() {
         return attributes;
     }
 
