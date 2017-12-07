@@ -52,8 +52,6 @@ import org.app.mydukan.data.SupplierGroups;
 import org.app.mydukan.data.User;
 import org.app.mydukan.data.Videos;
 import org.app.mydukan.fragments.OneFragment;
-//import org.app.mydukan.data.Videos;
-import org.app.mydukan.data.Videos;
 import org.app.mydukan.utils.AppContants;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -1390,7 +1388,6 @@ public class ApiManager {
 
             /*Logic for product keys group*/
 
-            groupRef.keepSynced(true);
             groupRef.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
@@ -1424,21 +1421,20 @@ public class ApiManager {
                                 if (productSnapshot.hasChild("platforms")) {
                                     try {
                                         HashMap<String,String> cPlatforms = new HashMap<String,String>();
-                                          HashMap<String, HashMap<String, String>> mPlatforms = new HashMap<>();
+                                        HashMap<String, HashMap<String, String>> mPlatforms = new HashMap<>();
 
                                         for (DataSnapshot recipe : productSnapshot.child("platforms").getChildren()){
 
                                             if(recipe!=null){
                                                 cPlatforms = new HashMap<String,String>();
-                                              for (DataSnapshot platform : recipe.getChildren()) {
-                                                  cPlatforms.put(platform.getKey(),platform.getValue(String.class));
-                                              }
-                                            mPlatforms.put(recipe.getKey(),cPlatforms);
+                                                for (DataSnapshot platform : recipe.getChildren()) {
+                                                    cPlatforms.put(platform.getKey(),platform.getValue(String.class));
+                                                }
+                                                mPlatforms.put(recipe.getKey(),cPlatforms);
                                             }
-                                           // mPlatforms.put(recipe.getKey(),recipe.getValue(PlatForm_Info.class));
+                                            // mPlatforms.put(recipe.getKey(),recipe.getValue(PlatForm_Info.class));
                                         }
                                         product.setmPlatforms(mPlatforms);
-
                                     } catch (Exception e) {
 
                                     }
@@ -1835,6 +1831,8 @@ public class ApiManager {
             }
         });
     }
+
+
     public void getVideosList(final ApiResult result) {
         final ArrayList<Videos> videosList = new ArrayList<>();
 
@@ -1861,6 +1859,7 @@ public class ApiManager {
             }
         });
     }
+
 
 
     public void getOrderList(final String supplierId, String uid, final ApiResult result) {
@@ -2955,7 +2954,7 @@ public class ApiManager {
                 });
             }
         }
-        int i = 20;
+
     }
 
     //Retrive the FeedData.

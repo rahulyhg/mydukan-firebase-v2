@@ -37,7 +37,7 @@
 
         <item
             android:id="@+id/nav_myBroadCast"
-            android:icon="@drawable/ic_mydukan_broadcast"
+            android:icon="@drawable/ic_action_broadcast"
             android:title="MyDukan BroadCast"
             tools:ignore="HardcodedText"/>
 

@@ -23,7 +23,7 @@ import java.util.Map;
  * In a real world scenario you would either hard code the video ID's in the strings file or
  * retrieve them from a web service.
  */
-public class YouTubeContent extends Activity{
+public class YouTubeContent extends Activity {
 
     /**
      * An array of YouTube videos
@@ -36,7 +36,7 @@ public class YouTubeContent extends Activity{
     public static Map<String, YouTubeVideo> ITEM_MAP = new HashMap<>();
 
 
-  {
+    {
 /*      addItem(new YouTubeVideo("CT3aWbdadOk", "Open in the YouTube App"));
         addItem(new YouTubeVideo("CT3aWbdadOk", "Open in the YouTube App in fullscreen"));
         addItem(new YouTubeVideo("ZPflrotUwgI", "Open in the Standalone player in fullscreen"));
@@ -47,18 +47,18 @@ public class YouTubeContent extends Activity{
         addItem(new YouTubeVideo("CT3aWbdadOk", "Custom \"Light Box\" player with fullscreen handling"));
         addItem(new YouTubeVideo("CT3aWbdadOk", "Custom player controls"));*/
 
-    fetchVideos();
+        fetchVideos();
     }
 
 
     private void fetchVideos() {
-        ApiManager.getInstance(this).getVideosList( new ApiResult() {
+        ApiManager.getInstance(this).getVideosList(new ApiResult() {
             @Override
             public void onSuccess(Object data) {
-                if(data!=null){
+                if (data != null) {
                     ArrayList<Videos> videosList = (ArrayList<Videos>) data;
 
-                    for (Videos vSnapshot : videosList ) {
+                    for (Videos vSnapshot : videosList) {
                         addItem(new YouTubeVideo(vSnapshot.getVideoID(), vSnapshot.getVideoINFO()));
                     }
                 }

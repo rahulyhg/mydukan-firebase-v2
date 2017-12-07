@@ -367,8 +367,7 @@
             android:screenOrientation="portrait" />
         <activity
             android:name=".activities.Search_MyNetworkActivity"
-            android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.ActionBar"/>
+            android:screenOrientation="portrait" />
         <activity
             android:name=".activities.MyProfileActivity"
             android:screenOrientation="portrait" />
@@ -398,6 +397,10 @@
             android:name=".activities.MerchantActivity"
             android:screenOrientation="portrait" />
         <activity
+            android:name=".activities.BroadcastActivity"
+            android:screenOrientation="portrait" />
+
+        <activity
             android:name=".activities.NewSignUpActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
@@ -408,11 +411,22 @@
             </intent-filter>
         </receiver>
 
+
+
+        <activity
+            android:name=".fragments.YouTubeFragmentActivity"
+            android:screenOrientation="portrait" />
+
         <activity
             android:name=".activities.UsersLocationAddress"
             android:screenOrientation="portrait" />
-        <activity android:name=".activities.UserProfile" />
-        <activity android:name=".activities.CompanyDetails" />
+
+        <activity android:name=".activities.UserProfile"
+            android:screenOrientation="portrait" />
+
+        <activity android:name=".activities.CompanyDetails"
+            android:screenOrientation="portrait" />
+
         <activity
             android:name=".activities.IntentForwardingActivity"
             android:launchMode="singleTask">
@@ -430,7 +444,7 @@
 
         <service
             android:name=".services.SyncContacts"
-            android:exported="false"></service>
+            android:exported="false"/>
     </application>
 
 </manifest>
