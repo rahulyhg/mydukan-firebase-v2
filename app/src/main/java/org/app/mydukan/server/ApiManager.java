@@ -52,6 +52,7 @@ import org.app.mydukan.data.SupplierBindData;
 import org.app.mydukan.data.SupplierGroups;
 import org.app.mydukan.data.User;
 //import org.app.mydukan.data.Videos;
+import org.app.mydukan.data.Videos;
 import org.app.mydukan.utils.AppContants;
 
 import java.io.IOException;
@@ -1831,7 +1832,6 @@ public class ApiManager {
             }
         });
     }
-/*
     public void getVideosList(final ApiResult result) {
         final ArrayList<Videos> videosList = new ArrayList<>();
 
@@ -1858,7 +1858,6 @@ public class ApiManager {
             }
         });
     }
-*/
 
 
     public void getOrderList(final String supplierId, String uid, final ApiResult result) {
