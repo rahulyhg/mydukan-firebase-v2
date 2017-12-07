@@ -29,8 +29,11 @@ public class MydukanInstanceIDService extends FirebaseInstanceIdService {
 
         String refreshedToken = FirebaseInstanceId.getInstance().getToken();
 
+
+        if (refreshedToken!=null){
         // Send the Instance ID token to your app server.
         sendRegistrationToServer(refreshedToken);
+        }
     }
 
     /**

@@ -133,7 +133,6 @@
     <string name="gadget360">gadget360</string>
 
 
-
     <!-- Strings related to screen titles -->
     <string name="signin_title">Sign In</string>
     <string name="help_title">Help</string>
@@ -287,5 +286,25 @@
     <string name="already_user">Already have Account? Login here.</string>
     <string name="registered_emailid">Please enter your Registered Email Id below:</string>
     <string name="back">BACK</string>
+
+
+
+
+
+    <string name="video_list_title">Title</string>
+    <string name="error_init_failure">Initialization failure: Unable to play video</string>
+    <string name="youtube_activity_fragment_placeholder">The YouTube Fragment can be placed anywhere
+        in a layout. You could use this space to describe the video, load some comments or anything else you can think of.
+    The benefit of using a Fragment is that your hosting Activity can be of any type.</string>
+    <string name="youtube_activity_placeholder">If you don\'t want to use a Fragment,
+        you can simply add a YouTubePlayerView to your layout file and handle it the same way.</string>
+    <string name="player_style">Player Style</string>
+    <string name="def">Default</string>
+    <string name="minimal">Minimal</string>
+    <string name="chromeless">Chromeless</string>
+    <string name="play">PLAY</string>
+    <string name="pause">PAUSE</string>
+    <string name="DEVELOPER_KEY">AIzaSyCZjcIxNyQyONEeanxuvbay-yGkyxgsiko</string>
+
 
 </resources>
