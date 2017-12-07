@@ -77,12 +77,9 @@ public class DescriptionFragment extends Fragment {
     Context context;
     private Product mProduct;
 
-
     private String mProductDesc;
     private static String fileExtension = "";
     private SupplierBindData mSupplier;
-
-
     private TextView mNameTextView;
     private TextView mPriceTextView;
     private TextView mOthersHeaderView;
@@ -155,7 +152,6 @@ public class DescriptionFragment extends Fragment {
                    }else{
                        new DownloadFileFromURL().execute(file_url);
                    }
-
 
                 } else {
                     Toast.makeText(getActivity(), "Please check network connectivity.", Toast.LENGTH_LONG).show();
@@ -308,6 +304,37 @@ public class DescriptionFragment extends Fragment {
         if (filetype != null && !filetype.isEmpty()) {
 
             switch (filetype) {
+
+
+                 /*      .csv
+                        .xlx
+                        .XLS
+                        .jpeg
+                        .jpg
+                        .png
+                        .TXT
+                        .doc
+                        .MP4
+                        .3gp
+                        .AVI
+                        .mkv
+                        .ppt
+                        .PDF
+                        */
+                case ".avi": {
+                    myExtension = ".avi";
+                }
+                break;
+                case ".mkv": {
+                    myExtension = ".mkv";
+                }
+                break;
+
+                case ".doc": {
+                    myExtension = ".doc";
+                }
+                break;
+
                 case ".jpg": {
                     myExtension = ".jpg";
                 }
@@ -450,7 +477,8 @@ public class DescriptionFragment extends Fragment {
             default:
                 return null;
         }
-    }*/
+    }
+    */
 
     /**
      * Background Async Task to download file
@@ -536,7 +564,6 @@ public class DescriptionFragment extends Fragment {
         protected void onPostExecute(String file_url) {
             // dismiss the dialog after the file was downloaded
             pDialog.dismiss();
-
             // Displaying downloaded image into image view
             // Reading image path from sdcard
             //   String imagePath = Environment.getExternalStorageDirectory().toString() + "/downloadedfile.jpg";
@@ -549,7 +576,7 @@ public class DescriptionFragment extends Fragment {
         //Check If SD Card is present or not method
         public boolean isSDCardPresent() {
             if (Environment.getExternalStorageState().equals(
-                    Environment.MEDIA_MOUNTED)) {
+                Environment.MEDIA_MOUNTED)) {
                 return true;
             }
             return false;
