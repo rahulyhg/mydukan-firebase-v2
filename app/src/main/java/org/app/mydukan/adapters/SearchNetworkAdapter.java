@@ -20,14 +20,18 @@ import com.bumptech.glide.Glide;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import org.app.mydukan.R;
 import org.app.mydukan.activities.Search_MyNetworkActivity.Contact;
 import org.app.mydukan.data.ContactUsers;
+import org.app.mydukan.services.VolleyNetworkRequest;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import static org.app.mydukan.activities.Search_MyNetworkActivity.FOLLOWERS_ROOT;
@@ -49,6 +53,7 @@ public class SearchNetworkAdapter extends RecyclerView.Adapter {
     @Nullable
     private DataSnapshot followings;
     private List<ContactUsers> networkUsers;
+    private VolleyNetworkRequest jsonRequest;
     OnItemClickListener onItemClickListener = new OnItemClickListener() {
         @Override
         public void onItemClick(int pos, View v) {
@@ -101,11 +106,12 @@ public class SearchNetworkAdapter extends RecyclerView.Adapter {
     private List<Contact> nonNetworkUsers;
     private boolean containsNetwork, containsNonNetwork;
 
-    public SearchNetworkAdapter(Context context) {
+    public SearchNetworkAdapter(Context context, VolleyNetworkRequest jsonRequest) {
         this.context = context;
         inflater = LayoutInflater.from(context);
         networkUsers = new ArrayList<>();
         nonNetworkUsers = new ArrayList<>();
+        this.jsonRequest = jsonRequest;
     }
 
     public void setNonNetworkUsers(List<Contact> nonNetworkUsers) {
@@ -215,10 +221,32 @@ public class SearchNetworkAdapter extends RecyclerView.Adapter {
         if (followings == null || !followings.hasChild(userToFollow.getuId())) {
             referenceFollowing.child(userToFollow.getuId()).setValue(true);//adding userid to following list  .
             referenceFollowers.child(user.getUid()).setValue(true);//adding the user id to distributor following list.
+            getUserToken(user.getUid(), user.getDisplayName());
         } else {
             referenceFollowing.child(userToFollow.getuId()).removeValue();//removing userid from following list  .
             referenceFollowers.child(user.getUid()).removeValue();//removing the user id from distributor following list.
         }
+    }
+
+    public void getUserToken(final String auth, final String name){
+        final DatabaseReference referenceFcm = FirebaseDatabase.getInstance().getReference().child("fcmregistration");
+//        final String auth = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        referenceFcm.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                HashMap<String, Object> map = new HashMap<>();
+                map = (HashMap<String, Object>) dataSnapshot.getValue();
+                if(map.containsKey(auth)) {
+                    System.out.println("User Token Comment: " + map.get(auth));
+                    jsonRequest.JsonObjectRequest((String)map.get(auth), name, "follow", "");
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
     }
 
     public boolean isEmpty() {

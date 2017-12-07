@@ -127,7 +127,7 @@ public class ProductDescriptionActivity extends BaseActivity {
         addTocart_Btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(product!=null){
+                if(mSupplier != null && product!=null){
                     showTheCartAlert(product);
                 }
             }
@@ -163,7 +163,7 @@ public class ProductDescriptionActivity extends BaseActivity {
      */
     private void setupTabIcons() {
 
-        if(!mSupplier.getId().equals("RcJ1L4mWaZeIe2wRO3ejHOmcSxf2")){
+        if(mSupplier != null && !mSupplier.getId().equals("RcJ1L4mWaZeIe2wRO3ejHOmcSxf2")){
 
             if (mProduct.getmPlatforms()!=null && mProduct.getmPlatforms().size()>0){
          /*   if(mProduct.getmPlatforms().size()!=0)
@@ -238,7 +238,7 @@ public class ProductDescriptionActivity extends BaseActivity {
         ProductDescriptionActivity.ViewPagerAdapter adapter = new ProductDescriptionActivity.ViewPagerAdapter(getSupportFragmentManager());
         /*adapter.addFrag(new KeySpecification(), "ONE");
         adapter.addFrag(new DescriptionFragment(), "TWO");*/
-        if(!mSupplier.getId().equals("RcJ1L4mWaZeIe2wRO3ejHOmcSxf2")){
+        if(mSupplier != null && !mSupplier.getId().equals("RcJ1L4mWaZeIe2wRO3ejHOmcSxf2")){
 
             if (mProduct.getmPlatforms()!=null && mProduct.getmPlatforms().size()>0){
            /* if(mProduct.getmPlatforms().size()!=0)
@@ -350,7 +350,9 @@ public class ProductDescriptionActivity extends BaseActivity {
                 String quantity_str = edittext.getText().toString();
                 if(!mApp.getUtils().isStringEmpty(quantity_str)){
                     if(Integer.valueOf(quantity_str) > 0){
-                        addProductToCart(product,Long.valueOf(quantity_str));
+                        if(mSupplier != null) {
+                            addProductToCart(product,Long.valueOf(quantity_str));
+                        }
                     } else {
                         showOkAlert(ProductDescriptionActivity.this,getString(R.string.info),
                                 getString(R.string.error_quantity),getString(R.string.ok));

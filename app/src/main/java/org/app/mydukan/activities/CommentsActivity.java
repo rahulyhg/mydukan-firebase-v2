@@ -40,6 +40,7 @@ import org.app.mydukan.adapters.AdapterListFeed;
 import org.app.mydukan.adapters.CircleTransform;
 import org.app.mydukan.data.Comment;
 import org.app.mydukan.data.Feed;
+import org.app.mydukan.services.VolleyNetworkRequest;
 import org.app.mydukan.utils.AppContants;
 import org.app.mydukan.utils.FeedUtils;
 import org.app.mydukan.utils.Utils;
@@ -47,6 +48,7 @@ import org.app.mydukan.viewholder.FeedViewHolder;
 
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -72,11 +74,13 @@ public class CommentsActivity extends AppCompatActivity {
     Feed feed;
     ImageView ivAvatar;
     FirebaseUser user;
+    VolleyNetworkRequest jsonRequest;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_comments);
+        jsonRequest = new VolleyNetworkRequest(this);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -152,7 +156,7 @@ public class CommentsActivity extends AppCompatActivity {
                         imm.showSoftInput(commentET, InputMethodManager.SHOW_IMPLICIT);
                         break;
                     case R.id.like:
-                        FeedUtils.addLike(feed);
+                        FeedUtils.addLike(feed, jsonRequest);
                         break;
                     case R.id.delete:
                         final ProgressDialog progressDialog = new ProgressDialog(CommentsActivity.this);
@@ -186,15 +190,22 @@ public class CommentsActivity extends AppCompatActivity {
         });
 
         holder.currFeed = feed;
-        holder.setTvName(feed.getName());
-        holder.setTvContent(feed.getText());
-        holder.setTvTime(feed.getTime());
-        holder.setIvAvatar(feed.getPhotoAvatar());
-        holder.setIvContent(feed.getPhotoFeed());
+        System.out.println("Feed data: "+feed.getName()+", "+feed.getText()+", "+feed.getTime()+", "+feed.getPhotoAvatar()+", "+feed.getIdFeed()+", "+feed.getIdUser()+", "+feed.getPhotoFeed()+", "+feed.getLink()+", "+feed.getLikeCount()+".");
+        if(feed.getName() != null)
+            holder.setTvName(feed.getName());
+        if(feed.getText() != null)
+            holder.setTvContent(feed.getText());
+        if(feed.getTime() != null)
+            holder.setTvTime(feed.getTime());
+        if(feed.getPhotoAvatar() != null)
+            holder.setIvAvatar(feed.getPhotoAvatar());
+        if(feed.getPhotoFeed() != null)
+            holder.setIvContent(feed.getPhotoFeed());
         if (feed.getLink() != null) {
             holder.setTvLink(feed.getLink());
         }
-        holder.getLikes(feed);
+        if(feed != null)
+            holder.getLikes(feed);
 
         holder.commentTV.setText("Comment");
         holder.setDeletable(feed.getIdUser().equalsIgnoreCase(user.getUid()));
@@ -293,7 +304,7 @@ public class CommentsActivity extends AppCompatActivity {
         comment.setText(commentText);
         comment.setTime(MyProfileActivity.getCurrentTimeStamp());
         comment.setId(key);
-
+        getUserToken(feed.getIdUser(), comment.getUserInfo().getName(), "comment");
         databaseReference.child(feed.getIdFeed()).child(key).setValue(comment);
 
         commentET.setText("");
@@ -323,6 +334,27 @@ public class CommentsActivity extends AppCompatActivity {
         });
 
 
+    }
+
+    public void getUserToken(final String auth, final String name, final String type){
+        final DatabaseReference referenceFcm = FirebaseDatabase.getInstance().getReference().child("fcmregistration");
+//        final String auth = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        referenceFcm.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                HashMap<String, Object> map = new HashMap<>();
+                map = (HashMap<String, Object>) dataSnapshot.getValue();
+                if(map.containsKey(auth)) {
+                    System.out.println("User Token Comment: " + map.get(auth));
+                    jsonRequest.JsonObjectRequest((String)map.get(auth), name, type, feed.getIdFeed());
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
     }
 
     private void toggleLoading() {
@@ -500,6 +532,7 @@ public class CommentsActivity extends AppCompatActivity {
 
                                 Comment comment = commentList.get(pos);
                                 comment.setText(newComment);
+                                getUserToken(feed.getIdUser(), comment.getUserInfo().getName(), "comment");
                                 databaseReference.setValue(comment);
                             }
                         })

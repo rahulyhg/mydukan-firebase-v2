@@ -17,6 +17,7 @@ import com.google.firebase.database.ValueEventListener;
 import org.app.mydukan.activities.CommentsActivity;
 import org.app.mydukan.activities.WebViewActivity;
 import org.app.mydukan.data.Feed;
+import org.app.mydukan.services.VolleyNetworkRequest;
 
 import java.io.Serializable;
 import java.util.HashMap;
@@ -27,6 +28,7 @@ import static org.app.mydukan.activities.CommentsActivity.COMMENT_ROOT;
 import static org.app.mydukan.fragments.MyNetworkFragment.FEED_LOCATION;
 import static org.app.mydukan.fragments.TwoFragment.FEED_ROOT;
 import static org.app.mydukan.fragments.TwoFragment.LIKE_ROOT;
+//import static org.app.mydukan.utils.FeedUtils.getUserToken;
 
 /**
  * Created by Harshit Agarwal on 22-10-2017.
@@ -63,7 +65,7 @@ public class FeedUtils {
     }
 
 
-    public static void addLike(final Feed feed) {
+    public static void addLike(final Feed feed, final VolleyNetworkRequest jsonRequest) {
         final DatabaseReference referenceLike = FirebaseDatabase.getInstance().getReference().child(LIKE_ROOT+"/"+feed.getIdFeed());
         final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if(user==null){
@@ -80,7 +82,29 @@ public class FeedUtils {
                     referenceLike.child(user.getUid()).removeValue();
                 } else {
                     referenceLike.child(user.getUid()).setValue(true);
+                    getUserToken(feed.getIdUser(), user.getDisplayName(), "like");
                 }
+            }
+
+            public void getUserToken(final String auth, final String name, final String type){
+                final DatabaseReference referenceFcm = FirebaseDatabase.getInstance().getReference().child("fcmregistration");
+//        final String auth = FirebaseAuth.getInstance().getCurrentUser().getUid();
+                referenceFcm.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        HashMap<String, Object> map = new HashMap<>();
+                        map = (HashMap<String, Object>) dataSnapshot.getValue();
+                        if(map.containsKey(auth)) {
+                            System.out.println("User Token Comment: " + map.get(auth));
+                            jsonRequest.JsonObjectRequest((String)map.get(auth), name, type, feed.getIdFeed());
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
             }
 
             @Override

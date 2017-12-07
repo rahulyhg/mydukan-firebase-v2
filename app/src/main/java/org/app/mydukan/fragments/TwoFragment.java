@@ -26,6 +26,7 @@ import com.google.firebase.auth.FirebaseUser;
 import org.app.mydukan.R;
 import org.app.mydukan.adapters.AdapterListFeed;
 import org.app.mydukan.data.Feed;
+import org.app.mydukan.services.VolleyNetworkRequest;
 import org.app.mydukan.utils.AppContants;
 import org.app.mydukan.utils.FeedRetriever2;
 import org.app.mydukan.utils.FeedUtils;
@@ -47,6 +48,7 @@ public class TwoFragment extends Fragment implements AdapterListFeed.OnClickItem
     FloatingActionButton addPost;
     Context context;
     AdView mAdView;
+    VolleyNetworkRequest jsonRequest;
     //NC8By7oxjjeYVQxSfjiY3nYWoGq1
     String[] myDukan_Ids = {"NC8By7oxjjeYVQxSfjiY3nYWoGq1","oGNKfltdMsVAfjDN63QjjITGnhw1","hxv73SDWuUNG0IXEMXWO6Lez26u2"};
     AdapterListFeed mAdapter;
@@ -77,6 +79,7 @@ public class TwoFragment extends Fragment implements AdapterListFeed.OnClickItem
         // Inflate the layout for this fragment
         mView = inflater.inflate(R.layout.fragment_two, container, false);
         context = mView.getContext();
+        jsonRequest = new VolleyNetworkRequest(context);
         initViews();
         //initialize ads for the app  - ca-app-pub-1640690939729824/2174590993
         MobileAds.initialize(context, "ca-app-pub-1640690939729824/2174590993");
@@ -118,7 +121,7 @@ public class TwoFragment extends Fragment implements AdapterListFeed.OnClickItem
         final Feed feed = mList.get(position);
         switch (view.getId()) {
             case R.id.like:  // Like_BTN
-                FeedUtils.addLike(feed);
+                FeedUtils.addLike(feed, jsonRequest);
                 break;
             case R.id.btn_follow:  // follow_BTN
                 // addFollow(feed);

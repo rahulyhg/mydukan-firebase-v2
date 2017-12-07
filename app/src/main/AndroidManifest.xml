@@ -246,6 +246,12 @@
             </intent-filter>
         </service>
 
+        <service android:name=".services.MydukanMessagingService">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+
         <!-- Listener for Receiving push payload from FCM -->
 
         <service android:name="com.moengage.firebase.MoEngaeFireBaseMessagingService">

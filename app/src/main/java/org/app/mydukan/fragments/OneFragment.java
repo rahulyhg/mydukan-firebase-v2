@@ -40,7 +40,9 @@ import org.app.mydukan.data.Feed;
 import org.app.mydukan.data.ServiceCenterInfo;
 import org.app.mydukan.server.ApiManager;
 import org.app.mydukan.server.ApiResult;
+import org.app.mydukan.services.VolleyNetworkRequest;
 import org.app.mydukan.utils.AppContants;
+import org.app.mydukan.utils.FeedUtils;
 import org.app.mydukan.utils.SimpleDividerItemDecoration;
 
 import java.io.Serializable;
@@ -76,6 +78,7 @@ public class OneFragment extends Fragment implements AdapterListFeed.OnClickItem
     Context context;
     AdView mAdView;
     private FloatingActionButton appNewPost;
+    VolleyNetworkRequest jsonRequest;
     //Variables
     private AdapterListFeed adapterListFeed;
     public OneFragment() {
@@ -93,6 +96,7 @@ public class OneFragment extends Fragment implements AdapterListFeed.OnClickItem
         // Inflate the layout for this fragment
         mView = inflater.inflate(R.layout.fragment_one, container, false);
         context = mView.getContext();
+        jsonRequest = new VolleyNetworkRequest(context);
         initViews();
         retrieveData();
         //initialize ads for the app  - ca-app-pub-1640690939729824/2174590993
@@ -206,7 +210,8 @@ public class OneFragment extends Fragment implements AdapterListFeed.OnClickItem
         Feed feed = mList.get(position);
         switch (view.getId()) {
             case R.id.iv_like:  // Like_BTN
-                addLike(feed);
+//                addLike(feed);
+                FeedUtils.addLike(feed, jsonRequest);
                 break;
             case R.id.btn_follow:  // follow_BTN
                 addFollow(feed);

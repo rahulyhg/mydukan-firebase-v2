@@ -32,6 +32,7 @@ import com.google.firebase.database.ValueEventListener;
 import org.app.mydukan.R;
 import org.app.mydukan.adapters.AdapterListFeed;
 import org.app.mydukan.data.Feed;
+import org.app.mydukan.services.VolleyNetworkRequest;
 import org.app.mydukan.utils.AppContants;
 import org.app.mydukan.utils.FeedRetriever2;
 import org.app.mydukan.utils.FeedUtils;
@@ -70,6 +71,7 @@ public class MyNetworkFragment extends Fragment implements AdapterListFeed.OnCli
     private AdapterListFeed adapterListFeed;
     private int itemThreshold = 4;
     private boolean hasMoreFeeds = true;
+    VolleyNetworkRequest jsonRequest;
 
     public MyNetworkFragment() {
         // Required empty public constructor
@@ -86,6 +88,7 @@ public class MyNetworkFragment extends Fragment implements AdapterListFeed.OnCli
         // Inflate the layout for this fragment
         mView = inflater.inflate(R.layout.fragment_one, container, false);
         context = mView.getContext();
+        jsonRequest = new VolleyNetworkRequest(context);
         initViews();
         //initialize ads for the app  - ca-app-pub-1640690939729824/2174590993
         MobileAds.initialize(context, "ca-app-pub-1640690939729824/2174590993");
@@ -163,7 +166,7 @@ public class MyNetworkFragment extends Fragment implements AdapterListFeed.OnCli
         final Feed feed = mList.get(position);
         switch (view.getId()) {
             case R.id.like:  // Like_BTN
-                FeedUtils.addLike(feed);
+                FeedUtils.addLike(feed, jsonRequest);
                 break;
             case R.id.btn_follow:  // follow_BTN
                 // addFollow(feed);

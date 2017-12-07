@@ -32,6 +32,7 @@ import org.app.mydukan.R;
 import org.app.mydukan.adapters.SearchNetworkAdapter;
 import org.app.mydukan.data.ContactUsers;
 import org.app.mydukan.services.SyncContacts;
+import org.app.mydukan.services.VolleyNetworkRequest;
 import org.app.mydukan.utils.Utils;
 
 import java.util.ArrayList;
@@ -62,6 +63,7 @@ public class Search_MyNetworkActivity extends AppCompatActivity {
     Realm realm;
     View progressBar;
     TextView emptyText;
+    VolleyNetworkRequest jsonRequest;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,6 +71,7 @@ public class Search_MyNetworkActivity extends AppCompatActivity {
         setContentView(R.layout.activity_search_mynetwork);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        jsonRequest = new VolleyNetworkRequest(this);
 
         emptyText = (TextView) findViewById(R.id.emptyText);
         progressBar = findViewById(R.id.progressBar);
@@ -76,7 +79,7 @@ public class Search_MyNetworkActivity extends AppCompatActivity {
         recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
         swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipeToRefresh);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        mAdapter = new SearchNetworkAdapter(this);
+        mAdapter = new SearchNetworkAdapter(this, jsonRequest);
         recyclerView.setAdapter(mAdapter);
 
 

@@ -36,7 +36,6 @@ import org.app.mydukan.data.Notification;
 import org.app.mydukan.data.Offer;
 import org.app.mydukan.data.Order;
 import org.app.mydukan.data.OrderProduct;
-import org.app.mydukan.data.PlatForm_Info;
 import org.app.mydukan.data.PriceDrop;
 import org.app.mydukan.data.Product;
 import org.app.mydukan.data.ProfileContants;
@@ -51,9 +50,13 @@ import org.app.mydukan.data.Supplier;
 import org.app.mydukan.data.SupplierBindData;
 import org.app.mydukan.data.SupplierGroups;
 import org.app.mydukan.data.User;
+import org.app.mydukan.data.Videos;
+import org.app.mydukan.fragments.OneFragment;
 //import org.app.mydukan.data.Videos;
 import org.app.mydukan.data.Videos;
 import org.app.mydukan.utils.AppContants;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -2953,6 +2956,54 @@ public class ApiManager {
             }
         }
         int i = 20;
+    }
+
+    //Retrive the FeedData.
+    public void retriveFeedData(final String feedUserId, final ApiResult apiResult) {
+        if (feedUserId != null && !feedUserId.isEmpty()) {
+            DatabaseReference feedReference = FirebaseDatabase.getInstance().getReference().child(OneFragment.FEED_ROOT).getRef();
+            feedReference.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    HashMap<String, Object> map = new HashMap<>();
+                    map = (HashMap<String, Object>) dataSnapshot.getValue();
+                    if(map.containsKey(feedUserId)) {
+                        Feed feed = new Feed();
+                        Map<String, String> keymap = (Map<String, String>) map.get(feedUserId);
+                        JSONObject object = new JSONObject(keymap);
+                        try {
+                            if(object.has("liked"))
+                                feed.setLiked(object.getBoolean("liked"));
+                            if(object.has("time"))
+                                feed.setTime(object.getString("time"));
+                            if(object.has("link"))
+                                feed.setLink(object.getString("link"));
+                            if(object.has("idFeed"))
+                                feed.setIdFeed(object.getString("idFeed"));
+                            if(object.has("idUser"))
+                                feed.setIdUser(object.getString("idUser"));
+                            if(object.has("text"))
+                                feed.setText(object.getString("text"));
+                            if(object.has("name"))
+                                feed.setName(object.getString("name"));
+                            if(object.has("photoAvatar"))
+                                feed.setPhotoAvatar(object.getString("photoAvatar"));
+                            if(object.has("photoFeed"))
+                                feed.setPhotoFeed(object.getString("photoFeed"));
+                            if(object.has("likeCount"))
+                                feed.setLikeCount(object.getInt("likeCount"));
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        apiResult.onSuccess(feed);
+                    }
+                }
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            });
+        }
     }
 }
 

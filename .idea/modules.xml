@@ -5,6 +5,8 @@
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://$PROJECT_DIR$/libraries/appdukan/libraries_appdukan.iml" filepath="$PROJECT_DIR$/libraries/appdukan/libraries_appdukan.iml" />
       <module fileurl="file://$PROJECT_DIR$/mydukan-firebase-v2.iml" filepath="$PROJECT_DIR$/mydukan-firebase-v2.iml" />
+      <module fileurl="file://E:\android\mydukan-new\mydukan-firebase-v2.iml" filepath="E:\android\mydukan-new\mydukan-firebase-v2.iml" />
+      <module fileurl="file://E:\MyDukan Project\mydukan-firebase-v2\mydukan-new.iml" filepath="E:\MyDukan Project\mydukan-firebase-v2\mydukan-new.iml" />
     </modules>
   </component>
 </project>
