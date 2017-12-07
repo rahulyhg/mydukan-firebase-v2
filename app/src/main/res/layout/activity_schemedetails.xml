@@ -141,8 +141,6 @@
                 android:layout_marginTop="@dimen/listrow_topmargin_multiline"
                 android:textColor="@color/text_color"
                 android:textSize="@dimen/smalltextSize" />
-
-
         </LinearLayout>
 
         <Button
@@ -160,7 +158,7 @@
             android:textColor="@color/new_btn_blue"
             android:text="Download"
             android:ellipsize="middle"
-            android:visibility="visible"
+            android:visibility="gone"
             android:lines="1"
             android:textSize="12sp"
             tools:ignore="EllipsizeMaxLines" />

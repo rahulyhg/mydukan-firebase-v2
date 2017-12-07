@@ -79,8 +79,7 @@ public class SchemeDetailsActivity extends BaseActivity {
     // Progress Dialog
     private ProgressDialog cDialog;
     private static final int STORAGE_PERMISSION_CODE = 555;
-    private static String file_url = "https://s3-ap-southeast-1.amazonaws.com/mydukan/A+NOVEMBER+UPDATES/1509290822price_list+(1).xls";
-
+    private static String file_url = "";
 
 
     @Override
