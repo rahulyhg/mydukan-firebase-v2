@@ -427,7 +427,7 @@ public class LoginActivity extends BaseActivity implements GoogleApiClient.OnCon
                         Answers.getInstance().logCustom(new CustomEvent("Login_Page")
                                 .putCustomAttribute("Login_Successful_UserId", mUserid));
                     }
-                }
+                }     
                 else
                 {
                     Answers.getInstance().logCustom(new CustomEvent("Login_Page")
