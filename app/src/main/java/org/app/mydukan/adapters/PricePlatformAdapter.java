@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.facebook.common.internal.ImmutableMap;
@@ -41,19 +42,26 @@ import static org.app.mydukan.activities.ProductDescriptionActivity.mApp;
 
 public class PricePlatformAdapter extends BaseAdapter {
     private final ArrayList mData;
+    private Context mContext;
+    private LayoutInflater inflater;
     private MyDukan mApp;
-    HashMap<String, PlatForm_Info> mItem;
-    public PricePlatformAdapter(Context context,HashMap<String, PlatForm_Info> map) {
+    HashMap<String, HashMap<String, String>> mItem;
+    public PricePlatformAdapter(Context context, HashMap<String, HashMap<String, String>> map) {
+        this. mContext = context;
+        inflater = LayoutInflater.from(mContext);
         mData = new ArrayList();
         mItem= new HashMap<>();
         mApp = (MyDukan) context.getApplicationContext();
 
         mData.addAll(map.keySet());
         mItem=map;
-
         }
 
+    public class ViewHolder {
+        TextView platformName;
+        TextView platformPrice;
 
+    }
 
     @Override
     public int getCount() {
@@ -72,17 +80,40 @@ public class PricePlatformAdapter extends BaseAdapter {
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-        final View result;
-       String item = getItem(position);
+    public View getView(final int position, View view, ViewGroup parent) {
+        final ViewHolder holder;
+       final String item = getItem(position);
 
-        if (convertView == null) {
-            result = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_priceplatformfragment, parent, false);
+
+
+        if (view == null) {
+            holder = new ViewHolder();
+            view = inflater.inflate(R.layout.item_priceplatformfragment, null);
+            holder.platformName = (TextView) view.findViewById(R.id.platformName);
+            holder.platformPrice = (TextView) view.findViewById(R.id.platformPrice);
+
+            view.setTag(holder);
 
         } else {
-            result = convertView;
+
+            holder = (ViewHolder) view.getTag();
 
         }
+        if(item!=null) {
+
+            holder.platformName.setText(mApp.getUtils().toCamelCase(item));
+            if(mItem.size()>0){
+                String mprice= mItem.get(item).get("price");
+                if(mprice!=null){
+
+                    holder.platformPrice.setText("₹ "+mItem.get(item).get("price"));
+                }
+            }else{
+                holder.platformPrice.setText("-");
+            }
+
+
+
 
 
 
@@ -145,14 +176,7 @@ public class PricePlatformAdapter extends BaseAdapter {
 
     */
 
-        if(item!=null) {
 
-            ((TextView) result.findViewById(android.R.id.text1)).setText(mApp.getUtils().toCamelCase(item));
-            if(mItem.size()>0){
-                ((TextView) result.findViewById(android.R.id.text2)).setText("₹ "+mItem.get(item).getPrice());
-            }else{
-                ((TextView) result.findViewById(android.R.id.text2)).setText("-");
-            }
 
          /*   switch (item.getKey()) {
 
@@ -199,11 +223,19 @@ public class PricePlatformAdapter extends BaseAdapter {
             }*/
         }
 
+        /*holder.platformPrice.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(mContext, "You Clicked : " + ("₹ "+mItem.get(item).get("price")), Toast.LENGTH_SHORT).show();
+            }
+        });*/
            /* // TODO replace findViewById by ViewHolder
             ((TextView) result.findViewById(android.R.id.text1)).setText(mApp.getUtils().toCamelCase(item.getKey())+": ");
             ((TextView) result.findViewById(android.R.id.text2)).setText(item.getValue());*/
 
-        return result;
+        return view;
     }
+
+
 
 }

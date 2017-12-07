@@ -170,12 +170,12 @@ public class ProductDescriptionActivity extends BaseActivity {
             {*/
                 // Supplier id for free Version "RcJ1L4mWaZeIe2wRO3ejHOmcSxf2" =====
                 final TextView tabOne = (TextView) LayoutInflater.from(this).inflate(R.layout.custom_tab, null);
-                tabOne.setText("Key Specifications");
+                tabOne.setText("Compare Price");
                 // tabOne.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.ic_action_google, 0, 0);
                 tabLayout.getTabAt(0).setCustomView(tabOne);
 
                 final TextView tabTwo = (TextView) LayoutInflater.from(this).inflate(R.layout.custom_tab, null);
-                tabTwo.setText("Compare Price");
+                tabTwo.setText("Key Specifications");
                 // tabTwo.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.ic_action_google, 0, 0);
                 tabLayout.getTabAt(1).setCustomView(tabTwo);
 
@@ -243,8 +243,8 @@ public class ProductDescriptionActivity extends BaseActivity {
             if (mProduct.getmPlatforms()!=null && mProduct.getmPlatforms().size()>0){
            /* if(mProduct.getmPlatforms().size()!=0)
             {*/
-                adapter.addFrag(new KeySpecification(), "ONE");
-                adapter.addFrag(new Product_PricePlatformFragment(), "TWO");
+                adapter.addFrag(new Product_PricePlatformFragment(), "ONE");
+                adapter.addFrag(new KeySpecification(), "TWO");
                 adapter.addFrag(new DescriptionFragment(), "THREE");
             }
             else{

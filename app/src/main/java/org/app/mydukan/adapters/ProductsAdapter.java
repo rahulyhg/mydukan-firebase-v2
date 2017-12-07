@@ -215,7 +215,7 @@ public class ProductsAdapter extends
             Set<String> platformName=currentProduct.getmPlatforms().keySet();
             for (String mplatform:currentProduct.getmPlatforms().keySet()) {
                // currentProduct.getmPlatforms().get(mplatform).getPrice()
-                comparePrice=comparePrice+" "+mplatform+": "+"₹ "+currentProduct.getmPlatforms().get(mplatform).getPrice()+" | ";
+                comparePrice=comparePrice+" "+mplatform+": "+"₹ "+currentProduct.getmPlatforms().get(mplatform).get("price")+" | ";
             }
             holder.mpricePlatform.setText( mApp.getUtils().toCamelCase(comparePrice));
            holder.mpricePlatform.setSelected(true);
@@ -343,7 +343,7 @@ public class ProductsAdapter extends
             super(itemView);
             mProductLayout = (CardView) itemView.findViewById(R.id.product_table);
             
-            mProductLayout.setBackgroundResource(R.drawable.bg_border_rectangle);
+            mProductLayout.setBackgroundResource(R.drawable.bg_product);
 
             mProductName = (TextView) itemView.findViewById(R.id.modelName);
             mStatusPrice = (TextView) itemView.findViewById(R.id.discountPrice);

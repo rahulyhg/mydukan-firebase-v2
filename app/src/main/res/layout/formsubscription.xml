@@ -57,11 +57,11 @@
         <ScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginRight="30dp"
+            android:layout_marginBottom="10dp"
             android:layout_marginLeft="30dp"
+            android:layout_marginRight="30dp"
             android:layout_marginTop="10dp"
             android:scrollbars="none"
-            android:layout_marginBottom="10dp"
             tools:ignore="UselessParent">
 
 
@@ -69,8 +69,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                tools:ignore="ObsoleteLayoutParam,UselessParent"
-                >
+                tools:ignore="ObsoleteLayoutParam,UselessParent">
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -78,18 +77,18 @@
                     android:layout_below="@+id/imageDialog"
                     android:text="Dear User,"
                     android:textColor="@color/text_color"
-                    android:textStyle="bold"
                     android:textSize="@dimen/mediumtextSize_1"
+                    android:textStyle="bold"
                     tools:ignore="HardcodedText,ObsoleteLayoutParam" />
 
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_below="@+id/imageDialog"
+                    android:layout_marginTop="10dp"
                     android:text="Your FREE trial subscription will expire in 7 days. We recommend you to be our PRIME member to get:"
                     android:textColor="@color/text_color"
                     android:textSize="@dimen/microtextSize"
-                    android:layout_marginTop="10dp"
                     tools:ignore="HardcodedText,ObsoleteLayoutParam" />
 
                 <LinearLayout
@@ -101,19 +100,19 @@
                     <ImageView
                         android:layout_width="9dp"
                         android:layout_height="wrap_content"
-                        android:paddingTop="2dp"
                         android:layout_marginRight="10dp"
-                        android:src="@drawable/circle"/>
+                        android:paddingTop="2dp"
+                        android:src="@drawable/circle" />
 
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
                         android:layout_below="@+id/imageDialog"
+                        android:layout_weight="1"
                         android:text="DP/Detailed Specifications of Handset Models of Leading Brands"
                         android:textColor="@color/text_color"
-                        android:textStyle="bold"
                         android:textSize="@dimen/microtextSize"
+                        android:textStyle="bold"
                         tools:ignore="HardcodedText,ObsoleteLayoutParam" />
 
                 </LinearLayout>
@@ -127,19 +126,19 @@
                     <ImageView
                         android:layout_width="9dp"
                         android:layout_height="wrap_content"
-                        android:paddingTop="2dp"
                         android:layout_marginRight="10dp"
-                        android:src="@drawable/circle"/>
+                        android:paddingTop="2dp"
+                        android:src="@drawable/circle" />
 
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
                         android:layout_below="@+id/imageDialog"
+                        android:layout_weight="1"
                         android:text="PRICE DROP and SCHEMES alert"
                         android:textColor="@color/text_color"
-                        android:textStyle="bold"
                         android:textSize="@dimen/microtextSize"
+                        android:textStyle="bold"
                         tools:ignore="HardcodedText,ObsoleteLayoutParam" />
 
                 </LinearLayout>
@@ -153,19 +152,19 @@
                     <ImageView
                         android:layout_width="9dp"
                         android:layout_height="wrap_content"
-                        android:paddingTop="2dp"
                         android:layout_marginRight="10dp"
-                        android:src="@drawable/circle"/>
+                        android:paddingTop="2dp"
+                        android:src="@drawable/circle" />
 
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
                         android:layout_below="@+id/imageDialog"
+                        android:layout_weight="1"
                         android:text="NEW LAUNCH alerts"
                         android:textColor="@color/text_color"
-                        android:textStyle="bold"
                         android:textSize="@dimen/microtextSize"
+                        android:textStyle="bold"
                         tools:ignore="HardcodedText,ObsoleteLayoutParam" />
 
                 </LinearLayout>
@@ -179,19 +178,19 @@
                     <ImageView
                         android:layout_width="9dp"
                         android:layout_height="wrap_content"
-                        android:paddingTop="2dp"
                         android:layout_marginRight="10dp"
-                        android:src="@drawable/circle"/>
+                        android:paddingTop="2dp"
+                        android:src="@drawable/circle" />
 
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
                         android:layout_below="@+id/imageDialog"
+                        android:layout_weight="1"
                         android:text="Records of storing IMEI and Enrolled Schemes"
                         android:textColor="@color/text_color"
-                        android:textStyle="bold"
                         android:textSize="@dimen/microtextSize"
+                        android:textStyle="bold"
                         tools:ignore="HardcodedText,ObsoleteLayoutParam" />
 
                 </LinearLayout>
@@ -205,19 +204,19 @@
                     <ImageView
                         android:layout_width="9dp"
                         android:layout_height="wrap_content"
-                        android:paddingTop="2dp"
                         android:layout_marginRight="10dp"
-                        android:src="@drawable/circle"/>
+                        android:paddingTop="2dp"
+                        android:src="@drawable/circle" />
 
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
                         android:layout_below="@+id/imageDialog"
+                        android:layout_weight="1"
                         android:text="App Notifications and much more.."
                         android:textColor="@color/text_color"
-                        android:textStyle="bold"
                         android:textSize="@dimen/microtextSize"
+                        android:textStyle="bold"
                         tools:ignore="HardcodedText,ObsoleteLayoutParam" />
 
                 </LinearLayout>
@@ -225,8 +224,8 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:layout_marginTop="8dp">
+                    android:layout_marginTop="8dp"
+                    android:orientation="vertical">
 
                     <TextView
                         android:id="@+id/tv_message_trialUser"
@@ -244,20 +243,20 @@
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:gravity="center"
                         android:layout_marginTop="10dp"
+                        android:gravity="center"
                         android:orientation="horizontal">
 
                         <Button
                             android:id="@+id/btn_remaingDays"
                             android:layout_width="0dp"
                             android:layout_height="35dp"
-                            android:layout_weight="1"
                             android:layout_marginRight="20dp"
-                            android:textColor="@color/white"
+                            android:layout_weight="1"
                             android:background="@color/colorDivider"
                             android:padding="5dp"
                             android:text="Click for free"
+                            android:textColor="@color/white"
                             android:textStyle="normal"
                             android:visibility="gone"
                             tools:ignore="HardcodedText,ObsoleteLayoutParam" />
@@ -276,6 +275,7 @@
                             tools:ignore="HardcodedText,ObsoleteLayoutParam,TextViewEdits" />
 
                     </LinearLayout>
+
                     <Button
                         android:id="@+id/btn_trial"
                         android:layout_width="wrap_content"
@@ -301,32 +301,32 @@
                         android:layout_marginLeft="@dimen/activity_horizontal_margin"
                         android:layout_marginStart="@dimen/activity_horizontal_margin"
                         android:src="@drawable/ic_action_whatsapp"
-                        app:backgroundTint="@color/green_500"
                         android:visibility="gone"
+                        app:backgroundTint="@color/green_500"
                         app:borderWidth="0dp"
                         tools:ignore="ObsoleteLayoutParam,RtlHardcoded" />
 
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
                         android:layout_below="@+id/imageDialog"
+                        android:layout_marginTop="10dp"
+                        android:layout_weight="1"
                         android:text="You can also pay via :"
                         android:textColor="@color/text_color"
-                        android:layout_marginTop="10dp"
-                        android:textStyle="bold"
                         android:textSize="@dimen/microtextSize"
+                        android:textStyle="bold"
                         tools:ignore="HardcodedText,ObsoleteLayoutParam" />
 
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
                         android:layout_below="@+id/imageDialog"
-                        android:text="Paytm or UPI to 9036770772"
+                        android:layout_weight="1"
+                        android:text="Paytm/BHIM/TEJ or UPI to 9036770772"
                         android:textColor="@color/text_color"
-                        android:textStyle="bold"
                         android:textSize="@dimen/smalltextSize"
+                        android:textStyle="bold"
                         tools:ignore="HardcodedText,ObsoleteLayoutParam" />
 
                     <TextView

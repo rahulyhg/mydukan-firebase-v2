@@ -13,15 +13,18 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+        <!--  android:layout_gravity="bottom|left|start"-->
+
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/whatsAppBtn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
-            android:layout_gravity="bottom|left|start"
+            android:layout_gravity="bottom|right|end"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
             android:layout_marginBottom="50dp"
-            android:layout_marginLeft="@dimen/activity_horizontal_margin"
-            android:layout_marginStart="@dimen/activity_horizontal_margin"
+            android:layout_marginRight="@dimen/activity_horizontal_margin"
             android:src="@drawable/ic_action_whatsapp"
             android:visibility="visible"
             app:backgroundTint="@color/green_500"

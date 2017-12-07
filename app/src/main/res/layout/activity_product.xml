@@ -32,6 +32,8 @@
             android:id="@+id/tabLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            app:tabIndicatorHeight="5dp"
+            app:tabIndicatorColor="@color/sky_blue"
             android:layout_below="@+id/toolbar"
             android:background="?attr/colorPrimary"
             android:minHeight="?attr/actionBarSize"
