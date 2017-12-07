@@ -36,6 +36,7 @@ import org.app.mydukan.data.Notification;
 import org.app.mydukan.data.Offer;
 import org.app.mydukan.data.Order;
 import org.app.mydukan.data.OrderProduct;
+import org.app.mydukan.data.PlatForm_Info;
 import org.app.mydukan.data.PriceDrop;
 import org.app.mydukan.data.Product;
 import org.app.mydukan.data.ProfileContants;
@@ -50,6 +51,7 @@ import org.app.mydukan.data.Supplier;
 import org.app.mydukan.data.SupplierBindData;
 import org.app.mydukan.data.SupplierGroups;
 import org.app.mydukan.data.User;
+//import org.app.mydukan.data.Videos;
 import org.app.mydukan.utils.AppContants;
 
 import java.io.IOException;
@@ -1384,6 +1386,7 @@ public class ApiManager {
 
             /*Logic for product keys group*/
 
+            groupRef.keepSynced(true);
             groupRef.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
@@ -1416,10 +1419,19 @@ public class ApiManager {
 
                                 if (productSnapshot.hasChild("platforms")) {
                                     try {
-                                        HashMap<String,String> mPlatforms = new HashMap<>();
-                                        productSnapshot.child("platforms").getChildren();
+                                        HashMap<String,String> cPlatforms = new HashMap<String,String>();
+                                          HashMap<String, HashMap<String, String>> mPlatforms = new HashMap<>();
+
                                         for (DataSnapshot recipe : productSnapshot.child("platforms").getChildren()){
-                                            mPlatforms.put(recipe.getKey(),recipe.getValue(String.class));
+
+                                            if(recipe!=null){
+                                                cPlatforms = new HashMap<String,String>();
+                                              for (DataSnapshot platform : recipe.getChildren()) {
+                                                  cPlatforms.put(platform.getKey(),platform.getValue(String.class));
+                                              }
+                                            mPlatforms.put(recipe.getKey(),cPlatforms);
+                                            }
+                                           // mPlatforms.put(recipe.getKey(),recipe.getValue(PlatForm_Info.class));
                                         }
                                         product.setmPlatforms(mPlatforms);
 
@@ -1819,6 +1831,35 @@ public class ApiManager {
             }
         });
     }
+/*
+    public void getVideosList(final ApiResult result) {
+        final ArrayList<Videos> videosList = new ArrayList<>();
+
+        DatabaseReference categoryRef = FirebaseDatabase.getInstance().getReference("MyDukan_BroadCast/videos");
+        categoryRef.keepSynced(true);
+        categoryRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    for (DataSnapshot categorySnapshot : dataSnapshot.getChildren()) {
+                        Videos mvideos = categorySnapshot.getValue(Videos.class);
+                        videosList.add(mvideos);
+                    }
+                    result.onSuccess(videosList);
+                }else{
+                    result.onFailure(mctx.getString(R.string.status_failed));
+                }
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                result.onFailure(mctx.getString(R.string.status_failed));
+            }
+        });
+    }
+*/
+
 
     public void getOrderList(final String supplierId, String uid, final ApiResult result) {
         final ArrayList<Order> mOrderList = new ArrayList<>();

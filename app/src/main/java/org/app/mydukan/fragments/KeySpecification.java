@@ -14,7 +14,11 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import org.app.mydukan.R;
+import org.app.mydukan.activities.FeedProfileFollowActivity;
+import org.app.mydukan.activities.ProductDescriptionActivity;
+import org.app.mydukan.adapters.CustomBaseAdapter;
 import org.app.mydukan.adapters.KeySpecificationAdapter;
+import org.app.mydukan.application.MyDukan;
 import org.app.mydukan.data.Product;
 import org.app.mydukan.data.SupplierBindData;
 import org.app.mydukan.server.ApiManager;

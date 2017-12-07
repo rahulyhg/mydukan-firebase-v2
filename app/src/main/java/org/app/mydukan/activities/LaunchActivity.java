@@ -5,6 +5,8 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.provider.ContactsContract;
+import android.support.annotation.NonNull;
 import android.util.Log;
 
 import com.crashlytics.android.answers.Answers;
@@ -88,7 +90,7 @@ public class LaunchActivity extends BaseActivity {
 
 
         Bundle bundle = getIntent().getExtras();
-        if (bundle != null) {
+        if(bundle != null){
             getNotificationData(bundle);
         }
 
@@ -128,8 +130,10 @@ public class LaunchActivity extends BaseActivity {
                             Answers.getInstance().logCustom(new CustomEvent("Launcher_OpenPage")
                                     .putCustomAttribute("UserId", mUid));
 
-                            String mob_vrify = user.getVrified_mobilenum();
-                            String location_verfy = user.getVerified_location();
+                           mApp.checkAndSendToken();
+
+                           String mob_vrify= user.getVrified_mobilenum();
+                           String location_verfy=user.getVerified_location();
 //                           String cmpnyInfo_vrify= user.getVerified_CompanyInfo();
 
 

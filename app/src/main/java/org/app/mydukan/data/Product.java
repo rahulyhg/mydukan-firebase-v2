@@ -19,24 +19,56 @@ public class Product extends Object implements Serializable {
     private String categoryId = "";
     private String subcategory = "";
     private Long stockremaining = 0l;
-    private HashMap<String,String> attributes = new HashMap<>();
+    private HashMap<String, String> attributes = new HashMap<>();
     private ArrayList<String> subcategoryIds = new ArrayList<>();
     private Boolean isnew = false;
 
     private String dp = "";
     private String mop = "";
     private String mrp = "";
+    private String filetype = "";
+
+    private String download_file="";
+    private String namesearchkey="";
+
+    public String getDownload_file() {
+        return download_file;
+    }
+
+    public void setDownload_file(String download_file) {
+        this.download_file = download_file;
+    }
 
 
-    private HashMap<String,String> mPlatforms = new HashMap<>();
 
-    public HashMap<String, String> getmPlatforms() {
+
+    public String getFiletype() {
+        return filetype;
+    }
+
+    public void setFiletype(String filetype) {
+        this.filetype = filetype;
+    }
+
+    public String getNamesearchkey() {
+        return namesearchkey;
+    }
+
+    public void setNamesearchkey(String namesearchkey) {
+        this.namesearchkey = namesearchkey;
+    }
+
+
+    public HashMap<String, HashMap<String, String>> getmPlatforms() {
         return mPlatforms;
     }
 
-    public void setmPlatforms(HashMap<String, String> mPlatforms) {
+    public void setmPlatforms(HashMap<String, HashMap<String, String>> mPlatforms) {
         this.mPlatforms = mPlatforms;
     }
+
+    private HashMap<String, HashMap<String, String>> mPlatforms = new HashMap<>();
+
 
     public String getMrp() {
         return mrp;

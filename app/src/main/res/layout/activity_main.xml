@@ -13,15 +13,18 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+        <!--  android:layout_gravity="bottom|left|start"-->
+
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/whatsAppBtn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
-            android:layout_gravity="bottom|left|start"
+            android:layout_gravity="bottom|right|end"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
             android:layout_marginBottom="50dp"
-            android:layout_marginLeft="@dimen/activity_horizontal_margin"
-            android:layout_marginStart="@dimen/activity_horizontal_margin"
+            android:layout_marginRight="@dimen/activity_horizontal_margin"
             android:src="@drawable/ic_action_whatsapp"
             android:visibility="visible"
             app:backgroundTint="@color/green_500"
@@ -108,7 +111,7 @@
                                 layout="@layout/item_subscribe"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                app:layout_behavior="@string/appbar_scrolling_view_behavior"></include>
+                                app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
                             <View
                                 style="@style/Divider"
@@ -122,21 +125,20 @@
                             layout="@layout/promotional_layout"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_below="@+id/layout_subscribe"
-                             ></include>
-
+                            android:layout_below="@+id/banner" />
 
                         <LinearLayout
                             android:id="@+id/banner"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_below="@+id/viewFlipperWithBtn">
+                            android:layout_below="@+id/layout_subscribe">
 
                             <include
                                 android:id="@+id/viewPagerBanner"
                                 layout="@layout/item_banner_page"
                                 android:layout_width="fill_parent"
                                 android:layout_height="wrap_content"
+                                android:layout_marginBottom="5dp"
                                 >
                                 <View style="@style/Divider"
                                     android:background="@color/colorBtnBackground"
@@ -150,7 +152,7 @@
                             layout="@layout/recycler_listview"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_below="@+id/banner"
+                            android:layout_below="@+id/viewFlipperWithBtn"
                             android:layout_margin="@dimen/layoutmarginsmall">
 
                         </include>

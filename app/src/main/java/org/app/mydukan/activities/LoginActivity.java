@@ -13,6 +13,7 @@ import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.View;
@@ -31,6 +32,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
@@ -425,6 +427,14 @@ public class LoginActivity extends BaseActivity implements GoogleApiClient.OnCon
                         Answers.getInstance().logCustom(new CustomEvent("Login_Page")
                                 .putCustomAttribute("Login_Successful_UserId", mUserid));
                     }
+                }
+                else
+                {
+                    Answers.getInstance().logCustom(new CustomEvent("Login_Page")
+                            .putCustomAttribute("UserId_Null", mUserid));
+
+                    startActivity(new Intent(getApplicationContext(), NewSignUpActivity.class));
+                    finish();
                 }
             }
 

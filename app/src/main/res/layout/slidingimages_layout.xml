@@ -3,23 +3,23 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     >
-    <LinearLayout
-        android:id="@+id/bannerView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <ImageView
-            android:id="@+id/image"
-            android:layout_width="fill_parent"
-            android:layout_height="150dp"
-            android:adjustViewBounds="true"
+<LinearLayout
+    android:id="@+id/bannerView"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
 
-            android:scaleType="fitXY"/>
-        <!--  <ImageView
-              android:id="@+id/image"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent"
-              android:adjustViewBounds="true"
-              android:src="@mipmap/ic_launcher"
-              android:scaleType="fitXY" />-->
-    </LinearLayout>
-</FrameLayout>
+    <ImageView
+    android:id="@+id/image"
+    android:layout_width="fill_parent"
+    android:layout_height="150dp"
+    android:adjustViewBounds="true"
+    android:scaleType="fitXY"/>
+    <!--  <ImageView
+          android:id="@+id/image"
+          android:layout_width="match_parent"
+          android:layout_height="match_parent"
+          android:adjustViewBounds="true"
+          android:src="@mipmap/ic_launcher"
+          android:scaleType="fitXY" />-->
+  </LinearLayout>
+  </FrameLayout>

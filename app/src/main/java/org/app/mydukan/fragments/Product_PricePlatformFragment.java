@@ -9,19 +9,23 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebView;
+import android.widget.AdapterView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.app.mydukan.R;
 import org.app.mydukan.adapters.KeySpecificationAdapter;
 import org.app.mydukan.adapters.PricePlatformAdapter;
+import org.app.mydukan.data.PlatForm_Info;
 import org.app.mydukan.data.Product;
 import org.app.mydukan.data.SupplierBindData;
 import org.app.mydukan.server.ApiManager;
 import org.app.mydukan.server.ApiResult;
 import org.app.mydukan.utils.AppContants;
 
+import java.util.HashMap;
 import java.util.Set;
 
 import static org.app.mydukan.activities.ProductDescriptionActivity.fullpage;
@@ -112,8 +116,6 @@ public class Product_PricePlatformFragment extends Fragment {
                     public void onSuccess(Object data) {
                         product = (Product)data;
                         if(product != null) {
-                            mProduct.setDescription(product.getDescription());
-                            mProduct.setUrl(product.getUrl());
                             product.setmPlatforms(mProduct.getmPlatforms());
                         }
                         dismissProgress();

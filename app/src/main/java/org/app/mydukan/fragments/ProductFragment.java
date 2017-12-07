@@ -3,8 +3,11 @@ package org.app.mydukan.fragments;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -139,10 +142,11 @@ public class ProductFragment extends android.support.v4.app.Fragment implements 
         mProductRecyclerView = (RecyclerView) supplierView.findViewById(R.id.listview);
         scrollViewList = (ScrollView)supplierView.findViewById(R.id.scrollViewList);
         mProductEmptyView = (TextView) supplierView.findViewById(R.id.nodata_view);
-        mProductRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+//        mProductRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        mProductRecyclerView.setLayoutManager(new GridLayoutManager(getActivity(),1));
         mProductRecyclerView.setAdapter(mProductAdapter);
-        mProductRecyclerView.addItemDecoration(new SimpleDividerItemDecoration(
-                getActivity().getApplicationContext(), false));
+       /* mProductRecyclerView.addItemDecoration(new SimpleDividerItemDecoration(
+                getActivity().getApplicationContext(), false));*/
         fetchProductdata();
     }
 
