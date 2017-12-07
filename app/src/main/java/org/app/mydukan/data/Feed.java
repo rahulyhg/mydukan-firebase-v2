@@ -106,4 +106,3 @@ public class Feed implements Serializable {
         this.photoFeed = photoFeed;
     }
 }
-

@@ -15,11 +15,9 @@ import android.widget.TextView;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.MobileAds;
-import com.squareup.picasso.Picasso;
 
 import org.app.mydukan.R;
 import org.app.mydukan.application.MyDukan;
-import org.app.mydukan.data.Notification;
 import org.app.mydukan.utils.AppContants;
 
 import java.util.HashMap;
@@ -113,9 +111,17 @@ public class NotificationDescriptionActivity extends Activity {
 
     private void setLayoutView(HashMap mNotification) {
 
-        String mTitle= String.valueOf(mNotification.get("notificationTitle"));
-        String mMessage= String.valueOf(mNotification.get("notificationMessage"));
-        String mImageURL= String.valueOf(mNotification.get("notificationImage"));
+        String mTitle= "";
+        if(mNotification.containsKey("notificationTitle"))
+            mTitle= String.valueOf(mNotification.get("notificationTitle"));
+
+        String mMessage="";
+        if(mNotification.containsKey("notificationMessage"))
+            mMessage= String.valueOf(mNotification.get("notificationMessage"));
+
+        String mImageURL="";
+        if(mNotification.containsKey("notificationImage"))
+            mImageURL= String.valueOf(mNotification.get("notificationImage"));
 
         mSupplierNameView.setText(mTitle );
         mNotificationTextView.setText(mMessage);
@@ -160,19 +166,27 @@ public class NotificationDescriptionActivity extends Activity {
         @Override
         public void onPageStarted(WebView view, String url, Bitmap favicon) {
             super.onPageStarted(view, url, favicon);
-            mProgress = new ProgressDialog(NotificationDescriptionActivity.this);
-            mProgress.setTitle("Please wait");
-            mProgress.setMessage("Page is loading..");
-            mProgress.setCancelable(false);
-            mProgress.show();
+            try {
+                mProgress = new ProgressDialog(NotificationDescriptionActivity.this);
+                mProgress.setTitle("Please wait");
+                mProgress.setMessage("Page is loading..");
+                mProgress.setCancelable(false);
+                mProgress.show();
+            }catch (Exception e){
+                e.printStackTrace();
+            }
         }
 
         @Override
         public void onPageFinished(WebView view, String url) {
             super.onPageFinished(view, url);
-            if (mProgress != null && mProgress.isShowing()) {
-                mProgress.dismiss();
-                mProgress = null;
+            try {
+                if (mProgress != null && mProgress.isShowing()) {
+                    mProgress.dismiss();
+                    mProgress = null;
+                }
+            }catch (Exception e){
+                e.printStackTrace();
             }
         }
     }

@@ -14,11 +14,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import org.app.mydukan.R;
-import org.app.mydukan.activities.FeedProfileFollowActivity;
-import org.app.mydukan.activities.ProductDescriptionActivity;
-import org.app.mydukan.adapters.CustomBaseAdapter;
 import org.app.mydukan.adapters.KeySpecificationAdapter;
-import org.app.mydukan.application.MyDukan;
 import org.app.mydukan.data.Product;
 import org.app.mydukan.data.SupplierBindData;
 import org.app.mydukan.server.ApiManager;
@@ -138,38 +134,42 @@ public class KeySpecification extends Fragment {
 
     private void setupOthers(){
         String othersStr = "";
+        try {
+            for (String attKey : mProduct.getAttributes().keySet()) {
+                String value = mProduct.getAttributes().get(attKey);
 
-        for (String attKey: mProduct.getAttributes().keySet()) {
-            String value = mProduct.getAttributes().get(attKey);
+                if (!mApp.getUtils().isStringEmpty(othersStr) && !othersStr.endsWith(", ")) {
+                    othersStr += ", ";
+                }
 
-            if(!mApp.getUtils().isStringEmpty(othersStr) && !othersStr.endsWith(", ")){
-                othersStr += ", ";
-            }
-
-            if(!mApp.getUtils().isStringEmpty(value)){
-                if(attKey.equalsIgnoreCase("androidversion")){
-                    othersStr += value + " " + getString(R.string.androidversion);
-                } else if(attKey.equalsIgnoreCase("cameramegapixel")){
-                    othersStr += value + " " + getString(R.string.camera);
-                } else if(attKey.equalsIgnoreCase("displaysize")){
-                    othersStr += value + " " + getString(R.string.size);
-                } else if(attKey.equalsIgnoreCase("ramrom")){
-                    othersStr += value + " " + getString(R.string.ram);
+                if (!mApp.getUtils().isStringEmpty(value)) {
+                    if (attKey.equalsIgnoreCase("androidversion")) {
+                        othersStr += value + " " + getString(R.string.androidversion);
+                    } else if (attKey.equalsIgnoreCase("cameramegapixel")) {
+                        othersStr += value + " " + getString(R.string.camera);
+                    } else if (attKey.equalsIgnoreCase("displaysize")) {
+                        othersStr += value + " " + getString(R.string.size);
+                    } else if (attKey.equalsIgnoreCase("ramrom")) {
+                        othersStr += value + " " + getString(R.string.ram);
+                    }
                 }
             }
-        }
 
-        if(!mApp.getUtils().isStringEmpty(othersStr)){
-           // mOthersTextView.setText(othersStr);
-            // showProgress(false);
-         // KeySpecificationAdapter adapter = new KeySpecificationAdapter(context,  mProduct.getAttributes());
-           // ksListView.setAdapter(adapter);
-            KeySpecificationAdapter adapter = new KeySpecificationAdapter(context, mProduct.getAttributes());
-            ksListView.setAdapter(adapter);
 
-        } else {
-            mOthersTextView.setVisibility(View.VISIBLE);
-            mOthersTextView.setText("Not available");
+            if (!mApp.getUtils().isStringEmpty(othersStr)) {
+                // mOthersTextView.setText(othersStr);
+                // showProgress(false);
+                // KeySpecificationAdapter adapter = new KeySpecificationAdapter(context,  mProduct.getAttributes());
+                // ksListView.setAdapter(adapter);
+                KeySpecificationAdapter adapter = new KeySpecificationAdapter(context, mProduct.getAttributes());
+                ksListView.setAdapter(adapter);
+
+            } else {
+                mOthersTextView.setVisibility(View.GONE);
+                mOthersTextView.setText("ot available");
+            }
+        }catch (Exception e){
+            e.printStackTrace();
         }
     }
 

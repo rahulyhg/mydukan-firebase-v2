@@ -3,8 +3,6 @@ package org.app.mydukan.fragments;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Color;
-import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
@@ -349,8 +347,8 @@ public class ProductFragment extends android.support.v4.app.Fragment implements 
                 p2.setPrice("0");
             }
 
-            int price1 = Integer.valueOf(p1.getPrice());
-            int price2 = Integer.valueOf(p2.getPrice());
+            int price1 = Integer.valueOf(p1.getPrice().trim());
+            int price2 = Integer.valueOf(p2.getPrice().trim());
 
             if (price1 > price2) {
                 return 1;

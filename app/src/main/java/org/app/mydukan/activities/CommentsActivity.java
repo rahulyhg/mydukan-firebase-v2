@@ -1,8 +1,8 @@
 package org.app.mydukan.activities;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -11,7 +11,9 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +21,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.PopupMenu;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -32,30 +35,33 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-
 import org.app.mydukan.R;
 import org.app.mydukan.adapters.AdapterListFeed;
 import org.app.mydukan.adapters.CircleTransform;
 import org.app.mydukan.data.Comment;
 import org.app.mydukan.data.Feed;
 import org.app.mydukan.utils.AppContants;
+import org.app.mydukan.utils.FeedUtils;
 import org.app.mydukan.utils.Utils;
+import org.app.mydukan.viewholder.FeedViewHolder;
 
-import java.io.Serializable;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
-import static org.app.mydukan.fragments.TwoFragment.LIKE_ROOT;
+import static org.app.mydukan.application.MyDukan.LOGTAG;
+import static org.app.mydukan.utils.AppContants.FEED_ID;
+import static org.app.mydukan.utils.AppContants.USER_ID;
 
 /**
- * Created by Harshit Agarwal on 10/0/17.
- * Updated by shivayogi Hiremath on 10/20/17
+ * Created by Harshit Agarwal on 10/04/17.
  */
 
 public class CommentsActivity extends AppCompatActivity {
 
-    private static final String COMMENT_ROOT = "comments";
+    public static final String COMMENT_ROOT = "comments";
+    public static final int RESULT_DELETED = 10;
     RecyclerView recyclerView;
     EditText commentET;
     ImageView addCommentButton;
@@ -65,6 +71,7 @@ public class CommentsActivity extends AppCompatActivity {
     TextView emptyText;
     Feed feed;
     ImageView ivAvatar;
+    FirebaseUser user;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,6 +84,7 @@ public class CommentsActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         setTitle("");
 
+        user = FirebaseAuth.getInstance().getCurrentUser();
         recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
         commentET = (EditText) findViewById(R.id.etComment);
         addCommentButton = (ImageView) findViewById(R.id.addComment);
@@ -84,83 +92,94 @@ public class CommentsActivity extends AppCompatActivity {
         emptyText = (TextView) findViewById(R.id.emptyText);
         ivAvatar = (ImageView) findViewById(R.id.et_avatar);
         feed = (Feed) getIntent().getSerializableExtra(AppContants.FEED);
-        initializeFeed();
 
-        commentList = new ArrayList<>();
+        if (feed == null) {
+            findViewById(R.id.cardView).setVisibility(View.INVISIBLE);
+            final ProgressDialog progressDialog = new ProgressDialog(this);
+            progressDialog.setMessage("Loading...");
+            progressDialog.setCancelable(false);
+            progressDialog.show();
 
-        mAdapter = new CommentsAdapter(this, commentList, feed);
-        recyclerView.setAdapter(mAdapter);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        recyclerView.setNestedScrollingEnabled(false);
+            String feedId = getIntent().getStringExtra(FEED_ID);
+            String userId = getIntent().getStringExtra(USER_ID);
+            FeedUtils.getFeed(feedId, userId, new FeedUtils.OnDataRetrieved() {
 
-        getComments();
+                @Override
+                public void onSuccess(Object object) {
+                    if (object instanceof Feed) {
+                        feed = (Feed) object;
+                        findViewById(R.id.cardView).setVisibility(View.VISIBLE);
+                        initializeFeed();
+                        progressDialog.dismiss();
+                    }
+                }
 
-        addCommentButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                addComment();
-            }
-        });
+                @Override
+                public void onFailure() {
+                    Toast.makeText(getApplicationContext(), "Error while loading", Toast.LENGTH_SHORT).show();
+                    CommentsActivity.this.finish();
+                    progressDialog.dismiss();
+                }
+            });
+        } else {
+            initializeFeed();
+        }
 
-        commentET.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                addCommentButton.setVisibility(s.toString().trim().isEmpty() ? View.GONE : View.VISIBLE);
-            }
-        });
-
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        Glide.with(this)
-                .load(user.getPhotoUrl())
-                .placeholder(R.drawable.profile_circle)
-                .centerCrop()
-                .transform(new CircleTransform(ivAvatar.getContext()))
-                .override(50, 50)
-                .into(ivAvatar);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
-             onBackPressed();
+            onBackPressed();
             return true;
         }
 
-            return super.onOptionsItemSelected(item);
+        return super.onOptionsItemSelected(item);
     }
 
     private void initializeFeed() {
-        AdapterListFeed.MyViewHolder holder = new AdapterListFeed.MyViewHolder(findViewById(R.id.cardView), new AdapterListFeed.OnClickItemFeed() {
+        FeedViewHolder holder = new FeedViewHolder(findViewById(R.id.cardView), new AdapterListFeed.OnClickItemFeed() {
             @Override
             public void onClickItemFeed(int position, View view) {
                 switch (view.getId()) {
                     case R.id.tv_contentLink:  // HyperLink click
-                        String textHyper = feed.getText();
-                        if (textHyper.isEmpty() || textHyper == null) {
-                            return;
-                        } else {
-                            Intent intent = new Intent(CommentsActivity.this, WebViewActivity.class);
-                            intent.putExtra(AppContants.VIEW_PROFILE, (Serializable) feed);
-                            startActivity(intent);
-                        }
+                        FeedUtils.handleHyperLink(feed, CommentsActivity.this);
                         break;
                     case R.id.comment:
                         commentET.requestFocus();
-                        InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+                        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                         imm.showSoftInput(commentET, InputMethodManager.SHOW_IMPLICIT);
                         break;
                     case R.id.like:
-                        toggleLike();
+                        FeedUtils.addLike(feed);
+                        break;
+                    case R.id.delete:
+                        final ProgressDialog progressDialog = new ProgressDialog(CommentsActivity.this);
+                        progressDialog.setCancelable(false);
+                        progressDialog.setCanceledOnTouchOutside(false);
+                        progressDialog.setMessage("Deleting...");
+                        progressDialog.show();
+
+                        FeedUtils.delete(feed, new FeedUtils.OnCompletion() {
+                            @Override
+                            public void onSuccess() {
+                                progressDialog.dismiss();
+                                Toast.makeText(CommentsActivity.this, "Deleted", Toast.LENGTH_SHORT).show();
+                                setResult(RESULT_DELETED, getIntent());
+                                CommentsActivity.this.finish();
+                            }
+
+                            @Override
+                            public void onFailure() {
+                                progressDialog.dismiss();
+                                Toast.makeText(CommentsActivity.this, "Unknown error occurred while deleting", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                        break;
+                    case R.id.share:
+                        FeedUtils.share(feed, CommentsActivity.this);
+                        break;
 
                 }
             }
@@ -178,9 +197,60 @@ public class CommentsActivity extends AppCompatActivity {
         holder.getLikes(feed);
 
         holder.commentTV.setText("Comment");
+        holder.setDeletable(feed.getIdUser().equalsIgnoreCase(user.getUid()));
+
+        initializeComment();
     }
 
-    private void toggleLike() {
+    private void initializeComment() {
+        commentList = new ArrayList<>();
+        mAdapter = new CommentsAdapter(this, commentList, feed);
+        recyclerView.setAdapter(mAdapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.setNestedScrollingEnabled(false);
+        getComments();
+
+        addCommentButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                addComment();
+            }
+        });
+        commentET.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                addCommentButton.setVisibility(s.toString().trim().isEmpty() ? View.GONE : View.VISIBLE);
+            }
+        });
+
+
+        Glide.with(this)
+                .load(user.getPhotoUrl())
+                .placeholder(R.drawable.profile_circle)
+                .centerCrop()
+                .transform(new CircleTransform(ivAvatar.getContext()))
+                .override(50, 50)
+                .into(ivAvatar);
+    }
+
+    @Override
+    public void onBackPressed() {
+        setResult(RESULT_CANCELED);
+        super.onBackPressed();
+
+    }
+
+   /* private void toggleLike() {
         final DatabaseReference referenceLike = FirebaseDatabase.getInstance().getReference().child(LIKE_ROOT + "/" + feed.getIdFeed());
         final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         referenceLike.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -203,7 +273,7 @@ public class CommentsActivity extends AppCompatActivity {
             }
         });
 
-    }
+    }*/
 
     private void addComment() {
         String commentText = commentET.getText().toString();
@@ -227,7 +297,6 @@ public class CommentsActivity extends AppCompatActivity {
         databaseReference.child(feed.getIdFeed()).child(key).setValue(comment);
 
         commentET.setText("");
-        //todo show progress bar and handle offline
 
     }
 
@@ -288,7 +357,9 @@ public class CommentsActivity extends AppCompatActivity {
             holder.setProfileName(comment.getUserInfo().getName());
             holder.setTime(comment.getTime());
             holder.setComment(comment.getText());
+            holder.setCommentLikes(comment.getLikes());
             holder.setEditAndDelete(comment.getUserInfo().getuId(), feed.getIdUser());
+
         }
 
         @Override
@@ -298,47 +369,109 @@ public class CommentsActivity extends AppCompatActivity {
 
         class MyViewHolder extends RecyclerView.ViewHolder {
 
-            ImageView profileImage;
-            TextView profileName, time, comment, edit, delete;
+            ImageView profileImage, commentLike, commentOverflow;
+            TextView profileName, time, comment, like, tv_likecount, edit, delete;
+            boolean liked = false;
+            boolean has_edit = false, has_delete = false;
 
             public MyViewHolder(View itemView) {
                 super(itemView);
+
                 profileImage = (ImageView) itemView.findViewById(R.id.profileImage);
+                commentLike = (ImageView) itemView.findViewById(R.id.img_comment_like);
                 profileName = (TextView) itemView.findViewById(R.id.profileName);
                 time = (TextView) itemView.findViewById(R.id.time);
+                like = (TextView) itemView.findViewById(R.id.like_comment);
+                tv_likecount = (TextView) itemView.findViewById(R.id.tv_comment_like);
                 comment = (TextView) itemView.findViewById(R.id.comment);
-                edit = (TextView) itemView.findViewById(R.id.edit);
-                delete = (TextView) itemView.findViewById(R.id.delete);
+                commentOverflow = (ImageView) itemView.findViewById(R.id.comment_overflowMenu);
 
-                edit.setOnClickListener(new View.OnClickListener() {
+                // display popup on overflow click as well as long press
+                commentOverflow.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        editComment(getLayoutPosition());
-
-
+                        displayPopupMenu(v);
                     }
                 });
 
-                delete.setOnClickListener(new View.OnClickListener() {
+                itemView.setOnLongClickListener(new View.OnLongClickListener() {
                     @Override
-                    public void onClick(View v) {
-                        final int pos = getLayoutPosition();
-                        new AlertDialog.Builder(context)
-                                .setTitle("Delete comment")
-                                .setMessage("Are you sure you want to delete the comment?")
-                                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        String commentId = commentList.get(pos).getId();
-                                        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference()
-                                                .child(COMMENT_ROOT + "/" + feed.getIdFeed() + "/" + commentId);
-                                        databaseReference.removeValue();
-                                    }
-                                })
-                                .setNegativeButton("Cancel", null).show();
+                    public boolean onLongClick(View v) {
+                        if(!has_edit && !has_delete){
+                            return false;
+                        }
+                        displayPopupMenu(commentOverflow);
+                        return true;
                     }
                 });
 
+
+                like.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        String commentId = commentList.get(getLayoutPosition()).getId();
+                        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference()
+                                .child(COMMENT_ROOT + "/" + feed.getIdFeed() + "/" + commentId + "/likes");
+                        if (!liked){
+                            // user is liking the comment.
+                            Log.i(LOGTAG, "onClick: Comment Liked");
+                            databaseReference.child(user.getUid()).setValue(true);
+                        } else {
+                            // user is unliking the comment.
+                            Log.i(LOGTAG, "onClick: Comment Unliked.");
+                            databaseReference.child(user.getUid()).removeValue();
+                        }
+                    }
+                });
+
+            }
+
+            private void displayPopupMenu(View v) {
+                PopupMenu popup = new PopupMenu(CommentsActivity.this, v);
+                MenuInflater inflater = popup.getMenuInflater();
+                inflater.inflate(R.menu.comment_popup_menu, popup.getMenu());
+                popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                        switch (item.getItemId()) {
+                            case R.id.comment_edit:
+                                editComment(getLayoutPosition());
+                                return true;
+
+                            case R.id.comment_delete:
+                                final int pos = getLayoutPosition();
+                                new AlertDialog.Builder(context)
+                                        .setTitle("Delete comment")
+                                        .setMessage("Are you sure you want to delete the comment?")
+                                        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialog, int which) {
+                                                String commentId = commentList.get(pos).getId();
+                                                DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference()
+                                                        .child(COMMENT_ROOT + "/" + feed.getIdFeed() + "/" + commentId);
+                                                databaseReference.removeValue();
+                                            }
+                                        })
+                                        .setNegativeButton("Cancel", null).show();
+                                return true;
+
+                            default:
+                                return false;
+                        }
+                    }
+                });
+
+                // either has_delete or has_edit will be true
+                // if both are false, the button is hidden and won't reach this point at all.
+                if (!has_delete) {
+                    popup.getMenu().getItem(1).setVisible(false);
+                }
+
+                if (!has_edit) {
+                    popup.getMenu().getItem(0).setVisible(false);
+                }
+
+                popup.show();
             }
 
             private void editComment(final int pos) {
@@ -404,11 +537,43 @@ public class CommentsActivity extends AppCompatActivity {
                 comment.setText(text == null ? "" : text);
             }
 
+            public void setCommentLikes(Map<String,Boolean> likesMap){
+                if(likesMap == null){
+                    // no likes, so no icon or count
+                    liked = false;
+                    tv_likecount.setVisibility(View.GONE);
+                    commentLike.setVisibility(View.GONE);
+                    like.setTextColor(0xff808080); // Default color
+                    return;
+                } else {
+                    // set icon, count to be visible in case they were hidden before
+                    tv_likecount.setVisibility(View.VISIBLE);
+                    commentLike.setVisibility(View.VISIBLE);
+                }
+
+                tv_likecount.setText(""+likesMap.size());
+
+                if(likesMap.containsKey(user.getUid())){
+                    // comment is liked by user
+                    liked = true;
+                    like.setTextColor(0xff0000ff); // Pure Blue
+                    commentLike.setImageResource(R.drawable.ic_action_uplike);
+                } else {
+                    // comment is not liked by user
+                    liked = false;
+                    like.setTextColor(0xff808080); // Default color
+                    commentLike.setImageResource(R.drawable.ic_action_like);
+                }
+            }
+
             public void setEditAndDelete(String commentUser, String feedUser) {
                 FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-                delete.setVisibility((user.getUid().equalsIgnoreCase(feedUser) || user.getUid().equalsIgnoreCase(commentUser)) ?
-                        View.VISIBLE : View.GONE);
-                edit.setVisibility(user.getUid().equalsIgnoreCase(commentUser) ? View.VISIBLE : View.GONE);
+                has_delete = (user.getUid().equalsIgnoreCase(feedUser) || user.getUid().equalsIgnoreCase(commentUser));
+                has_edit = user.getUid().equalsIgnoreCase(commentUser);
+
+                if (!has_edit && !has_delete) {
+                    commentOverflow.setVisibility(View.GONE);
+                }
             }
         }
     }

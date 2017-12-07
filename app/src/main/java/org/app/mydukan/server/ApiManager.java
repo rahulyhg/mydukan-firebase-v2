@@ -11,6 +11,7 @@ import com.crashlytics.android.answers.Answers;
 import com.crashlytics.android.answers.LoginEvent;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -58,7 +59,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.app.mydukan.fragments.OneFragment.FEED_ROOT;
+import static org.app.mydukan.fragments.MyNetworkFragment.FEED_ROOT;
 
 /**
  * Created by Codespeak on 05-07-2016.
@@ -337,8 +338,12 @@ public class ApiManager {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         // Get user value
-                        User user = dataSnapshot.getValue(User.class);
-                        result.onSuccess(user);
+                        try {
+                            User user = dataSnapshot.getValue(User.class);
+                            result.onSuccess(user);
+                        }catch (Exception e){
+                            e.printStackTrace();
+                        }
                     }
 
                     @Override
@@ -1122,8 +1127,15 @@ public class ApiManager {
                                 return;
                             }
 
-                            String userState = mApp.getPreference().getUser(mctx).getUserinfo().getAddressinfo().getState();
-                            String userPin =  mApp.getPreference().getUser(mctx).getUserinfo().getAddressinfo().getPincode();
+                            User user = mApp.getPreference().getUser(mctx);
+                            String userState = "";
+                            String userPin = "";
+                            if (user.getUserinfo().getAddressinfo() != null && user.getUserinfo().getAddressinfo().getState() != null){
+                                userState = user.getUserinfo().getAddressinfo().getState();
+                                if(user.getUserinfo().getAddressinfo().getPincode() != null)
+                                    userPin = user.getUserinfo().getAddressinfo().getPincode();
+                            }
+
                             if (dataSnapshot.exists()) {
                                 for (DataSnapshot criteriaSnapshot : dataSnapshot.getChildren()) {
                                     DataSnapshot criteria = criteriaSnapshot.child("criteria");
@@ -1404,7 +1416,7 @@ public class ApiManager {
 
                                 if (productSnapshot.hasChild("platforms")) {
                                     try {
-                                          HashMap<String,String> mPlatforms = new HashMap<>();
+                                        HashMap<String,String> mPlatforms = new HashMap<>();
                                         productSnapshot.child("platforms").getChildren();
                                         for (DataSnapshot recipe : productSnapshot.child("platforms").getChildren()){
                                             mPlatforms.put(recipe.getKey(),recipe.getValue(String.class));
@@ -2028,11 +2040,16 @@ public class ApiManager {
                 new DatabaseReference.CompletionListener() {
                     @Override
                     public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
-                        if (databaseError == null) {
-                            getTheOrdersCount(supplierId, uid, result);
-                        } else {
-                            result.onSuccess(mctx.getString(R.string.error_updatefailed));
+                        try {
+                            if (databaseError == null) {
+                                getTheOrdersCount(supplierId, uid, result);
+                            } else {
+                                result.onSuccess(mctx.getString(R.string.error_updatefailed));
+                            }
+                        }catch (Exception e){
+                            e.printStackTrace();
                         }
+
                     }
                 });
     }
@@ -2222,7 +2239,12 @@ public class ApiManager {
     }
 
     public void refreshTheSupplierGroups(final String supplierId, final ApiResult result) {
-        final String userId = mApp.getFirebaseAuth().getCurrentUser().getUid();
+        FirebaseUser firebaseUser = mApp.getFirebaseAuth().getCurrentUser();
+        String uid = "";
+        if(firebaseUser != null && firebaseUser.getUid() != null && !firebaseUser.getUid().isEmpty()) {
+            uid = firebaseUser.getUid();
+        }
+        final String userId = uid;
         DatabaseReference groupRef = FirebaseDatabase.getInstance().getReference("groups/" + supplierId);
         groupRef.addValueEventListener(new ValueEventListener() {
             @Override
@@ -2232,9 +2254,13 @@ public class ApiManager {
                 if (user == null || user.getUserinfo() == null) {
                     return;
                 }
-
-                String userState = user.getUserinfo().getAddressinfo().getState();
-                String userPin = user.getUserinfo().getAddressinfo().getPincode();
+                String userState = "";
+                String userPin = "";
+                if (user.getUserinfo().getAddressinfo() != null && user.getUserinfo().getAddressinfo().getState() != null){
+                    userState = user.getUserinfo().getAddressinfo().getState();
+                    if(user.getUserinfo().getAddressinfo().getPincode() != null)
+                        userPin = user.getUserinfo().getAddressinfo().getPincode();
+                }
 
                 if (dataSnapshot.exists()) {
                     Log.e("User State", userState);

@@ -1,19 +1,16 @@
 package org.app.mydukan.activities;
 
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -33,16 +30,13 @@ import org.app.mydukan.R;
 import org.app.mydukan.adapters.CircleTransform;
 import org.app.mydukan.data.ChattUser;
 import org.app.mydukan.data.Feed;
-import org.app.mydukan.fragments.OneFragment;
+import org.app.mydukan.fragments.MyNetworkFragment;
 import org.app.mydukan.fragments.TwoFragment;
 import org.app.mydukan.utils.AppContants;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-
-import uk.co.deanwild.materialshowcaseview.MaterialShowcaseSequence;
-import uk.co.deanwild.materialshowcaseview.ShowcaseConfig;
 
 public class MyNetworksActivity extends AppCompatActivity {
 
@@ -111,7 +105,7 @@ public class MyNetworksActivity extends AppCompatActivity {
             public void onClick(View view) {
                 /*Fragment mFragment = new SearchFragment();
                 FragmentManager fragmentManager = getSupportFragmentManager();
-                fragmentManager.beginTransaction().replace(R.mCatId.search_container, mFragment).commit();*/
+                fragmentManager.beginTransaction().replace(R.id.search_container, mFragment).commit();*/
                 Intent intent = new Intent(MyNetworksActivity.this, Search_MyNetworkActivity.class);
                 startActivity(intent);
                 Answers.getInstance().logCustom(new CustomEvent("MyNetwork_search")
@@ -138,7 +132,7 @@ public class MyNetworksActivity extends AppCompatActivity {
                 /*
                 Fragment mFragment = new SearchFragment();
                 FragmentManager fragmentManager = getSupportFragmentManager();
-                fragmentManager.beginTransaction().replace(R.mCatId.search_container, mFragment).commit();
+                fragmentManager.beginTransaction().replace(R.id.search_container, mFragment).commit();
                 */
 
                 Answers.getInstance().logCustom(new CustomEvent("MyNetwork_search")
@@ -154,6 +148,9 @@ public class MyNetworksActivity extends AppCompatActivity {
     private void getCurrentUserData(FirebaseUser auth) {
         //showProgress(true);
         mList = new ArrayList<>();
+        if(auth == null || auth.getUid() == null || auth.getUid().isEmpty())
+            return;
+
         DatabaseReference feedReference = FirebaseDatabase.getInstance().getReference("chat_USER/" + auth.getUid());
         feedReference.addValueEventListener(new ValueEventListener() {
             @Override
@@ -177,30 +174,32 @@ public class MyNetworksActivity extends AppCompatActivity {
     }
     @Override
     public void onBackPressed() {
-      //  super.onBackPressed();
+        //  super.onBackPressed();
         Intent intent = new Intent(MyNetworksActivity.this, MainActivity.class);
         startActivity(intent);
     }
 
     private void InitProfileView(ChattUser chattUser) {
-
-        profileName.setText(chattUser.getName());
-        profileEmail.setText(chattUser.getEmail());
-        if( chattUser.getPhotoUrl()!=null)
-        {
-            Glide.with(this)
-                    .load( chattUser.getPhotoUrl() )
-                    .centerCrop()
-                    .transform(new CircleTransform(this))
-                    .override(50,50)
-                    .into(profileIMG);
-        }else{
-            Glide.with(this)
-                    .load( R.mipmap.ic_launcher )
-                    .centerCrop()
-                    .transform(new CircleTransform(this))
-                    .override(50,50)
-                    .into(profileIMG);
+        try {
+            profileName.setText(chattUser.getName());
+            profileEmail.setText(chattUser.getEmail());
+            if (chattUser.getPhotoUrl() != null) {
+                Glide.with(getApplicationContext())
+                        .load(chattUser.getPhotoUrl())
+                        .centerCrop()
+                        .transform(new CircleTransform(this))
+                        .override(50, 50)
+                        .into(profileIMG);
+            } else {
+                Glide.with(getApplicationContext())
+                        .load(R.mipmap.ic_launcher)
+                        .centerCrop()
+                        .transform(new CircleTransform(this))
+                        .override(50, 50)
+                        .into(profileIMG);
+            }
+        }catch (Exception e){
+            e.printStackTrace();
         }
     }
 
@@ -216,7 +215,7 @@ public class MyNetworksActivity extends AppCompatActivity {
 
         TextView tabOne = (TextView) LayoutInflater.from(this).inflate(R.layout.custom_tab, null);
         tabOne.setText("My Network");
-       // tabOne.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.ic_action_google, 0, 0);
+        // tabOne.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.ic_action_google, 0, 0);
         tabLayout.getTabAt(1).setCustomView(tabOne);
 
 
@@ -233,8 +232,8 @@ public class MyNetworksActivity extends AppCompatActivity {
     private void setupViewPager(ViewPager viewPager) {
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
         adapter.addFrag(new TwoFragment(), "TWO");
-        adapter.addFrag(new OneFragment(), "ONE");
-      //  adapter.addFrag(new ThreeFragment(), "THREE");
+        adapter.addFrag(new MyNetworkFragment(), "ONE");
+        //  adapter.addFrag(new ThreeFragment(), "THREE");
         viewPager.setAdapter(adapter);
     }
 

@@ -160,7 +160,7 @@ public class UserProfile extends BaseActivity implements View.OnClickListener {
 //        user_Profile_Name.setText(chattUser.getName());
         FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
 
-        if( chattUser.getPhotoUrl()!=null && chattUser.getEmail() !=null)
+        if(chattUser != null && chattUser.getPhotoUrl()!=null && chattUser.getEmail() !=null)
         {
             user_Email_Id.setText(chattUser.getEmail());
 

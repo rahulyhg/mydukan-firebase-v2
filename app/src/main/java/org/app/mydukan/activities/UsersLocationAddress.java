@@ -280,73 +280,77 @@ public class UsersLocationAddress extends BaseActivity implements View.OnClickLi
     private void enableLoc() {
 
         //
+        try {
+            if (mClient == null) {
+                mClient = new GoogleApiClient.Builder(UsersLocationAddress.this)
+                        .addApi(LocationServices.API)
+                        .addConnectionCallbacks(new GoogleApiClient.ConnectionCallbacks() {
+                            @RequiresApi(api = Build.VERSION_CODES.M)
+                            @Override
+                            public void onConnected(Bundle bundle) {
 
-        if (mClient == null) {
-            mClient = new GoogleApiClient.Builder(UsersLocationAddress.this)
-                    .addApi(LocationServices.API)
-                    .addConnectionCallbacks(new GoogleApiClient.ConnectionCallbacks() {
-                        @RequiresApi(api = Build.VERSION_CODES.M)
-                        @Override
-                        public void onConnected(Bundle bundle) {
-
-                            if (!canAccessLocation() || !canAccessCoreLocation()) {
+                                if (!canAccessLocation() || !canAccessCoreLocation()) {
+                                    checkLocationPermission();
+                                }
                                 checkLocationPermission();
                             }
-                            checkLocationPermission();
-                        }
 
-                        @Override
-                        public void onConnectionSuspended(int i) {
-                            mClient.connect();
-                            Toast.makeText(UsersLocationAddress.this, "please enable your GPS1 and Try again", Toast.LENGTH_SHORT).show();
-                            dismissProgress();
-                            Log.d("Location error", "Location connection suspended");
-                        }
-                    })
-                    .addOnConnectionFailedListener(new GoogleApiClient.OnConnectionFailedListener() {
-                        @Override
-                        public void onConnectionFailed(ConnectionResult connectionResult) {
-                            Toast.makeText(UsersLocationAddress.this, "please enable your GPS2 and Try again", Toast.LENGTH_SHORT).show();
-                            Log.d("Location error", "Location error " + connectionResult.getErrorCode());
-                            dismissProgress();
-                        }
-                    })
-                    .build();
-            mClient.connect();
+                            @Override
+                            public void onConnectionSuspended(int i) {
+                                mClient.connect();
+                                Toast.makeText(UsersLocationAddress.this, "please enable your GPS1 and Try again", Toast.LENGTH_SHORT).show();
+                                dismissProgress();
+                                Log.d("Location error", "Location connection suspended");
+                            }
+                        })
+                        .addOnConnectionFailedListener(new GoogleApiClient.OnConnectionFailedListener() {
+                            @Override
+                            public void onConnectionFailed(ConnectionResult connectionResult) {
+                                Toast.makeText(UsersLocationAddress.this, "please enable your GPS2 and Try again", Toast.LENGTH_SHORT).show();
+                                Log.d("Location error", "Location error " + connectionResult.getErrorCode());
+                                dismissProgress();
+                            }
+                        })
+                        .build();
+                mClient.connect();
 
-            LocationRequest locationRequest = LocationRequest.create();
-            locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-            locationRequest.setInterval(10 * 1000);
-            locationRequest.setFastestInterval(5 * 1000);
-            LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder()
-                    .addLocationRequest(locationRequest);
+                LocationRequest locationRequest = LocationRequest.create();
+                locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+                locationRequest.setInterval(10 * 1000);
+                locationRequest.setFastestInterval(5 * 1000);
+                LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder()
+                        .addLocationRequest(locationRequest);
 
-            builder.setAlwaysShow(true);
+                builder.setAlwaysShow(true);
 
-            PendingResult<LocationSettingsResult> result =
-                    LocationServices.SettingsApi.checkLocationSettings(mClient, builder.build());
-            result.setResultCallback(new ResultCallback<LocationSettingsResult>() {
-                @RequiresApi(api = Build.VERSION_CODES.M)
-                @Override
-                public void onResult(LocationSettingsResult result) {
-                    final Status status = result.getStatus();
-                    switch (status.getStatusCode()) {
-                        case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
-                            try {
-                                // Show the dialog by calling startResolutionForResult(),
-                                // and check the result in onActivityResult().
+                PendingResult<LocationSettingsResult> result =
+                        LocationServices.SettingsApi.checkLocationSettings(mClient, builder.build());
+                result.setResultCallback(new ResultCallback<LocationSettingsResult>() {
+                    @RequiresApi(api = Build.VERSION_CODES.M)
+                    @Override
+                    public void onResult(LocationSettingsResult result) {
+                        final Status status = result.getStatus();
+                        switch (status.getStatusCode()) {
+                            case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
+                                try {
+                                    // Show the dialog by calling startResolutionForResult(),
+                                    // and check the result in onActivityResult().
 //                                Toast.makeText(UsersLocationAddress.this, "Done.", Toast.LENGTH_SHORT).show();
 //                                requestPermissions(INITIAL_PERMS, INITIAL_REQUEST);
-                                status.startResolutionForResult(UsersLocationAddress.this, REQUEST_LOCATION);
+                                    status.startResolutionForResult(UsersLocationAddress.this, REQUEST_LOCATION);
 
 //                                finish();
-                            } catch (IntentSender.SendIntentException e) {
-                                // Ignore the error.
-                            }
-                            break;
+                                } catch (IntentSender.SendIntentException e) {
+                                    // Ignore the error.
+                                }
+                                break;
+                        }
                     }
-                }
-            });
+                });
+
+            }
+        }catch (Exception e){
+            e.printStackTrace();
         }
     }
 
@@ -363,6 +367,16 @@ public class UsersLocationAddress extends BaseActivity implements View.OnClickLi
                 break;
 
             case R.id.BtnChangeLocation:
+
+                /*
+                Added Amit
+                Before opening Google maps must check GPS permission
+                 */
+                if(ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED){
+                    //Toast.makeText(this, "Please allow MyDukan to access your location", Toast.LENGTH_SHORT).show();
+                    checkLocationPermission();
+                    return;
+                }
 
                 boolean networkPresent = myLocation.getLocation(UsersLocationAddress.this, UsersLocationAddress.this);
                 if (!networkPresent) {
@@ -419,14 +433,25 @@ public class UsersLocationAddress extends BaseActivity implements View.OnClickLi
         if (requestCode == PLACE_PICKER_REQUEST) {
 
             if (resultCode == RESULT_OK) {
-                if (addressInfo==null) {
+                /*if (addressInfo==null) {
                     Toast.makeText(this, "Wait your GPS is turning On.", Toast.LENGTH_SHORT).show();
                     return;
                 }
                 else
                 {
                     addressInfo.clear();
+                }*/
+                /*
+                This code added by amit
+                It will check if GPS Permission is granted or not if not then request to grant again
+                */
+
+                if(ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED){
+                    Toast.makeText(this, "Please allow MyDukan to access your location", Toast.LENGTH_SHORT).show();
+                    checkLocationPermission();
+                    return;
                 }
+                addressInfo.clear();
                 Place place = PlacePicker.getPlace(data, this);
                 double latitude = place.getLatLng().latitude;
                 double longitude = place.getLatLng().longitude;
@@ -638,8 +663,28 @@ public class UsersLocationAddress extends BaseActivity implements View.OnClickLi
 
                     }
                 } else { //Permission is denaided
+                    /*
+                    Code added by amit
+                    Ask user to must allow for location permission
+                     */
                     dismissProgress();
-                    Toast.makeText(this, "Permission is Denaied !", Toast.LENGTH_SHORT).show();
+                    /*if(permissions != null && permissions.length > 0 && permissions[0].equals("android.permission.ACCESS_FINE_LOCATION") || permissions[0].equals("android.permission.ACCESS_COARSE_LOCATION")) {
+                        new android.support.v7.app.AlertDialog.Builder(this)
+                                .setTitle("Info")
+                                .setMessage("To edit your address you must allow MyDukan to access your location. Please click on Edit location button and allow the permission")
+                                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        // continue
+                                        ActivityCompat.requestPermissions(UsersLocationAddress.this, new String[]{Manifest.permission.READ_CONTACTS, Manifest.permission.CALL_PHONE}, 1);
+                                        dialog.dismiss();
+                                    }
+                                })
+                                .setIcon(android.R.drawable.ic_dialog_alert)
+                                .show();
+                    }else {
+                        Toast.makeText(this, "Permission Denied !", Toast.LENGTH_SHORT).show();
+                    }*/
+                    Toast.makeText(this, "Permission Denied !", Toast.LENGTH_SHORT).show();
                 }
                 return;
 

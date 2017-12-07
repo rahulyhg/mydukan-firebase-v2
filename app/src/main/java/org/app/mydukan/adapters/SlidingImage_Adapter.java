@@ -14,7 +14,6 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
-import com.bumptech.glide.Glide;
 import com.crashlytics.android.answers.Answers;
 import com.crashlytics.android.answers.CustomEvent;
 import com.squareup.picasso.Picasso;
@@ -25,7 +24,6 @@ import org.app.mydukan.appSubscription.PriceDropSubscription;
 import org.app.mydukan.data.ImageModel;
 import org.app.mydukan.data.User;
 import org.app.mydukan.utils.AppContants;
-import org.app.mydukan.utils.Utils;
 
 import java.util.ArrayList;
 
@@ -62,10 +60,11 @@ public class SlidingImage_Adapter extends PagerAdapter {
     public Object instantiateItem(ViewGroup view, int position) {
         View imageLayout = inflater.inflate(R.layout.slidingimages_layout, view, false);
 
-        assert imageLayout != null;
-        final LinearLayout layoutImg = (LinearLayout) imageLayout.findViewById(R.id.bannerView);
-        final ImageView imageView = (ImageView) imageLayout.findViewById(R.id.image);
-        this.setupClickListener(layoutImg, position);
+        try {
+            assert imageLayout != null;
+            final LinearLayout layoutImg = (LinearLayout) imageLayout.findViewById(R.id.bannerView);
+            final ImageView imageView = (ImageView) imageLayout.findViewById(R.id.image);
+            this.setupClickListener(layoutImg, position);
 /*
        Glide.with(context)
                 .load(imageModelArrayList.get(position).getImage_drawable())
@@ -81,18 +80,23 @@ public class SlidingImage_Adapter extends PagerAdapter {
                 .placeholder(R.drawable.img_holder)                 // optional
                 .into(imageView);
                 */
-        Picasso.with(context).load(imageModelArrayList.get(position).getImage_drawable())
-                .resize(600,180)
-                //.centerCrop()
-                .placeholder(R.drawable.img_holder)                 // optional
-                .into(imageView);
+            Picasso.with(context).load(imageModelArrayList.get(position).getImage_drawable())
+                    .resize(600, 180)
+                    //.centerCrop()
+                    .placeholder(R.drawable.img_holder)                 // optional
+                    .into(imageView);
 
 
-        if(imgHolders.length>4){
-        count=0;
+            if (imgHolders.length > 4) {
+                count = 0;
+            }
+            // imageView.setImageResource(imageModelArrayList.get(position).getImage_drawable());
+            view.addView(imageLayout, 0);
+        }catch (Exception e){
+            e.printStackTrace();
+        }catch (OutOfMemoryError e){
+            e.printStackTrace();
         }
-        // imageView.setImageResource(imageModelArrayList.get(position).getImage_drawable());
-        view.addView(imageLayout, 0);
         return imageLayout;
     }
 

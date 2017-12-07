@@ -1,10 +1,8 @@
 package org.app.mydukan.activities.Schemes;
 
-import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.Toolbar;
@@ -22,8 +20,6 @@ import android.widget.TextView;
 
 import org.app.mydukan.R;
 import org.app.mydukan.activities.BaseActivity;
-import org.app.mydukan.activities.PrivacyPolicyActivity;
-import org.app.mydukan.activities.WebViewActivity;
 import org.app.mydukan.application.MyDukan;
 import org.app.mydukan.data.Scheme;
 import org.app.mydukan.data.SchemeInfo;
@@ -103,7 +99,7 @@ public class SchemeDetailsActivity extends BaseActivity {
         mEnrolledBtn.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
-                if (mSchemeRecord.getEnrolled() != isChecked) {
+                if (mSchemeRecord != null && mSchemeRecord.getEnrolled() != null && mSchemeRecord.getEnrolled() != isChecked) {
                     mSchemeRecord.setEnrolled(isChecked);
                     addSchemeRecord(mSchemeRecord);
                 }

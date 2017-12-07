@@ -6,19 +6,14 @@ import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
 import org.app.mydukan.R;
-import org.app.mydukan.activities.Doa.DoaRecordListActivity;
-import org.app.mydukan.activities.Schemes.SchemeListActivity;
 import org.app.mydukan.activities.Schemes.SchemeRecordActivity;
-import org.app.mydukan.adapters.ComplaintsAdapter;
 import org.app.mydukan.adapters.RecordsAdapter;
 import org.app.mydukan.application.MyDukan;
-import org.app.mydukan.data.Complaint;
 import org.app.mydukan.data.Record;
 import org.app.mydukan.server.ApiManager;
 import org.app.mydukan.server.ApiResult;
@@ -134,6 +129,9 @@ public class RecordsActivity extends BaseActivity implements RecordsAdapter.Reco
 
     private void deleteTheRecord(final int position){
         showProgress();
+        if(mRecordList.size() < position) {
+            return;
+        }
         Record record = mRecordList.get(position);
         ApiManager.getInstance(RecordsActivity.this).deleteRecord(record.getSupplierInfo().getId(), record.getRecordId(), new ApiResult() {
             @Override
@@ -156,6 +154,9 @@ public class RecordsActivity extends BaseActivity implements RecordsAdapter.Reco
 
     @Override
     public void OnClick(int position) {
+        if(mRecordList.size() < position) {
+            return;
+        }
         Intent intent = new Intent(RecordsActivity.this, RecordDetailsActivity.class);
         intent.putExtra(AppContants.RECORD, mRecordList.get(position));
         startActivity(intent);

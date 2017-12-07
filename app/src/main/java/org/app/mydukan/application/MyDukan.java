@@ -23,6 +23,7 @@ import org.app.mydukan.utils.AppContants;
 import org.app.mydukan.utils.AppPreference;
 import org.app.mydukan.utils.Utils;
 import io.fabric.sdk.android.Fabric;
+import io.realm.Realm;
 
 public class MyDukan extends Application {
     public static final String LOGTAG = "MyDukan";
@@ -43,6 +44,7 @@ public class MyDukan extends Application {
     public void onCreate() {
         super.onCreate();
         mContext = this;
+        Realm.init(this);
         MoEHelper.getInstance(getApplicationContext()).autoIntegrate(this);
 //        MultiDex.install(getBaseContext());
         TwitterAuthConfig authConfig = new TwitterAuthConfig(AppContants.TWITTER_KEY, AppContants.TWITTER_SECRET);
@@ -97,7 +99,7 @@ public class MyDukan extends Application {
         if(mFirebaseAuth.getCurrentUser() != null) {
             ApiManager.getInstance(getApplicationContext()).checkAndSubscribeForTopic();
             String token = FirebaseInstanceId.getInstance().getToken();
-
+ 
             // Send the Instance ID token to your app server.
             ApiManager.getInstance(this).sendRegistrationId(mFirebaseAuth.getCurrentUser().getUid(), token, new ApiResult() {
                 @Override

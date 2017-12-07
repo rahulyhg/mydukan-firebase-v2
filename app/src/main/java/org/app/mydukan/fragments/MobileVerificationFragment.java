@@ -38,6 +38,7 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.crashlytics.android.answers.Answers;
 import com.crashlytics.android.answers.CustomEvent;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -557,120 +558,128 @@ public class MobileVerificationFragment extends Fragment implements View.OnClick
 
 
     private void makeJsonObjectVerifyRequest() {
-        pDialog.show();
+        try {
+            pDialog.show();
 
-        String getMobile = mobile_field.getText().toString();
-        if (!getMobile.isEmpty()) {
-            getMobile = "+91" + getMobile;
+            String getMobile = mobile_field.getText().toString();
+            if (!getMobile.isEmpty()) {
+                getMobile = "+91" + getMobile;
 
-        }
-        String OtpCode = otp_field.getText().toString();
+            }
+            String OtpCode = otp_field.getText().toString();
 
-        String Request_type = "https://api-valify.solutionsinfini.com/v1/?otp=" + OtpCode + "&valify_id=" + token_id;
+            String Request_type = "https://api-valify.solutionsinfini.com/v1/?otp=" + OtpCode + "&valify_id=" + token_id;
 //                "https://api-valify.solutionsinfini.com/v1/?otp="+OtpCode+"&valify_id="+token_id;
 //        "https://api-valify.solutionsinfini.com/v1/?otp="+OtpCode+"&valify_id="+token_id;
-        final String finalGetMobile = getMobile;
-        StringRequest strRequest = new StringRequest(Request.Method.POST, Request_type,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        try {
-                            JSONObject jsonObject = new JSONObject(response);
+            final String finalGetMobile = getMobile;
+            StringRequest strRequest = new StringRequest(Request.Method.POST, Request_type,
+                    new Response.Listener<String>() {
+                        @Override
+                        public void onResponse(String response) {
+                            try {
+                                JSONObject jsonObject = new JSONObject(response);
 
 
-                            // Parsing json object response
-                            // response will be a json object
-                            status_1 = jsonObject.getString("status");
-                            message_1 = jsonObject.getString("message");
-                            JSONObject data = jsonObject.getJSONObject("data");
-                            token_id_1 = data.getString("otp");
+                                // Parsing json object response
+                                // response will be a json object
+                                status_1 = jsonObject.getString("status");
+                                message_1 = jsonObject.getString("message");
+                                JSONObject data = jsonObject.getJSONObject("data");
+                                token_id_1 = data.getString("otp");
 
-                            if (status.equals("OK")) {
-                                pDialog.dismiss();
-                                mainlayout.setVisibility(View.GONE);
-                                BtnNext.setVisibility(View.GONE);
-                                verified_icon.setVisibility(View.VISIBLE);
-                                verified_icon_text.setVisibility(View.VISIBLE);
-                                Toast.makeText(getActivity(), "Verified", Toast.LENGTH_SHORT)
-                                        .show();
-                                Answers.getInstance().logCustom(new CustomEvent("MobileNumber_Page")
-                                        .putCustomAttribute("Mobile_OTP_Verified",mobile_field.getText().toString()));
+                                if (status.equals("OK")) {
+                                    pDialog.dismiss();
+                                    mainlayout.setVisibility(View.GONE);
+                                    BtnNext.setVisibility(View.GONE);
+                                    verified_icon.setVisibility(View.VISIBLE);
+                                    verified_icon_text.setVisibility(View.VISIBLE);
+                                    Toast.makeText(getActivity(), "Verified", Toast.LENGTH_SHORT)
+                                            .show();
+                                    Answers.getInstance().logCustom(new CustomEvent("MobileNumber_Page")
+                                            .putCustomAttribute("Mobile_OTP_Verified", mobile_field.getText().toString()));
 
-                                String UserId = mApp.getFirebaseAuth().getCurrentUser().getUid();
-                                DatabaseReference feedReference = FirebaseDatabase.getInstance().getReference("users/" + UserId + "/userinfo/number");
-                                feedReference.setValue(finalGetMobile);
-                                DatabaseReference flagVerify_mob = FirebaseDatabase.getInstance().getReference("users/" + UserId + "/vrified_mobilenum");
-                                flagVerify_mob.setValue("true");
+                                    FirebaseUser firebaseUser = mApp.getFirebaseAuth().getCurrentUser();
+                                    String UserId = "";
+                                    if (firebaseUser != null && firebaseUser.getUid() != null)
+                                        UserId = mApp.getFirebaseAuth().getCurrentUser().getUid();
 
-                                //  updateUserInfo(email,name,Phonum);
-                                //https://mydukan-1024.firebaseio.com/users/kVihGQVdNPgwUoHkaLiw6X1czN43/userinfo/number
-                                NewSignUpActivity newSignUpActivity =new NewSignUpActivity();
-                                if (newSignUpActivity.viewType !=null) {
-                                    if (newSignUpActivity.viewType.equalsIgnoreCase("user_profile")){
+                                    DatabaseReference feedReference = FirebaseDatabase.getInstance().getReference("users/" + UserId + "/userinfo/number");
+                                    feedReference.setValue(finalGetMobile);
+                                    DatabaseReference flagVerify_mob = FirebaseDatabase.getInstance().getReference("users/" + UserId + "/vrified_mobilenum");
+                                    flagVerify_mob.setValue("true");
+
+                                    //  updateUserInfo(email,name,Phonum);
+                                    //https://mydukan-1024.firebaseio.com/users/kVihGQVdNPgwUoHkaLiw6X1czN43/userinfo/number
+                                    NewSignUpActivity newSignUpActivity = new NewSignUpActivity();
+                                    if (newSignUpActivity.viewType != null) {
+                                        if (newSignUpActivity.viewType.equalsIgnoreCase("user_profile")) {
                                        /* Intent i = new Intent(getContext(), UserProfile.class);
                                         i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                                         startActivity(i);*/
-                                       getActivity().onBackPressed();
+                                            getActivity().onBackPressed();
+                                        }
+                                    } else {
+                                        Intent i = new Intent(getContext(), UsersLocationAddress.class);
+                                        i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                        startActivity(i);
                                     }
-                                } else {
-                                    Intent i = new Intent(getContext(), UsersLocationAddress.class);
-                                    i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                                    startActivity(i);
+
                                 }
 
+                                if (status_1.equals("E600")) {
+                                    validatePhoneNumber();
+                                    pDialog.dismiss();
+                                    Toast.makeText(getActivity(), "E600 Error", Toast.LENGTH_SHORT)
+                                            .show();
+                                }
+
+                                if (status_1.equals("A401B")) {
+                                    Toast.makeText(getActivity(), "A401B Error", Toast.LENGTH_SHORT)
+                                            .show();
+                                    pDialog.dismiss();
+
+                                }
+                                if (status_1.equals("E603")) {
+                                    BtnVerify.setEnabled(true);
+                                    BtnVerify.setTextColor(Color.parseColor("#4285F4"));
+                                    pDialog.dismiss();
+                                    Toast.makeText(getActivity(), "E603 Error", Toast.LENGTH_SHORT)
+                                            .show();
+                                }
+
+
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+
                             }
-
-                            if (status_1.equals("E600")) {
-                                validatePhoneNumber();
-                                pDialog.dismiss();
-                                Toast.makeText(getActivity(), "E600 Error", Toast.LENGTH_SHORT)
-                                        .show();
-                            }
-
-                            if (status_1.equals("A401B")) {
-                                Toast.makeText(getActivity(), "A401B Error", Toast.LENGTH_SHORT)
-                                        .show();
-                                pDialog.dismiss();
-
-                            }
-                            if (status_1.equals("E603")) {
-                                BtnVerify.setEnabled(true);
-                                BtnVerify.setTextColor(Color.parseColor("#4285F4"));
-                                pDialog.dismiss();
-                                Toast.makeText(getActivity(), "E603 Error", Toast.LENGTH_SHORT)
-                                        .show();
-                            }
-
-
-                        } catch (JSONException e) {
-                            e.printStackTrace();
 
                         }
+                    },
+                    new Response.ErrorListener() {
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+                            VolleyLog.d(TAG, "Error: " + message_1);
+                            Toast.makeText(getActivity(),
+                                    message_1, Toast.LENGTH_LONG).show();
+                            pDialog.dismiss();
+                        }
+                    }) {
+                @Override
+                public Map<String, String> getHeaders() throws AuthFailureError {
+                    Map<String, String> map = new HashMap<String, String>();
+                    map.put(KEY_X_Auth_Key_1, x_auth_key);
+                    map.put(KEY_X_Api_Method_1, x_api_method);
+                    map.put(KEY_X_Api_Format_1, x_api_format);
 
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        VolleyLog.d(TAG, "Error: " + message_1);
-                        Toast.makeText(getActivity(),
-                                message_1, Toast.LENGTH_LONG).show();
-                        pDialog.dismiss();
-                    }
-                }) {
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
-                Map<String, String> map = new HashMap<String, String>();
-                map.put(KEY_X_Auth_Key_1, x_auth_key);
-                map.put(KEY_X_Api_Method_1, x_api_method);
-                map.put(KEY_X_Api_Format_1, x_api_format);
+                    return map;
+                }
+            };
 
-                return map;
-            }
-        };
-
-        RequestQueue requestQueue = Volley.newRequestQueue(getContext());
-        requestQueue.add(strRequest);
+            RequestQueue requestQueue = Volley.newRequestQueue(getContext());
+            requestQueue.add(strRequest);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
    /* private void updateUserInfo() {
