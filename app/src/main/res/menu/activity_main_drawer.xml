@@ -36,6 +36,12 @@
             tools:ignore="HardcodedText" />
 
         <item
+            android:id="@+id/nav_myBroadCast"
+            android:icon="@drawable/ic_mydukan_broadcast"
+            android:title="MyDukan BroadCast"
+            tools:ignore="HardcodedText"/>
+
+        <item
             android:id="@+id/nav_help"
             android:icon="@drawable/ic_action_about"
             android:title="About Us"
