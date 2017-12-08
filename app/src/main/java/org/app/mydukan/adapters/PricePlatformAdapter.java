@@ -66,7 +66,7 @@ public class PricePlatformAdapter extends BaseAdapter {
         TextView platformName;
         TextView platformPrice;
         TextView platformInfo;
-        Button platformToStores;
+        ImageView platformToStores;
     }
 
     @Override
@@ -98,7 +98,7 @@ public class PricePlatformAdapter extends BaseAdapter {
             holder.platformName = (TextView) view.findViewById(R.id.platformName);
             holder.platformPrice = (TextView) view.findViewById(R.id.platformPrice);
             holder.platformInfo = (TextView) view.findViewById(R.id.platformInfo);
-            holder.platformToStores = (Button) view.findViewById(R.id.platformToStores);
+            holder.platformToStores = (ImageView) view.findViewById(R.id.platformToStores);
 
             view.setTag(holder);
 

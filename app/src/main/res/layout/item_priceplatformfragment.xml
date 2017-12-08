@@ -46,7 +46,7 @@
 
 
 
-        <Button
+        <!--<Button
             android:id="@+id/platformToStores"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -57,7 +57,15 @@
             android:text="Go to Store"
             android:padding="5dp"
             android:textSize="@dimen/microtextSize"
-            android:layout_marginLeft="10sp"/>
+            android:layout_marginLeft="10sp"/>-->
+
+        <ImageView
+            android:id="@+id/platformToStores"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:src="@drawable/ic_gotostore"
+            />
 
     </LinearLayout>
 
