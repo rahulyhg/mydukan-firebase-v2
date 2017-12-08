@@ -90,7 +90,6 @@ import static org.app.mydukan.utils.AppContants.USER_ID;
 
 //import org.app.mydukan.utils.PaytmGateway;
 
-
 /**
  * autoIntegrate
  * Created by arpithadudi on 7/27/16.

@@ -1387,7 +1387,7 @@ public class ApiManager {
 
 
             /*Logic for product keys group*/
-
+            groupRef.keepSynced(true);
             groupRef.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
