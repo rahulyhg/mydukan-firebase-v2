@@ -14,7 +14,7 @@ import org.app.mydukan.data.ChattUser;
 import org.app.mydukan.data.Feed;
 import org.app.mydukan.utils.AppContants;
 
-public class WebViewActivity extends AppCompatActivity {
+public class WebViewActivity extends BaseActivity {
 
     Feed wFeed =new Feed();
     private WebView wv1;

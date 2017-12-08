@@ -132,7 +132,7 @@ public class PricePlatformAdapter extends BaseAdapter {
                 if (mUrl == null || mUrl.isEmpty()) {
                     holder.platformToStores.setVisibility(View.GONE);
                 }else {
-                    holder.platformToStores.setVisibility(View.VISIBLE);;
+                    holder.platformToStores.setVisibility(View.VISIBLE);
                 }
 
 
