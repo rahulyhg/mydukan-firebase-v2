@@ -130,7 +130,7 @@ public class PricePlatformAdapter extends BaseAdapter {
                 }
 
                 if (mUrl == null || mUrl.isEmpty()) {
-                    holder.platformToStores.setVisibility(View.GONE);
+                    holder.platformToStores.setVisibility(View.INVISIBLE);
                 }else {
                     holder.platformToStores.setVisibility(View.VISIBLE);
                 }
@@ -250,7 +250,7 @@ public class PricePlatformAdapter extends BaseAdapter {
                 Intent intent = new Intent(mContext, WebViewActivity.class);
                 intent.putExtra(AppContants.VIEW_PLATFORM,mUrl );
                 mContext.startActivity(intent);
-                Toast.makeText(mContext, "You Clicked : " + ("₹ "+mItem.get(item).get("price")), Toast.LENGTH_SHORT).show();
+              //  Toast.makeText(mContext, "You Clicked : " + ("₹ "+mItem.get(item).get("price")), Toast.LENGTH_SHORT).show();
             }
         });
            /* // TODO replace findViewById by ViewHolder
