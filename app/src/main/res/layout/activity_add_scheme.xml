@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+    android:orientation="vertical"
+    android:background="@android:color/white"
+    android:padding="5dp"
+    android:layout_height="match_parent">
+
+
+    <AutoCompleteTextView
+        android:id="@+id/lbl_category"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="LG"
+        android:gravity="center"
+        android:imeOptions="actionNext"
+        android:inputType="textCapSentences"
+        android:maxLines="1"
+        />
+
+
+    <android.support.design.widget.TextInputLayout
+        android:id="@+id/lbl_scheme"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/lbl_dp"
+        android:layout_below="@+id/lbl_target">
+
+        <AutoCompleteTextView
+            android:id="@+id/edt_scheme_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/enter_schemes_title"
+            android:imeOptions="actionNext"
+            android:inputType="number"
+            android:maxLines="1"
+            />
+
+    </android.support.design.widget.TextInputLayout>
+
+    <android.support.design.widget.TextInputLayout
+        android:id="@+id/lbl_scheme_desc"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/lbl_dp"
+        android:layout_below="@+id/lbl_target">
+
+        <AutoCompleteTextView
+            android:id="@+id/edt_scheme_desc"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/enter_schemes_title"
+            android:minHeight="100dp"
+            android:imeOptions="actionNext"
+            android:gravity="top"
+            android:inputType="textCapSentences"
+            android:maxLines="5"
+            />
+
+    </android.support.design.widget.TextInputLayout>
+
+
+    <android.support.v7.widget.AppCompatSpinner
+        android:id="@+id/sprn_selectschemes"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"
+        android:padding="5dp"
+ />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:padding="5dp"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/txt_start_date"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:padding="5dp"
+           android:text="Start Date"
+            android:textSize="20sp" />
+
+
+        <TextView
+            android:id="@+id/txt_end_date"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:padding="5dp"
+            android:text="End Date"
+            android:textSize="20sp" />
+    </LinearLayout>
+
+
+    <Button
+        android:layout_width="match_parent"
+        android:padding="5dp"
+        android:text="Capture Scheme Document"
+        android:layout_marginTop="5dp"
+        android:layout_height="wrap_content" />
+
+</LinearLayout>

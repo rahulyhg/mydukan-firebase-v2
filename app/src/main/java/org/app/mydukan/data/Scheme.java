@@ -16,6 +16,17 @@ public class Scheme extends Object implements Serializable {
     private long startdate = 0l;
     private long enddate = 0l;
 
+    public boolean isHasEnrolled() {
+        return hasEnrolled;
+    }
+
+    public void setHasEnrolled(boolean hasEnrolled) {
+        this.hasEnrolled = hasEnrolled;
+    }
+
+    private boolean hasEnrolled = false;
+
+
     public String getSchemeId() {
         return schemeId;
     }

@@ -103,6 +103,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity android:name=".fragments.myschemes.MySchemesActivity"/>
         <activity
             android:name=".activities.MyNetworksActivity"
             android:label="MyNetwork"

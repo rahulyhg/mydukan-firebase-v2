@@ -7,6 +7,7 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 
 import org.app.mydukan.data.Product;
 import org.app.mydukan.data.Scheme;
+import org.app.mydukan.fragments.myschemes.fragmetns.MySelectedSchemesHelper;
 import org.app.mydukan.utils.AppContants;
 
 import java.util.ArrayList;
@@ -18,10 +19,10 @@ import java.util.HashMap;
 public class SchemesPagerFragment extends FragmentStatePagerAdapter {
 
     //integer to count number of tabs
-    int tabCount;
-    String supplierName;
-    String supplierId;
-    ArrayList<ArrayList<Scheme>> mSchemeList;
+    private int tabCount;
+    private String supplierName;
+    private String supplierId;
+    private ArrayList<ArrayList<Scheme>> mSchemeList;
 
     public SchemesPagerFragment(FragmentManager fm, String supplierName, String supplierId,
                                 ArrayList<ArrayList<Scheme>> list ) {
@@ -39,7 +40,7 @@ public class SchemesPagerFragment extends FragmentStatePagerAdapter {
         bundle.putString(AppContants.SUPPLIER_NAME, supplierName);
         bundle.putString(AppContants.SUPPLIER_ID, supplierId);
         schemeFragment.setArguments(bundle);
-        schemeFragment.setData(mSchemeList.get(position));
+        schemeFragment.setData(mSchemeList.get(position),position);
         return schemeFragment;
     }
 
@@ -48,9 +49,12 @@ public class SchemesPagerFragment extends FragmentStatePagerAdapter {
         return tabCount;
     }
 
+
     public void setData(ArrayList<ArrayList<Scheme>> list){
         mSchemeList.clear();
         mSchemeList.addAll(list);
         tabCount = mSchemeList.size();
+        MySelectedSchemesHelper.getInstance()
+                .setAllProductsList(mSchemeList);
     }
 }

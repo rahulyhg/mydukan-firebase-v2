@@ -279,4 +279,33 @@
     <string name="registered_emailid">Please enter your Registered Email Id below:</string>
     <string name="back">BACK</string>
 
+    <string name="myschemes_title">My Schemes</string>
+
+    <string name="prompt_target">Target</string>
+    <string name="prompt_quantity">Quantity</string>
+    <string name="percent">Percent(%)</string>
+    <string name="prompt_perhandset">Per hand set</string>
+    <string name="incentive_amount">Incentive Amount</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="select_offers_for_the_period">Change Date</string>
+    <string name="action_search">Add</string>
+
+    <array name="months">
+        <item>-Select Month-</item>
+        <item>Jan</item>
+        <item>Feb</item>
+        <item>Mar</item>
+        <item>April</item>
+        <item>May</item>
+        <item>Jun</item>
+        <item>Jul</item>
+        <item>Aug</item>
+        <item>Sept</item>
+        <item>Oct</item>
+        <item>Nov</item>
+        <item>Dec</item>
+    </array>
+    <string name="enter_schemes_title">Enter Scheme title</string>
+
 </resources>
