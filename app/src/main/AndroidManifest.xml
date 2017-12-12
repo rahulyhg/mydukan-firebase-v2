@@ -245,7 +245,6 @@
                 <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
             </intent-filter>
         </service>
-
         <service android:name=".services.MydukanMessagingService">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
@@ -399,7 +398,6 @@
         <activity
             android:name=".activities.BroadcastActivity"
             android:screenOrientation="portrait" />
-
         <activity
             android:name=".activities.NewSignUpActivity"
             android:screenOrientation="portrait"
@@ -411,22 +409,18 @@
             </intent-filter>
         </receiver>
 
-
-
         <activity
             android:name=".fragments.YouTubeFragmentActivity"
             android:screenOrientation="portrait" />
-
         <activity
             android:name=".activities.UsersLocationAddress"
             android:screenOrientation="portrait" />
-
-        <activity android:name=".activities.UserProfile"
+        <activity
+            android:name=".activities.UserProfile"
             android:screenOrientation="portrait" />
-
-        <activity android:name=".activities.CompanyDetails"
+        <activity
+            android:name=".activities.CompanyDetails"
             android:screenOrientation="portrait" />
-
         <activity
             android:name=".activities.IntentForwardingActivity"
             android:launchMode="singleTask">
@@ -444,7 +438,9 @@
 
         <service
             android:name=".services.SyncContacts"
-            android:exported="false"/>
+            android:exported="false" />
+
+        <activity android:name=".activities.MyRecordsActivity"></activity>
     </application>
 
 </manifest>
