@@ -62,6 +62,7 @@ import org.app.mydukan.server.ApiResult;
 import org.app.mydukan.utils.AppContants;
 import org.app.mydukan.utils.AppPreference;
 import org.app.mydukan.utils.NetworkUtil;
+import org.app.mydukan.utils.SharedPrefsUtils;
 import org.app.mydukan.utils.Utils;
 
 import java.util.ArrayList;
@@ -144,7 +145,8 @@ public class CategoryListActivity extends BaseActivity implements CategoryAdapte
                 // Save supplier details in shared prefs
                // appPreference = new AppPreference();
               //  appPreference.set
-
+                SharedPrefsUtils.setStringPreference(this,"supplier_name",supplierData.getName());
+                SharedPrefsUtils.setStringPreference(this,"supplier_id",supplierData.getId());
             }
         }
         mApp = (MyDukan) getApplicationContext();

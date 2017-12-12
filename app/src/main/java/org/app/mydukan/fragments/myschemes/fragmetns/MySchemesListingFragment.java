@@ -27,6 +27,7 @@ import org.app.mydukan.fragments.myschemes.MySchemesActivity;
 import org.app.mydukan.fragments.myschemes.adapter.GridSpacingItemDecoration;
 import org.app.mydukan.fragments.myschemes.adapter.MySchemesAdapter;
 import org.app.mydukan.utils.AppContants;
+import org.app.mydukan.utils.SharedPrefsUtils;
 
 import java.io.Serializable;
 import java.util.List;
@@ -149,8 +150,8 @@ public class MySchemesListingFragment extends Fragment
     public void OnClick(int position) {
         Intent intent = new Intent(getActivity(), SchemeDetailsActivity.class);
         intent.putExtra(AppContants.SCHEME, mSchemesList.get(position));
-        intent.putExtra(AppContants.SUPPLIER_NAME, mSupplierName);
-        intent.putExtra(AppContants.SUPPLIER_ID, mSupplierId);
+        intent.putExtra(AppContants.SUPPLIER_NAME, SharedPrefsUtils.getStringPreference(getActivity(),"supplier_name"));
+        intent.putExtra(AppContants.SUPPLIER_ID, SharedPrefsUtils.getStringPreference(getActivity(),"supplier_id"));
         startActivity(intent);
     }
 
