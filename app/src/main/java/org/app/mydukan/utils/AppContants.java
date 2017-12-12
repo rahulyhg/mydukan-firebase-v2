@@ -49,6 +49,8 @@ public class AppContants {
     public final static String SCHEMERECORD = "schemerecord";
     public final static String SCHEMEID = "schemeid";
 
+    public final static String VIEW_PLATFORM= "view_platform";
+
     public final static String RECORDDATA = "recorddata";
     public final static String NOTIFICATION = "notification";
 

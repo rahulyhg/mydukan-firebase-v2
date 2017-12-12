@@ -401,12 +401,12 @@ public class LoginActivity extends BaseActivity implements GoogleApiClient.OnCon
                     Answers.getInstance().logCustom(new CustomEvent("Login_Page")
                             .putCustomAttribute("UserId", mUserid));
 
-                    if(user.getVrified_mobilenum() == null && mob_vrify.equals("false")){
+                    if(user.getVrified_mobilenum() == null || mob_vrify.equals("false")){
                         Intent intent = new Intent(LoginActivity.this, NewSignUpActivity.class);
                         intent.putExtra(AppContants.VIEW_TYPE, AppContants.SIGN_UP);
                         startActivity(intent);
                         finish();
-                    }else if(user.getVerified_location() == null && location_verfy.equals("false")){
+                    }else if(user.getVerified_location() == null || location_verfy.equals("false")){
                         Intent intent = new Intent(LoginActivity.this, UsersLocationAddress.class);
                         intent.putExtra(AppContants.VIEW_TYPE, AppContants.SIGN_UP);
                         startActivity(intent);

@@ -2,10 +2,12 @@ package org.app.mydukan.adapters;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -21,11 +23,13 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import org.app.mydukan.R;
+import org.app.mydukan.activities.WebViewActivity;
 import org.app.mydukan.application.MyDukan;
 import org.app.mydukan.data.ChattUser;
 import org.app.mydukan.data.PlatForm_Info;
 import org.app.mydukan.utils.AppContants;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -45,6 +49,7 @@ public class PricePlatformAdapter extends BaseAdapter {
     private Context mContext;
     private LayoutInflater inflater;
     private MyDukan mApp;
+    String mUrl="";
     HashMap<String, HashMap<String, String>> mItem;
     public PricePlatformAdapter(Context context, HashMap<String, HashMap<String, String>> map) {
         this. mContext = context;
@@ -60,7 +65,8 @@ public class PricePlatformAdapter extends BaseAdapter {
     public class ViewHolder {
         TextView platformName;
         TextView platformPrice;
-
+        TextView platformInfo;
+        ImageView platformToStores;
     }
 
     @Override
@@ -91,6 +97,8 @@ public class PricePlatformAdapter extends BaseAdapter {
             view = inflater.inflate(R.layout.item_priceplatformfragment, null);
             holder.platformName = (TextView) view.findViewById(R.id.platformName);
             holder.platformPrice = (TextView) view.findViewById(R.id.platformPrice);
+            holder.platformInfo = (TextView) view.findViewById(R.id.platformInfo);
+            holder.platformToStores = (ImageView) view.findViewById(R.id.platformToStores);
 
             view.setTag(holder);
 
@@ -102,19 +110,33 @@ public class PricePlatformAdapter extends BaseAdapter {
         if(item!=null) {
 
             holder.platformName.setText(mApp.getUtils().toCamelCase(item));
-            if(mItem.size()>0){
-                String mprice= mItem.get(item).get("price");
-                if(mprice!=null){
+            if (mItem.size() > 0) {
+                String mprice = mItem.get(item).get("price");
+                String mInfo = mItem.get(item).get("info");
+                 mUrl = mItem.get(item).get("url");
 
-                    holder.platformPrice.setText("₹ "+mItem.get(item).get("price"));
+                if (mprice != null) {
+
+                    holder.platformPrice.setText("₹ " + mItem.get(item).get("price"));
+                } else {
+                    holder.platformPrice.setText("-");
                 }
-            }else{
-                holder.platformPrice.setText("-");
-            }
+
+                if (mInfo != null) {
+                    holder.platformInfo.setText(mApp.getUtils().toCamelCase(mInfo));
+                }
+                else {
+                    holder.platformInfo.setVisibility(View.GONE);
+                }
+
+                if (mUrl == null || mUrl.isEmpty()) {
+                    holder.platformToStores.setVisibility(View.INVISIBLE);
+                }else {
+                    holder.platformToStores.setVisibility(View.VISIBLE);
+                }
 
 
-
-
+        }
 
 
         /* if(!mApp.getUtils().isStringEmpty(value)){
@@ -222,12 +244,15 @@ public class PricePlatformAdapter extends BaseAdapter {
             }*/
         }
 
-        /*holder.platformPrice.setOnClickListener(new View.OnClickListener() {
+         holder.platformToStores.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(mContext, "You Clicked : " + ("₹ "+mItem.get(item).get("price")), Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(mContext, WebViewActivity.class);
+                intent.putExtra(AppContants.VIEW_PLATFORM,mUrl );
+                mContext.startActivity(intent);
+              //  Toast.makeText(mContext, "You Clicked : " + ("₹ "+mItem.get(item).get("price")), Toast.LENGTH_SHORT).show();
             }
-        });*/
+        });
            /* // TODO replace findViewById by ViewHolder
             ((TextView) result.findViewById(android.R.id.text1)).setText(mApp.getUtils().toCamelCase(item.getKey())+": ");
             ((TextView) result.findViewById(android.R.id.text2)).setText(item.getValue());*/

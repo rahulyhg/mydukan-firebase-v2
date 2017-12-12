@@ -432,6 +432,9 @@
             android:exported="false" />
 
         <activity android:name=".activities.PriceDropActivity"></activity>
+            android:exported="false" />
+
+        <activity android:name=".activities.MyRecordsActivity"></activity>
     </application>
 
 </manifest>

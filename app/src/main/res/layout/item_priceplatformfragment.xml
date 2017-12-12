@@ -19,24 +19,64 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         >
+
         <TextView
             android:id="@+id/platformName"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text=""
+            android:layout_gravity="center_vertical"
+            android:textColor="@color/text_color"
+            android:text="Platform Name"
             android:layout_weight="1"
             android:textSize="@dimen/mediumtextSize"
             />
-        <TextView
-            android:id="@+id/platformPrice"
-            android:textSize="@dimen/mediumtextSize"
+
+
+            <TextView
+                android:id="@+id/platformPrice"
+                android:textSize="@dimen/mediumtextSize"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_gravity="center_vertical"
+                android:layout_height="wrap_content"
+                android:textColor="@color/text_color"
+                android:layout_marginLeft="10sp"
+                android:textStyle="bold"
+                android:text="Platform Price"/>
+
+
+
+        <!--<Button
+            android:id="@+id/platformToStores"
             android:layout_width="0dp"
-            android:layout_weight="1"
             android:layout_height="wrap_content"
-            android:textColor="@color/text_color"
-            android:layout_marginLeft="10sp"
-            android:textStyle="bold"
-            android:text=""/>
+            android:layout_weight="1"
+            android:drawableRight="@drawable/ic_arrow_right_black_24dp"
+            android:layout_gravity="center_vertical"
+            android:textColor="@color/orange_one"
+            android:text="Go to Store"
+            android:padding="5dp"
+            android:textSize="@dimen/microtextSize"
+            android:layout_marginLeft="10sp"/>-->
+
+        <ImageView
+            android:id="@+id/platformToStores"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:src="@drawable/ic_gotostore"
+            />
+
     </LinearLayout>
+
+    <TextView
+        android:id="@+id/platformInfo"
+        android:textSize="@dimen/smalltextSize"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10sp"
+        android:layout_marginRight="10sp"
+        android:layout_marginTop="4sp"
+        android:text="Platform Price"/>
 
 </LinearLayout>

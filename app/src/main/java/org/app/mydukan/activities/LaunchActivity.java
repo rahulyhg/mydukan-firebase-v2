@@ -268,13 +268,15 @@ public class LaunchActivity extends BaseActivity {
                 if (mAppState == stateContants.HOME_SCREEN) {
                     // startActivity(new Intent(LaunchActivity.this, MainActivity.class));
                     openActivity();
+
                     Answers.getInstance().logCustom(new CustomEvent("Launcher_Page")
                             .putCustomAttribute("UserId", mUid));
                     Intent intent = new Intent(LaunchActivity.this, MainActivity.class);
-//                    intent.putExtra(AppContants.NOTIFICATION,notificationInfo);
+//                  intent.putExtra(AppContants.NOTIFICATION,notificationInfo);
                     intent.putExtra(DEEP_LINK, getIntent().getStringExtra(DEEP_LINK));
                     startActivity(intent);
                     finish();
+
                 } else if (mAppState == stateContants.PROFILE_SCREEN) {
                     Intent intent = new Intent(LaunchActivity.this, UserProfile.class);
                     intent.putExtra(AppContants.VIEW_TYPE, AppContants.SIGN_UP);

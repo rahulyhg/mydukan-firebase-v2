@@ -403,7 +403,7 @@ public class ProductListActivity extends BaseActivity implements TabLayout.OnTab
 
         final MenuItem mCart = menu.findItem(R.id.menu_cart);
         if (mSupplier.isCartEnabled()) {
-            mCart.setVisible(true);
+            mCart.setVisible(false);
         } else {
             mCart.setVisible(false);
         }

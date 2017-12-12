@@ -14,7 +14,7 @@ import org.app.mydukan.data.ChattUser;
 import org.app.mydukan.data.Feed;
 import org.app.mydukan.utils.AppContants;
 
-public class WebViewActivity extends AppCompatActivity {
+public class WebViewActivity extends BaseActivity {
 
     Feed wFeed =new Feed();
     private WebView wv1;
@@ -43,7 +43,7 @@ public class WebViewActivity extends AppCompatActivity {
                     settings.setLightTouchEnabled(true);
                     settings.setDomStorageEnabled(true);
                     settings.setLoadWithOverviewMode(true);
-                    String url =wFeed.getLink();
+                    String url = wFeed.getLink();
                     ///  String url ="file:///android_asset/responssivepage.html";
                     wv1.getSettings().setLoadsImagesAutomatically(true);
                     wv1.getSettings().setJavaScriptEnabled(true);
@@ -54,6 +54,37 @@ public class WebViewActivity extends AppCompatActivity {
                     Toast.makeText(WebViewActivity.this, "Error: Unable to Open the Link", Toast.LENGTH_SHORT).show();
                 }
             }
+                 if (mybundle.containsKey(AppContants.VIEW_PLATFORM)) {
+                    String url_Platform = (String) mybundle.get(AppContants.VIEW_PLATFORM);
+
+                    if (url_Platform != null) {
+                        wv1.setVisibility(View.VISIBLE);
+                        wv1.setWebViewClient(new MyBrowser());
+
+                        WebSettings settings = wv1.getSettings();
+                        settings.setMinimumFontSize(20);
+                        settings.setBuiltInZoomControls(true);
+                        settings.setUseWideViewPort(true);
+                        settings.setJavaScriptEnabled(true);
+                        settings.setSupportMultipleWindows(true);
+                        settings.setJavaScriptCanOpenWindowsAutomatically(true);
+                        settings.setLoadsImagesAutomatically(true);
+                        settings.setLightTouchEnabled(true);
+                        settings.setDomStorageEnabled(true);
+                        settings.setLoadWithOverviewMode(true);
+
+                        ///  String url ="file:///android_asset/responssivepage.html";
+                        wv1.getSettings().setLoadsImagesAutomatically(true);
+                        wv1.getSettings().setJavaScriptEnabled(true);
+                        wv1.setScrollBarStyle(View.SCROLLBARS_INSIDE_OVERLAY);
+                        wv1.loadUrl(url_Platform);
+
+                    }
+                    else {
+                    Toast.makeText(WebViewActivity.this, "Error: Unable to Open the Link", Toast.LENGTH_SHORT).show();
+                }
+                }
+
         }
 
     }
