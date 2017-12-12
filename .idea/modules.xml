@@ -4,10 +4,7 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/MyDukan.iml" filepath="$PROJECT_DIR$/.idea/MyDukan.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
-      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://$PROJECT_DIR$/libraries/appdukan/libraries_appdukan.iml" filepath="$PROJECT_DIR$/libraries/appdukan/libraries_appdukan.iml" />
-      <module fileurl="file://$PROJECT_DIR$/libraries/appdukan/libraries_appdukan.iml" filepath="$PROJECT_DIR$/libraries/appdukan/libraries_appdukan.iml" />
-      <module fileurl="file://$PROJECT_DIR$/mydukan-firebase-v2.iml" filepath="$PROJECT_DIR$/mydukan-firebase-v2.iml" />
     </modules>
   </component>
 </project>
