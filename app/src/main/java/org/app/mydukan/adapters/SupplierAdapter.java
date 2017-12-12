@@ -80,6 +80,8 @@ public class SupplierAdapter extends
             holder.mSupplierName.setText("MOBILE DP FREE");
         }
 
+        // Save Supplier
+
         if (currentSupplier.getUserinfo().getName().contains(AppContants.MOBILE_DP)) {
             holder.mSupplierimg.setImageResource(R.drawable.ic_mobiledp);
           //  holder.mSupplierName.setTypeface(Typeface.DEFAULT_BOLD);

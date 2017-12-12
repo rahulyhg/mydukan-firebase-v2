@@ -1,9 +1,25 @@
 package org.app.mydukan.fragments.myschemes.fragmetns;
 
+import android.content.Intent;
+import android.util.Log;
+import android.view.View;
+import android.widget.Toast;
+
+import com.crashlytics.android.answers.Answers;
+import com.crashlytics.android.answers.CustomEvent;
+
+import org.app.mydukan.activities.CategoryListActivity;
+import org.app.mydukan.activities.ProductListActivity;
+import org.app.mydukan.data.Category;
 import org.app.mydukan.data.Scheme;
 import org.app.mydukan.data.SchemeRecord;
+import org.app.mydukan.data.Supplier;
+import org.app.mydukan.data.SupplierBindData;
+import org.app.mydukan.data.User;
+import org.app.mydukan.utils.AppContants;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -18,6 +34,10 @@ public class MySelectedSchemesHelper {
     private ArrayList<SchemeRecord> recordList;
 
     private static MySelectedSchemesHelper instance;
+
+    private ArrayList<Category> categoryList;
+    private  SupplierBindData  currentSupplier;
+
 
     private MySelectedSchemesHelper() {
         mySelectedList = new ArrayList<>();
@@ -170,4 +190,37 @@ public class MySelectedSchemesHelper {
         }
 
     }
+
+    public void storeCategoryList(ArrayList<Category> mCategoryList) {
+        this.categoryList = mCategoryList;
+    }
+
+
+    public String getCategoryId(String category){
+        if(categoryList != null && categoryList.size() >0 && category != null) {
+            for (int i = 0; i < categoryList.size(); i++) {
+                if(categoryList.get(i).getName().contains(category)){
+                    return categoryList.get(i).getId();
+                }
+            }
+        }
+        return null;
+    }
+
+    public void saveCurrentSupplier(SupplierBindData supplier) {
+        this.currentSupplier = supplier;
+    }
+
+    public SupplierBindData getCurrentSupplier(){
+        return currentSupplier;
+    }
+/*
+    public void saveCurrentUser(User supplier) {
+        this.currentSupplier = supplier;
+    }
+
+    public Supplier getCurrentSupplier(){
+        return currentSupplier;
+    }*/
+
 }

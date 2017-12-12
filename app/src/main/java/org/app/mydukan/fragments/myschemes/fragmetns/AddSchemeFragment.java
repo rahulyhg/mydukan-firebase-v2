@@ -5,17 +5,20 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
-import android.view.ContextMenu;
+import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AutoCompleteTextView;
 
 import org.app.mydukan.R;
+
 import org.app.mydukan.fragments.myschemes.MySchemesActivity;
+import org.app.mydukan.server.ApiManager;
+import org.app.mydukan.server.ApiResult;
+
+
+import static com.facebook.FacebookSdk.getApplicationContext;
 
 /**
  * Created by rojesharunkumar on 15/11/17.
@@ -24,8 +27,9 @@ import org.app.mydukan.fragments.myschemes.MySchemesActivity;
 public class AddSchemeFragment extends Fragment {
 
     private MySchemesActivity mActivity;
-private String title;
-private AutoCompleteTextView mCategory,mTxtSchemeTitle,mTxtSchemeDescription;
+    private String title;
+    private AutoCompleteTextView mCategory,mTxtSchemeTitle,mTxtSchemeDescription;
+
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
@@ -68,8 +72,31 @@ private AutoCompleteTextView mCategory,mTxtSchemeTitle,mTxtSchemeDescription;
             mCategory.setText(title.trim());
         }
 
+        getProductList();
+
 
     }
 
+
+    private void getProductList() {
+
+        try {
+            ApiManager.getInstance(getApplicationContext()).getSupplierProductList(MySelectedSchemesHelper.getInstance().getCurrentSupplier(),
+                    MySelectedSchemesHelper.getInstance().getCategoryId(title),
+                    null, new ApiResult() {
+                        @Override
+                        public void onSuccess(Object data) {
+
+                        }
+
+                        @Override
+                        public void onFailure(String response) {
+
+                        }
+                    });
+        } catch (Exception e) {
+
+        }
+    }
 
 }

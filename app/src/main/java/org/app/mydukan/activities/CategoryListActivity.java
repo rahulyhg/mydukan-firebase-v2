@@ -14,6 +14,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
@@ -57,6 +58,7 @@ import org.app.mydukan.data.AppSubscriptionInfo;
 import org.app.mydukan.data.Category;
 import org.app.mydukan.data.SupplierBindData;
 import org.app.mydukan.data.User;
+import org.app.mydukan.fragments.myschemes.fragmetns.MySelectedSchemesHelper;
 import org.app.mydukan.server.ApiManager;
 import org.app.mydukan.server.ApiResult;
 import org.app.mydukan.utils.AppContants;
@@ -567,6 +569,8 @@ public class CategoryListActivity extends BaseActivity implements CategoryAdapte
                     compareCategoryList();
                     mAdapter.addItems(mCategoryList);
                     mAdapter.notifyDataSetChanged();
+                    // Save it
+                    MySelectedSchemesHelper.getInstance().storeCategoryList(mCategoryList);
 
                     for (int i = 0; i < ((ArrayList<Category>) data).size(); ++i) {
                         String item = ((ArrayList<Category>) data).get(i).getName();
@@ -1561,6 +1565,11 @@ public class CategoryListActivity extends BaseActivity implements CategoryAdapte
     @Override
     public void onNothingSelected(AdapterView<?> parent) {
 
+    }
+
+    @Override
+    protected void onPostCreate(@Nullable Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
     }
 
     @Override
