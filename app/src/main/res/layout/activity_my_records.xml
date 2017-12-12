@@ -7,6 +7,7 @@
     android:background="@color/new_btn_blue_baground"
     android:orientation="vertical"
     app:ignore="NamespaceTypo">
+
     <android.support.design.widget.AppBarLayout
         android:id="@+id/appBarLayout_product"
         android:layout_width="match_parent"
@@ -21,14 +22,13 @@
             app:layout_scrollFlags="scroll|enterAlways"
             app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
             app:theme="@style/ThemeOverlay.AppCompat.Dark" />
-
     </android.support.design.widget.AppBarLayout>
 
     <RelativeLayout
-        android:id="@+id/btn_my_schemes"
+        android:id="@+id/btn_records_my_pricedrops"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="10dp"
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
         android:layout_marginBottom="10dp"
@@ -45,18 +45,18 @@
             android:textSize="24sp" />
 
         <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
             android:layout_alignParentRight="true"
             android:layout_marginRight="15dp"
-            android:padding="10dp"
-            android:src="@drawable/ic_pricedrop"
+            android:padding="6dp"
+            android:src="@drawable/ic_records_pricedrop"
             android:textColor="@android:color/white" />
     </RelativeLayout>
 
 
     <RelativeLayout
-        android:id="@+id/btn_calculator"
+        android:id="@+id/btn_records_calculator"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="10dp"
@@ -75,18 +75,18 @@
 
         <ImageView
 
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
             android:layout_alignParentRight="true"
             android:layout_marginRight="15dp"
-            android:padding="10dp"
-            android:src="@drawable/ic_calculator"
+            android:padding="6dp"
+            android:src="@drawable/ic_records_calculator"
             android:textColor="@android:color/white" />
     </RelativeLayout>
 
 
     <RelativeLayout
-        android:id="@+id/btn_earnings"
+        android:id="@+id/btn_records_earnings"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="10dp"
@@ -104,12 +104,12 @@
             android:textSize="24sp" />
 
         <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
             android:layout_alignParentRight="true"
             android:layout_marginRight="15dp"
-            android:padding="10dp"
-            android:src="@drawable/ic_earnings"
+            android:padding="6dp"
+            android:src="@drawable/ic_records_earnings"
             android:textColor="@android:color/white" />
     </RelativeLayout>
 

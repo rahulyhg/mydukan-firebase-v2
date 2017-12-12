@@ -209,7 +209,8 @@ public class CategoryListActivity extends BaseActivity implements CategoryAdapte
         mBottomToolBar.findViewById(R.id.recordsBtn).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                /*Intent record = new Intent(CategoryListActivity.this, RecordsActivity.class);
+
+               /* Intent record = new Intent(CategoryListActivity.this, RecordsActivity.class);
                 startActivity(record);*/
 
                 Intent record = new Intent(CategoryListActivity.this, MyRecordsActivity.class);
