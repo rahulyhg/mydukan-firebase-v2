@@ -2,6 +2,7 @@
 package org.app.mydukan.fragments.myschemes.fragmetns;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -19,10 +20,13 @@ import android.widget.Button;
 import com.wooplr.spotlight.utils.Utils;
 
 import org.app.mydukan.R;
+import org.app.mydukan.activities.Schemes.SchemeDetailsActivity;
+import org.app.mydukan.adapters.SchemesAdapter;
 import org.app.mydukan.data.Scheme;
 import org.app.mydukan.fragments.myschemes.MySchemesActivity;
 import org.app.mydukan.fragments.myschemes.adapter.GridSpacingItemDecoration;
 import org.app.mydukan.fragments.myschemes.adapter.MySchemesAdapter;
+import org.app.mydukan.utils.AppContants;
 
 import java.io.Serializable;
 import java.util.List;
@@ -34,13 +38,16 @@ import java.util.List;
 
 
 public class MySchemesListingFragment extends Fragment
-        implements AdapterView.OnItemClickListener, View.OnClickListener {
+        implements AdapterView.OnItemClickListener, View.OnClickListener,SchemesAdapter.SchemesAdapterListener {
 
     private RecyclerView mBrandsRecycleView;
     private MySchemesActivity mActivity;
     private MySchemesAdapter mAdapter;
     private List<Scheme> mSchemesList;
     private Button btnAdd;
+    //Variables
+    private String mSupplierId;
+    private String mSupplierName;
 
 
     public static MySchemesListingFragment newInstance(List<Scheme> schemeList) {
@@ -82,7 +89,7 @@ public class MySchemesListingFragment extends Fragment
         btnAdd.setOnClickListener(this);
         mBrandsRecycleView = (RecyclerView) view.findViewById(R.id.lst_schemes);
         GridLayoutManager layoutManager = new GridLayoutManager(mActivity, 2);
-        mAdapter = new MySchemesAdapter(mSchemesList);
+        mAdapter = new MySchemesAdapter(mSchemesList,this);
         mBrandsRecycleView.setLayoutManager(layoutManager);
         mBrandsRecycleView.addItemDecoration(
                 new GridSpacingItemDecoration(2, Utils.dpToPx(10), true));
@@ -136,5 +143,21 @@ public class MySchemesListingFragment extends Fragment
         AddSchemeFragment fragment = AddSchemeFragment.newInstance(category);
         mActivity.addFragment(fragment,true);
     }
+
+
+    @Override
+    public void OnClick(int position) {
+        Intent intent = new Intent(getActivity(), SchemeDetailsActivity.class);
+        intent.putExtra(AppContants.SCHEME, mSchemesList.get(position));
+        intent.putExtra(AppContants.SUPPLIER_NAME, mSupplierName);
+        intent.putExtra(AppContants.SUPPLIER_ID, mSupplierId);
+        startActivity(intent);
+    }
+
+    @Override
+    public void OnEnrolled(Scheme scheme, int pos, boolean isChecked) {
+
+    }
+
 }
 

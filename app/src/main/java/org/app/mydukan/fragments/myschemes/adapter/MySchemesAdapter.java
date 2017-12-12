@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import org.app.mydukan.R;
+import org.app.mydukan.adapters.SchemesAdapter;
 import org.app.mydukan.data.Scheme;
 
 import java.util.List;
@@ -19,8 +20,11 @@ import java.util.List;
 public class MySchemesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     List<Scheme> schemeList;
+    public SchemesAdapter.SchemesAdapterListener mListener;
 
-    public MySchemesAdapter(List<Scheme> mSchemesList) {
+
+    public MySchemesAdapter(List<Scheme> mSchemesList, SchemesAdapter.SchemesAdapterListener listener) {
+        mListener = listener;
         schemeList = mSchemesList;
     }
 
@@ -41,6 +45,12 @@ public class MySchemesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         schemeViewHolder.txtTitle.setText(scheme.getName());
 
 
+        schemeViewHolder.view.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mListener.OnClick(position);
+            }
+        });
     }
 
     @Override
@@ -60,10 +70,12 @@ public class MySchemesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
     public static class SchemeViewHolder extends RecyclerView.ViewHolder {
         TextView txtTitle;
+        View view;
 
         public SchemeViewHolder(View itemView) {
             super(itemView);
             txtTitle = (TextView) itemView.findViewById(R.id.txt_scheme_title);
+            view = itemView;
 
         }
     }

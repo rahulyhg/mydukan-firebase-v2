@@ -129,6 +129,8 @@ public class CategoryListActivity extends BaseActivity implements CategoryAdapte
     private static final String REMOTE_MESSAGE_CAPS_KEY = "showSubscriptionPage";
     private static final String REMOTE_MESSAGE_ENABLE_PROMOCODE = "enable_promocode";
 
+    AppPreference appPreference;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -139,6 +141,9 @@ public class CategoryListActivity extends BaseActivity implements CategoryAdapte
             if (bundle.containsKey(AppContants.SUPPLIER)) {
                 supplierData = (SupplierBindData) bundle.getSerializable(AppContants.SUPPLIER);
                 mSupplierId = supplierData.getId();
+                // Save supplier details in shared prefs
+               // appPreference = new AppPreference();
+              //  appPreference.set
 
             }
         }
