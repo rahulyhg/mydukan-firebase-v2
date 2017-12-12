@@ -23,8 +23,7 @@ import java.util.List;
 import java.util.Set;
 
 
-public class ProductsAdapter extends
-        RecyclerView.Adapter<ProductsAdapter.ViewHolder> {
+public class ProductsAdapter extends RecyclerView.Adapter<ProductsAdapter.ViewHolder> {
     public final String VIEW = "VIEW";
     public final String ADD_CART = "ADD_CART";
     private List<Product> mProductData;

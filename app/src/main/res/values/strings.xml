@@ -288,9 +288,6 @@
     <string name="back">BACK</string>
 
 
-
-
-
     <string name="video_list_title">Title</string>
     <string name="error_init_failure">Initialization failure: Unable to play video</string>
     <string name="youtube_activity_fragment_placeholder">The YouTube Fragment can be placed anywhere

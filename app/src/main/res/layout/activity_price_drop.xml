@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="org.app.mydukan.activities.PriceDropActivity">
+
+    <android.support.v7.widget.RecyclerView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/pricedrop_list"
+        android:scrollbars="none"
+        android:padding="5dp"/>
+
+    <TextView
+        android:id="@+id/nodata_view"
+        style="@style/normalTextStyle"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/bottomToolbar"
+        android:layout_below="@+id/tabLayout"
+        android:gravity="center"
+        android:text="There is no model in this Price Range."
+        android:textColor="@color/colorTextPrimary"
+        android:textSize="@dimen/mediumtextSize"
+        android:visibility="gone" />
+
+</android.support.constraint.ConstraintLayout>

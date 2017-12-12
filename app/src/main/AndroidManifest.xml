@@ -245,7 +245,6 @@
                 <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
             </intent-filter>
         </service>
-
         <service android:name=".services.MydukanMessagingService">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
@@ -368,7 +367,7 @@
         <activity
             android:name=".activities.Search_MyNetworkActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.ActionBar"/>
+            android:theme="@style/AppTheme.ActionBar" />
         <activity
             android:name=".activities.MyProfileActivity"
             android:screenOrientation="portrait" />
@@ -430,7 +429,9 @@
 
         <service
             android:name=".services.SyncContacts"
-            android:exported="false"></service>
+            android:exported="false" />
+
+        <activity android:name=".activities.PriceDropActivity"></activity>
     </application>
 
 </manifest>

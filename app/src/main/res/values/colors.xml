@@ -90,5 +90,7 @@
     <color name="sky_blue">#87cefa</color>
     <color name="light_orange">#fff3eF</color>
 
+    <!-- Price Drop Design-->
+    <color name="yellow">#FEB300</color>
 
 </resources>
