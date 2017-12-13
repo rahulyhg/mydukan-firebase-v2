@@ -105,62 +105,71 @@ public class MyNetworkFragment extends Fragment implements AdapterListFeed.OnCli
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        adapterListFeed = new AdapterListFeed(mList, this);
-        recyclerView.setAdapter(adapterListFeed);
 
-        feedRetriever = new FeedRetriever2(new FeedRetriever2.OnFeedRetrievedListener() {
-            @Override
-            public void onFeedRetrieved(List<Feed> feeds) {
-                if (feeds.size() == 0) {
-                    hasMoreFeeds = false;
+        try{
+            adapterListFeed = new AdapterListFeed(mList, this);
+            recyclerView.setAdapter(adapterListFeed);
+
+            feedRetriever = new FeedRetriever2(new FeedRetriever2.OnFeedRetrievedListener() {
+                @Override
+                public void onFeedRetrieved(List<Feed> feeds) {
+                    if (feeds.size() == 0) {
+                        hasMoreFeeds = false;
+                    }
+                    mList.addAll(feeds);
+                    adapterListFeed.notifyItemRangeInserted(mList.size() - feeds.size(), feeds.size());
+                    mSwipeRefereshLayout.setRefreshing(false);
+                    emptyText.setVisibility(mList.isEmpty() ? View.VISIBLE : View.GONE);
                 }
-                mList.addAll(feeds);
-                adapterListFeed.notifyItemRangeInserted(mList.size() - feeds.size(), feeds.size());
-                mSwipeRefereshLayout.setRefreshing(false);
-                emptyText.setVisibility(mList.isEmpty() ? View.VISIBLE : View.GONE);
-            }
 
-            @Override
-            public void onError() {
+                @Override
+                public void onError() {
 
-            }
-        });
+                }
+            });
 
-        mSwipeRefereshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                mList.clear();
-                adapterListFeed.notifyDataSetChanged();
-                feedRetriever.getFeeds(10, true);
+            mSwipeRefereshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+                @Override
+                public void onRefresh() {
+                    mList.clear();
+                    adapterListFeed.notifyDataSetChanged();
+                    feedRetriever.getFeeds(10, true);
 
-            }
-        });
+                }
+            });
 
-        final LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
-        recyclerView.setLayoutManager(layoutManager);
+            final LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
+            recyclerView.setLayoutManager(layoutManager);
 
-        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-            int lastVisibleItemPos, totalItemCount;
+            recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+                int lastVisibleItemPos, totalItemCount;
 
-            @Override
-            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                super.onScrolled(recyclerView, dx, dy);
-                if (dy > 0) {   //scroll down
+                @Override
+                public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                    super.onScrolled(recyclerView, dx, dy);
+                    if (dy > 0) {   //scroll down
 
-                    totalItemCount = layoutManager.getItemCount();
-                    lastVisibleItemPos = layoutManager.findLastVisibleItemPosition();
-                    if (!mSwipeRefereshLayout.isRefreshing() && hasMoreFeeds) {
-                        if (totalItemCount - lastVisibleItemPos < itemThreshold) {
-                            mSwipeRefereshLayout.setRefreshing(true);
-                            feedRetriever.getFeeds(10, false);
+                        totalItemCount = layoutManager.getItemCount();
+                        lastVisibleItemPos = layoutManager.findLastVisibleItemPosition();
+                        if (!mSwipeRefereshLayout.isRefreshing() && hasMoreFeeds) {
+                            if (totalItemCount - lastVisibleItemPos < itemThreshold) {
+                                mSwipeRefereshLayout.setRefreshing(true);
+                                feedRetriever.getFeeds(10, false);
+                            }
                         }
                     }
                 }
-            }
-        });
+            });
 
-        feedRetriever.getFeeds(10, false);
-        mSwipeRefereshLayout.setRefreshing(true);
+            feedRetriever.getFeeds(10, false);
+            mSwipeRefereshLayout.setRefreshing(true);
+        }catch (Exception e){
+            Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() + " - onViewCreated : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            Crashlytics.log(0,this.getClass().getSimpleName() + " - onViewCreated : ",errors.toString());
+        }
     }
 
 

@@ -475,8 +475,7 @@ public class UsersLocationAddress extends BaseActivity implements View.OnClickLi
                         checkLocationPermission();
                         return;
                     }
-                    //addressInfo = new HashMap<>();
-                    addressInfo.clear();
+                    addressInfo = new HashMap<>();
                     Place place = PlacePicker.getPlace(data, this);
                     double latitude = place.getLatLng().latitude;
                     double longitude = place.getLatLng().longitude;
@@ -562,7 +561,11 @@ public class UsersLocationAddress extends BaseActivity implements View.OnClickLi
                 placeDescription.setText(stBuilder.toString());*/
                 }
             }catch (Exception e){
-                e.printStackTrace();
+                Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() + " - onActivityResult : ",e.toString());
+            }catch (VirtualMachineError ex){
+                StringWriter errors = new StringWriter();
+                ex.printStackTrace(new PrintWriter(errors));
+                Crashlytics.log(0,this.getClass().getSimpleName() + " - onActivityResult : ",errors.toString());
             }
         }
     }
