@@ -9,6 +9,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
+import com.crashlytics.android.Crashlytics;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.MobileAds;
@@ -21,6 +22,8 @@ import org.app.mydukan.server.ApiManager;
 import org.app.mydukan.server.ApiResult;
 import org.app.mydukan.utils.AppContants;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -46,39 +49,47 @@ public class NotificationListActivity extends BaseActivity implements TabLayout.
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_notificationlist);
 
-        mApp = (MyDukan) getApplicationContext();
+        try {
+            mApp = (MyDukan) getApplicationContext();
 
-        //initialization of adview in this activity//
+            //initialization of adview in this activity//
 
-        MobileAds.initialize(this,"ca-app-pub-1640690939729824/3824606597");
-        AdView cALdview=(AdView)findViewById(R.id.adView_MainFragment);//adView_MainFragment
-        AdRequest adRequest= new AdRequest.Builder().build();
-        cALdview.loadAd(adRequest);
+            MobileAds.initialize(this, "ca-app-pub-1640690939729824/3824606597");
+            AdView cALdview = (AdView) findViewById(R.id.adView_MainFragment);//adView_MainFragment
+            AdRequest adRequest = new AdRequest.Builder().build();
+            cALdview.loadAd(adRequest);
 
-        //end of adview mobAds//
+            //end of adview mobAds//
 
-        Bundle bundle = getIntent().getExtras();
-        if(bundle != null){
-            if (bundle.containsKey(AppContants.SUPPLIER_ID)) {
-                mSupplierId = bundle.getString(AppContants.SUPPLIER_ID);
+            Bundle bundle = getIntent().getExtras();
+            if (bundle != null) {
+                if (bundle.containsKey(AppContants.SUPPLIER_ID)) {
+                    mSupplierId = bundle.getString(AppContants.SUPPLIER_ID);
+                }
+                if (bundle.containsKey(AppContants.SUPPLIER_NAME)) {
+                    mSupplierName = bundle.getString(AppContants.SUPPLIER_NAME);
+                }
             }
-            if (bundle.containsKey(AppContants.SUPPLIER_NAME)) {
-                mSupplierName = bundle.getString(AppContants.SUPPLIER_NAME);
-            }
+
+            //Adding toolbar to the activity
+            setupActionBar();
+
+            //Initializing Tablayout
+            setupTabLayout();
+
+            //Initializing viewPager
+            setupViewPager();
+
+            mNoDataView = (TextView) findViewById(R.id.nodata_view);
+
+            getSchemesList();
+        }catch (Exception e){
+            Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() + " - onCreate : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            Crashlytics.log(0,this.getClass().getSimpleName() + " - onCreate : ",errors.toString());
         }
-
-        //Adding toolbar to the activity
-        setupActionBar();
-
-        //Initializing Tablayout
-        setupTabLayout();
-
-        //Initializing viewPager
-        setupViewPager();
-
-        mNoDataView = (TextView) findViewById(R.id.nodata_view);
-
-        getSchemesList();
     }
 
     private void setupActionBar() {
@@ -144,33 +155,41 @@ public class NotificationListActivity extends BaseActivity implements TabLayout.
     }
 
     private void getSchemesList(){
-        showProgress();
-        ApiManager.getInstance(NotificationListActivity.this).getNotificationList(mSupplierId, mApp.getFirebaseAuth().getCurrentUser().getUid(),
-                new ApiResult() {
-                    @Override
-                    public void onSuccess(Object data) {
-                        mNotificationList.clear();
-                        mNotificationList.putAll((HashMap<String, ArrayList<Notification>>) data);
-                        if(!mNotificationList.isEmpty()) {
-                            mNoDataView.setVisibility(View.GONE);
-                            mViewPager.setVisibility(View.VISIBLE);
-                            setTabs();
-                            ((NotificationsPagerFragment) mViewPager.getAdapter()).setData(new ArrayList<ArrayList<Notification>>(mNotificationList.values()));
-                            ((NotificationsPagerFragment) mViewPager.getAdapter()).notifyDataSetChanged();
-                        }else{
+        try {
+            showProgress();
+            ApiManager.getInstance(NotificationListActivity.this).getNotificationList(mSupplierId, mApp.getFirebaseAuth().getCurrentUser().getUid(),
+                    new ApiResult() {
+                        @Override
+                        public void onSuccess(Object data) {
+                            mNotificationList.clear();
+                            mNotificationList.putAll((HashMap<String, ArrayList<Notification>>) data);
+                            if (!mNotificationList.isEmpty()) {
+                                mNoDataView.setVisibility(View.GONE);
+                                mViewPager.setVisibility(View.VISIBLE);
+                                setTabs();
+                                ((NotificationsPagerFragment) mViewPager.getAdapter()).setData(new ArrayList<ArrayList<Notification>>(mNotificationList.values()));
+                                ((NotificationsPagerFragment) mViewPager.getAdapter()).notifyDataSetChanged();
+                            } else {
+                                mNoDataView.setVisibility(View.VISIBLE);
+                                mViewPager.setVisibility(View.GONE);
+                            }
+                            dismissProgress();
+                        }
+
+                        @Override
+                        public void onFailure(String response) {
+                            dismissProgress();
                             mNoDataView.setVisibility(View.VISIBLE);
                             mViewPager.setVisibility(View.GONE);
                         }
-                        dismissProgress();
-                    }
-
-                    @Override
-                    public void onFailure(String response) {
-                        dismissProgress();
-                        mNoDataView.setVisibility(View.VISIBLE);
-                        mViewPager.setVisibility(View.GONE);
-                    }
-                });
+                    });
+        }catch (Exception e){
+            Crashlytics.log(0,"Exception - NotificationListActivity - getSchemesList : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            Crashlytics.log(0,"1 - NotificationListActivity - getSchemesList : ",errors.toString());
+        }
     }
 
 

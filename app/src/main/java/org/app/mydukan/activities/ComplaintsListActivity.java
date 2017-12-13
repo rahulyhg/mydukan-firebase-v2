@@ -12,6 +12,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
+import com.crashlytics.android.Crashlytics;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.MobileAds;
@@ -26,10 +27,9 @@ import org.app.mydukan.server.ApiResult;
 import org.app.mydukan.utils.AppContants;
 import org.app.mydukan.utils.SimpleDividerItemDecoration;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
-
-import uk.co.deanwild.materialshowcaseview.MaterialShowcaseSequence;
-import uk.co.deanwild.materialshowcaseview.ShowcaseConfig;
 
 /**
  * Created by arpithadudi on 9/13/16.
@@ -53,44 +53,45 @@ public class ComplaintsListActivity extends BaseActivity implements ComplaintsAd
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_complaintslist);
 
-        mApp = (MyDukan) getApplicationContext();
-        //====================adds view start=======================================
-        //initialization of adview in this activity//
+        try {
+            mApp = (MyDukan) getApplicationContext();
+            //====================adds view start=======================================
+            //initialization of adview in this activity//
 
 
-        MobileAds.initialize(getApplicationContext(), "ca-app-pub-1640690939729824/3964207396");
-        AdView cALdview = (AdView) findViewById(R.id.adView_cmplst);
-        AdRequest adRequest = new AdRequest.Builder().build();
-        cALdview.loadAd(adRequest);
+            MobileAds.initialize(getApplicationContext(), "ca-app-pub-1640690939729824/3964207396");
+            AdView cALdview = (AdView) findViewById(R.id.adView_cmplst);
+            AdRequest adRequest = new AdRequest.Builder().build();
+            cALdview.loadAd(adRequest);
 
-        //end of adview mobAds//
+            //end of adview mobAds//
 
-        //=====================adds view end=====================================
+            //=====================adds view end=====================================
 
-        Bundle bundle = getIntent().getExtras();
-        if (bundle != null) {
-            if (bundle.containsKey(AppContants.SUPPLIER_ID)) {
-                mSupplierId = bundle.getString(AppContants.SUPPLIER_ID);
+            Bundle bundle = getIntent().getExtras();
+            if (bundle != null) {
+                if (bundle.containsKey(AppContants.SUPPLIER_ID)) {
+                    mSupplierId = bundle.getString(AppContants.SUPPLIER_ID);
+                }
+                if (bundle.containsKey(AppContants.SUPPLIER_NAME)) {
+                    mSupplierName = bundle.getString(AppContants.SUPPLIER_NAME);
+                }
             }
-            if (bundle.containsKey(AppContants.SUPPLIER_NAME)) {
-                mSupplierName = bundle.getString(AppContants.SUPPLIER_NAME);
-            }
-        }
 
-        //setup actionbar
-        setupActionBar();
+            //setup actionbar
+            setupActionBar();
 
-        mAddComplaintBtn = (FloatingActionButton) findViewById(R.id.addComplaintBtn);
-        mAddComplaintBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(ComplaintsListActivity.this, AddComplaintsActivity.class);
-                intent.putExtra(AppContants.SUPPLIER_ID, mSupplierId);
-                intent.putExtra(AppContants.SUPPLIER_NAME, mSupplierName);
-                startActivity(intent);
-                finish();
-            }
-        });
+            mAddComplaintBtn = (FloatingActionButton) findViewById(R.id.addComplaintBtn);
+            mAddComplaintBtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent intent = new Intent(ComplaintsListActivity.this, AddComplaintsActivity.class);
+                    intent.putExtra(AppContants.SUPPLIER_ID, mSupplierId);
+                    intent.putExtra(AppContants.SUPPLIER_NAME, mSupplierName);
+                    startActivity(intent);
+                    finish();
+                }
+            });
 
 
 
@@ -109,31 +110,38 @@ public class ComplaintsListActivity extends BaseActivity implements ComplaintsAd
         sequence.start();*/
 
 
-        new SpotlightView.Builder(this)
-                .introAnimationDuration(400)
-                .enableRevealAnimation(true)
-                .performClick(true)
-                .fadeinTextDuration(400)
-                .headingTvColor(Color.parseColor("#eb273f"))
-                .headingTvSize(32)
-                .headingTvText("Add Supplier")
-                .subHeadingTvColor(Color.parseColor("#ffffff"))
-                .subHeadingTvSize(16)
-                .subHeadingTvText("Add Complaints, Click here to add your Complaint")
-                .maskColor(Color.parseColor("#dc000060"))
-                .target(mAddComplaintBtn)
-                .lineAnimDuration(400)
-                .lineAndArcColor(Color.parseColor("#eb273f"))
-                .dismissOnTouch(true)
-                .dismissOnBackPress(true)
-                .enableDismissAfterShown(true)
-                .usageId("1013") //UNIQUE ID
-                .show();
+            new SpotlightView.Builder(this)
+                    .introAnimationDuration(400)
+                    .enableRevealAnimation(true)
+                    .performClick(true)
+                    .fadeinTextDuration(400)
+                    .headingTvColor(Color.parseColor("#eb273f"))
+                    .headingTvSize(32)
+                    .headingTvText("Add Supplier")
+                    .subHeadingTvColor(Color.parseColor("#ffffff"))
+                    .subHeadingTvSize(16)
+                    .subHeadingTvText("Add Complaints, Click here to add your Complaint")
+                    .maskColor(Color.parseColor("#dc000060"))
+                    .target(mAddComplaintBtn)
+                    .lineAnimDuration(400)
+                    .lineAndArcColor(Color.parseColor("#eb273f"))
+                    .dismissOnTouch(true)
+                    .dismissOnBackPress(true)
+                    .enableDismissAfterShown(true)
+                    .usageId("1013") //UNIQUE ID
+                    .show();
 
-        //==============================================
+            //==============================================
 
-        setupComplaintsListView();
-        fetchComplaintsData();
+            setupComplaintsListView();
+            fetchComplaintsData();
+        }catch (Exception e){
+            Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() + " - onCreate : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            Crashlytics.log(0,this.getClass().getSimpleName() + " - onCreate : ",errors.toString());
+        }
 
     }
 
@@ -174,31 +182,39 @@ public class ComplaintsListActivity extends BaseActivity implements ComplaintsAd
     }
 
     private void fetchComplaintsData() {
-        showProgress();
-        ApiManager.getInstance(ComplaintsListActivity.this).getComplaintList(mSupplierId, mApp.getFirebaseAuth().getCurrentUser().getUid(),
-                new ApiResult() {
-                    @Override
-                    public void onSuccess(Object data) {
-                        dismissProgress();
-                        mComplaintsList = (ArrayList<Complaint>) data;
-                        if (mComplaintsList.isEmpty()) {
-                            mNoDataView.setVisibility(View.VISIBLE);
-                            mRecyclerView.setVisibility(View.GONE);
-                        } else {
-                            mNoDataView.setVisibility(View.GONE);
-                            mRecyclerView.setVisibility(View.VISIBLE);
-                            mAdapter.addItems(mComplaintsList);
-                            mAdapter.notifyDataSetChanged();
+        try {
+            showProgress();
+            ApiManager.getInstance(ComplaintsListActivity.this).getComplaintList(mSupplierId, mApp.getFirebaseAuth().getCurrentUser().getUid(),
+                    new ApiResult() {
+                        @Override
+                        public void onSuccess(Object data) {
+                            dismissProgress();
+                            mComplaintsList = (ArrayList<Complaint>) data;
+                            if (mComplaintsList.isEmpty()) {
+                                mNoDataView.setVisibility(View.VISIBLE);
+                                mRecyclerView.setVisibility(View.GONE);
+                            } else {
+                                mNoDataView.setVisibility(View.GONE);
+                                mRecyclerView.setVisibility(View.VISIBLE);
+                                mAdapter.addItems(mComplaintsList);
+                                mAdapter.notifyDataSetChanged();
+                            }
+                            dismissProgress();
                         }
-                        dismissProgress();
-                    }
 
-                    @Override
-                    public void onFailure(String response) {
-                        dismissProgress();
+                        @Override
+                        public void onFailure(String response) {
+                            dismissProgress();
 
-                    }
-                });
+                        }
+                    });
+        }catch (Exception e){
+            Crashlytics.log(0,"Exception - ComplaintsListActivity - fetchComplaintsData : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            Crashlytics.log(0,"1 - ComplaintsListActivity - fetchComplaintsData : ",errors.toString());
+        }
     }
 
     @Override

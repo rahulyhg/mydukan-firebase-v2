@@ -13,7 +13,6 @@ import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.View;
@@ -23,6 +22,7 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
+import com.crashlytics.android.Crashlytics;
 import com.crashlytics.android.answers.Answers;
 import com.crashlytics.android.answers.CustomEvent;
 import com.google.android.gms.auth.api.Auth;
@@ -32,7 +32,6 @@ import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
@@ -56,6 +55,8 @@ import org.app.mydukan.server.ApiResult;
 import org.app.mydukan.utils.AppContants;
 import org.app.mydukan.utils.NetworkUtil;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.Date;
 
 /**
@@ -104,121 +105,153 @@ public class LoginActivity extends BaseActivity implements GoogleApiClient.OnCon
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mApp = (MyDukan) getApplicationContext();
-        networkUtil =new NetworkUtil();
-        myLocation = new MyLocation();
-        setContentView(R.layout.activity_login);
-        helper = MoEHelper.getInstance(this);
+        try {
+            mApp = (MyDukan) getApplicationContext();
+            networkUtil = new NetworkUtil();
+            myLocation = new MyLocation();
+            setContentView(R.layout.activity_login);
+            helper = MoEHelper.getInstance(this);
 
-        setupGoogleClient();
-        setupFirebaseAuthListener();
+            setupGoogleClient();
+            setupFirebaseAuthListener();
 
-        intro_images = (ViewPager) findViewById(R.id.pager_introduction);
-        btnNext = (ImageButton) findViewById(R.id.btn_next);
-        btnFinish = (ImageButton) findViewById(R.id.btn_finish);
-        pager_indicator = (LinearLayout) findViewById(R.id.viewPagerCountDots);
+            intro_images = (ViewPager) findViewById(R.id.pager_introduction);
+            btnNext = (ImageButton) findViewById(R.id.btn_next);
+            btnFinish = (ImageButton) findViewById(R.id.btn_finish);
+            pager_indicator = (LinearLayout) findViewById(R.id.viewPagerCountDots);
 
-        mAdapter = new ViewPagerAdapter(this, mImageResources);
-        intro_images.setAdapter(mAdapter);
-        intro_images.setCurrentItem(0);
-        intro_images.setOnPageChangeListener(this);
-        setUiPageViewController();
+            mAdapter = new ViewPagerAdapter(this, mImageResources);
+            intro_images.setAdapter(mAdapter);
+            intro_images.setCurrentItem(0);
+            intro_images.setOnPageChangeListener(this);
+            setUiPageViewController();
 
-        mGoogleLayout = (RelativeLayout) findViewById(R.id.googleBtn);
-        mGoogleLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(networkUtil.isConnectingToInternet(LoginActivity.this)){
+            mGoogleLayout = (RelativeLayout) findViewById(R.id.googleBtn);
+            mGoogleLayout.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (networkUtil.isConnectingToInternet(LoginActivity.this)) {
+                        showProgress();
+                        signInToGoogle();
+                    } else {
+                        Toast.makeText(LoginActivity.this, "Please check network connectivity.", Toast.LENGTH_LONG).show();
+                    }
+                }
+            });
+
+            mLoginLayout = (RelativeLayout) findViewById(R.id.loginLayout);
+            mLoginLayout.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
                     showProgress();
                     signInToGoogle();
-                }else{
-                    Toast.makeText(LoginActivity.this, "Please check network connectivity.", Toast.LENGTH_LONG).show();
                 }
-            }
-        });
+            });
 
-        mLoginLayout = (RelativeLayout) findViewById(R.id.loginLayout);
-        mLoginLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                showProgress();
-                signInToGoogle();
-            }
-        });
-
-        showPermissions();
+            showPermissions();
+        }catch (Exception e){
+            Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() + " - onCreate : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            Crashlytics.log(0,this.getClass().getSimpleName() + " - onCreate : ",errors.toString());
+        }
     }
 
 
     private void setupGoogleClient() {
         // Configure Google Sign In
-        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken(getString(R.string.default_web_client_id))
-                .requestEmail()
-                .build();
+        try {
+            GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                    .requestIdToken(getString(R.string.default_web_client_id))
+                    .requestEmail()
+                    .build();
 
-        mGoogleApiClient = new GoogleApiClient.Builder(this)
-                .enableAutoManage(this, this)
-                .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
-                .build();
+            mGoogleApiClient = new GoogleApiClient.Builder(this)
+                    .enableAutoManage(this, this)
+                    .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
+                    .build();
+        }catch (Exception e){
+            Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() + " - setupGoogleClient : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            Crashlytics.log(0,this.getClass().getSimpleName() + " - setupGoogleClient : ",errors.toString());
+        }
     }
 
     private void setupFirebaseAuthListener() {
-        mFirebaseAuth = mApp.getFirebaseAuth();
-        mAuthListener = new FirebaseAuth.AuthStateListener() {
-            @Override
-            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-                FirebaseUser user = firebaseAuth.getCurrentUser();
+        try {
+            mFirebaseAuth = mApp.getFirebaseAuth();
+            mAuthListener = new FirebaseAuth.AuthStateListener() {
+                @Override
+                public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                    FirebaseUser user = firebaseAuth.getCurrentUser();
 
-                if (user != null) {
-                    // User is signed in
-                    String PREF_NAME=user.getUid();
-                    String UNIQUE_ID=user.getUid()+"@"+user.getDisplayName()+"@"+user.getEmail();
+                    if (user != null) {
+                        // User is signed in
+                        String PREF_NAME = user.getUid();
+                        String UNIQUE_ID = user.getUid() + "@" + user.getDisplayName() + "@" + user.getEmail();
 
-                    Log.d(MyDukan.LOGTAG, "onAuthStateChanged:signed_in:" + user.getUid());
-                    MoEHelper.getInstance(getApplicationContext()).setUniqueId(UNIQUE_ID); //UNIQUE_ID is used to uniquely identify a user.
-                    SharedPreferences pref = getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
-                    // app-id:  "B2JUXC91LG9VLJDHNHLWQ1G2"
-                    if( pref.contains("B2JUXC91LG9VLJDHNHLWQ1G2")){
-                        helper.setExistingUser(true);
-                    }else{
-                        helper.setExistingUser(false);
+                        Log.d(MyDukan.LOGTAG, "onAuthStateChanged:signed_in:" + user.getUid());
+                        MoEHelper.getInstance(getApplicationContext()).setUniqueId(UNIQUE_ID); //UNIQUE_ID is used to uniquely identify a user.
+                        SharedPreferences pref = getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
+                        // app-id:  "B2JUXC91LG9VLJDHNHLWQ1G2"
+                        if (pref.contains("B2JUXC91LG9VLJDHNHLWQ1G2")) {
+                            helper.setExistingUser(true);
+                        } else {
+                            helper.setExistingUser(false);
+                        }
+                        Log.d(MyDukan.LOGTAG, "onAuthStateChanged:signed_in:" + user.getDisplayName());
+                    } else {
+                        // User is signed out
+                        Log.d(MyDukan.LOGTAG, "onAuthStateChanged:signed_out");
                     }
-                    Log.d(MyDukan.LOGTAG, "onAuthStateChanged:signed_in:" + user.getDisplayName());
-                } else {
-                    // User is signed out
-                    Log.d(MyDukan.LOGTAG, "onAuthStateChanged:signed_out");
                 }
-            }
-        };
+            };
+        }catch (Exception e){
+            Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() + " - setupFirebaseAuthListener : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            Crashlytics.log(0,this.getClass().getSimpleName() + " - setupFirebaseAuthListener : ",errors.toString());
+        }
     }
 
     private void showPermissions(){
-        if (Build.VERSION.SDK_INT >= 23){
-            if (checkSelfPermission(Manifest.permission.READ_CONTACTS)  == PackageManager.PERMISSION_GRANTED &&
-                    checkSelfPermission(Manifest.permission.CALL_PHONE)  == PackageManager.PERMISSION_GRANTED &&
-                    checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)  == PackageManager.PERMISSION_GRANTED &&
-                    checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION)  == PackageManager.PERMISSION_GRANTED ) {
-                Log.e("testing", "Permission is granted");
-            } else {
-                new android.support.v7.app.AlertDialog.Builder(this)
-                        .setTitle("Info")
-                        .setMessage("Please do not deny any permissions, accept all permissions to enter myDukan")
-                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                                // continue
+        try {
+            if (Build.VERSION.SDK_INT >= 23) {
+                if (checkSelfPermission(Manifest.permission.READ_CONTACTS) == PackageManager.PERMISSION_GRANTED &&
+                        checkSelfPermission(Manifest.permission.CALL_PHONE) == PackageManager.PERMISSION_GRANTED &&
+                        checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED &&
+                        checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                    Log.e("testing", "Permission is granted");
+                } else {
+                    new android.support.v7.app.AlertDialog.Builder(this)
+                            .setTitle("Info")
+                            .setMessage("Please do not deny any permissions, accept all permissions to enter myDukan")
+                            .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    // continue
 
-                                ActivityCompat.requestPermissions(LoginActivity.this, new String[]{Manifest.permission.READ_CONTACTS,Manifest.permission.CALL_PHONE, Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
+                                    ActivityCompat.requestPermissions(LoginActivity.this, new String[]{Manifest.permission.READ_CONTACTS, Manifest.permission.CALL_PHONE, Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
 //                                showSettingsAlert();
-                                dialog.dismiss();
-                            }
-                        })
-                        .setIcon(android.R.drawable.ic_dialog_alert)
-                        .show();
-            }
-        } else { //permission is automatically granted on sdk<23 upon installation
-            Log.e("testing", "Permission is already granted");
+                                    dialog.dismiss();
+                                }
+                            })
+                            .setIcon(android.R.drawable.ic_dialog_alert)
+                            .show();
+                }
+            } else { //permission is automatically granted on sdk<23 upon installation
+                Log.e("testing", "Permission is already granted");
 
+            }
+        }catch (Exception e){
+            Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() + " - showPermissions : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            Crashlytics.log(0,this.getClass().getSimpleName() + " - showPermissions : ",errors.toString());
         }
     }
 
@@ -265,57 +298,65 @@ public class LoginActivity extends BaseActivity implements GoogleApiClient.OnCon
     }
 
     private void firebaseAuthWithGoogle(final GoogleSignInAccount acct) {
-        Log.d(MyDukan.LOGTAG, "firebaseAuthWithGoogle:" + acct.getId());
-        showProgress();
-        final AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
-        mFirebaseAuth.signInWithCredential(credential)
-                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        Log.d(MyDukan.LOGTAG, "signInWithCredential:onComplete:" + task.isSuccessful());
+        try {
+            Log.d(MyDukan.LOGTAG, "firebaseAuthWithGoogle:" + acct.getId());
+            showProgress();
+            final AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
+            mFirebaseAuth.signInWithCredential(credential)
+                    .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                        @Override
+                        public void onComplete(@NonNull Task<AuthResult> task) {
+                            Log.d(MyDukan.LOGTAG, "signInWithCredential:onComplete:" + task.isSuccessful());
 
-                        // If sign in fails, display a message to the user. If sign in succeeds
-                        // the auth state listener will be notified and logic to handle the
-                        // signed in user can be handled in the listener.
-                        if (task.isSuccessful()) {
-                            dismissProgress();
-                            checkIfUserExist();
-                            acct.getDisplayName();
-                            acct.getEmail();
-                            String fullname = "";
-                            if(acct.getDisplayName() != null && !acct.getDisplayName().isEmpty())
-                            fullname = acct.getDisplayName();
+                            // If sign in fails, display a message to the user. If sign in succeeds
+                            // the auth state listener will be notified and logic to handle the
+                            // signed in user can be handled in the listener.
+                            if (task.isSuccessful()) {
+                                dismissProgress();
+                                checkIfUserExist();
+                                acct.getDisplayName();
+                                acct.getEmail();
+                                String fullname = "";
+                                if (acct.getDisplayName() != null && !acct.getDisplayName().isEmpty())
+                                    fullname = acct.getDisplayName();
 
-                            String email = "";
-                            if(acct.getEmail() != null && !acct.getEmail().isEmpty())
-                            email = acct.getEmail();
+                                String email = "";
+                                if (acct.getEmail() != null && !acct.getEmail().isEmpty())
+                                    email = acct.getEmail();
 
-                            if(fullname.isEmpty())
-                                return;
+                                if (fullname.isEmpty())
+                                    return;
 
-                            String[] parts = fullname.split("\\s+");
-                            Log.d("Length-->",""+parts.length);
-                            if(parts != null && parts.length==2) {
-                                String firstname = parts[0];
-                                String lastname = parts[1];
-                                Log.d("First-->", "" + firstname);
-                                Log.d("Last-->", "" + lastname);
+                                String[] parts = fullname.split("\\s+");
+                                Log.d("Length-->", "" + parts.length);
+                                if (parts != null && parts.length == 2) {
+                                    String firstname = parts[0];
+                                    String lastname = parts[1];
+                                    Log.d("First-->", "" + firstname);
+                                    Log.d("Last-->", "" + lastname);
 
-                                SharedPreferences sharedPreferences = getSharedPreferences("firstname", Context.MODE_PRIVATE);
-                                SharedPreferences.Editor editor = sharedPreferences.edit();
-                                editor.putString("firstname", firstname);
-                                editor.putString("email", email);
-                                editor.commit();
+                                    SharedPreferences sharedPreferences = getSharedPreferences("firstname", Context.MODE_PRIVATE);
+                                    SharedPreferences.Editor editor = sharedPreferences.edit();
+                                    editor.putString("firstname", firstname);
+                                    editor.putString("email", email);
+                                    editor.commit();
+                                }
+                            } else if (task.isSuccessful()) {
+                                dismissProgress();
+                                Log.i(MyDukan.LOGTAG, "signInWithCredential", task.getException());
+                                Toast.makeText(LoginActivity.this, "Authentication failed.",
+                                        Toast.LENGTH_SHORT).show();
                             }
-                        } else if (task.isSuccessful()) {
-                            dismissProgress();
-                            Log.i(MyDukan.LOGTAG, "signInWithCredential", task.getException());
-                            Toast.makeText(LoginActivity.this, "Authentication failed.",
-                                    Toast.LENGTH_SHORT).show();
+                            // dismissProgress();
                         }
-                        // dismissProgress();
-                    }
-                });
+                    });
+        }catch (Exception e){
+            Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() + " - firebaseAuthWithGoogle : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            Crashlytics.log(0,this.getClass().getSimpleName() + " - firebaseAuthWithGoogle : ",errors.toString());
+        }
     }
 
     private void checkIfUserExist() {
@@ -323,145 +364,167 @@ public class LoginActivity extends BaseActivity implements GoogleApiClient.OnCon
       if current user is new user display the verification page.
       else show the signup page.
      */
+        try {
 
-        if (mApp.getFirebaseAuth().getCurrentUser() == null) {
-            // new user And setting the signed in date in MoEngage.
-            isNewUserForTrail = true;
-            MoEHelper.getInstance(LoginActivity.this).setUserAttribute("signedUpOn", new Date());
-            showProgress();
-            ApiManager.getInstance(LoginActivity.this).checkAndSignUpUser(mApp.getFirebaseAuth().getCurrentUser().getUid(), mApp.getFirebaseAuth().getCurrentUser().getEmail(), new ApiResult() {
-                @Override
-                public void onSuccess(Object data) {
-                    //Already this user has account.
-                    if(data.toString().equalsIgnoreCase(getString(R.string.status_success))) {
-                        dismissProgress();
-                        mApp.checkAndSendToken();
-                        openActivity();  //Testing code.
-                    } else {
-                        Log.i(MyDukan.LOGTAG, data.toString());
-                        dismissProgress();
-                        showErrorToast(LoginActivity.this,data.toString());
+            if (mApp.getFirebaseAuth().getCurrentUser() == null) {
+                // new user And setting the signed in date in MoEngage.
+                isNewUserForTrail = true;
+                MoEHelper.getInstance(LoginActivity.this).setUserAttribute("signedUpOn", new Date());
+                showProgress();
+                ApiManager.getInstance(LoginActivity.this).checkAndSignUpUser(mApp.getFirebaseAuth().getCurrentUser().getUid(), mApp.getFirebaseAuth().getCurrentUser().getEmail(), new ApiResult() {
+                    @Override
+                    public void onSuccess(Object data) {
+                        //Already this user has account.
+                        if (data.toString().equalsIgnoreCase(getString(R.string.status_success))) {
+                            dismissProgress();
+                            mApp.checkAndSendToken();
+                            openActivity();  //Testing code.
+                        } else {
+                            Log.i(MyDukan.LOGTAG, data.toString());
+                            dismissProgress();
+                            showErrorToast(LoginActivity.this, data.toString());
+                        }
                     }
-                }
 
-                @Override
-                public void onFailure(String response) {
-                    //Do when the user type is different.
-                    logoutUser();
-                    showOkAlert(LoginActivity.this, getResources().getString(R.string.info), response,getResources().getString(R.string.ok));
-                    dismissProgress();
-                }
-            });
-        }else{
-            isNewUserForTrail = false;
-            showProgress();
-
-            ApiManager.getInstance(LoginActivity.this).checkAndSignUpUser(mApp.getFirebaseAuth().getCurrentUser().getUid(), mApp.getFirebaseAuth().getCurrentUser().getEmail(), new ApiResult() {
-                @Override
-                public void onSuccess(Object data) {
-                    //Already this user has account.
-                    if(data.toString().equalsIgnoreCase(getString(R.string.status_success))) {
+                    @Override
+                    public void onFailure(String response) {
+                        //Do when the user type is different.
+                        logoutUser();
+                        showOkAlert(LoginActivity.this, getResources().getString(R.string.info), response, getResources().getString(R.string.ok));
                         dismissProgress();
-                        mApp.checkAndSendToken();
-                        sendUserFirebase();  // very Importent, this will create the chatt Account for user
-                        openActivity();
-                    } else {
-                        Log.i(MyDukan.LOGTAG, data.toString());
-                        dismissProgress();
-                        showErrorToast(LoginActivity.this,data.toString());
                     }
-                }
+                });
+            } else {
+                isNewUserForTrail = false;
+                showProgress();
 
-                @Override
-                public void onFailure(String response) {
-                    //Do when the user type is different.
-                    logoutUser();
-                    showOkAlert(LoginActivity.this, getResources().getString(R.string.info),
-                            response,getResources().getString(R.string.ok));
-                    dismissProgress();
-                }
-            });
+                ApiManager.getInstance(LoginActivity.this).checkAndSignUpUser(mApp.getFirebaseAuth().getCurrentUser().getUid(), mApp.getFirebaseAuth().getCurrentUser().getEmail(), new ApiResult() {
+                    @Override
+                    public void onSuccess(Object data) {
+                        //Already this user has account.
+                        if (data.toString().equalsIgnoreCase(getString(R.string.status_success))) {
+                            dismissProgress();
+                            mApp.checkAndSendToken();
+                            sendUserFirebase();  // very Importent, this will create the chatt Account for user
+                            openActivity();
+                        } else {
+                            Log.i(MyDukan.LOGTAG, data.toString());
+                            dismissProgress();
+                            showErrorToast(LoginActivity.this, data.toString());
+                        }
+                    }
 
+                    @Override
+                    public void onFailure(String response) {
+                        //Do when the user type is different.
+                        logoutUser();
+                        showOkAlert(LoginActivity.this, getResources().getString(R.string.info),
+                                response, getResources().getString(R.string.ok));
+                        dismissProgress();
+                    }
+                });
+
+            }
+        }catch (Exception e){
+            Crashlytics.log(0,"Exception - LoginActivity - checkIfUserExist : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            Crashlytics.log(0,"1 - LoginActivity - checkIfUserExist : ",errors.toString());
         }
     }
 
     private void openActivity() {
 
-        final String mUserid=mApp.getFirebaseAuth().getCurrentUser().getUid();
-        DatabaseReference referenceUser = FirebaseDatabase.getInstance().getReference().child("users/"+mUserid);
-        referenceUser.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                if (dataSnapshot!=null){
-                    user=dataSnapshot.getValue(User.class);
-                    String mob_vrify= user.getVrified_mobilenum();
-                    String location_verfy=user.getVerified_location();
+        try {
+            final String mUserid = mApp.getFirebaseAuth().getCurrentUser().getUid();
+            DatabaseReference referenceUser = FirebaseDatabase.getInstance().getReference().child("users/" + mUserid);
+            referenceUser.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    if (dataSnapshot != null) {
+                        user = dataSnapshot.getValue(User.class);
+                        String mob_vrify = user.getVrified_mobilenum();
+                        String location_verfy = user.getVerified_location();
 //                    String cmpnyInfo_vrify= user.getVerified_CompanyInfo();
 
-                    Answers.getInstance().logCustom(new CustomEvent("Login_Page")
-                            .putCustomAttribute("UserId", mUserid));
+                        Answers.getInstance().logCustom(new CustomEvent("Login_Page")
+                                .putCustomAttribute("UserId", mUserid));
 
-                    if(user.getVrified_mobilenum() == null || mob_vrify.equals("false")){
-                        Intent intent = new Intent(LoginActivity.this, NewSignUpActivity.class);
-                        intent.putExtra(AppContants.VIEW_TYPE, AppContants.SIGN_UP);
-                        startActivity(intent);
-                        finish();
-                    }else if(user.getVerified_location() == null || location_verfy.equals("false")){
-                        Intent intent = new Intent(LoginActivity.this, UsersLocationAddress.class);
-                        intent.putExtra(AppContants.VIEW_TYPE, AppContants.SIGN_UP);
-                        startActivity(intent);
-                        finish();
-                    }
+                        if (user.getVrified_mobilenum() == null || mob_vrify.equals("false")) {
+                            Intent intent = new Intent(LoginActivity.this, NewSignUpActivity.class);
+                            intent.putExtra(AppContants.VIEW_TYPE, AppContants.SIGN_UP);
+                            startActivity(intent);
+                            finish();
+                        } else if (user.getVerified_location() == null || location_verfy.equals("false")) {
+                            Intent intent = new Intent(LoginActivity.this, UsersLocationAddress.class);
+                            intent.putExtra(AppContants.VIEW_TYPE, AppContants.SIGN_UP);
+                            startActivity(intent);
+                            finish();
+                        }
                       /* else if(cmpnyInfo_vrify.equals("false")){
                            Intent intent = new Intent(LoginActivity.this, UserProfile.class);
                            intent.putExtra(AppContants.VIEW_TYPE, AppContants.SIGN_UP);
                            startActivity(intent);
                            finish();
 
-                       }*/ else{
-                        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                        intent.putExtra(AppContants.VIEW_TYPE, AppContants.SIGN_UP);
-                        startActivity(intent);
-                        finish();
+                       }*/
+                        else {
+                            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                            intent.putExtra(AppContants.VIEW_TYPE, AppContants.SIGN_UP);
+                            startActivity(intent);
+                            finish();
 
+                            Answers.getInstance().logCustom(new CustomEvent("Login_Page")
+                                    .putCustomAttribute("Login_Successful_UserId", mUserid));
+                        }
+                    } else {
                         Answers.getInstance().logCustom(new CustomEvent("Login_Page")
-                                .putCustomAttribute("Login_Successful_UserId", mUserid));
+                                .putCustomAttribute("UserId_Null", mUserid));
+
+                        startActivity(new Intent(getApplicationContext(), NewSignUpActivity.class));
+                        finish();
                     }
                 }
-                else
-                {
-                    Answers.getInstance().logCustom(new CustomEvent("Login_Page")
-                            .putCustomAttribute("UserId_Null", mUserid));
 
-                    startActivity(new Intent(getApplicationContext(), NewSignUpActivity.class));
-                    finish();
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
                 }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-
+            });
+        }catch (Exception e){
+            Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() + " - openActivity : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            Crashlytics.log(0,this.getClass().getSimpleName() + " - openActivity : ",errors.toString());
+        }
     }
 
     /**
      * Send user Firebase
      */
     private void sendUserFirebase(){
-        DatabaseReference referenceUser = FirebaseDatabase.getInstance().getReference().child(USER_ROOT);
-        FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-        if (firebaseUser != null){
-            ChattUser chattUser = new ChattUser();
-            chattUser.setName( firebaseUser.getDisplayName());
-            chattUser.setEmail( firebaseUser.getEmail() );
-            chattUser.setPhotoUrl( firebaseUser.getPhotoUrl() == null ? "default_uri" : firebaseUser.getPhotoUrl().toString() );
-            chattUser.setuId( firebaseUser.getUid() );
-            chattUser.setUserType("");
+        try {
+            DatabaseReference referenceUser = FirebaseDatabase.getInstance().getReference().child(USER_ROOT);
+            FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+            if (firebaseUser != null) {
+                ChattUser chattUser = new ChattUser();
+                chattUser.setName(firebaseUser.getDisplayName());
+                chattUser.setEmail(firebaseUser.getEmail());
+                chattUser.setPhotoUrl(firebaseUser.getPhotoUrl() == null ? "default_uri" : firebaseUser.getPhotoUrl().toString());
+                chattUser.setuId(firebaseUser.getUid());
+                chattUser.setUserType("");
 
-            referenceUser.child( firebaseUser.getUid()).setValue(chattUser);
+                referenceUser.child(firebaseUser.getUid()).setValue(chattUser);
 
+            }
+        }catch (Exception e){
+            Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() + " - sendUserFirebase : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            Crashlytics.log(0,this.getClass().getSimpleName() + " - sendUserFirebase : ",errors.toString());
         }
     }
 
@@ -476,28 +539,36 @@ public class LoginActivity extends BaseActivity implements GoogleApiClient.OnCon
         super.onActivityResult(requestCode, resultCode, data);
 
         // Result returned from launching the Intent from GoogleSignInApi.getSignInIntent(...);
-        if (requestCode == GOOGLE_SIGN_IN) {
-            if (data!=null){
+        try {
+            if (requestCode == GOOGLE_SIGN_IN) {
+                if (data != null) {
 
-                GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
-                if (result.isSuccess()) {
-                    // Google Sign In was successful, authenticate with Firebase
-                    GoogleSignInAccount account = result.getSignInAccount();
-                    firebaseAuthWithGoogle(account);
-                } else {
-                    // Google Sign In failed, update UI appropriately
-                    Log.i(MyDukan.LOGTAG, "Google Sign In failed");
-                    Toast.makeText(LoginActivity.this, "Authentication failed.",
-                            Toast.LENGTH_SHORT).show();
-                    dismissProgress();
+                    GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
+                    if (result.isSuccess()) {
+                        // Google Sign In was successful, authenticate with Firebase
+                        GoogleSignInAccount account = result.getSignInAccount();
+                        firebaseAuthWithGoogle(account);
+                    } else {
+                        // Google Sign In failed, update UI appropriately
+                        Log.i(MyDukan.LOGTAG, "Google Sign In failed");
+                        Toast.makeText(LoginActivity.this, "Authentication failed.",
+                                Toast.LENGTH_SHORT).show();
+                        dismissProgress();
+                    }
                 }
+            } else {
+                // Google Sign In failed, update UI appropriately
+                Log.i(MyDukan.LOGTAG, "Google Sign In failed");
+                Toast.makeText(LoginActivity.this, "Authentication failed.",
+                        Toast.LENGTH_SHORT).show();
+                dismissProgress();
             }
-        }else{
-            // Google Sign In failed, update UI appropriately
-            Log.i(MyDukan.LOGTAG, "Google Sign In failed");
-            Toast.makeText(LoginActivity.this, "Authentication failed.",
-                    Toast.LENGTH_SHORT).show();
-            dismissProgress();
+        }catch (Exception e){
+            Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() + " - onActivityResult : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            Crashlytics.log(0,this.getClass().getSimpleName() + " - onActivityResult : ",errors.toString());
         }
 
     }
@@ -513,36 +584,60 @@ public class LoginActivity extends BaseActivity implements GoogleApiClient.OnCon
 
     }
     private void logoutUser(){
-        mApp.getFirebaseAuth().signOut();
-        googleLogout();
-        MoEHelper.getInstance(getApplicationContext()).logoutUser();
+        try {
+            mApp.getFirebaseAuth().signOut();
+            googleLogout();
+            MoEHelper.getInstance(getApplicationContext()).logoutUser();
+        }catch (Exception e){
+            Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() + " - logoutUser: ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            Crashlytics.log(0,this.getClass().getSimpleName() + " - logoutUser : ",errors.toString());
+        }
     }
     private void googleLogout() {
-        if (mGoogleApiClient.isConnected()) {
-            Auth.GoogleSignInApi.signOut(mGoogleApiClient);
+        try {
+            if (mGoogleApiClient.isConnected()) {
+                Auth.GoogleSignInApi.signOut(mGoogleApiClient);
+            }
+        }catch (Exception e){
+            Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() + " - googleLogout: ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            Crashlytics.log(0,this.getClass().getSimpleName() + " - googleLogout : ",errors.toString());
         }
     }
 
     private void setUiPageViewController() {
 
-        dotsCount = mAdapter.getCount();
-        dots = new ImageView[dotsCount];
+        try {
+            dotsCount = mAdapter.getCount();
+            dots = new ImageView[dotsCount];
 
-        for (int i = 0; i < dotsCount; i++) {
-            dots[i] = new ImageView(this);
-            dots[i].setImageDrawable(getResources().getDrawable(R.drawable.nonselecteditem_dot));
+            for (int i = 0; i < dotsCount; i++) {
+                dots[i] = new ImageView(this);
+                dots[i].setImageDrawable(getResources().getDrawable(R.drawable.nonselecteditem_dot));
 
-            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
-                    LinearLayout.LayoutParams.WRAP_CONTENT,
-                    LinearLayout.LayoutParams.WRAP_CONTENT
-            );
+                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.WRAP_CONTENT,
+                        LinearLayout.LayoutParams.WRAP_CONTENT
+                );
 
-            params.setMargins(4, 0, 4, 0);
+                params.setMargins(4, 0, 4, 0);
 
-            pager_indicator.addView(dots[i], params);
+                pager_indicator.addView(dots[i], params);
+            }
+
+            dots[0].setImageDrawable(getResources().getDrawable(R.drawable.selecteditem_dot));
+        }catch (Exception e){
+            Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() + " - setUiPageViewController: ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            Crashlytics.log(0,this.getClass().getSimpleName() + " - setUiPageViewController : ",errors.toString());
         }
-
-        dots[0].setImageDrawable(getResources().getDrawable(R.drawable.selecteditem_dot));
     }
 
 

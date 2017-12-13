@@ -27,6 +27,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.crashlytics.android.Crashlytics;
 import com.crashlytics.android.answers.Answers;
 import com.crashlytics.android.answers.CustomEvent;
 import com.google.android.gms.ads.AdRequest;
@@ -64,7 +65,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.io.Serializable;
+import java.io.StringWriter;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -578,9 +581,10 @@ public class MyProfileActivity extends BaseActivity implements MyFeedAdapter.OnC
 
     private void getProfileData(String profileUID) {
         showProgress(true);
-        ApiManager.getInstance(this).getUserProfile(profileUID, new ApiResult() {
-            @Override
-            public void onSuccess(Object data) {
+        try {
+            ApiManager.getInstance(this).getUserProfile(profileUID, new ApiResult() {
+                @Override
+                public void onSuccess(Object data) {
               /*  long totalLike = 0;
                 for (DataSnapshot snapshot : data.getChildren()) {
                     if (snapshot.getKey().equals(feedKey)) {
@@ -590,27 +594,34 @@ public class MyProfileActivity extends BaseActivity implements MyFeedAdapter.OnC
                 }*/
 
 
-                profileDetails = (User) data;
-                if (profileDetails == null) {
+                    profileDetails = (User) data;
+                    if (profileDetails == null) {
+                        showProgress(false);
+                        return;
+                    }
+                    profileDetails.getId();
+                    if (profileDetails != null) {
+                        initProfileView(profileDetails, chattUser);
+                        retriveFeedsData(profileDetails, chattUser.getuId());
+                    } else {
+                        Toast.makeText(MyProfileActivity.this, "Unable to Get the User Profile", Toast.LENGTH_SHORT).show();
+                    }
                     showProgress(false);
-                    return;
                 }
-                profileDetails.getId();
-                if(profileDetails!=null){
-                    initProfileView(profileDetails, chattUser);
-                    retriveFeedsData(profileDetails, chattUser.getuId());
-                }else{
-                    Toast.makeText(MyProfileActivity.this, "Unable to Get the User Profile", Toast.LENGTH_SHORT).show();
-                }
-                showProgress(false);
-            }
 
-            @Override
-            public void onFailure(String response) {
-                Toast.makeText(MyProfileActivity.this, "Unable to Get the User Profile", Toast.LENGTH_SHORT).show();
-                showProgress(false);
-            }
-        });
+                @Override
+                public void onFailure(String response) {
+                    Toast.makeText(MyProfileActivity.this, "Unable to Get the User Profile", Toast.LENGTH_SHORT).show();
+                    showProgress(false);
+                }
+            });
+        }catch (Exception e){
+            Crashlytics.log(0,"Exception - MyProfileActivity - getProfileData : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            Crashlytics.log(0,"1 - MyProfileActivity - getProfileData : ",errors.toString());
+        }
     }
 
     private void retriveFeedsData(User profileDetails, String UserId) {

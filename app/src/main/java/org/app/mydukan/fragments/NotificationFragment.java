@@ -10,6 +10,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.crashlytics.android.Crashlytics;
+
 import org.app.mydukan.R;
 import org.app.mydukan.activities.NotificationDetailsActivity;
 import org.app.mydukan.adapters.NotificationAdapter;
@@ -18,6 +20,8 @@ import org.app.mydukan.data.Notification;
 import org.app.mydukan.utils.AppContants;
 import org.app.mydukan.utils.SimpleDividerItemDecoration;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -42,14 +46,22 @@ public class NotificationFragment extends android.support.v4.app.Fragment implem
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
         View v = inflater.inflate(R.layout.fragment_scheme, container, false);
-        mApp = (MyDukan) getActivity().getApplicationContext();
+        try {
+            mApp = (MyDukan) getActivity().getApplicationContext();
 
-        Bundle bundle = getArguments();
-        if(bundle != null && bundle.containsKey(AppContants.SUPPLIER_NAME)){
-            mNotificationName = bundle.getString(AppContants.SUPPLIER_NAME);
+            Bundle bundle = getArguments();
+            if (bundle != null && bundle.containsKey(AppContants.SUPPLIER_NAME)) {
+                mNotificationName = bundle.getString(AppContants.SUPPLIER_NAME);
+            }
+            setupSchemeCard(v);
+            setTheSchemes();
+        }catch (Exception e){
+            Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() + " - onCreate : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            Crashlytics.log(0,this.getClass().getSimpleName() + " - onCreate : ",errors.toString());
         }
-        setupSchemeCard(v);
-        setTheSchemes();
         return v;
     }
 

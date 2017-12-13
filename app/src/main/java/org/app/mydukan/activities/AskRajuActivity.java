@@ -2,17 +2,20 @@ package org.app.mydukan.activities;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.DisplayMetrics;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
-import android.widget.Toast;
+
+import com.crashlytics.android.Crashlytics;
 
 import org.app.mydukan.R;
+
+import java.io.PrintWriter;
+import java.io.StringWriter;
 
 public class AskRajuActivity extends AppCompatActivity {
 
@@ -24,12 +27,13 @@ public class AskRajuActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ask_raju);
+        try {
 
-        webViewAskRaju = (WebView) findViewById(R.id.webViewAskRaju);
-        spinner = (ProgressBar)findViewById(R.id.progressBarAskRaju);
-        backBTN =(ImageView) findViewById(R.id.back_button_askraju);
-        webViewAskRaju.getSettings().setJavaScriptEnabled(true);
-        startWebView(" https://bot.api.ai/5a9d06ba-7404-4aa0-b31f-9bd3f114eb0b");
+            webViewAskRaju = (WebView) findViewById(R.id.webViewAskRaju);
+            spinner = (ProgressBar) findViewById(R.id.progressBarAskRaju);
+            backBTN = (ImageView) findViewById(R.id.back_button_askraju);
+            webViewAskRaju.getSettings().setJavaScriptEnabled(true);
+            startWebView(" https://bot.api.ai/5a9d06ba-7404-4aa0-b31f-9bd3f114eb0b");
 
         /*DisplayMetrics dm = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(dm);
@@ -37,16 +41,23 @@ public class AskRajuActivity extends AppCompatActivity {
         int height = dm.heightPixels;
         getWindow().setLayout((int)(width*.8),(int)(height*.4));*/
 
-        backBTN.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(AskRajuActivity.this, MainActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                startActivity(intent);
+            backBTN.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent intent = new Intent(AskRajuActivity.this, MainActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    startActivity(intent);
 
 
-            }
-        });
+                }
+            });
+        }catch (Exception e){
+            Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() + " - onCreate : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            Crashlytics.log(0,this.getClass().getSimpleName() + " - onCreate : ",errors.toString());
+        }
     }
 
     private void startWebView(String url) {

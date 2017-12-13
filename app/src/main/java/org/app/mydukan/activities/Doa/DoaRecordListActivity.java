@@ -6,11 +6,12 @@ import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
+
+import com.crashlytics.android.Crashlytics;
 
 import org.app.mydukan.R;
 import org.app.mydukan.activities.BaseActivity;
@@ -21,6 +22,8 @@ import org.app.mydukan.server.ApiManager;
 import org.app.mydukan.server.ApiResult;
 import org.app.mydukan.utils.SimpleDividerItemDecoration;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
 
 /**
@@ -100,27 +103,35 @@ public class DoaRecordListActivity extends BaseActivity {
     }
 
     private void fetchTheRecords(){
-        showProgress();
-        ApiManager.getInstance(DoaRecordListActivity.this).getDoaRecordList(new ApiResult() {
-            @Override
-            public void onSuccess(Object data) {
-                dismissProgress();
-                mRecordList = (ArrayList<DoaRecord>)data;
-                if(mRecordList.isEmpty()){
-                    mNoDataView.setVisibility(View.VISIBLE);
-                    mRecyclerView.setVisibility(View.GONE);
-                } else {
-                    mNoDataView.setVisibility(View.GONE);
-                    mRecyclerView.setVisibility(View.VISIBLE);
-                    mAdapter.addItems(mRecordList);
-                    mAdapter.notifyDataSetChanged();
+        try {
+            showProgress();
+            ApiManager.getInstance(DoaRecordListActivity.this).getDoaRecordList(new ApiResult() {
+                @Override
+                public void onSuccess(Object data) {
+                    dismissProgress();
+                    mRecordList = (ArrayList<DoaRecord>) data;
+                    if (mRecordList.isEmpty()) {
+                        mNoDataView.setVisibility(View.VISIBLE);
+                        mRecyclerView.setVisibility(View.GONE);
+                    } else {
+                        mNoDataView.setVisibility(View.GONE);
+                        mRecyclerView.setVisibility(View.VISIBLE);
+                        mAdapter.addItems(mRecordList);
+                        mAdapter.notifyDataSetChanged();
+                    }
                 }
-            }
 
-            @Override
-            public void onFailure(String response) {
+                @Override
+                public void onFailure(String response) {
 
-            }
-        });
+                }
+            });
+        }catch (Exception e){
+            Crashlytics.log(0,"Exception - DoaRecordListActivity - fetchTheRecords : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            Crashlytics.log(0,"1 - DoaRecordListActivity - fetchTheRecords : ",errors.toString());
+        }
     }
 }

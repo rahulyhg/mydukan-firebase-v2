@@ -3,19 +3,20 @@ package org.app.mydukan.activities;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.VisibleForTesting;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
-import android.os.Handler;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.crashlytics.android.Crashlytics;
 import com.google.android.gms.appinvite.AppInvite;
 import com.google.android.gms.appinvite.AppInviteInvitationResult;
 import com.google.android.gms.appinvite.AppInviteReferral;
@@ -24,6 +25,9 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.ResultCallback;
 
 import org.app.mydukan.R;
+
+import java.io.PrintWriter;
+import java.io.StringWriter;
 
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
@@ -113,82 +117,90 @@ public class DeeplinkActivity extends AppCompatActivity implements GoogleApiClie
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_deeplink);
 
-        Intent intent = getIntent();
-        String action = intent.getAction();
-        Uri data = intent.getData();
-        // Validate that the developer has set the app code.
-        validateAppCode();
+        try {
+            Intent intent = getIntent();
+            String action = intent.getAction();
+            Uri data = intent.getData();
+            // Validate that the developer has set the app code.
+            validateAppCode();
 
-        // Create a deep link and display it in the UI
-        final Uri deepLink = buildDeepLink(Uri.parse(DEEP_LINK_URL), 0, true);
-        ((TextView) findViewById(R.id.link_view_send)).setText(deepLink.toString());
+            // Create a deep link and display it in the UI
+            final Uri deepLink = buildDeepLink(Uri.parse(DEEP_LINK_URL), 0, true);
+            ((TextView) findViewById(R.id.link_view_send)).setText(deepLink.toString());
 
-        // Share button click listener
-        findViewById(R.id.button_share).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                shareDeepLink(deepLink.toString());
-            }
-        });
-        // [END_EXCLUDE]
+            // Share button click listener
+            findViewById(R.id.button_share).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    shareDeepLink(deepLink.toString());
+                }
+            });
+            // [END_EXCLUDE]
 
-        // [START build_api_client]
-        // Build GoogleApiClient with AppInvite API for receiving deep links
-        mGoogleApiClient = new GoogleApiClient.Builder(this)
-                .enableAutoManage(this, this)
-                .addApi(AppInvite.API)
-                .build();
-        // [END build_api_client]
+            // [START build_api_client]
+            // Build GoogleApiClient with AppInvite API for receiving deep links
+            mGoogleApiClient = new GoogleApiClient.Builder(this)
+                    .enableAutoManage(this, this)
+                    .addApi(AppInvite.API)
+                    .build();
+            // [END build_api_client]
 
-        // [START get_deep_link]
-        // Check if this app was launched from a deep link. Setting autoLaunchDeepLink to true
-        // would automatically launch the deep link if one is found.
-        boolean autoLaunchDeepLink = false;
-        AppInvite.AppInviteApi.getInvitation(mGoogleApiClient, this, autoLaunchDeepLink)
-                .setResultCallback(
-                        new ResultCallback<AppInviteInvitationResult>() {
-                            @Override
-                            public void onResult(@NonNull AppInviteInvitationResult result) {
-                                if (result.getStatus().isSuccess()) {
-                                    // Extract deep link from Intent
-                                    Intent intent = result.getInvitationIntent();
-                                    String deepLink = AppInviteReferral.getDeepLink(intent);
+            // [START get_deep_link]
+            // Check if this app was launched from a deep link. Setting autoLaunchDeepLink to true
+            // would automatically launch the deep link if one is found.
+            boolean autoLaunchDeepLink = false;
+            AppInvite.AppInviteApi.getInvitation(mGoogleApiClient, this, autoLaunchDeepLink)
+                    .setResultCallback(
+                            new ResultCallback<AppInviteInvitationResult>() {
+                                @Override
+                                public void onResult(@NonNull AppInviteInvitationResult result) {
+                                    if (result.getStatus().isSuccess()) {
+                                        // Extract deep link from Intent
+                                        Intent intent = result.getInvitationIntent();
+                                        String deepLink = AppInviteReferral.getDeepLink(intent);
 
-                                    // Handle the deep link. For example, open the linked
-                                    // content, or apply promotional credit to the user's
-                                    // account.
+                                        // Handle the deep link. For example, open the linked
+                                        // content, or apply promotional credit to the user's
+                                        // account.
 
-                                    // [START_EXCLUDE]
-                                    // Display deep link in the UI
-                                    ((TextView) findViewById(R.id.link_view_receive)).setText(deepLink);
-                                    // [END_EXCLUDE]
-                                } else {
-                                    Log.d(TAG, "getInvitation: no deep link found.");
+                                        // [START_EXCLUDE]
+                                        // Display deep link in the UI
+                                        ((TextView) findViewById(R.id.link_view_receive)).setText(deepLink);
+                                        // [END_EXCLUDE]
+                                    } else {
+                                        Log.d(TAG, "getInvitation: no deep link found.");
+                                    }
                                 }
-                            }
-                        });
-        // [END get_deep_link]
+                            });
+            // [END get_deep_link]
 
 
-        //=================================================================
+            //=================================================================
 
-        mVisible = true;
-        mControlsView = findViewById(R.id.fullscreen_content_controls);
-        mContentView = findViewById(R.id.fullscreen_content);
+            mVisible = true;
+            mControlsView = findViewById(R.id.fullscreen_content_controls);
+            mContentView = findViewById(R.id.fullscreen_content);
 
 
-        // Set up the user interaction to manually show or hide the system UI.
-        mContentView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                toggle();
-            }
-        });
+            // Set up the user interaction to manually show or hide the system UI.
+            mContentView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    toggle();
+                }
+            });
 
-        // Upon interacting with UI controls, delay any scheduled hide()
-        // operations to prevent the jarring behavior of controls going away
-        // while interacting with the UI.
-        findViewById(R.id.dummy_button).setOnTouchListener(mDelayHideTouchListener);
+            // Upon interacting with UI controls, delay any scheduled hide()
+            // operations to prevent the jarring behavior of controls going away
+            // while interacting with the UI.
+            findViewById(R.id.dummy_button).setOnTouchListener(mDelayHideTouchListener);
+        }catch (Exception e){
+            Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() + " - onCreate : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            Crashlytics.log(0,this.getClass().getSimpleName() + " - onCreate : ",errors.toString());
+        }
     }
 
     @Override

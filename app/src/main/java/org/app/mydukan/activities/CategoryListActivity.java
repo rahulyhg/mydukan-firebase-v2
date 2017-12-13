@@ -35,6 +35,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.crashlytics.android.Crashlytics;
 import com.crashlytics.android.answers.Answers;
 import com.crashlytics.android.answers.CustomEvent;
 import com.crystal.crystalrangeseekbar.interfaces.OnRangeSeekbarChangeListener;
@@ -64,6 +65,8 @@ import org.app.mydukan.utils.AppPreference;
 import org.app.mydukan.utils.NetworkUtil;
 import org.app.mydukan.utils.Utils;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -132,230 +135,238 @@ public class CategoryListActivity extends BaseActivity implements CategoryAdapte
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_category_list);
+        try {
+            setContentView(R.layout.activity_category_list);
 
-        Bundle bundle = getIntent().getExtras();
-        if (bundle != null) {
-            if (bundle.containsKey(AppContants.SUPPLIER)) {
-                supplierData = (SupplierBindData) bundle.getSerializable(AppContants.SUPPLIER);
-                mSupplierId = supplierData.getId();
+            Bundle bundle = getIntent().getExtras();
+            if (bundle != null) {
+                if (bundle.containsKey(AppContants.SUPPLIER)) {
+                    supplierData = (SupplierBindData) bundle.getSerializable(AppContants.SUPPLIER);
+                    mSupplierId = supplierData.getId();
 
+                }
             }
-        }
-        mApp = (MyDukan) getApplicationContext();
-        FirebaseUser firebaseUser = mApp.getFirebaseAuth().getCurrentUser();
-        if(firebaseUser != null && firebaseUser.getUid() != null)
-            userID = mApp.getFirebaseAuth().getCurrentUser().getUid();
-        networkUtil = new NetworkUtil();
+            mApp = (MyDukan) getApplicationContext();
+            FirebaseUser firebaseUser = mApp.getFirebaseAuth().getCurrentUser();
+            if (firebaseUser != null && firebaseUser.getUid() != null)
+                userID = mApp.getFirebaseAuth().getCurrentUser().getUid();
+            networkUtil = new NetworkUtil();
 
-        mWhatsAppBtn_payment = (FloatingActionButton) findViewById(R.id.whatsAppBtn_payment);
-        scroll = (ScrollView) findViewById(R.id.scrollViewList);
-        mlayout = (RelativeLayout) findViewById(R.id.mlayout_enable);
-        subscribeAleartLayout = (LinearLayout) findViewById(R.id.layout_subscribe);
-        btn_Subscribe = (Button) findViewById(R.id.btn_subscription);
-        btn_Trial = (Button) findViewById(R.id.btn_trial);
-        btn_DaysRemaing = (Button) findViewById(R.id.btn_remaingDays);
-        daysRemain = (TextView) findViewById(R.id.tv_message_trialUser);
-        //  mlayout.setVisibility(View.GONE);
-        go = (Button) findViewById(R.id.findcat);
-        mFilterBtn = (Button) findViewById(R.id.FilterBtn);
-        mFilterBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                fetchCategoryData();
-                AddFilters();
+            mWhatsAppBtn_payment = (FloatingActionButton) findViewById(R.id.whatsAppBtn_payment);
+            scroll = (ScrollView) findViewById(R.id.scrollViewList);
+            mlayout = (RelativeLayout) findViewById(R.id.mlayout_enable);
+            subscribeAleartLayout = (LinearLayout) findViewById(R.id.layout_subscribe);
+            btn_Subscribe = (Button) findViewById(R.id.btn_subscription);
+            btn_Trial = (Button) findViewById(R.id.btn_trial);
+            btn_DaysRemaing = (Button) findViewById(R.id.btn_remaingDays);
+            daysRemain = (TextView) findViewById(R.id.tv_message_trialUser);
+            //  mlayout.setVisibility(View.GONE);
+            go = (Button) findViewById(R.id.findcat);
+            mFilterBtn = (Button) findViewById(R.id.FilterBtn);
+            mFilterBtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    fetchCategoryData();
+                    AddFilters();
+                }
+            });
+
+            sharedPreferences = getSharedPreferences("ShaPreferences", Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            boolean firstTime = sharedPreferences.getBoolean("first", true);
+            if (firstTime) {
+                editor.putBoolean("first", false);
+                //For commit the changes, Use either editor.commit(); or  editor.apply();.
+                editor.commit();
+                LoginActivity loginActivity = new LoginActivity();
+                notNew_user = loginActivity.isNewUserForTrail;
+                lounchedDate_User = Utils.getCurrentdate();
+                // now the calling the method to clear the cache data or app data
             }
-        });
 
-        sharedPreferences = getSharedPreferences("ShaPreferences", Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        boolean firstTime = sharedPreferences.getBoolean("first", true);
-        if (firstTime) {
-            editor.putBoolean("first", false);
-            //For commit the changes, Use either editor.commit(); or  editor.apply();.
-            editor.commit();
-            LoginActivity loginActivity = new LoginActivity();
-            notNew_user = loginActivity.isNewUserForTrail;
-            lounchedDate_User = Utils.getCurrentdate();
-            // now the calling the method to clear the cache data or app data
-        }
+            mWhatsAppBtn_payment.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    onWhatsAppBtnClick();
+                }
+            });
+            //============================================
+            mBottomToolBar = (Toolbar) findViewById(R.id.bottomToolbar);
+            mBottomToolBar.findViewById(R.id.schemeBtn).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    open_PageName = "schemes"; // this will tell us which page has to open
 
-        mWhatsAppBtn_payment.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                onWhatsAppBtnClick();
-            }
-        });
-        //============================================
-        mBottomToolBar = (Toolbar) findViewById(R.id.bottomToolbar);
-        mBottomToolBar.findViewById(R.id.schemeBtn).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                open_PageName = "schemes"; // this will tell us which page has to open
+                    if (showSubscriptionPage(CategoryListActivity.this, userID, userdetails)) {
+                        subscribeAleartLayout.setVisibility(View.VISIBLE);
+                    } else {
+                        Answers.getInstance().logCustom(new CustomEvent("Scheme click")
+                                .putCustomAttribute("Name", supplierData.getName()));
+                        Intent intent = new Intent(CategoryListActivity.this, SchemeListActivity.class);
+                        intent.putExtra(AppContants.SUPPLIER_ID, supplierData.getId());
+                        intent.putExtra(AppContants.SUPPLIER_NAME, supplierData.getName());
+                        startActivity(intent);
+                    }
+                }
+            });
 
-                if (showSubscriptionPage(CategoryListActivity.this, userID, userdetails)) {
-                    subscribeAleartLayout.setVisibility(View.VISIBLE);
-                } else {
-                    Answers.getInstance().logCustom(new CustomEvent("Scheme click")
-                            .putCustomAttribute("Name", supplierData.getName()));
-                    Intent intent = new Intent(CategoryListActivity.this, SchemeListActivity.class);
+            mBottomToolBar.findViewById(R.id.recordsBtn).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent record = new Intent(CategoryListActivity.this, RecordsActivity.class);
+                    startActivity(record);
+                }
+            });
+            mBottomToolBar.findViewById(R.id.complaintBtn).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Answers.getInstance().logCustom(new CustomEvent("Service Center")
+                            .putCustomAttribute("Categorypage_ServiceCenter_button", "Service Center button clicked"));
+
+                    Intent intent = new Intent(CategoryListActivity.this, ServiceProviders.class);
+                    intent.putExtra(AppContants.SERVICECENTERS_ENABLE, remoteSearchServiCecenters);
+                    startActivity(intent);
+                }
+            });
+
+            mBottomToolBar.findViewById(R.id.myorderBtn).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent intent = new Intent(CategoryListActivity.this, OrderListActivity.class);
                     intent.putExtra(AppContants.SUPPLIER_ID, supplierData.getId());
                     intent.putExtra(AppContants.SUPPLIER_NAME, supplierData.getName());
                     startActivity(intent);
                 }
+            });
+
+            if (!supplierData.isCartEnabled()) {
+                mBottomToolBar.findViewById(R.id.myorderBtn).setVisibility(View.GONE);
             }
-        });
+            btn_Subscribe.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (userdetails != null && userdetails.getUserinfo() != null && userdetails.getUserinfo().getEmailid() != null && !userdetails.getUserinfo().getEmailid().isEmpty())
+                        Answers.getInstance().logCustom(new CustomEvent("PaytmButton click")
+                                .putCustomAttribute("USER_ID/ USER_Email:", userID + "/" + userdetails.getUserinfo().getEmailid()));
 
-        mBottomToolBar.findViewById(R.id.recordsBtn).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent record = new Intent(CategoryListActivity.this, RecordsActivity.class);
-                startActivity(record);
-            }
-        });
-        mBottomToolBar.findViewById(R.id.complaintBtn).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Answers.getInstance().logCustom(new CustomEvent("Service Center")
-                        .putCustomAttribute("Categorypage_ServiceCenter_button", "Service Center button clicked"));
-
-                Intent intent = new Intent(CategoryListActivity.this, ServiceProviders.class);
-                intent.putExtra(AppContants.SERVICECENTERS_ENABLE, remoteSearchServiCecenters);
-                startActivity(intent);
-            }
-        });
-
-        mBottomToolBar.findViewById(R.id.myorderBtn).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(CategoryListActivity.this, OrderListActivity.class);
-                intent.putExtra(AppContants.SUPPLIER_ID, supplierData.getId());
-                intent.putExtra(AppContants.SUPPLIER_NAME, supplierData.getName());
-                startActivity(intent);
-            }
-        });
-
-        if (!supplierData.isCartEnabled()) {
-            mBottomToolBar.findViewById(R.id.myorderBtn).setVisibility(View.GONE);
-        }
-        btn_Subscribe.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(userdetails != null && userdetails.getUserinfo() != null && userdetails.getUserinfo().getEmailid() != null && !userdetails.getUserinfo().getEmailid().isEmpty())
-                Answers.getInstance().logCustom(new CustomEvent("PaytmButton click")
-                        .putCustomAttribute("USER_ID/ USER_Email:", userID + "/" + userdetails.getUserinfo().getEmailid()));
-
-                Intent nIntent = new Intent(CategoryListActivity.this, PaytmGatewayActivity.class);
-                nIntent.putExtra(AppContants.FP_USER_DETAILS, userdetails);
-                nIntent.putExtra(AppContants.FP_USER_ID, userdetails.getId());
-                startActivity(nIntent);
-            }
-        });
-
-        btn_Trial.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(userdetails != null && userdetails.getUserinfo() != null && userdetails.getUserinfo().getEmailid() != null && !userdetails.getUserinfo().getEmailid().isEmpty())
-                Answers.getInstance().logCustom(new CustomEvent("PriceDropTrial click")
-                        .putCustomAttribute("USER_ID/ USER_Email:", userID + "/" + userdetails.getUserinfo().getEmailid()));
-                mlayout.setVisibility(View.VISIBLE);
-                subscribeAleartLayout.setVisibility(View.GONE);
-                Utils.getCurrentdate();// TODO: 25-02-2017  PASS THE CURRENT DATE TO SERVER IF THE USER IS START USING TRIAL FEATURE
-                btn_Trial.setVisibility(View.GONE);
-                btn_DaysRemaing.setVisibility(View.VISIBLE);
-                AppSubscriptionInfo appSubscriptionInfo = new AppSubscriptionInfo();
-                appSubscriptionInfo.setSubcription_EXTRAINFO("MYDUKAN_UserID:" + userID + "||" + "User_MobileNO:" + userdetails.getUserinfo().getNumber() + "||" + "User_EmailId:" + userdetails.getUserinfo().getEmailid());
-                appSubscriptionInfo.setSubscription_TRIALDAYS("7");
-                appSubscriptionInfo.setSubscription_TRIALSTARTDATE(Utils.getCurrentdate());
-                updateSubscriptionInfo(CategoryListActivity.this, appSubscriptionInfo);
-                notNew_user = true;
-            }
-        });
-
-        btn_DaysRemaing.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                if (open_PageName != null) {
-                    //open_PageName="schemes";
-                    switch (open_PageName) {
-                        case "category":
-                            if(userdetails != null && userdetails.getUserinfo() != null && userdetails.getUserinfo().getEmailid() != null && !userdetails.getUserinfo().getEmailid().isEmpty())
-                            Answers.getInstance().logCustom(new CustomEvent("FreeUseBTN")
-                                    .putCustomAttribute("USER_ID/ USER_Email:", userID + "/" + userdetails.getUserinfo().getEmailid()));
-
-                            Intent intent = new Intent(CategoryListActivity.this, ProductListActivity.class);
-                            intent.putExtra(AppContants.CATEGORY_ID, mCatId);
-                            intent.putExtra(AppContants.SUPPLIER, supplierData);
-                            intent.putExtra(AppContants.USER_DETAILS, userdetails);
-                            startActivity(intent);
-
-                            break;
-
-                        case "category_filter":
-                            Intent intent1 = new Intent(CategoryListActivity.this, ProductListActivity.class);
-                            intent1.putExtra(AppContants.CATEGORY_ID, mCatId);
-                            intent1.putExtra(AppContants.SUPPLIER, supplierData);
-                            intent1.putExtra(AppContants.USER_DETAILS, userdetails);
-                            HashMap<String, Integer> minMax = new HashMap<String, Integer>();
-                            minMax.put("Min", minRange);
-                             minMax.put("Max", maxRange);
-                            Log.e("Maxxx", (String) ""+maxRange);
-                            intent1.putExtra(AppContants.PRICE_RANGE, minMax);
-                            intent1.putExtra(AppContants.PRICE_TYPE, price_Type);
-                            startActivity(intent1);
-                            break;
-                        case "schemes":
-                            Answers.getInstance().logCustom(new CustomEvent("Scheme click")
-                                    .putCustomAttribute("Name", supplierData.getName()));
-                            Intent schemeIntent = new Intent(CategoryListActivity.this, SchemeListActivity.class);
-                            schemeIntent.putExtra(AppContants.SUPPLIER_ID, supplierData.getId());
-                            schemeIntent.putExtra(AppContants.SUPPLIER_NAME, supplierData.getName());
-                            startActivity(schemeIntent);
-                            break;
-                        default:
-                            if(userdetails != null && userdetails.getUserinfo() != null && userdetails.getUserinfo().getEmailid() != null && !userdetails.getUserinfo().getEmailid().isEmpty())
-                            Answers.getInstance().logCustom(new CustomEvent("FreeUseBTN_Default")
-                                    .putCustomAttribute("USER_ID/ USER_Email:", userID + "/" + userdetails.getUserinfo().getEmailid()));
-
-                            Intent catintent = new Intent(CategoryListActivity.this, ProductListActivity.class);
-                            catintent.putExtra(AppContants.CATEGORY_ID, mCatId);
-                            catintent.putExtra(AppContants.SUPPLIER, supplierData);
-                            catintent.putExtra(AppContants.USER_DETAILS, userdetails);
-                            startActivity(catintent);
-                            break;
-                    }
-                    mlayout.setVisibility(View.VISIBLE);
-                    subscribeAleartLayout.setVisibility(View.GONE);
-                    btn_Trial.setVisibility(View.GONE);
-                } else {
-                    mlayout.setVisibility(View.VISIBLE);
-                    subscribeAleartLayout.setVisibility(View.GONE);
-                    btn_Trial.setVisibility(View.GONE);
+                    Intent nIntent = new Intent(CategoryListActivity.this, PaytmGatewayActivity.class);
+                    nIntent.putExtra(AppContants.FP_USER_DETAILS, userdetails);
+                    nIntent.putExtra(AppContants.FP_USER_ID, userdetails.getId());
+                    startActivity(nIntent);
                 }
+            });
 
+            btn_Trial.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (userdetails != null && userdetails.getUserinfo() != null && userdetails.getUserinfo().getEmailid() != null && !userdetails.getUserinfo().getEmailid().isEmpty())
+                        Answers.getInstance().logCustom(new CustomEvent("PriceDropTrial click")
+                                .putCustomAttribute("USER_ID/ USER_Email:", userID + "/" + userdetails.getUserinfo().getEmailid()));
+                    mlayout.setVisibility(View.VISIBLE);
+                    subscribeAleartLayout.setVisibility(View.GONE);
+                    Utils.getCurrentdate();// TODO: 25-02-2017  PASS THE CURRENT DATE TO SERVER IF THE USER IS START USING TRIAL FEATURE
+                    btn_Trial.setVisibility(View.GONE);
+                    btn_DaysRemaing.setVisibility(View.VISIBLE);
+                    AppSubscriptionInfo appSubscriptionInfo = new AppSubscriptionInfo();
+                    appSubscriptionInfo.setSubcription_EXTRAINFO("MYDUKAN_UserID:" + userID + "||" + "User_MobileNO:" + userdetails.getUserinfo().getNumber() + "||" + "User_EmailId:" + userdetails.getUserinfo().getEmailid());
+                    appSubscriptionInfo.setSubscription_TRIALDAYS("7");
+                    appSubscriptionInfo.setSubscription_TRIALSTARTDATE(Utils.getCurrentdate());
+                    updateSubscriptionInfo(CategoryListActivity.this, appSubscriptionInfo);
+                    notNew_user = true;
+                }
+            });
+
+            btn_DaysRemaing.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+
+                    if (open_PageName != null) {
+                        //open_PageName="schemes";
+                        switch (open_PageName) {
+                            case "category":
+                                if (userdetails != null && userdetails.getUserinfo() != null && userdetails.getUserinfo().getEmailid() != null && !userdetails.getUserinfo().getEmailid().isEmpty())
+                                    Answers.getInstance().logCustom(new CustomEvent("FreeUseBTN")
+                                            .putCustomAttribute("USER_ID/ USER_Email:", userID + "/" + userdetails.getUserinfo().getEmailid()));
+
+                                Intent intent = new Intent(CategoryListActivity.this, ProductListActivity.class);
+                                intent.putExtra(AppContants.CATEGORY_ID, mCatId);
+                                intent.putExtra(AppContants.SUPPLIER, supplierData);
+                                intent.putExtra(AppContants.USER_DETAILS, userdetails);
+                                startActivity(intent);
+
+                                break;
+
+                            case "category_filter":
+                                Intent intent1 = new Intent(CategoryListActivity.this, ProductListActivity.class);
+                                intent1.putExtra(AppContants.CATEGORY_ID, mCatId);
+                                intent1.putExtra(AppContants.SUPPLIER, supplierData);
+                                intent1.putExtra(AppContants.USER_DETAILS, userdetails);
+                                HashMap<String, Integer> minMax = new HashMap<String, Integer>();
+                                minMax.put("Min", minRange);
+                                minMax.put("Max", maxRange);
+                                Log.e("Maxxx", (String) "" + maxRange);
+                                intent1.putExtra(AppContants.PRICE_RANGE, minMax);
+                                intent1.putExtra(AppContants.PRICE_TYPE, price_Type);
+                                startActivity(intent1);
+                                break;
+                            case "schemes":
+                                Answers.getInstance().logCustom(new CustomEvent("Scheme click")
+                                        .putCustomAttribute("Name", supplierData.getName()));
+                                Intent schemeIntent = new Intent(CategoryListActivity.this, SchemeListActivity.class);
+                                schemeIntent.putExtra(AppContants.SUPPLIER_ID, supplierData.getId());
+                                schemeIntent.putExtra(AppContants.SUPPLIER_NAME, supplierData.getName());
+                                startActivity(schemeIntent);
+                                break;
+                            default:
+                                if (userdetails != null && userdetails.getUserinfo() != null && userdetails.getUserinfo().getEmailid() != null && !userdetails.getUserinfo().getEmailid().isEmpty())
+                                    Answers.getInstance().logCustom(new CustomEvent("FreeUseBTN_Default")
+                                            .putCustomAttribute("USER_ID/ USER_Email:", userID + "/" + userdetails.getUserinfo().getEmailid()));
+
+                                Intent catintent = new Intent(CategoryListActivity.this, ProductListActivity.class);
+                                catintent.putExtra(AppContants.CATEGORY_ID, mCatId);
+                                catintent.putExtra(AppContants.SUPPLIER, supplierData);
+                                catintent.putExtra(AppContants.USER_DETAILS, userdetails);
+                                startActivity(catintent);
+                                break;
+                        }
+                        mlayout.setVisibility(View.VISIBLE);
+                        subscribeAleartLayout.setVisibility(View.GONE);
+                        btn_Trial.setVisibility(View.GONE);
+                    } else {
+                        mlayout.setVisibility(View.VISIBLE);
+                        subscribeAleartLayout.setVisibility(View.GONE);
+                        btn_Trial.setVisibility(View.GONE);
+                    }
+
+                }
+            });
+
+
+            //setup actionbar
+            setupActionBar();
+            setupListView();
+            getUserProfile();
+            fetchCategoryData();
+            AddFilters();
+            if (dialog.isShowing()) {
+                dialog.dismiss();
             }
-        });
 
-
-        //setup actionbar
-        setupActionBar();
-        setupListView();
-        getUserProfile();
-        fetchCategoryData();
-        AddFilters();
-        if (dialog.isShowing()) {
-            dialog.dismiss();
+            // Get Remote Config instance.
+            // [START get_remote_config_instance]
+            mFirebaseRemoteConfig = FirebaseRemoteConfig.getInstance();
+            FirebaseRemoteConfigSettings configSettings = new FirebaseRemoteConfigSettings.Builder()
+                    .setDeveloperModeEnabled(BuildConfig.DEBUG)
+                    .build();
+            mFirebaseRemoteConfig.setConfigSettings(configSettings);
+            fetchWelcome();
+        }catch (Exception e){
+            Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() + " - onCreate : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            Crashlytics.log(0,this.getClass().getSimpleName() + " - onCreate : ",errors.toString());
         }
-
-        // Get Remote Config instance.
-        // [START get_remote_config_instance]
-        mFirebaseRemoteConfig = FirebaseRemoteConfig.getInstance();
-        FirebaseRemoteConfigSettings configSettings = new FirebaseRemoteConfigSettings.Builder()
-                .setDeveloperModeEnabled(BuildConfig.DEBUG)
-                .build();
-        mFirebaseRemoteConfig.setConfigSettings(configSettings);
-        fetchWelcome();
 
     }
 
@@ -545,44 +556,52 @@ public class CategoryListActivity extends BaseActivity implements CategoryAdapte
     }
 
     private void fetchCategoryData() {
-        showProgress();
-        ApiManager.getInstance(CategoryListActivity.this).getCategoryList(supplierData.getId(), new ApiResult() {
-            @Override
-            public void onSuccess(Object data) {
-                dismissProgress();
-                mCategoryList = (ArrayList<Category>) data;
-                if (mCategoryList.isEmpty()) {
-                    mNoDataView.setVisibility(View.VISIBLE);
-                    mRecyclerView.setVisibility(View.GONE);
-                } else {
-                    mNoDataView.setVisibility(View.GONE);
-                    mRecyclerView.setVisibility(View.VISIBLE);
-                    compareCategoryList();
-                    mAdapter.addItems(mCategoryList);
-                    mAdapter.notifyDataSetChanged();
+        try {
+            showProgress();
+            ApiManager.getInstance(CategoryListActivity.this).getCategoryList(supplierData.getId(), new ApiResult() {
+                @Override
+                public void onSuccess(Object data) {
+                    dismissProgress();
+                    mCategoryList = (ArrayList<Category>) data;
+                    if (mCategoryList.isEmpty()) {
+                        mNoDataView.setVisibility(View.VISIBLE);
+                        mRecyclerView.setVisibility(View.GONE);
+                    } else {
+                        mNoDataView.setVisibility(View.GONE);
+                        mRecyclerView.setVisibility(View.VISIBLE);
+                        compareCategoryList();
+                        mAdapter.addItems(mCategoryList);
+                        mAdapter.notifyDataSetChanged();
 
-                    for (int i = 0; i < ((ArrayList<Category>) data).size(); ++i) {
-                        String item = ((ArrayList<Category>) data).get(i).getName();
-                        categAdapter.add(item);
+                        for (int i = 0; i < ((ArrayList<Category>) data).size(); ++i) {
+                            String item = ((ArrayList<Category>) data).get(i).getName();
+                            categAdapter.add(item);
 //                                if(!item.equals("PRICE DROP") || !item.equals("NEW LAUNCH")) {
 //                                    categAdapter.add(item);
 //                                }
+                        }
+                        categAdapter.notifyDataSetChanged();
                     }
-                    categAdapter.notifyDataSetChanged();
-                }
-                if(userdetails != null && userdetails.getUserinfo() != null && userdetails.getUserinfo().getEmailid() != null && !userdetails.getUserinfo().getEmailid().isEmpty())
-                Answers.getInstance().logCustom(new CustomEvent(supplierData.getName())
-                        .putCustomAttribute("USER_ID/ USER_Email:", userID + "/" + userdetails.getUserinfo().getEmailid()));
+                    if (userdetails != null && userdetails.getUserinfo() != null && userdetails.getUserinfo().getEmailid() != null && !userdetails.getUserinfo().getEmailid().isEmpty())
+                        Answers.getInstance().logCustom(new CustomEvent(supplierData.getName())
+                                .putCustomAttribute("USER_ID/ USER_Email:", userID + "/" + userdetails.getUserinfo().getEmailid()));
 
-                ApiManager.getInstance(CategoryListActivity.this).refreshTheSupplierGroups(supplierData.getId(), null);
+                    ApiManager.getInstance(CategoryListActivity.this).refreshTheSupplierGroups(supplierData.getId(), null);
                 }
 
-            @Override
-            public void onFailure(String response) {
-                dismissProgress();
+                @Override
+                public void onFailure(String response) {
+                    dismissProgress();
 
-            }
-        });
+                }
+            });
+        }catch (Exception e){
+            Crashlytics.log(0,"Exception - CategoryListActivity - fetchCategoryData : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            Crashlytics.log(0,"1 - CategoryListActivity - fetchCategoryData : ",errors.toString());
+        }
     }
 
     public void AddFilters() {

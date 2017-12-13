@@ -12,18 +12,20 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Switch;
 
+import com.crashlytics.android.Crashlytics;
+
 import org.app.mydukan.R;
 import org.app.mydukan.activities.BaseActivity;
 import org.app.mydukan.application.MyDukan;
-import org.app.mydukan.data.SchemeInfo;
 import org.app.mydukan.data.SchemeRecord;
-import org.app.mydukan.data.SupplierInfo;
 import org.app.mydukan.server.ApiManager;
 import org.app.mydukan.server.ApiResult;
 import org.app.mydukan.utils.AppContants;
 import org.app.mydukan.utils.DatePickerFragment;
 import org.app.mydukan.utils.DateTextWatcher;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -186,45 +188,61 @@ public class AddSchemeRecordActivity extends BaseActivity {
     }
 
     private void getSchemeRecordInfo(){
-        ApiManager.getInstance(AddSchemeRecordActivity.this).getSchemeRecord(mSchemeRecord.getSchemeinfo().getId(),
-                mSchemeRecord.getSupplierinfo().getId(), new ApiResult() {
-                    @Override
-                    public void onSuccess(Object data) {
-                        dismissProgress();
-                        if(data != null){
-                            mSchemeRecord = (SchemeRecord) data;
+        try {
+            ApiManager.getInstance(AddSchemeRecordActivity.this).getSchemeRecord(mSchemeRecord.getSchemeinfo().getId(),
+                    mSchemeRecord.getSupplierinfo().getId(), new ApiResult() {
+                        @Override
+                        public void onSuccess(Object data) {
+                            dismissProgress();
+                            if (data != null) {
+                                mSchemeRecord = (SchemeRecord) data;
+                            }
+                            setTheData();
                         }
-                        setTheData();
-                    }
 
-                    @Override
-                    public void onFailure(String response) {
+                        @Override
+                        public void onFailure(String response) {
 
-                    }
-                });
+                        }
+                    });
+        }catch (Exception e){
+            Crashlytics.log(0,"Exception - AddSchemeRecordActivity - getSchemeRecordInfo : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            Crashlytics.log(0,"1 - AddSchemeRecordActivity - getSchemeRecordInfo : ",errors.toString());
+        }
     }
 
     private void addSchemeRecord(SchemeRecord record){
-        showProgress();
+        try {
+            showProgress();
 
-        ApiManager.getInstance(AddSchemeRecordActivity.this).addSchemeRecord(record,
-                new ApiResult() {
-            @Override
-            public void onSuccess(Object data) {
-                String result = (String) data;
-                dismissProgress();
-                if(!result.equalsIgnoreCase(getString(R.string.status_success))){
-                    showErrorToast(AddSchemeRecordActivity.this, result);
-                }else{
-                    finish();
-                }
-            }
+            ApiManager.getInstance(AddSchemeRecordActivity.this).addSchemeRecord(record,
+                    new ApiResult() {
+                        @Override
+                        public void onSuccess(Object data) {
+                            String result = (String) data;
+                            dismissProgress();
+                            if (!result.equalsIgnoreCase(getString(R.string.status_success))) {
+                                showErrorToast(AddSchemeRecordActivity.this, result);
+                            } else {
+                                finish();
+                            }
+                        }
 
-            @Override
-            public void onFailure(String response) {
+                        @Override
+                        public void onFailure(String response) {
 
-            }
-        });
+                        }
+                    });
+        }catch (Exception e){
+            Crashlytics.log(0,"Exception - AddSchemeRecordActivity - addSchemeRecord : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            Crashlytics.log(0,"1 - AddSchemeRecordActivity - addSchemeRecord : ",errors.toString());
+        }
 
     }
 

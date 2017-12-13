@@ -20,21 +20,18 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.Button;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.crashlytics.android.Crashlytics;
 import com.crashlytics.android.answers.Answers;
 import com.crashlytics.android.answers.CustomEvent;
 import com.moengage.widgets.NudgeView;
 
 import org.app.mydukan.R;
 import org.app.mydukan.activities.Schemes.SchemeListActivity;
-import org.app.mydukan.appSubscription.PriceDropSubscription;
 import org.app.mydukan.application.MyDukan;
-import org.app.mydukan.data.AppSubscriptionInfo;
 import org.app.mydukan.data.Product;
 import org.app.mydukan.data.SupplierBindData;
 import org.app.mydukan.data.User;
@@ -44,19 +41,17 @@ import org.app.mydukan.server.ApiManager;
 import org.app.mydukan.server.ApiResult;
 import org.app.mydukan.utils.AppContants;
 
-
-
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.text.DateFormat;
-import java.text.Format;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.Iterator;
+import java.util.Map;
 
 //Implementing the interface OnTabSelectedListener to our MainActivity
 //This interface would help in swiping views
@@ -93,98 +88,106 @@ public class ProductListActivity extends BaseActivity implements TabLayout.OnTab
 
         mApp = (MyDukan) getApplicationContext();
 
-        NudgeView nv = (NudgeView) findViewById(R.id.nudge);
-        nv.initialiseNudgeView(this); //pass the activity context
+        try {
+            NudgeView nv = (NudgeView) findViewById(R.id.nudge);
+            nv.initialiseNudgeView(this); //pass the activity context
 
-        mlayout = (RelativeLayout) findViewById(R.id.layout_enable);
-        //Adding toolbar to the activity
-        setupActionBar();
-        Bundle bundle = getIntent().getExtras();
-        if (bundle != null) {
-            if (bundle.containsKey(AppContants.SUPPLIER)) {
-                mSupplier = (SupplierBindData) bundle.getSerializable(AppContants.SUPPLIER);
+            mlayout = (RelativeLayout) findViewById(R.id.layout_enable);
+            //Adding toolbar to the activity
+            setupActionBar();
+            Bundle bundle = getIntent().getExtras();
+            if (bundle != null) {
+                if (bundle.containsKey(AppContants.SUPPLIER)) {
+                    mSupplier = (SupplierBindData) bundle.getSerializable(AppContants.SUPPLIER);
+                }
+                if (bundle.containsKey(AppContants.CATEGORY_ID)) {
+                    mCategoryId = bundle.getString(AppContants.CATEGORY_ID);
+                    Log.e("Category", mCategoryId);
+                }
+                if (bundle.containsKey(AppContants.USER_DETAILS)) {
+                    userdetails = (User) bundle.getSerializable(AppContants.USER_DETAILS);
+                }
+                if (bundle.containsKey(AppContants.PRICE_TYPE)) {
+                    ptype = bundle.getString(AppContants.PRICE_TYPE);
+                    Log.e("Ptype", ptype);
+
+                }
+                if (bundle.containsKey(AppContants.PRICE_RANGE)) {
+                    Log.d("PRICERANGE", "Found");
+                    priceRange = (HashMap<String, Integer>) bundle.getSerializable(AppContants.PRICE_RANGE);
+                    pmin = priceRange.get("Min");
+                    pmax = priceRange.get("Max");
+                }
             }
-            if (bundle.containsKey(AppContants.CATEGORY_ID)) {
-                mCategoryId = bundle.getString(AppContants.CATEGORY_ID);
-                Log.e("Category", mCategoryId);
+
+
+            //Initializing the tablayout
+            tabLayout = (TabLayout) findViewById(R.id.tabLayout);
+            tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
+            //Initializing viewPager
+            viewPager = (ViewPager) findViewById(R.id.pager);
+            mNoDataView = (TextView) findViewById(R.id.nodata_view);
+
+            //Adding onTabSelectedListener to swipe views
+            tabLayout.setOnTabSelectedListener(this);
+            tabLayout.setTabMode(TabLayout.MODE_SCROLLABLE);
+            viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
+
+            mBottomToolBar = (Toolbar) findViewById(R.id.bottomToolbar);
+            mBottomToolBar.findViewById(R.id.schemeBtn).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent intent = new Intent(ProductListActivity.this, SchemeListActivity.class);
+                    intent.putExtra(AppContants.SUPPLIER_ID, mSupplier.getId());
+                    intent.putExtra(AppContants.SUPPLIER_NAME, mSupplier.getName());
+                    startActivity(intent);
+                }
+            });
+
+            mBottomToolBar.findViewById(R.id.complaintBtn).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent intent = new Intent(ProductListActivity.this, ServiceProviders.class);
+                    //intent.putExtra(AppContants.SUPPLIER_ID, mSupplier.getId());
+                    //intent.putExtra(AppContants.SUPPLIER_NAME, mSupplier.getName());
+                    startActivity(intent);
+                }
+            });
+
+            mBottomToolBar.findViewById(R.id.myorderBtn).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent intent = new Intent(ProductListActivity.this, OrderListActivity.class);
+                    intent.putExtra(AppContants.SUPPLIER_ID, mSupplier.getId());
+                    intent.putExtra(AppContants.SUPPLIER_NAME, mSupplier.getName());
+                    startActivity(intent);
+                }
+            });
+            mBottomToolBar.findViewById(R.id.recordsBtn).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent record = new Intent(ProductListActivity.this, RecordsActivity.class);
+                    startActivity(record);
+                }
+            });
+
+
+            if (!mSupplier.isCartEnabled()) {
+                mBottomToolBar.findViewById(R.id.myorderBtn).setVisibility(View.GONE);
             }
-            if (bundle.containsKey(AppContants.USER_DETAILS)) {
-                userdetails = (User) bundle.getSerializable(AppContants.USER_DETAILS);
+            mBottomToolBar.setVisibility(View.GONE);
+
+            if (!mApp.getUtils().isStringEmpty(mSupplier.getId())) {
+                getProductList();
+            } else {
+                return;
             }
-            if (bundle.containsKey(AppContants.PRICE_TYPE)) {
-                ptype = bundle.getString(AppContants.PRICE_TYPE);
-                Log.e("Ptype", ptype);
-
-            }
-            if (bundle.containsKey(AppContants.PRICE_RANGE)){
-                Log.d("PRICERANGE", "Found");
-                priceRange = (HashMap<String, Integer>) bundle.getSerializable(AppContants.PRICE_RANGE);
-                pmin = priceRange.get("Min");
-                pmax = priceRange.get("Max");
-            }
-        }
-
-
-        //Initializing the tablayout
-        tabLayout = (TabLayout) findViewById(R.id.tabLayout);
-        tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
-        //Initializing viewPager
-        viewPager = (ViewPager) findViewById(R.id.pager);
-        mNoDataView = (TextView) findViewById(R.id.nodata_view);
-
-        //Adding onTabSelectedListener to swipe views
-        tabLayout.setOnTabSelectedListener(this);
-        tabLayout.setTabMode(TabLayout.MODE_SCROLLABLE);
-        viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
-
-        mBottomToolBar = (Toolbar) findViewById(R.id.bottomToolbar);
-        mBottomToolBar.findViewById(R.id.schemeBtn).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(ProductListActivity.this, SchemeListActivity.class);
-                intent.putExtra(AppContants.SUPPLIER_ID, mSupplier.getId());
-                intent.putExtra(AppContants.SUPPLIER_NAME, mSupplier.getName());
-                startActivity(intent);
-            }
-        });
-
-        mBottomToolBar.findViewById(R.id.complaintBtn).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(ProductListActivity.this, ServiceProviders.class);
-                //intent.putExtra(AppContants.SUPPLIER_ID, mSupplier.getId());
-                //intent.putExtra(AppContants.SUPPLIER_NAME, mSupplier.getName());
-                startActivity(intent);
-            }
-        });
-
-        mBottomToolBar.findViewById(R.id.myorderBtn).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(ProductListActivity.this, OrderListActivity.class);
-                intent.putExtra(AppContants.SUPPLIER_ID, mSupplier.getId());
-                intent.putExtra(AppContants.SUPPLIER_NAME, mSupplier.getName());
-                startActivity(intent);
-            }
-        });
-        mBottomToolBar.findViewById(R.id.recordsBtn).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent record = new Intent(ProductListActivity.this, RecordsActivity.class);
-                startActivity(record);
-            }
-        });
-
-
-        if (!mSupplier.isCartEnabled()) {
-            mBottomToolBar.findViewById(R.id.myorderBtn).setVisibility(View.GONE);
-        }
-        mBottomToolBar.setVisibility(View.GONE);
-
-        if (!mApp.getUtils().isStringEmpty(mSupplier.getId())) {
-            getProductList();
-        } else {
-            return;
+        }catch (Exception e){
+            Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() + " - onCreate : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            Crashlytics.log(0,this.getClass().getSimpleName() + " - onCreate : ",errors.toString());
         }
     }
     @Override
@@ -220,12 +223,13 @@ public class ProductListActivity extends BaseActivity implements TabLayout.OnTab
     }
 
     private void getProductList() {
+        try {
         showProgress();
         tabLayout.removeAllTabs();
         viewPager.removeAllViews();
         viewPager.setAdapter(null);
         String uid = mApp.getFirebaseAuth().getCurrentUser().getUid();
-        try {
+
             ApiManager.getInstance(getApplicationContext()).getSupplierProductList(mSupplier, mCategoryId,
                     mSerachText, new ApiResult() {
                         @Override
@@ -335,63 +339,84 @@ public class ProductListActivity extends BaseActivity implements TabLayout.OnTab
                             dismissProgress();
                         }
                     });
-        } catch (Exception e) {
+        } catch (Exception e){
             dismissProgress();
+            Crashlytics.log(0,"Exception - ProductListActivity - getProductList : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            Crashlytics.log(0,"1 - ProductListActivity - getProductList : ",errors.toString());
         }
     }
 
 
     private void addProductToCart(Product product, long quantity) {
-        showProgress();
-        HashMap<String, Object> orderInfo = new HashMap<>();
-        orderInfo.put("productid", product.getProductId());
-        orderInfo.put("productname", product.getName());
-        orderInfo.put("price", product.getPrice());
-        orderInfo.put("quantity", quantity);
+        try {
+            showProgress();
+            HashMap<String, Object> orderInfo = new HashMap<>();
+            orderInfo.put("productid", product.getProductId());
+            orderInfo.put("productname", product.getName());
+            orderInfo.put("price", product.getPrice());
+            orderInfo.put("quantity", quantity);
 
-        ApiManager.getInstance(ProductListActivity.this).addOrderToCart(mSupplier.getId(),
-                mApp.getFirebaseAuth().getCurrentUser().getUid(), orderInfo, new ApiResult() {
-                    @Override
-                    public void onSuccess(Object data) {
-                        dismissProgress();
-                        String response = (String) data;
-                        if (response.contains(getString(R.string.status_success))) {
-                            String[] str_count = response.split("::");
-                            setTheBadgeCount(Integer.valueOf(str_count[1]));
-                        } else {
-                            showErrorToast(ProductListActivity.this, response);
+            ApiManager.getInstance(ProductListActivity.this).addOrderToCart(mSupplier.getId(),
+                    mApp.getFirebaseAuth().getCurrentUser().getUid(), orderInfo, new ApiResult() {
+                        @Override
+                        public void onSuccess(Object data) {
+                            dismissProgress();
+                            String response = (String) data;
+                            if (response.contains(getString(R.string.status_success))) {
+                                String[] str_count = response.split("::");
+                                setTheBadgeCount(Integer.valueOf(str_count[1]));
+                            } else {
+                                showErrorToast(ProductListActivity.this, response);
+                            }
                         }
-                    }
 
-                    @Override
-                    public void onFailure(String response) {
-                        dismissProgress();
-                    }
-                });
+                        @Override
+                        public void onFailure(String response) {
+                            dismissProgress();
+                        }
+                    });
+        }catch (Exception e){
+            Crashlytics.log(0,"Exception - ProductListActivity - addProductToCart : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            Crashlytics.log(0,"1 - ProductListActivity - addProductToCart : ",errors.toString());
+        }
     }
 
     private void addProductToClaimList(Product product, String imeiNo) {
-        showProgress();
-        ApiManager.getInstance(ProductListActivity.this).addProductToClaim(mSupplier.getId(), mSupplier.getName(),
-                product, imeiNo, new ApiResult() {
-                    @Override
-                    public void onSuccess(Object data) {
-                        String response = (String) data;
-                        dismissProgress();
-                        if (response.equalsIgnoreCase(getString(R.string.status_success))) {
-                            if (!isFinishing())
-                                showRecordDialog();
-                        } else {
+        try {
+            showProgress();
+            ApiManager.getInstance(ProductListActivity.this).addProductToClaim(mSupplier.getId(), mSupplier.getName(),
+                    product, imeiNo, new ApiResult() {
+                        @Override
+                        public void onSuccess(Object data) {
+                            String response = (String) data;
+                            dismissProgress();
+                            if (response.equalsIgnoreCase(getString(R.string.status_success))) {
+                                if (!isFinishing())
+                                    showRecordDialog();
+                            } else {
+                                showErrorToast(ProductListActivity.this, response);
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(String response) {
+                            dismissProgress();
                             showErrorToast(ProductListActivity.this, response);
                         }
-                    }
-
-                    @Override
-                    public void onFailure(String response) {
-                        dismissProgress();
-                        showErrorToast(ProductListActivity.this, response);
-                    }
-                });
+                    });
+        }catch (Exception e){
+            Crashlytics.log(0,"Exception - ProductListActivity - addProductToClaimList : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            Crashlytics.log(0,"1 - ProductListActivity - addProductToClaimList : ",errors.toString());
+        }
     }
 
     @Override

@@ -2,7 +2,6 @@ package org.app.mydukan.activities;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.view.Gravity;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -10,6 +9,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.crashlytics.android.Crashlytics;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.MobileAds;
@@ -27,6 +27,8 @@ import org.app.mydukan.data.ChattUser;
 import org.app.mydukan.data.Feed;
 import org.app.mydukan.utils.AppContants;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -48,50 +50,58 @@ public class FeedProfileFollowActivity extends Activity implements
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_image_text_list_base_adapter);
-        title_tv= (TextView) findViewById(R.id.tv_Title);
 
-        Bundle mybundle = getIntent().getExtras();
-        if (mybundle != null) {
-            if (mybundle.containsKey(AppContants.FEEDPROFILE_FOLLOW)) {
-                type_Profile=mybundle.getString(AppContants.FEEDPROFILE_FOLLOW);
-            }
-            if (mybundle.containsKey(AppContants.MYPROFILE_FOLLOW)) {
-                type_Profile=mybundle.getString(AppContants.MYPROFILE_FOLLOW);
-            }
-            if (mybundle.containsKey(AppContants.PROFILE_ID_FOLLOWERS)) {
-                //PROFILE_FOLLOWING
-               // PROFILE_FOLLOWERS
+        try {
+            title_tv = (TextView) findViewById(R.id.tv_Title);
+
+            Bundle mybundle = getIntent().getExtras();
+            if (mybundle != null) {
+                if (mybundle.containsKey(AppContants.FEEDPROFILE_FOLLOW)) {
+                    type_Profile = mybundle.getString(AppContants.FEEDPROFILE_FOLLOW);
+                }
+                if (mybundle.containsKey(AppContants.MYPROFILE_FOLLOW)) {
+                    type_Profile = mybundle.getString(AppContants.MYPROFILE_FOLLOW);
+                }
+                if (mybundle.containsKey(AppContants.PROFILE_ID_FOLLOWERS)) {
+                    //PROFILE_FOLLOWING
+                    // PROFILE_FOLLOWERS
                     title_tv.setText("Profile Followers..");
-                 id_Profile=mybundle.getString(AppContants.PROFILE_ID_FOLLOWERS);
-                 if((id_Profile != null)&&(!id_Profile.isEmpty())) {
-                   getProfileFollowers(id_Profile);
-                } else {
-                    Toast.makeText(this, "Unable to Get Profile Followers", Toast.LENGTH_SHORT).show();
-                }
-            }else if (mybundle.containsKey(AppContants.PROFILE_ID_FOLLOWING)){
-                id_Profile=mybundle.getString(AppContants.PROFILE_ID_FOLLOWING);
-                title_tv.setText("I am Following...");
-                if((id_Profile != null)&&(!id_Profile.isEmpty())) {
-                    mList = new ArrayList<ChattUser>();
-                    if(!(mList.isEmpty())){
-                        mList.clear();
+                    id_Profile = mybundle.getString(AppContants.PROFILE_ID_FOLLOWERS);
+                    if ((id_Profile != null) && (!id_Profile.isEmpty())) {
+                        getProfileFollowers(id_Profile);
+                    } else {
+                        Toast.makeText(this, "Unable to Get Profile Followers", Toast.LENGTH_SHORT).show();
                     }
-                    getFollowingProfiles(id_Profile);
+                } else if (mybundle.containsKey(AppContants.PROFILE_ID_FOLLOWING)) {
+                    id_Profile = mybundle.getString(AppContants.PROFILE_ID_FOLLOWING);
+                    title_tv.setText("I am Following...");
+                    if ((id_Profile != null) && (!id_Profile.isEmpty())) {
+                        mList = new ArrayList<ChattUser>();
+                        if (!(mList.isEmpty())) {
+                            mList.clear();
+                        }
+                        getFollowingProfiles(id_Profile);
+                    } else {
+                        Toast.makeText(this, "Unable to Get Profile Followers", Toast.LENGTH_SHORT).show();
+                    }
                 } else {
-                    Toast.makeText(this, "Unable to Get Profile Followers", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, "Unable to Get Profiles", Toast.LENGTH_SHORT).show();
+                    return;
                 }
             }
-            else {
-                Toast.makeText(this, "Unable to Get Profiles", Toast.LENGTH_SHORT).show();
-                return;
-            }
-        }
 
 //initialize ads for the app  - ca-app-pub-1640690939729824/2174590993
-        MobileAds.initialize(getApplicationContext(), "ca-app-pub-1640690939729824/2174590993");
-        mAdView = (AdView) findViewById(R.id.adView_myFollower);
-        AdRequest adRequest = new AdRequest.Builder().build();
-        mAdView.loadAd(adRequest);
+            MobileAds.initialize(getApplicationContext(), "ca-app-pub-1640690939729824/2174590993");
+            mAdView = (AdView) findViewById(R.id.adView_myFollower);
+            AdRequest adRequest = new AdRequest.Builder().build();
+            mAdView.loadAd(adRequest);
+        }catch (Exception e){
+            Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() + " - onCreate : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            Crashlytics.log(0,this.getClass().getSimpleName() + " - onCreate : ",errors.toString());
+        }
 
     }
 

@@ -9,6 +9,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
+import com.crashlytics.android.Crashlytics;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.MobileAds;
@@ -22,6 +23,8 @@ import org.app.mydukan.server.ApiManager;
 import org.app.mydukan.server.ApiResult;
 import org.app.mydukan.utils.AppContants;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -151,33 +154,41 @@ public class SchemeListActivity extends BaseActivity implements TabLayout.OnTabS
     }
 
     private void getSchemesList(){
-        showProgress();
-        ApiManager.getInstance(SchemeListActivity.this).getSchemeList(mSupplierId, mApp.getFirebaseAuth().getCurrentUser().getUid(),
-            new ApiResult() {
-                @Override
-                public void onSuccess(Object data) {
-                    mSchemesList.clear();
-                    mSchemesList.putAll((HashMap<String, ArrayList<Scheme>>) data);
-                    dismissProgress();
-                    if(!mSchemesList.isEmpty()) {
-                        mNoDataView.setVisibility(View.GONE);
-                        mViewPager.setVisibility(View.VISIBLE);
+        try {
+            showProgress();
+            ApiManager.getInstance(SchemeListActivity.this).getSchemeList(mSupplierId, mApp.getFirebaseAuth().getCurrentUser().getUid(),
+                    new ApiResult() {
+                        @Override
+                        public void onSuccess(Object data) {
+                            mSchemesList.clear();
+                            mSchemesList.putAll((HashMap<String, ArrayList<Scheme>>) data);
+                            dismissProgress();
+                            if (!mSchemesList.isEmpty()) {
+                                mNoDataView.setVisibility(View.GONE);
+                                mViewPager.setVisibility(View.VISIBLE);
 
-                        setTabs();
-                        ((SchemesPagerFragment) mViewPager.getAdapter()).setData(new ArrayList<ArrayList<Scheme>>(mSchemesList.values()));
-                        ((SchemesPagerFragment) mViewPager.getAdapter()).notifyDataSetChanged();
-                    }else{
-                        mNoDataView.setVisibility(View.VISIBLE);
-                        mViewPager.setVisibility(View.GONE);
-                    }
-                }
+                                setTabs();
+                                ((SchemesPagerFragment) mViewPager.getAdapter()).setData(new ArrayList<ArrayList<Scheme>>(mSchemesList.values()));
+                                ((SchemesPagerFragment) mViewPager.getAdapter()).notifyDataSetChanged();
+                            } else {
+                                mNoDataView.setVisibility(View.VISIBLE);
+                                mViewPager.setVisibility(View.GONE);
+                            }
+                        }
 
-                @Override
-                public void onFailure(String response) {
-                    dismissProgress();
-                    mNoDataView.setVisibility(View.VISIBLE);
-                    mViewPager.setVisibility(View.GONE);
-                }
-            });
+                        @Override
+                        public void onFailure(String response) {
+                            dismissProgress();
+                            mNoDataView.setVisibility(View.VISIBLE);
+                            mViewPager.setVisibility(View.GONE);
+                        }
+                    });
+        }catch (Exception e){
+            Crashlytics.log(0,"Exception - SchemeListActivity - getSchemesList : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            Crashlytics.log(0,"1 - SchemeListActivity - getSchemesList : ",errors.toString());
+        }
     }
 }

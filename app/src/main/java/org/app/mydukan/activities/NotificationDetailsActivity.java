@@ -10,11 +10,15 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.TextView;
 
+import com.crashlytics.android.Crashlytics;
+
 import org.app.mydukan.R;
 import org.app.mydukan.application.MyDukan;
 import org.app.mydukan.data.Notification;
-import org.app.mydukan.data.Scheme;
 import org.app.mydukan.utils.AppContants;
+
+import java.io.PrintWriter;
+import java.io.StringWriter;
 
 /**
  * Created by arpithadudi on 9/11/16.
@@ -37,28 +41,36 @@ public class NotificationDetailsActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_notificationdetails);
 
-        mApp = (MyDukan) getApplicationContext();
+        try {
+            mApp = (MyDukan) getApplicationContext();
 
-        //Set up the actionbar
-        setupActionBar();
+            //Set up the actionbar
+            setupActionBar();
 
-        //get the initial data
-        Bundle bundle = getIntent().getExtras();
-        if(bundle != null){
-            if(bundle.containsKey(AppContants.NOTIFICATION)) {
-                mNotification = (Notification) bundle.getSerializable(AppContants.NOTIFICATION);
+            //get the initial data
+            Bundle bundle = getIntent().getExtras();
+            if (bundle != null) {
+                if (bundle.containsKey(AppContants.NOTIFICATION)) {
+                    mNotification = (Notification) bundle.getSerializable(AppContants.NOTIFICATION);
+                }
+
+                if (bundle.containsKey(AppContants.SUPPLIER_NAME)) {
+                    mSupplierName = bundle.getString(AppContants.SUPPLIER_NAME);
+                }
             }
 
-            if (bundle.containsKey(AppContants.SUPPLIER_NAME)){
-                mSupplierName = bundle.getString(AppContants.SUPPLIER_NAME);
-            }
+            mNotificationTextView = (TextView) findViewById(R.id.notificationtext);
+            mSupplierNameView = (TextView) findViewById(R.id.supplierName);
+            mDescriptionView = (WebView) findViewById(R.id.description);
+
+            setSchemeData();
+        }catch (Exception e){
+            Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() + " - onCreate : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            Crashlytics.log(0,this.getClass().getSimpleName() + " - onCreate : ",errors.toString());
         }
-
-        mNotificationTextView = (TextView) findViewById(R.id.notificationtext);
-        mSupplierNameView = (TextView) findViewById(R.id.supplierName);
-        mDescriptionView = (WebView) findViewById(R.id.description);
-
-        setSchemeData();
     }
 
     @Override

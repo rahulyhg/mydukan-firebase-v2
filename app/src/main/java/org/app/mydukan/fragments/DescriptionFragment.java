@@ -5,11 +5,8 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
-
-
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -28,6 +25,9 @@ import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.crashlytics.android.Crashlytics;
 
 import org.app.mydukan.R;
 import org.app.mydukan.activities.ProductDescriptionActivity;
@@ -39,32 +39,13 @@ import org.app.mydukan.utils.AppContants;
 import org.app.mydukan.utils.NetworkUtil;
 import org.app.mydukan.utils.Utils;
 
-import java.io.BufferedInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.URI;
-import java.net.URL;
-import java.net.URLConnection;
-import java.util.Date;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.Random;
-
-import android.app.Activity;
-import android.app.Dialog;
-import android.app.ProgressDialog;
-import android.graphics.drawable.Drawable;
-import android.os.AsyncTask;
-import android.widget.Toast;
-
 
 import static android.content.Context.DOWNLOAD_SERVICE;
 import static org.app.mydukan.activities.ProductDescriptionActivity.fullpage;
 import static org.app.mydukan.activities.ProductDescriptionActivity.mApp;
-import static org.app.mydukan.utils.Utils.getCurrentdate;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -123,50 +104,59 @@ public class DescriptionFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
+
         mView = inflater.inflate(R.layout.fragment_description, container, false);
-        context = mView.getContext();
-        networkUtil = new NetworkUtil();
+        try {
+            context = mView.getContext();
+            networkUtil = new NetworkUtil();
 
-        requestStoragePermission();
-        Bundle extras = getActivity().getIntent().getExtras();
-        if (extras != null) {
-            try {
-                mProduct = (Product) extras.getSerializable(AppContants.PRODUCT);
-                mSupplier = (SupplierBindData) extras.getSerializable(AppContants.SUPPLIER);
+            requestStoragePermission();
+            Bundle extras = getActivity().getIntent().getExtras();
+            if (extras != null) {
+                try {
+                    mProduct = (Product) extras.getSerializable(AppContants.PRODUCT);
+                    mSupplier = (SupplierBindData) extras.getSerializable(AppContants.SUPPLIER);
 
-            } catch (Exception ex) {
-                ex.printStackTrace();
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
             }
-        }
 
 
-        mDescWebView = (WebView) mView.findViewById(R.id.descWebView);
-        mDescTextView = (TextView) mView.findViewById(R.id.descTextView);
+            mDescWebView = (WebView) mView.findViewById(R.id.descWebView);
+            mDescTextView = (TextView) mView.findViewById(R.id.descTextView);
 
-        btn_DownloadProductPage = (Button) mView.findViewById(R.id.btn_DownloadProductPage);
-        btn_DownloadProductPage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+            btn_DownloadProductPage = (Button) mView.findViewById(R.id.btn_DownloadProductPage);
+            btn_DownloadProductPage.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
 
-                // starting new Async Task
-                if (networkUtil.isConnectingToInternet(getActivity())) {
-                   if(file_url==null || file_url.equals("")){
-                       Toast.makeText(getActivity(), "File Not Available for Download.", Toast.LENGTH_LONG).show();
-                   }else{
-                       new DownloadFileFromURL().execute(file_url);
-                   }
+                    // starting new Async Task
+                    if (networkUtil.isConnectingToInternet(getActivity())) {
+                        if (file_url == null || file_url.equals("")) {
+                            Toast.makeText(getActivity(), "File Not Available for Download.", Toast.LENGTH_LONG).show();
+                        } else {
+                            new DownloadFileFromURL().execute(file_url);
+                        }
 
 
-                } else {
-                    Toast.makeText(getActivity(), "Please check network connectivity.", Toast.LENGTH_LONG).show();
+                    } else {
+                        Toast.makeText(getActivity(), "Please check network connectivity.", Toast.LENGTH_LONG).show();
+                    }
+
                 }
 
-            }
-
-        });
+            });
 //        setupDescription();
-        fetchProductAndShow();
+            fetchProductAndShow();
 //        fullpage.setVisibility(View.VISIBLE);
+        }catch (Exception e){
+            Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() + " - onCreate : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            Crashlytics.log(0,this.getClass().getSimpleName() + " - onCreate : ",errors.toString());
+        }
         return mView;
 
     }
@@ -228,39 +218,47 @@ public class DescriptionFragment extends Fragment {
     }
 
     private void fetchProductAndShow() {
-        showProgress();
-        ApiManager.getInstance(context).getProductDetails(mProduct.getProductId(),
-                new ApiResult() {
-                    @Override
-                    public void onSuccess(Object data) {
-                        try{
-                        product = (Product)data;
-                        if(product != null) {
-                            mProduct.setDescription(product.getDescription());
-                            mProduct.setUrl(product.getUrl());
-                            mProduct.setAttributes(product.getAttributes());
-                            mProduct.setFiletype(product.getFiletype());
-                            mProduct.setDownload_file(product.getDownload_file());
-                            fullpage.setVisibility(View.VISIBLE);
+        try {
+            showProgress();
+            ApiManager.getInstance(context).getProductDetails(mProduct.getProductId(),
+                    new ApiResult() {
+                        @Override
+                        public void onSuccess(Object data) {
+                            try {
+                                product = (Product) data;
+                                if (product != null) {
+                                    mProduct.setDescription(product.getDescription());
+                                    mProduct.setUrl(product.getUrl());
+                                    mProduct.setAttributes(product.getAttributes());
+                                    mProduct.setFiletype(product.getFiletype());
+                                    mProduct.setDownload_file(product.getDownload_file());
+                                    fullpage.setVisibility(View.VISIBLE);
+                                }
+
+                                dismissProgress();
+                                setupDescription();
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
                         }
 
-                        dismissProgress();
-                        setupDescription();
-                        }catch (Exception e){
-                            e.printStackTrace();
+                        @Override
+                        public void onFailure(String response) {
+                            try {
+                                dismissProgress();
+                                setupDescription();
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
                         }
-                    }
-
-                    @Override
-                    public void onFailure(String response) {
-                        try {
-                            dismissProgress();
-                            setupDescription();
-                        }catch (Exception e){
-                            e.printStackTrace();
-                        }
-                    }
-                });
+                    });
+        }catch (Exception e){
+            Crashlytics.log(0,"Exception - DescriptionFragment - fetchProductAndShow : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            Crashlytics.log(0,"1 - DescriptionFragment - fetchProductAndShow : ",errors.toString());
+        }
     }
 
     private void setupDescription(){

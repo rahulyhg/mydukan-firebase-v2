@@ -16,18 +16,12 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.crashlytics.android.answers.Answers;
-import com.crashlytics.android.answers.CustomEvent;
+import com.crashlytics.android.Crashlytics;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.MobileAds;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 
 import org.app.mydukan.R;
 import org.app.mydukan.adapters.AdapterListFeed;
@@ -37,6 +31,8 @@ import org.app.mydukan.utils.AppContants;
 import org.app.mydukan.utils.FeedRetriever2;
 import org.app.mydukan.utils.FeedUtils;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -87,14 +83,22 @@ public class MyNetworkFragment extends Fragment implements AdapterListFeed.OnCli
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         mView = inflater.inflate(R.layout.fragment_one, container, false);
-        context = mView.getContext();
-        jsonRequest = new VolleyNetworkRequest(context);
-        initViews();
-        //initialize ads for the app  - ca-app-pub-1640690939729824/2174590993
-        MobileAds.initialize(context, "ca-app-pub-1640690939729824/2174590993");
-        mAdView = (AdView) mView.findViewById(R.id.adView_myNetwork_one);
-        AdRequest adRequest = new AdRequest.Builder().build();
-        mAdView.loadAd(adRequest);
+        try {
+            context = mView.getContext();
+            jsonRequest = new VolleyNetworkRequest(context);
+            initViews();
+            //initialize ads for the app  - ca-app-pub-1640690939729824/2174590993
+            MobileAds.initialize(context, "ca-app-pub-1640690939729824/2174590993");
+            mAdView = (AdView) mView.findViewById(R.id.adView_myNetwork_one);
+            AdRequest adRequest = new AdRequest.Builder().build();
+            mAdView.loadAd(adRequest);
+        }catch (Exception e){
+            Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() + " - onCreate : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            Crashlytics.log(0,this.getClass().getSimpleName() + " - onCreate : ",errors.toString());
+        }
         return mView;
     }
 

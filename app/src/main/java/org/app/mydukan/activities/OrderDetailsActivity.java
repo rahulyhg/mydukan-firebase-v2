@@ -9,9 +9,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
+import com.crashlytics.android.Crashlytics;
+
 import org.app.mydukan.R;
-import org.app.mydukan.adapters.ComplaintsAdapter;
-import org.app.mydukan.adapters.MyOrderAdapter;
 import org.app.mydukan.adapters.OrderAdapter;
 import org.app.mydukan.application.MyDukan;
 import org.app.mydukan.data.Order;
@@ -19,6 +19,8 @@ import org.app.mydukan.data.OrderProduct;
 import org.app.mydukan.utils.AppContants;
 import org.app.mydukan.utils.SimpleDividerItemDecoration;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -54,37 +56,45 @@ public class OrderDetailsActivity extends BaseActivity {
         setContentView(R.layout.activity_orderdetails);
         mApp = (MyDukan) getApplicationContext();
 
-        setupActionBar();
+        try {
+            setupActionBar();
 
-        Bundle bundle = getIntent().getExtras();
-        if (bundle != null) {
-            if (bundle.containsKey(AppContants.ORDER)) {
-                mOrder = (Order) bundle.getSerializable(AppContants.ORDER);
+            Bundle bundle = getIntent().getExtras();
+            if (bundle != null) {
+                if (bundle.containsKey(AppContants.ORDER)) {
+                    mOrder = (Order) bundle.getSerializable(AppContants.ORDER);
+                }
+
+                if (bundle.containsKey(AppContants.SUPPLIER_NAME)) {
+                    mSupplierName = bundle.getString(AppContants.SUPPLIER_NAME);
+                }
             }
 
-            if (bundle.containsKey(AppContants.SUPPLIER_NAME)) {
-                mSupplierName = bundle.getString(AppContants.SUPPLIER_NAME);
+            if (mOrder == null) {
+                return;
             }
+
+            //Get all the summary fields.
+            mOrderId = (TextView) findViewById(R.id.orderid);
+            mNameView = (TextView) findViewById(R.id.name);
+            mTotalAmt = (TextView) findViewById(R.id.amount);
+            mNoOfProducts = (TextView) findViewById(R.id.quantity);
+            mDateView = (TextView) findViewById(R.id.date);
+            mStatus = (TextView) findViewById(R.id.status);
+            mExecutionStatus = (TextView) findViewById(R.id.exestatus);
+            mComment = (TextView) findViewById(R.id.comment);
+
+            setupProductListView();
+
+            setSummaryCard();
+            getProductList();
+        }catch (Exception e){
+            Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() + " - onCreate : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            Crashlytics.log(0,this.getClass().getSimpleName() + " - onCreate : ",errors.toString());
         }
-
-        if(mOrder == null){
-            return;
-        }
-
-        //Get all the summary fields.
-        mOrderId = (TextView) findViewById(R.id.orderid);
-        mNameView = (TextView) findViewById(R.id.name);
-        mTotalAmt = (TextView) findViewById(R.id.amount);
-        mNoOfProducts = (TextView) findViewById(R.id.quantity);
-        mDateView = (TextView) findViewById(R.id.date);
-        mStatus = (TextView) findViewById(R.id.status);
-        mExecutionStatus = (TextView) findViewById(R.id.exestatus);
-        mComment = (TextView) findViewById(R.id.comment);
-
-        setupProductListView();
-
-        setSummaryCard();
-        getProductList();
     }
 
     @Override

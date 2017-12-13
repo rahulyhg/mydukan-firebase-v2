@@ -11,6 +11,8 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.crashlytics.android.Crashlytics;
+
 import org.app.mydukan.R;
 import org.app.mydukan.application.MyDukan;
 import org.app.mydukan.data.ComplaintConstants;
@@ -18,6 +20,8 @@ import org.app.mydukan.server.ApiManager;
 import org.app.mydukan.server.ApiResult;
 import org.app.mydukan.utils.AppContants;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.HashMap;
 
 /**
@@ -40,39 +44,47 @@ public class AddComplaintsActivity extends BaseActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_addcomplaint);
+        try {
+            setContentView(R.layout.activity_addcomplaint);
 
-        mApp = (MyDukan) getApplicationContext();
+            mApp = (MyDukan) getApplicationContext();
 
-        Bundle bundle = getIntent().getExtras();
-        if(bundle != null){
-            if (bundle.containsKey(AppContants.SUPPLIER_ID)) {
-                mSupplierId = bundle.getString(AppContants.SUPPLIER_ID);
+            Bundle bundle = getIntent().getExtras();
+            if (bundle != null) {
+                if (bundle.containsKey(AppContants.SUPPLIER_ID)) {
+                    mSupplierId = bundle.getString(AppContants.SUPPLIER_ID);
+                }
+
+                if (bundle.containsKey(AppContants.SUPPLIER_NAME)) {
+                    mSupplierName = bundle.getString(AppContants.SUPPLIER_NAME);
+                }
             }
 
-            if (bundle.containsKey(AppContants.SUPPLIER_NAME)) {
-                mSupplierName = bundle.getString(AppContants.SUPPLIER_NAME);
-            }
+            //setup actionbar
+            setupActionBar();
+
+            mSupplierNameView = (TextView) findViewById(R.id.supplierName);
+            mComplaintTypeSpinner = (Spinner) findViewById(R.id.complaintTypeSpinner);
+            mSubjectView = (EditText) findViewById(R.id.subjectEditText);
+            mMessageView = (EditText) findViewById(R.id.messageEditText);
+
+            mSubmitBtn = (Button) findViewById(R.id.submitBtn);
+            mSubmitBtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    onSubmitBtnClicked();
+                }
+            });
+
+            mSupplierNameView.setText(mSupplierName);
+            setupComplaintTypeSpinner();
+        }catch (Exception e){
+            Crashlytics.log(0,"Exception - AddComplaintsActivity - onCreate : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            Crashlytics.log(0,"AddComplaintsActivity - onCreate : ",errors.toString());
         }
-
-        //setup actionbar
-        setupActionBar();
-
-        mSupplierNameView = (TextView) findViewById(R.id.supplierName);
-        mComplaintTypeSpinner = (Spinner) findViewById(R.id.complaintTypeSpinner);
-        mSubjectView = (EditText) findViewById(R.id.subjectEditText);
-        mMessageView = (EditText) findViewById(R.id.messageEditText);
-
-        mSubmitBtn = (Button) findViewById(R.id.submitBtn);
-        mSubmitBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                onSubmitBtnClicked();
-            }
-        });
-
-        mSupplierNameView.setText(mSupplierName);
-        setupComplaintTypeSpinner();
     }
 
     @Override
@@ -137,32 +149,40 @@ public class AddComplaintsActivity extends BaseActivity {
     }
 
     private void  addSupplierComplaint(String subject, String message, String type){
-        showProgress();
-        ComplaintConstants constants = new ComplaintConstants();
-        HashMap<String,Object> complaintInfo = new HashMap<>();
-        complaintInfo.put(constants.SUBJECT, subject.toLowerCase());
-        complaintInfo.put(constants.MESSAGE,message.toLowerCase());
-        complaintInfo.put(constants.COMPLAINTTYPE, type.toLowerCase());
-        complaintInfo.put(constants.STATUS, "pending");
-        complaintInfo.put(constants.CREATEDDATE,System.currentTimeMillis());
+        try {
+            showProgress();
+            ComplaintConstants constants = new ComplaintConstants();
+            HashMap<String, Object> complaintInfo = new HashMap<>();
+            complaintInfo.put(constants.SUBJECT, subject.toLowerCase());
+            complaintInfo.put(constants.MESSAGE, message.toLowerCase());
+            complaintInfo.put(constants.COMPLAINTTYPE, type.toLowerCase());
+            complaintInfo.put(constants.STATUS, "pending");
+            complaintInfo.put(constants.CREATEDDATE, System.currentTimeMillis());
 
-        ApiManager.getInstance(AddComplaintsActivity.this).addComplaint(mSupplierId, mApp.getFirebaseAuth().getCurrentUser().getUid(), complaintInfo, new ApiResult() {
-            @Override
-            public void onSuccess(Object data) {
-                dismissProgress();
-                String response = (String)data;
-                if(response.equalsIgnoreCase(getString(R.string.status_success))){
-                    finish();
-                } else {
-                    showErrorToast(AddComplaintsActivity.this,response);
+            ApiManager.getInstance(AddComplaintsActivity.this).addComplaint(mSupplierId, mApp.getFirebaseAuth().getCurrentUser().getUid(), complaintInfo, new ApiResult() {
+                @Override
+                public void onSuccess(Object data) {
+                    dismissProgress();
+                    String response = (String) data;
+                    if (response.equalsIgnoreCase(getString(R.string.status_success))) {
+                        finish();
+                    } else {
+                        showErrorToast(AddComplaintsActivity.this, response);
+                    }
                 }
-            }
 
-            @Override
-            public void onFailure(String response) {
+                @Override
+                public void onFailure(String response) {
 
-            }
-        });
+                }
+            });
+        }catch (Exception e){
+            Crashlytics.log(0,"Exception - AddComplaintsActivity - addSupplierComplaint : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            Crashlytics.log(0,"1 - AddComplaintsActivity - addSupplierComplaint : ",errors.toString());
+        }
 
     }
 }

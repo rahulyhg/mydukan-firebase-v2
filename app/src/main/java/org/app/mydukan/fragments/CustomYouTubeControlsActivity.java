@@ -8,12 +8,16 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Toast;
 
+import com.crashlytics.android.Crashlytics;
 import com.google.android.youtube.player.YouTubeBaseActivity;
 import com.google.android.youtube.player.YouTubeInitializationResult;
 import com.google.android.youtube.player.YouTubePlayer;
 import com.google.android.youtube.player.YouTubePlayerView;
 
 import org.app.mydukan.R;
+
+import java.io.PrintWriter;
+import java.io.StringWriter;
 
 /***********************************************************************************
 
@@ -37,25 +41,33 @@ public class CustomYouTubeControlsActivity extends YouTubeBaseActivity implement
 
         setContentView(R.layout.activity_youtube_controls);
 
-        final Bundle arguments = getIntent().getExtras();
-        if (arguments != null && arguments.containsKey(KEY_VIDEO_ID)) {
-            mVideoId = arguments.getString(KEY_VIDEO_ID);
+        try {
+            final Bundle arguments = getIntent().getExtras();
+            if (arguments != null && arguments.containsKey(KEY_VIDEO_ID)) {
+                mVideoId = arguments.getString(KEY_VIDEO_ID);
+            }
+
+            final YouTubePlayerView playerView = (YouTubePlayerView) findViewById(R.id.youTubePlayerView);
+            playerView.initialize(getString(R.string.DEVELOPER_KEY), this);
+
+            playButton = (Button) findViewById(R.id.play_button);
+            playButton.setOnClickListener(this);
+            pauseButton = (Button) findViewById(R.id.pause_button);
+            pauseButton.setOnClickListener(this);
+
+            styleRadioGroup = (RadioGroup) findViewById(R.id.style_radio_group);
+            ((RadioButton) findViewById(R.id.style_default)).setOnCheckedChangeListener(this);
+            ((RadioButton) findViewById(R.id.style_minimal)).setOnCheckedChangeListener(this);
+            ((RadioButton) findViewById(R.id.style_chromeless)).setOnCheckedChangeListener(this);
+
+            setControlsEnabled(false);
+        }catch (Exception e){
+            Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() + " - onCreate : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            Crashlytics.log(0,this.getClass().getSimpleName() + " - onCreate : ",errors.toString());
         }
-
-        final YouTubePlayerView playerView = (YouTubePlayerView) findViewById(R.id.youTubePlayerView);
-        playerView.initialize(getString(R.string.DEVELOPER_KEY), this);
-
-        playButton = (Button) findViewById(R.id.play_button);
-        playButton.setOnClickListener(this);
-        pauseButton = (Button) findViewById(R.id.pause_button);
-        pauseButton.setOnClickListener(this);
-
-        styleRadioGroup = (RadioGroup) findViewById(R.id.style_radio_group);
-        ((RadioButton) findViewById(R.id.style_default)).setOnCheckedChangeListener(this);
-        ((RadioButton) findViewById(R.id.style_minimal)).setOnCheckedChangeListener(this);
-        ((RadioButton) findViewById(R.id.style_chromeless)).setOnCheckedChangeListener(this);
-
-        setControlsEnabled(false);
     }
 
     @Override

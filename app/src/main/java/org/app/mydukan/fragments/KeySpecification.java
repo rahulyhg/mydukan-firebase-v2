@@ -13,19 +13,19 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.crashlytics.android.Crashlytics;
+
 import org.app.mydukan.R;
-import org.app.mydukan.activities.FeedProfileFollowActivity;
-import org.app.mydukan.activities.ProductDescriptionActivity;
-import org.app.mydukan.adapters.CustomBaseAdapter;
 import org.app.mydukan.adapters.KeySpecificationAdapter;
-import org.app.mydukan.application.MyDukan;
 import org.app.mydukan.data.Product;
 import org.app.mydukan.data.SupplierBindData;
 import org.app.mydukan.server.ApiManager;
 import org.app.mydukan.server.ApiResult;
 import org.app.mydukan.utils.AppContants;
 
-import static org.app.mydukan.activities.ProductDescriptionActivity.fullpage;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+
 import static org.app.mydukan.activities.ProductDescriptionActivity.mApp;
 
 /**
@@ -70,23 +70,30 @@ public class KeySpecification extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         mView =  inflater.inflate(R.layout.fragment_key_specification, container, false);
-        context = mView.getContext();
+        try {
+            context = mView.getContext();
 
-        Bundle extras = getActivity().getIntent().getExtras();
-        if (extras != null) {
-            try {
-                mProduct = (Product) extras.getSerializable(AppContants.PRODUCT);
-                mSupplier = (SupplierBindData) extras.getSerializable(AppContants.SUPPLIER);
+            Bundle extras = getActivity().getIntent().getExtras();
+            if (extras != null) {
+                try {
+                    mProduct = (Product) extras.getSerializable(AppContants.PRODUCT);
+                    mSupplier = (SupplierBindData) extras.getSerializable(AppContants.SUPPLIER);
 
-            } catch (Exception ex) {
-                ex.printStackTrace();
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
             }
+            mOthersHeaderView = (TextView) mView.findViewById(R.id.othersHeader);
+            mOthersTextView = (TextView) mView.findViewById(R.id.othersTextView);
+            ksListView = (ListView) mView.findViewById(R.id.list_Keyspecification);
+            fetchProductAndShow();
+        }catch (Exception e){
+            Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() + " - onCreate : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            Crashlytics.log(0,this.getClass().getSimpleName() + " - onCreate : ",errors.toString());
         }
-        mOthersHeaderView = (TextView) mView.findViewById(R.id.othersHeader);
-        mOthersTextView = (TextView) mView.findViewById(R.id.othersTextView);
-        ksListView = (ListView)  mView.findViewById(R.id.list_Keyspecification);
-        fetchProductAndShow();
-
         return mView;
     }
     public void showProgress() {
@@ -114,26 +121,35 @@ public class KeySpecification extends Fragment {
     }
 
     private void fetchProductAndShow(){
-        showProgress();
-        ApiManager.getInstance(context).getProductDetails(mProduct.getProductId(),
-                new ApiResult() {
-                    @Override
-                    public void onSuccess(Object data) {
-                        product = (Product)data;
-                        if(product != null) {
-                            mProduct.setDescription(product.getDescription());
-                            mProduct.setUrl(product.getUrl());
-                            mProduct.setAttributes(product.getAttributes());
+        try {
+            showProgress();
+            ApiManager.getInstance(context).getProductDetails(mProduct.getProductId(),
+                    new ApiResult() {
+                        @Override
+                        public void onSuccess(Object data) {
+                            product = (Product) data;
+                            if (product != null) {
+                                mProduct.setDescription(product.getDescription());
+                                mProduct.setUrl(product.getUrl());
+                                mProduct.setAttributes(product.getAttributes());
+                            }
+                            dismissProgress();
+                            setupOthers();
                         }
-                        dismissProgress();
-                        setupOthers();
-                    }
-                    @Override
-                    public void onFailure(String response) {
-                        dismissProgress();
-                        setupOthers();
-                    }
-                });
+
+                        @Override
+                        public void onFailure(String response) {
+                            dismissProgress();
+                            setupOthers();
+                        }
+                    });
+        }catch (Exception e){
+            Crashlytics.log(0,"Exception - KeySpecification - fetchProductAndShow : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            Crashlytics.log(0,"1 - KeySpecification - fetchProductAndShow : ",errors.toString());
+        }
     }
 
     private void setupOthers(){

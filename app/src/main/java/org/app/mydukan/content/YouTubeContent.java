@@ -2,13 +2,14 @@ package org.app.mydukan.content;
 
 import android.app.Activity;
 
-import com.google.firebase.database.DataSnapshot;
+import com.crashlytics.android.Crashlytics;
 
-import org.app.mydukan.data.Category;
 import org.app.mydukan.data.Videos;
 import org.app.mydukan.server.ApiManager;
 import org.app.mydukan.server.ApiResult;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -52,24 +53,32 @@ public class YouTubeContent extends Activity {
 
 
     private void fetchVideos() {
-        ApiManager.getInstance(this).getVideosList(new ApiResult() {
-            @Override
-            public void onSuccess(Object data) {
-                if (data != null) {
-                    ArrayList<Videos> videosList = (ArrayList<Videos>) data;
+        try {
+            ApiManager.getInstance(this).getVideosList(new ApiResult() {
+                @Override
+                public void onSuccess(Object data) {
+                    if (data != null) {
+                        ArrayList<Videos> videosList = (ArrayList<Videos>) data;
 
-                    for (Videos vSnapshot : videosList) {
-                        addItem(new YouTubeVideo(vSnapshot.getVideoID(), vSnapshot.getVideoINFO()));
+                        for (Videos vSnapshot : videosList) {
+                            addItem(new YouTubeVideo(vSnapshot.getVideoID(), vSnapshot.getVideoINFO()));
+                        }
                     }
                 }
-            }
 
-            @Override
-            public void onFailure(String response) {
+                @Override
+                public void onFailure(String response) {
 
 
-            }
-        });
+                }
+            });
+        }catch (Exception e){
+            Crashlytics.log(0,"Exception - YouTubeContent - fetchVideos : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            Crashlytics.log(0,"1 - YouTubeContent - fetchVideos : ",errors.toString());
+        }
 
     }
 

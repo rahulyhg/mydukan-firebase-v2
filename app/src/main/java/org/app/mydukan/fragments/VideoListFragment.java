@@ -3,24 +3,20 @@ package org.app.mydukan.fragments;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.support.v4.app.ListFragment;
 import android.view.View;
 import android.widget.ListView;
 
-import com.google.android.youtube.player.YouTubeIntents;
-import com.google.android.youtube.player.YouTubeStandalonePlayer;
+import com.crashlytics.android.Crashlytics;
 
 import org.app.mydukan.R;
-import org.app.mydukan.content.YouTubeContent;
 import org.app.mydukan.data.Videos;
 import org.app.mydukan.server.ApiManager;
 import org.app.mydukan.server.ApiResult;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /***********************************************************************************
 
@@ -49,8 +45,16 @@ public class VideoListFragment extends ListFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        try {
 
-       fetchVideos();
+            fetchVideos();
+        }catch (Exception e){
+            Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() + " - onCreate : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            Crashlytics.log(0,this.getClass().getSimpleName() + " - onCreate : ",errors.toString());
+        }
 
 
     }

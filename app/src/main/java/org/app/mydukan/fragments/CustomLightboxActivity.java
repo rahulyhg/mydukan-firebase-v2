@@ -5,12 +5,16 @@ import android.view.View;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
+import com.crashlytics.android.Crashlytics;
 import com.google.android.youtube.player.YouTubeBaseActivity;
 import com.google.android.youtube.player.YouTubeInitializationResult;
 import com.google.android.youtube.player.YouTubePlayer;
 import com.google.android.youtube.player.YouTubePlayerView;
 
 import org.app.mydukan.R;
+
+import java.io.PrintWriter;
+import java.io.StringWriter;
 
 /***********************************************************************************
 
@@ -32,28 +36,36 @@ public class CustomLightboxActivity extends YouTubeBaseActivity implements YouTu
     @Override
     protected void onCreate(Bundle bundle) {
         super.onCreate(bundle);
-        setContentView(R.layout.activity_youtube_lightbox);
+        try {
+            setContentView(R.layout.activity_youtube_lightbox);
 
-        final RelativeLayout relativeLayout = (RelativeLayout) findViewById(R.id.relativeLayout_youtube_activity);
-        relativeLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onBackPressed();
+            final RelativeLayout relativeLayout = (RelativeLayout) findViewById(R.id.relativeLayout_youtube_activity);
+            relativeLayout.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    onBackPressed();
+                }
+            });
+
+            final YouTubePlayerView playerView = (YouTubePlayerView) findViewById(R.id.youTubePlayerView);
+            playerView.initialize(getString(R.string.DEVELOPER_KEY), this);
+
+            if (bundle != null) {
+                millis = bundle.getInt(KEY_VIDEO_TIME);
             }
-        });
 
-        final YouTubePlayerView playerView = (YouTubePlayerView) findViewById(R.id.youTubePlayerView);
-        playerView.initialize(getString(R.string.DEVELOPER_KEY), this);
-
-        if (bundle != null) {
-            millis = bundle.getInt(KEY_VIDEO_TIME);
-        }
-
-        final Bundle extras = getIntent().getExtras();
-        if (extras != null && extras.containsKey(KEY_VIDEO_ID)) {
-            mVideoId = extras.getString(KEY_VIDEO_ID);
-        } else {
-            finish();
+            final Bundle extras = getIntent().getExtras();
+            if (extras != null && extras.containsKey(KEY_VIDEO_ID)) {
+                mVideoId = extras.getString(KEY_VIDEO_ID);
+            } else {
+                finish();
+            }
+        }catch (Exception e){
+            Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() + " - onCreate : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            Crashlytics.log(0,this.getClass().getSimpleName() + " - onCreate : ",errors.toString());
         }
     }
 

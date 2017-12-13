@@ -3,7 +3,6 @@ package org.app.mydukan.services;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
-
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -19,7 +18,7 @@ import android.support.v4.app.TaskStackBuilder;
 import android.support.v4.content.WakefulBroadcastReceiver;
 import android.util.Log;
 
-
+import com.crashlytics.android.Crashlytics;
 import com.crashlytics.android.answers.Answers;
 import com.crashlytics.android.answers.CustomEvent;
 import com.moengage.push.PushManager;
@@ -30,8 +29,9 @@ import org.app.mydukan.activities.MainActivity;
 import org.app.mydukan.application.MyDukan;
 import org.app.mydukan.utils.AppContants;
 
-
 import java.io.InputStream;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.math.BigInteger;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -46,58 +46,67 @@ public class FirebaseDataReceiver extends WakefulBroadcastReceiver {
     HashMap<String, Object> notificationInfo;
 
     public void onReceive(Context context, Intent intent) {
-        Answers.getInstance().logCustom(new CustomEvent("Notification Received")
-                .putCustomAttribute("BroadcastReceiver", "Notification Received"));
 
-        if (android.os.Build.VERSION.SDK_INT > 9) {
-            StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
-            StrictMode.setThreadPolicy(policy);
-        }
+        try {
+            Answers.getInstance().logCustom(new CustomEvent("Notification Received")
+                    .putCustomAttribute("BroadcastReceiver", "Notification Received"));
 
-        Bundle bundle = intent.getExtras();
-        if (bundle != null) {
-            String title = "";
-            String message = "";
-            Bitmap imageBitmap = null;
-
-            if( null == bundle)return;
-            if( MoEngageNotificationUtils.isFromMoEngagePlatform(bundle)){
-                //If the message is not sent from MoEngage it will be rejected
-                PushManager.getInstance().getPushHandler().handlePushPayload(context.getApplicationContext(), bundle);
-                Answers.getInstance().logCustom(new CustomEvent("Notification Received")
-                        .putCustomAttribute("BroadcastReceiverMoEngage", "Notification Received"));
-                return;
-            }
-            if (bundle.containsKey("message")) {
-                message = bundle.get("message").toString();
+            if (android.os.Build.VERSION.SDK_INT > 9) {
+                StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+                StrictMode.setThreadPolicy(policy);
             }
 
-            if (bundle.containsKey("image")) {
-                String image = bundle.get("image").toString();
-                imageBitmap = getBitmapfromUrl(image);
-            }
+            Bundle bundle = intent.getExtras();
+            if (bundle != null) {
+                String title = "";
+                String message = "";
+                Bitmap imageBitmap = null;
 
-            if (bundle.containsKey("title")) {
-                title = bundle.get("title").toString();
-            }
+                if (null == bundle) return;
+                if (MoEngageNotificationUtils.isFromMoEngagePlatform(bundle)) {
+                    //If the message is not sent from MoEngage it will be rejected
+                    PushManager.getInstance().getPushHandler().handlePushPayload(context.getApplicationContext(), bundle);
+                    Answers.getInstance().logCustom(new CustomEvent("Notification Received")
+                            .putCustomAttribute("BroadcastReceiverMoEngage", "Notification Received"));
+                    return;
+                }
+                if (bundle.containsKey("message")) {
+                    message = bundle.get("message").toString();
+                }
 
-            SharedPreferences sharedPreferences = context.getSharedPreferences("NotificationBadge", Context.MODE_PRIVATE);
-            SharedPreferences.Editor editor = sharedPreferences.edit();
-            editor.putBoolean("notificationBadge", true);
-            editor.apply();
+                if (bundle.containsKey("image")) {
+                    String image = bundle.get("image").toString();
+                    imageBitmap = getBitmapfromUrl(image);
+                }
+
+                if (bundle.containsKey("title")) {
+                    title = bundle.get("title").toString();
+                }
+
+                SharedPreferences sharedPreferences = context.getSharedPreferences("NotificationBadge", Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.putBoolean("notificationBadge", true);
+                editor.apply();
 //            ShortcutBadger.applyCount(context, 1); //for 1.1.4+
 
-            if (imageBitmap != null) {
+                if (imageBitmap != null) {
 //                sendNotification(title, message, imageBitmap, context);
 
-                String image = bundle.get("image").toString();
-                notificationInfo = new HashMap<>();
-                notificationInfo.put("notificationTitle", title);
-                notificationInfo.put("notificationMessage", message);
-                notificationInfo.put("notificationImage", image);
-                sentBigTextNotification(title,message,imageBitmap,context);
+                    String image = bundle.get("image").toString();
+                    notificationInfo = new HashMap<>();
+                    notificationInfo.put("notificationTitle", title);
+                    notificationInfo.put("notificationMessage", message);
+                    notificationInfo.put("notificationImage", image);
+                    sentBigTextNotification(title, message, imageBitmap, context);
 
+                }
             }
+        }catch (Exception e){
+            Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() + " - onReceive : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            Crashlytics.log(0,this.getClass().getSimpleName() + " - v : ",errors.toString());
         }
     }
 

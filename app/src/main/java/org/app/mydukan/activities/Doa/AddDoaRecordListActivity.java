@@ -16,6 +16,8 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Switch;
 
+import com.crashlytics.android.Crashlytics;
+
 import org.app.mydukan.R;
 import org.app.mydukan.activities.BaseActivity;
 import org.app.mydukan.application.MyDukan;
@@ -29,6 +31,8 @@ import org.app.mydukan.utils.AppContants;
 import org.app.mydukan.utils.DatePickerFragment;
 import org.app.mydukan.utils.DateTextWatcher;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -189,73 +193,89 @@ public class AddDoaRecordListActivity extends BaseActivity {
     }
 
     private void setupCategorySpinner(){
-        showProgress();
-        ApiManager.getInstance(AddDoaRecordListActivity.this).getCategoryList(mSupplierId,new ApiResult() {
-            @Override
-            public void onSuccess(Object data) {
-                ArrayList<Category> list = (ArrayList<Category>) data;
+        try {
+            showProgress();
+            ApiManager.getInstance(AddDoaRecordListActivity.this).getCategoryList(mSupplierId, new ApiResult() {
+                @Override
+                public void onSuccess(Object data) {
+                    ArrayList<Category> list = (ArrayList<Category>) data;
 
-                if(list != null && !list.isEmpty()){
+                    if (list != null && !list.isEmpty()) {
 
-                    Collections.sort(list,new CategoryComparator());
+                        Collections.sort(list, new CategoryComparator());
 
-                    ArrayList<String> categoryNameList = new ArrayList<String>();
-                    categoryNameList.add("Select the Category");
-                    for (Category category: list) {
-                        categoryNameList.add(category.getName());
+                        ArrayList<String> categoryNameList = new ArrayList<String>();
+                        categoryNameList.add("Select the Category");
+                        for (Category category : list) {
+                            categoryNameList.add(category.getName());
+                        }
+
+
+                        // Create an ArrayAdapter using the string array and a default spinner layout
+                        ArrayAdapter<String> adapter = new ArrayAdapter<String>(AddDoaRecordListActivity.this,
+                                android.R.layout.simple_spinner_item, categoryNameList);
+                        // Specify the layout to use when the list of choices appears
+                        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                        // Apply the adapter to the spinner
+                        mCategorySpinner.setAdapter(adapter);
                     }
-
-
-                    // Create an ArrayAdapter using the string array and a default spinner layout
-                    ArrayAdapter<String> adapter = new ArrayAdapter<String>(AddDoaRecordListActivity.this,
-                            android.R.layout.simple_spinner_item, categoryNameList);
-                    // Specify the layout to use when the list of choices appears
-                    adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                    // Apply the adapter to the spinner
-                    mCategorySpinner.setAdapter(adapter);
+                    dismissProgress();
                 }
-                dismissProgress();
-            }
 
-            @Override
-            public void onFailure(String response) {
+                @Override
+                public void onFailure(String response) {
 
-            }
-        });
+                }
+            });
+        }catch (Exception e){
+            Crashlytics.log(0,"Exception - AddDoaRecordListActivity - setupCategorySpinner : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            Crashlytics.log(0,"1 - AddDoaRecordListActivity - setupCategorySpinner : ",errors.toString());
+        }
     }
 
     private void setupNameSpinner(){
-        if(mCategorySpinner.getSelectedItemPosition() == 0){
-            return;
-        }
-        showProgress();
-        String category = mCategorySpinner.getSelectedItem().toString().trim();
-        ApiManager.getInstance(AddDoaRecordListActivity.this).getProductsForCategory(mSupplierId,category,new ApiResult() {
-            @Override
-            public void onSuccess(Object data) {
-                mProductMap = (HashMap<String,String>) data;
-                if(mProductMap != null && !mProductMap.isEmpty()){
-                    ArrayList<String> productNameList = new ArrayList<String>();
-                    productNameList.addAll(mProductMap.keySet());
-                    Collections.sort(productNameList,new NameComparator());
-                    productNameList.add(0,"Select the Model");
+        try {
+            if (mCategorySpinner.getSelectedItemPosition() == 0) {
+                return;
+            }
+            showProgress();
+            String category = mCategorySpinner.getSelectedItem().toString().trim();
+            ApiManager.getInstance(AddDoaRecordListActivity.this).getProductsForCategory(mSupplierId, category, new ApiResult() {
+                @Override
+                public void onSuccess(Object data) {
+                    mProductMap = (HashMap<String, String>) data;
+                    if (mProductMap != null && !mProductMap.isEmpty()) {
+                        ArrayList<String> productNameList = new ArrayList<String>();
+                        productNameList.addAll(mProductMap.keySet());
+                        Collections.sort(productNameList, new NameComparator());
+                        productNameList.add(0, "Select the Model");
 
-                    // Create an ArrayAdapter using the string array and a default spinner layout
-                    ArrayAdapter<String> adapter = new ArrayAdapter<String>(AddDoaRecordListActivity.this,
-                            android.R.layout.simple_spinner_item, productNameList);
-                    // Specify the layout to use when the list of choices appears
-                    adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                    // Apply the adapter to the spinner
-                    mProductNameSpinner.setAdapter(adapter);
+                        // Create an ArrayAdapter using the string array and a default spinner layout
+                        ArrayAdapter<String> adapter = new ArrayAdapter<String>(AddDoaRecordListActivity.this,
+                                android.R.layout.simple_spinner_item, productNameList);
+                        // Specify the layout to use when the list of choices appears
+                        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                        // Apply the adapter to the spinner
+                        mProductNameSpinner.setAdapter(adapter);
+                    }
+                    dismissProgress();
                 }
-                dismissProgress();
-            }
 
-            @Override
-            public void onFailure(String response) {
+                @Override
+                public void onFailure(String response) {
 
-            }
-        });
+                }
+            });
+        }catch (Exception e){
+            Crashlytics.log(0,"Exception - AddDoaRecordListActivity - setupNameSpinner : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            Crashlytics.log(0,"1 - AddDoaRecordListActivity - setupNameSpinner : ",errors.toString());
+        }
     }
 
     private void onSubmitBtnClicked(){
@@ -337,26 +357,34 @@ public class AddDoaRecordListActivity extends BaseActivity {
     }
 
     private void addDoaRecord(DoaRecord record){
-        showProgress();
+        try {
+            showProgress();
 
-        ApiManager.getInstance(AddDoaRecordListActivity.this).addDoaRecord(record,
-                new ApiResult() {
-                    @Override
-                    public void onSuccess(Object data) {
-                        String result = (String) data;
-                        dismissProgress();
-                        if(!result.equalsIgnoreCase(getString(R.string.status_success))){
-                            showErrorToast(AddDoaRecordListActivity.this, result);
-                        }else{
-                            finish();
+            ApiManager.getInstance(AddDoaRecordListActivity.this).addDoaRecord(record,
+                    new ApiResult() {
+                        @Override
+                        public void onSuccess(Object data) {
+                            String result = (String) data;
+                            dismissProgress();
+                            if (!result.equalsIgnoreCase(getString(R.string.status_success))) {
+                                showErrorToast(AddDoaRecordListActivity.this, result);
+                            } else {
+                                finish();
+                            }
                         }
-                    }
 
-                    @Override
-                    public void onFailure(String response) {
+                        @Override
+                        public void onFailure(String response) {
 
-                    }
-                });
+                        }
+                    });
+        }catch (Exception e){
+            Crashlytics.log(0,"Exception - AddDoaRecordListActivity - addDoaRecord : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            Crashlytics.log(0,"1 - AddDoaRecordListActivity - addDoaRecord : ",errors.toString());
+        }
 
     }
 

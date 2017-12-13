@@ -6,25 +6,24 @@ import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
+import com.crashlytics.android.Crashlytics;
+
 import org.app.mydukan.R;
-import org.app.mydukan.activities.Doa.DoaRecordListActivity;
-import org.app.mydukan.activities.Schemes.SchemeListActivity;
 import org.app.mydukan.activities.Schemes.SchemeRecordActivity;
-import org.app.mydukan.adapters.ComplaintsAdapter;
 import org.app.mydukan.adapters.RecordsAdapter;
 import org.app.mydukan.application.MyDukan;
-import org.app.mydukan.data.Complaint;
 import org.app.mydukan.data.Record;
 import org.app.mydukan.server.ApiManager;
 import org.app.mydukan.server.ApiResult;
 import org.app.mydukan.utils.AppContants;
 import org.app.mydukan.utils.SimpleDividerItemDecoration;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
 
 /**
@@ -47,17 +46,17 @@ public class RecordsActivity extends BaseActivity implements RecordsAdapter.Reco
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_records);
+        try {
+            mApp = (MyDukan) getApplicationContext();
 
-        mApp = (MyDukan) getApplicationContext();
-
-        mBottomToolBar = (Toolbar) findViewById(R.id.bottomToolbar);
-        mBottomToolBar.findViewById(R.id.schemeBtn).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(RecordsActivity.this, SchemeRecordActivity.class);
-                startActivity(intent);
-            }
-        });
+            mBottomToolBar = (Toolbar) findViewById(R.id.bottomToolbar);
+            mBottomToolBar.findViewById(R.id.schemeBtn).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent intent = new Intent(RecordsActivity.this, SchemeRecordActivity.class);
+                    startActivity(intent);
+                }
+            });
 //        mBottomToolBar.findViewById(R.mCatId.doaBtn).setOnClickListener(new View.OnClickListener() {
 //            @Override
 //            public void onClick(View view) {
@@ -65,10 +64,17 @@ public class RecordsActivity extends BaseActivity implements RecordsAdapter.Reco
 //                startActivity(intent);
 //            }
 //        });
-        setupActionBar();
-        BaseActivity.showOkAlert(this,"Records","All Price Drop Model IMEI entered will be stored in Records for Retailer to keep track.","OK");
-        setupRecordsView();
-        fetchTheRecords();
+            setupActionBar();
+            BaseActivity.showOkAlert(this, "Records", "All Price Drop Model IMEI entered will be stored in Records for Retailer to keep track.", "OK");
+            setupRecordsView();
+            fetchTheRecords();
+        }catch (Exception e){
+            Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() + " - onCreate : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            Crashlytics.log(0,this.getClass().getSimpleName() + " - onCreate : ",errors.toString());
+        }
     }
 
     @Override
@@ -108,52 +114,68 @@ public class RecordsActivity extends BaseActivity implements RecordsAdapter.Reco
     }
 
     private void fetchTheRecords(){
-        showProgress();
-        ApiManager.getInstance(RecordsActivity.this).getRecordsList(new ApiResult() {
-            @Override
-            public void onSuccess(Object data) {
-                dismissProgress();
-                mRecordList = (ArrayList<Record>)data;
-                if(mRecordList.isEmpty()){
-                    mNoDataView.setVisibility(View.VISIBLE);
-                    mRecyclerView.setVisibility(View.GONE);
-                } else {
-                    mNoDataView.setVisibility(View.GONE);
-                    mRecyclerView.setVisibility(View.VISIBLE);
-                    mAdapter.addItems(mRecordList);
-                    mAdapter.notifyDataSetChanged();
+        try {
+            showProgress();
+            ApiManager.getInstance(RecordsActivity.this).getRecordsList(new ApiResult() {
+                @Override
+                public void onSuccess(Object data) {
+                    dismissProgress();
+                    mRecordList = (ArrayList<Record>) data;
+                    if (mRecordList.isEmpty()) {
+                        mNoDataView.setVisibility(View.VISIBLE);
+                        mRecyclerView.setVisibility(View.GONE);
+                    } else {
+                        mNoDataView.setVisibility(View.GONE);
+                        mRecyclerView.setVisibility(View.VISIBLE);
+                        mAdapter.addItems(mRecordList);
+                        mAdapter.notifyDataSetChanged();
+                    }
                 }
-            }
 
-            @Override
-            public void onFailure(String response) {
+                @Override
+                public void onFailure(String response) {
 
-            }
-        });
+                }
+            });
+        }catch (Exception e){
+            Crashlytics.log(0,"Exception - RecordsActivity - fetchTheRecords : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            Crashlytics.log(0,"1 - RecordsActivity - fetchTheRecords : ",errors.toString());
+        }
     }
 
     private void deleteTheRecord(final int position){
-        showProgress();
-        if(mRecordList.size() < position) {
-            return;
-        }
-        Record record = mRecordList.get(position);
-        ApiManager.getInstance(RecordsActivity.this).deleteRecord(record.getSupplierInfo().getId(), record.getRecordId(), new ApiResult() {
-            @Override
-            public void onSuccess(Object data) {
-                dismissProgress();
-                Object mdata=data;
-                mRecordList.remove(position);
-                mAdapter.addItems(mRecordList);
-                mAdapter.notifyDataSetChanged();
+        try {
+            showProgress();
+            if (mRecordList.size() < position) {
+                return;
             }
+            Record record = mRecordList.get(position);
+            ApiManager.getInstance(RecordsActivity.this).deleteRecord(record.getSupplierInfo().getId(), record.getRecordId(), new ApiResult() {
+                @Override
+                public void onSuccess(Object data) {
+                    dismissProgress();
+                    Object mdata = data;
+                    mRecordList.remove(position);
+                    mAdapter.addItems(mRecordList);
+                    mAdapter.notifyDataSetChanged();
+                }
 
-            @Override
-            public void onFailure(String response) {
-                dismissProgress();
-                showErrorToast(RecordsActivity.this,response);
-            }
-        });
+                @Override
+                public void onFailure(String response) {
+                    dismissProgress();
+                    showErrorToast(RecordsActivity.this, response);
+                }
+            });
+        }catch (Exception e){
+            Crashlytics.log(0,"Exception - RecordsActivity - deleteTheRecord : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            Crashlytics.log(0,"1 - RecordsActivity - deleteTheRecord : ",errors.toString());
+        }
     }
 
 

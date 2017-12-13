@@ -1,14 +1,9 @@
 package org.app.mydukan.activities;
 
-import android.net.Uri;
-import android.support.annotation.NonNull;
-
-import android.os.Bundle;
-
-import retrofit2.http.Url;
-
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
@@ -16,6 +11,7 @@ import android.view.WindowManager;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
+import com.crashlytics.android.Crashlytics;
 import com.crashlytics.android.answers.Answers;
 import com.crashlytics.android.answers.CustomEvent;
 import com.google.android.gms.ads.AdRequest;
@@ -37,9 +33,10 @@ import org.app.mydukan.R;
 import org.app.mydukan.utils.AppContants;
 import org.app.mydukan.youtube.Config;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.HashMap;
 
 import static android.content.ContentValues.TAG;
 
@@ -57,29 +54,30 @@ public class VidPlayer extends YouTubeBaseActivity implements
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Intent intent = getIntent();
-        String action = intent.getAction();
-        Uri data = intent.getData();
+        try {
+            Intent intent = getIntent();
+            String action = intent.getAction();
+            Uri data = intent.getData();
 
-        Bundle bundle = getIntent().getExtras();
-        if(bundle != null){
-            if(bundle.containsKey(AppContants.REMOTECONFIG_VID) ) {
-                remoteUrl =  bundle.getString(AppContants.REMOTECONFIG_VID);
-                if(remoteUrl==null){
-                    try {
-                        path = new URL(data.toString()).getPath();
-                        path = path.substring(1);
-                    } catch (MalformedURLException e) {
-                        e.printStackTrace();
+            Bundle bundle = getIntent().getExtras();
+            if (bundle != null) {
+                if (bundle.containsKey(AppContants.REMOTECONFIG_VID)) {
+                    remoteUrl = bundle.getString(AppContants.REMOTECONFIG_VID);
+                    if (remoteUrl == null) {
+                        try {
+                            path = new URL(data.toString()).getPath();
+                            path = path.substring(1);
+                        } catch (MalformedURLException e) {
+                            e.printStackTrace();
+                        }
+                        Log.d("Path", path);
+                    } else {
+                        path = remoteUrl;
+                        // path="D8Ert5yjMV4";
                     }
-                    Log.d("Path", path);
-                }else{
-                   path=remoteUrl;
-                   // path="D8Ert5yjMV4";
                 }
+                // testing for git_gub
             }
-            // testing for git_gub
-        }
  /*
         //initialization of adview in this activity//
         //initialize ads for the app
@@ -98,58 +96,65 @@ public class VidPlayer extends YouTubeBaseActivity implements
         }
         Log.d("Path", path);
         */
-        mGoogleApiClient = new GoogleApiClient.Builder(this)
-                .addApi(AppInvite.API)
-                .build();
-        boolean autoLaunchDeepLink = true;
-        AppInvite.AppInviteApi.getInvitation(mGoogleApiClient, this, autoLaunchDeepLink)
-                .setResultCallback(
-                        new ResultCallback<AppInviteInvitationResult>() {
-                            @Override
-                            public void onResult(@NonNull AppInviteInvitationResult result) {
-                                if (result.getStatus().isSuccess()) {
-                                    Log.d("Deep", "Status True");
-                                    // Extract deep link from Intent
+            mGoogleApiClient = new GoogleApiClient.Builder(this)
+                    .addApi(AppInvite.API)
+                    .build();
+            boolean autoLaunchDeepLink = true;
+            AppInvite.AppInviteApi.getInvitation(mGoogleApiClient, this, autoLaunchDeepLink)
+                    .setResultCallback(
+                            new ResultCallback<AppInviteInvitationResult>() {
+                                @Override
+                                public void onResult(@NonNull AppInviteInvitationResult result) {
+                                    if (result.getStatus().isSuccess()) {
+                                        Log.d("Deep", "Status True");
+                                        // Extract deep link from Intent
 
-                                    Intent intent = result.getInvitationIntent();
-                                    String deepLink = AppInviteReferral.getDeepLink(intent);
+                                        Intent intent = result.getInvitationIntent();
+                                        String deepLink = AppInviteReferral.getDeepLink(intent);
 
-                                    path=deepLink;
-                                    Log.d("Deep Link", deepLink);
-                                    // Handle the deep link. For example, open the linked
-                                    // content, or apply promotional credit to the user's
-                                    // account.
+                                        path = deepLink;
+                                        Log.d("Deep Link", deepLink);
+                                        // Handle the deep link. For example, open the linked
+                                        // content, or apply promotional credit to the user's
+                                        // account.
 
-                                    // ...
-                                } else {
-                                    Log.d(TAG, "getInvitation: no deep link found.");
+                                        // ...
+                                    } else {
+                                        Log.d(TAG, "getInvitation: no deep link found.");
+                                    }
                                 }
-                            }
-                        });
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-                WindowManager.LayoutParams.FLAG_FULLSCREEN);
+                            });
+            requestWindowFeature(Window.FEATURE_NO_TITLE);
+            getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                    WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
-        setContentView(R.layout.videoplayer);
+            setContentView(R.layout.videoplayer);
 
-        youTubeView = (YouTubePlayerView) findViewById(R.id.youtube_view);
-        closeButton =(ImageButton) findViewById(R.id.closeButton);
-         closeButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onBackPressed();
-                //startActivity(new Intent(VidPlayer.this, MainActivity.class));
-                //finish();
-            }
-        });
+            youTubeView = (YouTubePlayerView) findViewById(R.id.youtube_view);
+            closeButton = (ImageButton) findViewById(R.id.closeButton);
+            closeButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    onBackPressed();
+                    //startActivity(new Intent(VidPlayer.this, MainActivity.class));
+                    //finish();
+                }
+            });
 
-        // Initializing v/home/rk/Desktop/Photos.zipideo player with developer key
-        youTubeView.initialize(Config.DEVELOPER_KEY, this);
+            // Initializing v/home/rk/Desktop/Photos.zipideo player with developer key
+            youTubeView.initialize(Config.DEVELOPER_KEY, this);
 
-        MobileAds.initialize(getApplicationContext(), "ca-app-pub-1640690939729824/2806052595");
-        cALdview = (AdView) findViewById(R.id.adView_youtube_video);
-        AdRequest adRequest = new AdRequest.Builder().build();
-        cALdview.loadAd(adRequest);
+            MobileAds.initialize(getApplicationContext(), "ca-app-pub-1640690939729824/2806052595");
+            cALdview = (AdView) findViewById(R.id.adView_youtube_video);
+            AdRequest adRequest = new AdRequest.Builder().build();
+            cALdview.loadAd(adRequest);
+        }catch (Exception e){
+            Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() + " - onCreate : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            Crashlytics.log(0,this.getClass().getSimpleName() + " - onCreate : ",errors.toString());
+        }
 
     }
 

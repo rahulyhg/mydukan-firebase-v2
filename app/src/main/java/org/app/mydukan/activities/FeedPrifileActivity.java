@@ -23,6 +23,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.crashlytics.android.Crashlytics;
 import com.crashlytics.android.answers.Answers;
 import com.crashlytics.android.answers.CustomEvent;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -54,6 +55,8 @@ import org.app.mydukan.utils.AppContants;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -100,115 +103,124 @@ public class FeedPrifileActivity extends AppCompatActivity implements View.OnCli
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_feed_profile);
 
-        mProgressBar = (ProgressBar) findViewById(R.id.pb);
-        tv_profile = (TextView) findViewById(R.id.profile_Name);
-        tv_ProfileType = (TextView) findViewById(R.id.profile_Profection);
-        tv_profilrEmail = (TextView) findViewById(R.id.profile_Email);
-        tv_profileImg = (ImageView) findViewById(R.id.profile_IMG);
-        btn_Follow = (Button) findViewById(R.id.btn_follow);
-        btn_Followers = (Button) findViewById(R.id.view_followers);
-        btn_Following = (Button) findViewById(R.id.view_following);
-        tvFollowers = (TextView) findViewById(R.id.profile_Followers);
+        try {
+            setContentView(R.layout.activity_feed_profile);
 
-        feedPost_view= (LinearLayout) findViewById(R.id.layout_feedPost);
+            mProgressBar = (ProgressBar) findViewById(R.id.pb);
+            tv_profile = (TextView) findViewById(R.id.profile_Name);
+            tv_ProfileType = (TextView) findViewById(R.id.profile_Profection);
+            tv_profilrEmail = (TextView) findViewById(R.id.profile_Email);
+            tv_profileImg = (ImageView) findViewById(R.id.profile_IMG);
+            btn_Follow = (Button) findViewById(R.id.btn_follow);
+            btn_Followers = (Button) findViewById(R.id.view_followers);
+            btn_Following = (Button) findViewById(R.id.view_following);
+            tvFollowers = (TextView) findViewById(R.id.profile_Followers);
 
-        uploadImgBtn = (Button) findViewById(R.id.cameraBtn);
-        addedImageView = (ImageView) findViewById(R.id.img_addedImg);
+            feedPost_view = (LinearLayout) findViewById(R.id.layout_feedPost);
 
-        requestStoragePermission();
+            uploadImgBtn = (Button) findViewById(R.id.cameraBtn);
+            addedImageView = (ImageView) findViewById(R.id.img_addedImg);
 
-        DisplayImageOptions defaultOptions = new DisplayImageOptions.Builder()
-                .cacheInMemory(true)
-                .cacheOnDisk(true)
-                .build();
-        ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(this)
-                .defaultDisplayImageOptions(defaultOptions).build();
-        ImageLoader.getInstance().init(config);
-        ImageLoader.getInstance().displayImage(null, addedImageView);
+            requestStoragePermission();
 
-        uploadImgBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showFileChooser();
+            DisplayImageOptions defaultOptions = new DisplayImageOptions.Builder()
+                    .cacheInMemory(true)
+                    .cacheOnDisk(true)
+                    .build();
+            ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(this)
+                    .defaultDisplayImageOptions(defaultOptions).build();
+            ImageLoader.getInstance().init(config);
+            ImageLoader.getInstance().displayImage(null, addedImageView);
 
-            }
-        });
+            uploadImgBtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    showFileChooser();
+
+                }
+            });
 
 //intent.putExtra(AppContants.VIEW_PROFILE,profileID);
 
-        Bundle mybundle = getIntent().getExtras();
-        if (mybundle != null) {
-            if (mybundle.containsKey(AppContants.VIEW_PROFILE)) {
-                feed = (Feed) mybundle.getSerializable(AppContants.VIEW_PROFILE);
+            Bundle mybundle = getIntent().getExtras();
+            if (mybundle != null) {
+                if (mybundle.containsKey(AppContants.VIEW_PROFILE)) {
+                    feed = (Feed) mybundle.getSerializable(AppContants.VIEW_PROFILE);
 
-                if (feed != null) {
-                    profileUID = feed.getIdUser();
-                    getProfileData(profileUID);
-                    getListFollowing(feed.getIdUser());
-                    changeFollower(feed.getIdUser());
+                    if (feed != null) {
+                        profileUID = feed.getIdUser();
+                        getProfileData(profileUID);
+                        getListFollowing(feed.getIdUser());
+                        changeFollower(feed.getIdUser());
 
-                } else {
-                    Toast.makeText(FeedPrifileActivity.this, "Unable to Get the User Profile", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(FeedPrifileActivity.this, "Unable to Get the User Profile", Toast.LENGTH_SHORT).show();
+                    }
                 }
             }
-        }
-        //============================================
+            //============================================
      /*   mItems = new ArrayList<String>();
         initViews();
         mListAdapter = new CompleteListAdapter(this, mItems);
         mCompleteListView.setAdapter(mListAdapter);
         addItemsToList();*/
-       // FeedProfileFollowActivity
-        //============================================
+            // FeedProfileFollowActivity
+            //============================================
 
-        addPost = (Button)  findViewById(R.id.btn_post);
-        addPost.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+            addPost = (Button) findViewById(R.id.btn_post);
+            addPost.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
 //                getPhoto();
-                sendPhotoFirebase(String.valueOf(filePath));
-            }
-        });
+                    sendPhotoFirebase(String.valueOf(filePath));
+                }
+            });
 
-        btn_Following.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if((feed.getIdUser()).isEmpty()||(feed.getIdUser())==null){
-                    return;
+            btn_Following.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if ((feed.getIdUser()).isEmpty() || (feed.getIdUser()) == null) {
+                        return;
+                    }
+                    Answers.getInstance().logCustom(new CustomEvent("Mynetwork FeedPage")
+                            .putCustomAttribute(feed.getIdFeed(), "Following Checked"));
+                    Intent activityintent = new Intent(FeedPrifileActivity.this, FeedProfileFollowActivity.class);
+                    activityintent.putExtra(AppContants.PROFILE_ID_FOLLOWING, feed.getIdUser());
+                    activityintent.putExtra(AppContants.FEEDPROFILE_FOLLOW, AppContants.FEEDPROFILE_FOLLOW);
+                    startActivity(activityintent);
                 }
-                Answers.getInstance().logCustom(new CustomEvent("Mynetwork FeedPage")
-                        .putCustomAttribute(feed.getIdFeed(), "Following Checked"));
-                Intent activityintent = new Intent(FeedPrifileActivity.this, FeedProfileFollowActivity.class);
-                activityintent.putExtra(AppContants.PROFILE_ID_FOLLOWING,feed.getIdUser());
-                activityintent.putExtra(AppContants.FEEDPROFILE_FOLLOW, AppContants.FEEDPROFILE_FOLLOW);
-                startActivity(activityintent);
-            }
-        });
-        btn_Followers.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+            });
+            btn_Followers.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
 
-                if((feed.getIdUser()).isEmpty()||(feed.getIdUser())==null){
-                    return;
+                    if ((feed.getIdUser()).isEmpty() || (feed.getIdUser()) == null) {
+                        return;
+                    }
+                    Answers.getInstance().logCustom(new CustomEvent("Mynetwork FeedPage")
+                            .putCustomAttribute(feed.getIdFeed(), "Followers Checked"));
+                    Intent activityintent = new Intent(FeedPrifileActivity.this, FeedProfileFollowActivity.class);
+                    activityintent.putExtra(AppContants.PROFILE_ID_FOLLOWERS, feed.getIdUser());
+                    activityintent.putExtra(AppContants.FEEDPROFILE_FOLLOW, AppContants.FEEDPROFILE_FOLLOW);
+                    startActivity(activityintent);
                 }
-                Answers.getInstance().logCustom(new CustomEvent("Mynetwork FeedPage")
-                        .putCustomAttribute(feed.getIdFeed(), "Followers Checked"));
-                Intent activityintent = new Intent(FeedPrifileActivity.this, FeedProfileFollowActivity.class);
-                activityintent.putExtra(AppContants.PROFILE_ID_FOLLOWERS,feed.getIdUser());
-                activityintent.putExtra(AppContants.FEEDPROFILE_FOLLOW, AppContants.FEEDPROFILE_FOLLOW);
-                startActivity(activityintent);
-            }
-        });
-        btn_Follow.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (feed != null) {
-                    addFollow(feed);
+            });
+            btn_Follow.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (feed != null) {
+                        addFollow(feed);
+                    }
                 }
-            }
-        });
+            });
+        }catch (Exception e){
+            Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() + " - onCreate : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            Crashlytics.log(0,this.getClass().getSimpleName() + " - onCreate : ",errors.toString());
+        }
     }
 
     @Override
@@ -464,10 +476,11 @@ public class FeedPrifileActivity extends AppCompatActivity implements View.OnCli
     }
 
     private void getProfileData(String profileUID) {
-        showProgress(true);
-        ApiManager.getInstance(this).getUserProfile(profileUID, new ApiResult() {
-            @Override
-            public void onSuccess(Object data) {
+        try {
+            showProgress(true);
+            ApiManager.getInstance(this).getUserProfile(profileUID, new ApiResult() {
+                @Override
+                public void onSuccess(Object data) {
               /*  long totalLike = 0;
                 for (DataSnapshot snapshot : data.getChildren()) {
                     if (snapshot.getKey().equals(feedKey)) {
@@ -477,22 +490,30 @@ public class FeedPrifileActivity extends AppCompatActivity implements View.OnCli
                 }*/
 
 
-                profileDetails = (User) data;
-                if (profileDetails == null) {
+                    profileDetails = (User) data;
+                    if (profileDetails == null) {
+                        showProgress(false);
+                        return;
+                    }
+                    Toast.makeText(FeedPrifileActivity.this, "User Profile: " + profileDetails.getCompanyinfo().getName() + ",\n" + profileDetails.getCompanyinfo().getIndustry(), Toast.LENGTH_SHORT).show();
+                    profileDetails.getId();
+                    initProfileView(profileDetails, feed);
                     showProgress(false);
-                    return;
                 }
-                Toast.makeText(FeedPrifileActivity.this, "User Profile: " + profileDetails.getCompanyinfo().getName() + ",\n" + profileDetails.getCompanyinfo().getIndustry(), Toast.LENGTH_SHORT).show();
-                profileDetails.getId();
-                initProfileView(profileDetails, feed);
-                showProgress(false);
-            }
-            @Override
-            public void onFailure(String response) {
-                Toast.makeText(FeedPrifileActivity.this, "Unable to Get the User Profile", Toast.LENGTH_SHORT).show();
-                showProgress(false);
-            }
-        });
+
+                @Override
+                public void onFailure(String response) {
+                    Toast.makeText(FeedPrifileActivity.this, "Unable to Get the User Profile", Toast.LENGTH_SHORT).show();
+                    showProgress(false);
+                }
+            });
+        }catch (Exception e){
+            Crashlytics.log(0,"Exception - FeedPrifileActivity - getProfileData : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            Crashlytics.log(0,"1 - FeedPrifileActivity - getProfileData : ",errors.toString());
+        }
     }
 
     private void initProfileView(User profileDetails, Feed feed) {

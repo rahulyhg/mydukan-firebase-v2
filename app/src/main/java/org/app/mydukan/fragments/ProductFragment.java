@@ -3,12 +3,9 @@ package org.app.mydukan.fragments;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Color;
-import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,6 +14,7 @@ import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
+import com.crashlytics.android.Crashlytics;
 import com.github.clans.fab.FloatingActionButton;
 import com.github.clans.fab.FloatingActionMenu;
 import com.google.android.gms.ads.AdRequest;
@@ -30,8 +28,9 @@ import org.app.mydukan.application.MyDukan;
 import org.app.mydukan.data.Product;
 import org.app.mydukan.data.SupplierBindData;
 import org.app.mydukan.utils.AppContants;
-import org.app.mydukan.utils.SimpleDividerItemDecoration;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.text.DateFormat;
 import java.text.Format;
 import java.text.SimpleDateFormat;
@@ -70,10 +69,11 @@ public class ProductFragment extends android.support.v4.app.Fragment implements 
         View v = inflater.inflate(R.layout.main_fragment, container, false);
         mApp = (MyDukan) getActivity().getApplicationContext();
         addLayout = (LinearLayout) v.findViewById(R.id.cmplnt_lst_add_id); //cmplnt_lst_add_id
-        //FAB
-        setupFAB(v);
+        try {
+            //FAB
+            setupFAB(v);
 
-        setupProductCard(v);
+            setupProductCard(v);
 
         
         /*mProductRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener(){
@@ -92,20 +92,26 @@ public class ProductFragment extends android.support.v4.app.Fragment implements 
                 super.onScrollStateChanged(recyclerView, newState);
             }
         });*/
-        MobileAds.initialize(getActivity(), "ca-app-pub-1640690939729824/3964207396");
-        AdView cALdview = (AdView) v.findViewById(R.id.adView_MainFragment);//adView_MainFragment
-        AdRequest adRequest = new AdRequest.Builder().build();
-        cALdview.loadAd(adRequest);
+            MobileAds.initialize(getActivity(), "ca-app-pub-1640690939729824/3964207396");
+            AdView cALdview = (AdView) v.findViewById(R.id.adView_MainFragment);//adView_MainFragment
+            AdRequest adRequest = new AdRequest.Builder().build();
+            cALdview.loadAd(adRequest);
 
-        //initialization of adview in this activity//
-        if(mSupplier!=null) {
-            if (mSupplier.getId().equalsIgnoreCase("WDSLSgxI10eiWVey4RVWY5niElE3")) {
-                addLayout.setVisibility(View.GONE);
+            //initialization of adview in this activity//
+            if (mSupplier != null) {
+                if (mSupplier.getId().equalsIgnoreCase("WDSLSgxI10eiWVey4RVWY5niElE3")) {
+                    addLayout.setVisibility(View.GONE);
+                }
             }
+            //end of adview mobAds//
+
+        }catch (Exception e){
+            Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() + " - onCreate : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            Crashlytics.log(0,this.getClass().getSimpleName() + " - onCreate : ",errors.toString());
         }
-        //end of adview mobAds//
-
-
         return v;
     }
 

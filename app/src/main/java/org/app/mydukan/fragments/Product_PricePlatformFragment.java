@@ -8,28 +8,21 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.webkit.WebView;
-import android.widget.AdapterView;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
+
+import com.crashlytics.android.Crashlytics;
 
 import org.app.mydukan.R;
-import org.app.mydukan.adapters.KeySpecificationAdapter;
 import org.app.mydukan.adapters.PricePlatformAdapter;
-import org.app.mydukan.data.PlatForm_Info;
 import org.app.mydukan.data.Product;
 import org.app.mydukan.data.SupplierBindData;
 import org.app.mydukan.server.ApiManager;
 import org.app.mydukan.server.ApiResult;
 import org.app.mydukan.utils.AppContants;
 
-import java.util.HashMap;
-import java.util.Set;
-
-import static org.app.mydukan.activities.ProductDescriptionActivity.fullpage;
-import static org.app.mydukan.activities.ProductDescriptionActivity.mApp;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -63,23 +56,31 @@ public class Product_PricePlatformFragment extends Fragment {
         // Inflate the layout for this fragment
 
         mView = inflater.inflate(R.layout.fragment_product__price_platform, container, false);
-        context = mView.getContext();
+        try {
+            context = mView.getContext();
 
 
-        Bundle extras = getActivity().getIntent().getExtras();
-        if (extras != null) {
-            try {
-                mProduct = (Product) extras.getSerializable(AppContants.PRODUCT);
-                mSupplier = (SupplierBindData) extras.getSerializable(AppContants.SUPPLIER);
+            Bundle extras = getActivity().getIntent().getExtras();
+            if (extras != null) {
+                try {
+                    mProduct = (Product) extras.getSerializable(AppContants.PRODUCT);
+                    mSupplier = (SupplierBindData) extras.getSerializable(AppContants.SUPPLIER);
 
-            } catch (Exception ex) {
-                ex.printStackTrace();
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
             }
-        }
 
-        list_pricePlatform = (ListView)  mView.findViewById(R.id.list_pricePlatform);
-        mOthersTextView = (TextView) mView.findViewById(R.id.othersTextView);
-        fetchProductAndShow();
+            list_pricePlatform = (ListView) mView.findViewById(R.id.list_pricePlatform);
+            mOthersTextView = (TextView) mView.findViewById(R.id.othersTextView);
+            fetchProductAndShow();
+        }catch (Exception e){
+            Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() + " - onCreate : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            Crashlytics.log(0,this.getClass().getSimpleName() + " - onCreate : ",errors.toString());
+        }
         return mView;
     }
 
@@ -109,24 +110,34 @@ public class Product_PricePlatformFragment extends Fragment {
         }
     }
     private void fetchProductAndShow(){
-        showProgress();
-        ApiManager.getInstance(context).getProductDetails(mProduct.getProductId(),
-                new ApiResult() {
-                    @Override
-                    public void onSuccess(Object data) {
-                        product = (Product)data;
-                        if(product != null) {
-                            product.setmPlatforms(mProduct.getmPlatforms());
+        try {
+            showProgress();
+            ApiManager.getInstance(context).getProductDetails(mProduct.getProductId(),
+                    new ApiResult() {
+                        @Override
+                        public void onSuccess(Object data) {
+                            product = (Product) data;
+                            if (product != null) {
+                                product.setmPlatforms(mProduct.getmPlatforms());
+                            }
+                            dismissProgress();
+                            setupOthers();
                         }
-                        dismissProgress();
-                        setupOthers();
-                    }
-                    @Override
-                    public void onFailure(String response) {
-                        dismissProgress();
-                        setupOthers();
-                    }
-                });
+
+                        @Override
+                        public void onFailure(String response) {
+                            dismissProgress();
+                            setupOthers();
+                        }
+                    });
+        }catch (Exception e){
+
+            Crashlytics.log(0,"Exception - Product_PricePlatformFragment - fetchProductAndShow : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            Crashlytics.log(0,"1 - Product_PricePlatformFragment - fetchProductAndShow : ",errors.toString());
+        }
     }
 
     private void setupOthers(){

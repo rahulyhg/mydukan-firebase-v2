@@ -21,6 +21,8 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.crashlytics.android.Crashlytics;
+
 import org.app.mydukan.R;
 import org.app.mydukan.application.MyDukan;
 import org.app.mydukan.data.Product;
@@ -32,6 +34,8 @@ import org.app.mydukan.server.ApiManager;
 import org.app.mydukan.server.ApiResult;
 import org.app.mydukan.utils.AppContants;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -68,94 +72,101 @@ public class ProductDescriptionActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_product_description);
 
-        mApp = (MyDukan) getApplicationContext();
+        try {
+            mApp = (MyDukan) getApplicationContext();
 
-        Bundle extras = getIntent().getExtras();
-        if (extras != null) {
-            try {
-                mProduct = (Product) extras.getSerializable(AppContants.PRODUCT);
-                mSupplier = (SupplierBindData) extras.getSerializable(AppContants.SUPPLIER);
-            } catch (Exception ex) {
-                ex.printStackTrace();
+            Bundle extras = getIntent().getExtras();
+            if (extras != null) {
+                try {
+                    mProduct = (Product) extras.getSerializable(AppContants.PRODUCT);
+                    mSupplier = (SupplierBindData) extras.getSerializable(AppContants.SUPPLIER);
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
             }
-        }
 
-        setupActionBar();
+            setupActionBar();
 
-        mNameTextView = (TextView) findViewById(R.id.productname);
-        mPriceTextView = (TextView) findViewById(R.id.priceDetails);
+            mNameTextView = (TextView) findViewById(R.id.productname);
+            mPriceTextView = (TextView) findViewById(R.id.priceDetails);
 //        mOthersHeaderView = (TextView) findViewById(R.mCatId.othersHeader);
 //        mOthersTextView = (TextView) findViewById(R.mCatId.othersTextView);
 //        mDescWebView = (WebView) findViewById(R.mCatId.descWebView);
 //        mDescTextView = (TextView) findViewById(R.mCatId.descTextView);
-        addTocart_Btn =(LinearLayout) findViewById(R.id.btn_AddTOCart);
-        mStockTextView = (TextView) findViewById(R.id.tv_stockDetail);
-        realative_layout_1 = (RelativeLayout) findViewById(R.id.realative_layout_1);
-        viewPager = (ViewPager) findViewById(R.id.viewpager_product);
+            addTocart_Btn = (LinearLayout) findViewById(R.id.btn_AddTOCart);
+            mStockTextView = (TextView) findViewById(R.id.tv_stockDetail);
+            realative_layout_1 = (RelativeLayout) findViewById(R.id.realative_layout_1);
+            viewPager = (ViewPager) findViewById(R.id.viewpager_product);
 
-        fullpage= (Button) findViewById(R.id.btn_FullPage);
-        normalpage= (Button) findViewById(R.id.btn_NormalPage);
+            fullpage = (Button) findViewById(R.id.btn_FullPage);
+            normalpage = (Button) findViewById(R.id.btn_NormalPage);
 
-        setupViewPager(viewPager);
-        tabLayout = (TabLayout) findViewById(R.id.tabs_product);
-        tabLayout.setupWithViewPager(viewPager);
-        setupTabIcons();
-
-
-        fetchProductAndShow();
+            setupViewPager(viewPager);
+            tabLayout = (TabLayout) findViewById(R.id.tabs_product);
+            tabLayout.setupWithViewPager(viewPager);
+            setupTabIcons();
 
 
-        //====================================================
-        if(isCartShow){
-            addTocart_Btn.setVisibility(View.VISIBLE);
-
-            if(mProduct.getStockremaining() <= 0){
-                addTocart_Btn.setVisibility(View.INVISIBLE);
-                mStockTextView.setText("No Stock");
-            } else if(mProduct.getStockremaining() <= 5){
-                mStockTextView.setText("Limited Stock");
-            } else {
-                mStockTextView.setVisibility(View.GONE);
-            }
-        } else {
-            addTocart_Btn.setVisibility(View.GONE);
-        }
-        //====================================================
+            fetchProductAndShow();
 
 
+            //====================================================
+            if (isCartShow) {
+                addTocart_Btn.setVisibility(View.VISIBLE);
 
-        addTocart_Btn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(mSupplier != null && product!=null){
-                    showTheCartAlert(product);
+                if (mProduct.getStockremaining() <= 0) {
+                    addTocart_Btn.setVisibility(View.INVISIBLE);
+                    mStockTextView.setText("No Stock");
+                } else if (mProduct.getStockremaining() <= 5) {
+                    mStockTextView.setText("Limited Stock");
+                } else {
+                    mStockTextView.setVisibility(View.GONE);
                 }
+            } else {
+                addTocart_Btn.setVisibility(View.GONE);
             }
-        });
+            //====================================================
 
-        fullpage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
 
-                realative_layout_1.setVisibility(View.GONE);
-                tabLayout.setVisibility(View.GONE);
-                normalpage.setVisibility(View.VISIBLE);
-                fullpage.setVisibility(View.GONE);
-            }
-        });
+            addTocart_Btn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (mSupplier != null && product != null) {
+                        showTheCartAlert(product);
+                    }
+                }
+            });
 
-        normalpage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+            fullpage.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
 
-                realative_layout_1.setVisibility(View.VISIBLE);
-                tabLayout.setVisibility(View.VISIBLE);
-                fullpage.setVisibility(View.VISIBLE);
-                normalpage.setVisibility(View.GONE);
+                    realative_layout_1.setVisibility(View.GONE);
+                    tabLayout.setVisibility(View.GONE);
+                    normalpage.setVisibility(View.VISIBLE);
+                    fullpage.setVisibility(View.GONE);
+                }
+            });
 
-            }
-        });
+            normalpage.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
 
+                    realative_layout_1.setVisibility(View.VISIBLE);
+                    tabLayout.setVisibility(View.VISIBLE);
+                    fullpage.setVisibility(View.VISIBLE);
+                    normalpage.setVisibility(View.GONE);
+
+                }
+            });
+
+        }catch (Exception e){
+            Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() + " - onCreate : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            Crashlytics.log(0,this.getClass().getSimpleName() + " - onCreate : ",errors.toString());
+        }
     }
 
     /**
@@ -309,29 +320,37 @@ public class ProductDescriptionActivity extends BaseActivity {
     }
 
     private void fetchProductAndShow(){
-        showProgress();
-        ApiManager.getInstance(ProductDescriptionActivity.this).getProductDetails(mProduct.getProductId(),
-                new ApiResult() {
-                    @Override
-                    public void onSuccess(Object data) {
-                        product = (Product)data;
-                        if(product != null) {
-                            mProduct.setDescription(product.getDescription());
-                            mProduct.setUrl(product.getUrl());
-                            mProduct.setAttributes(product.getAttributes());
-                            fullpage.setVisibility(View.VISIBLE);
+        try {
+            showProgress();
+            ApiManager.getInstance(ProductDescriptionActivity.this).getProductDetails(mProduct.getProductId(),
+                    new ApiResult() {
+                        @Override
+                        public void onSuccess(Object data) {
+                            product = (Product) data;
+                            if (product != null) {
+                                mProduct.setDescription(product.getDescription());
+                                mProduct.setUrl(product.getUrl());
+                                mProduct.setAttributes(product.getAttributes());
+                                fullpage.setVisibility(View.VISIBLE);
+                            }
+
+                            dismissProgress();
+                            setupData();
                         }
 
-                        dismissProgress();
-                        setupData();
-                    }
-
-                    @Override
-                    public void onFailure(String response) {
-                        dismissProgress();
-                        setupData();
-                    }
-                });
+                        @Override
+                        public void onFailure(String response) {
+                            dismissProgress();
+                            setupData();
+                        }
+                    });
+        }catch (Exception e){
+            Crashlytics.log(0,"Exception - ProductDescriptionActivity - fetchProductAndShow : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            Crashlytics.log(0,"1 - ProductDescriptionActivity - fetchProductAndShow : ",errors.toString());
+        }
     }
 
 
@@ -371,34 +390,42 @@ public class ProductDescriptionActivity extends BaseActivity {
     }
 
     private void addProductToCart(Product product, long quantity){
-        showProgress();
-        HashMap<String,Object> orderInfo = new HashMap<>();
-        orderInfo.put("productid",product.getProductId());
-        orderInfo.put("productname",product.getName());
-        orderInfo.put("price", product.getPrice());
-        orderInfo.put("quantity", quantity);
+        try {
+            showProgress();
+            HashMap<String, Object> orderInfo = new HashMap<>();
+            orderInfo.put("productid", product.getProductId());
+            orderInfo.put("productname", product.getName());
+            orderInfo.put("price", product.getPrice());
+            orderInfo.put("quantity", quantity);
 
-        ApiManager.getInstance(ProductDescriptionActivity.this).addOrderToCart(mSupplier.getId(),
-                mApp.getFirebaseAuth().getCurrentUser().getUid(), orderInfo, new ApiResult() {
-                    @Override
-                    public void onSuccess(Object data) {
-                        dismissProgress();
-                        String response = (String)data;
-                        if(response.contains(getString(R.string.status_success))){
-                            //String[] str_count = response.split("::");
-                            //setTheBadgeCount(Integer.valueOf(str_count[1]));
-                            BaseActivity.showOkAlert(ProductDescriptionActivity.this,"MyDukan","Product is added to CartList","OK");
+            ApiManager.getInstance(ProductDescriptionActivity.this).addOrderToCart(mSupplier.getId(),
+                    mApp.getFirebaseAuth().getCurrentUser().getUid(), orderInfo, new ApiResult() {
+                        @Override
+                        public void onSuccess(Object data) {
+                            dismissProgress();
+                            String response = (String) data;
+                            if (response.contains(getString(R.string.status_success))) {
+                                //String[] str_count = response.split("::");
+                                //setTheBadgeCount(Integer.valueOf(str_count[1]));
+                                BaseActivity.showOkAlert(ProductDescriptionActivity.this, "MyDukan", "Product is added to CartList", "OK");
 
-                        } else {
-                            showErrorToast(ProductDescriptionActivity.this,response);
+                            } else {
+                                showErrorToast(ProductDescriptionActivity.this, response);
+                            }
                         }
-                    }
 
-                    @Override
-                    public void onFailure(String response) {
-                        dismissProgress();
-                    }
-                });
+                        @Override
+                        public void onFailure(String response) {
+                            dismissProgress();
+                        }
+                    });
+        }catch (Exception e){
+            Crashlytics.log(0,"Exception - ProductDescriptionActivity - addProductToCart : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            Crashlytics.log(0,"1 - ProductDescriptionActivity - addProductToCart : ",errors.toString());
+        }
     }
 
 

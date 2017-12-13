@@ -17,6 +17,7 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.crashlytics.android.Crashlytics;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.Lists;
@@ -35,6 +36,8 @@ import org.app.mydukan.services.SyncContacts;
 import org.app.mydukan.services.VolleyNetworkRequest;
 import org.app.mydukan.utils.Utils;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -69,37 +72,45 @@ public class Search_MyNetworkActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search_mynetwork);
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        jsonRequest = new VolleyNetworkRequest(this);
+        try {
+            getSupportActionBar().setDisplayShowHomeEnabled(true);
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            jsonRequest = new VolleyNetworkRequest(this);
 
-        emptyText = (TextView) findViewById(R.id.emptyText);
-        progressBar = findViewById(R.id.progressBar);
+            emptyText = (TextView) findViewById(R.id.emptyText);
+            progressBar = findViewById(R.id.progressBar);
 //        contactMap = SyncContacts.getNumberMap(this);
-        recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
-        swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipeToRefresh);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        mAdapter = new SearchNetworkAdapter(this, jsonRequest);
-        recyclerView.setAdapter(mAdapter);
+            recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
+            swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipeToRefresh);
+            recyclerView.setLayoutManager(new LinearLayoutManager(this));
+            mAdapter = new SearchNetworkAdapter(this, jsonRequest);
+            recyclerView.setAdapter(mAdapter);
 
 
-        RealmConfiguration config = new RealmConfiguration.Builder()
-                .deleteRealmIfMigrationNeeded()
-                .build();
+            RealmConfiguration config = new RealmConfiguration.Builder()
+                    .deleteRealmIfMigrationNeeded()
+                    .build();
 
-        realm = Realm.getInstance(config);
-        //loadData();
+            realm = Realm.getInstance(config);
+            //loadData();
 
-        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                reSyncContacts();
-            }
-        });
-        getFollowings();
+            swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+                @Override
+                public void onRefresh() {
+                    reSyncContacts();
+                }
+            });
+            getFollowings();
 
-        showProgress(true);
-        new ContactLoader().execute();
+            showProgress(true);
+            new ContactLoader().execute();
+        }catch (Exception e){
+            Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() + " - onCreate : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            Crashlytics.log(0,this.getClass().getSimpleName() + " - onCreate : ",errors.toString());
+        }
 
     }
 

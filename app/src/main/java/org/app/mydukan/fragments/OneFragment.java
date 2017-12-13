@@ -10,11 +10,11 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AbsListView;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.crashlytics.android.Crashlytics;
 import com.crashlytics.android.answers.Answers;
 import com.crashlytics.android.answers.CustomEvent;
 import com.google.android.gms.ads.AdRequest;
@@ -31,21 +31,18 @@ import com.google.firebase.database.ValueEventListener;
 import org.app.mydukan.R;
 import org.app.mydukan.activities.CommentsActivity;
 import org.app.mydukan.activities.FeedPrifileActivity;
-import org.app.mydukan.activities.MainActivity;
-import org.app.mydukan.activities.MyProfileActivity;
 import org.app.mydukan.activities.WebViewActivity;
 import org.app.mydukan.adapters.AdapterListFeed;
-import org.app.mydukan.adapters.SupplierAdapter;
 import org.app.mydukan.data.Feed;
-import org.app.mydukan.data.ServiceCenterInfo;
 import org.app.mydukan.server.ApiManager;
 import org.app.mydukan.server.ApiResult;
 import org.app.mydukan.services.VolleyNetworkRequest;
 import org.app.mydukan.utils.AppContants;
 import org.app.mydukan.utils.FeedUtils;
-import org.app.mydukan.utils.SimpleDividerItemDecoration;
 
+import java.io.PrintWriter;
 import java.io.Serializable;
+import java.io.StringWriter;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -53,8 +50,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-
-import static org.app.mydukan.R.id.view;
 
 
 public class OneFragment extends Fragment implements AdapterListFeed.OnClickItemFeed, View.OnClickListener {
@@ -95,15 +90,23 @@ public class OneFragment extends Fragment implements AdapterListFeed.OnClickItem
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         mView = inflater.inflate(R.layout.fragment_one, container, false);
-        context = mView.getContext();
-        jsonRequest = new VolleyNetworkRequest(context);
-        initViews();
-        retrieveData();
-        //initialize ads for the app  - ca-app-pub-1640690939729824/2174590993
-        MobileAds.initialize(context, "ca-app-pub-1640690939729824/2174590993");
-        mAdView = (AdView) mView.findViewById(R.id.adView_myNetwork_one);
-        AdRequest adRequest = new AdRequest.Builder().build();
-        mAdView.loadAd(adRequest);
+        try {
+            context = mView.getContext();
+            jsonRequest = new VolleyNetworkRequest(context);
+            initViews();
+            retrieveData();
+            //initialize ads for the app  - ca-app-pub-1640690939729824/2174590993
+            MobileAds.initialize(context, "ca-app-pub-1640690939729824/2174590993");
+            mAdView = (AdView) mView.findViewById(R.id.adView_myNetwork_one);
+            AdRequest adRequest = new AdRequest.Builder().build();
+            mAdView.loadAd(adRequest);
+        }catch (Exception e){
+            Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() + " - onCreate : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            Crashlytics.log(0,this.getClass().getSimpleName() + " - onCreate : ",errors.toString());
+        }
         return mView;
     }
 
@@ -191,9 +194,13 @@ public class OneFragment extends Fragment implements AdapterListFeed.OnClickItem
                         showProgress(false);
                 }
             });
-        } catch (Exception e) {
-            //  dismissProgress();
+        } catch (Exception e){
             showProgress(false);
+            Crashlytics.log(0,"Exception - OneFargment - retriveFeedsData : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            Crashlytics.log(0,"1 - OneFargment - retriveFeedsData : ",errors.toString());
         }
     }
 
