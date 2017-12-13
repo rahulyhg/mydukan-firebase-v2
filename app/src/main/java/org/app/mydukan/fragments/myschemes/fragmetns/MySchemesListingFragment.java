@@ -26,6 +26,7 @@ import org.app.mydukan.data.Scheme;
 import org.app.mydukan.fragments.myschemes.MySchemesActivity;
 import org.app.mydukan.fragments.myschemes.adapter.GridSpacingItemDecoration;
 import org.app.mydukan.fragments.myschemes.adapter.MySchemesAdapter;
+import org.app.mydukan.fragments.myschemes.calculator.CalculatorForm;
 import org.app.mydukan.utils.AppContants;
 import org.app.mydukan.utils.SharedPrefsUtils;
 
@@ -135,8 +136,18 @@ public class MySchemesListingFragment extends Fragment
                 if(mSchemesList != null && mSchemesList.size() >0)
                 gotoAddSchemeFragment(mSchemesList.get(0).getCategory());
                 break;
+            case R.id.action_cal:
+                loadCalculatorFragment();
+                break;
         }
         return super.onOptionsItemSelected(item);
+
+    }
+
+
+    private void loadCalculatorFragment() {
+        CalculatorForm calculatorForm = CalculatorForm.newInstance();
+        mActivity.addFragment(calculatorForm, true);
 
     }
 

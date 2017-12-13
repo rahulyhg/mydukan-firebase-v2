@@ -18,6 +18,7 @@ import com.google.firebase.auth.FirebaseAuth;
 
 import org.app.mydukan.R;
 import org.app.mydukan.fragments.myschemes.MySchemesActivity;
+import org.app.mydukan.fragments.myschemes.calculator.CalculatorForm;
 
 
 /**
@@ -114,8 +115,8 @@ public class DashBoardFragment extends Fragment implements View.OnClickListener 
     }
 
     private void loadCalculatorFragment() {
-       /* CalculatorForm calculatorForm = CalculatorForm.newInstance();
+        CalculatorForm calculatorForm = CalculatorForm.newInstance();
         mActivity.addFragment(calculatorForm, true);
-    */
+
     }
 }

@@ -1,4 +1,3 @@
-package org.app.mydukan.fragments.myschemes.calculator;/*
 package org.app.mydukan.fragments.myschemes.calculator;
 
 import android.content.Context;
@@ -23,28 +22,18 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import org.app.mydukan.fragments.BaseFragment;
+import org.app.mydukan.R;
 import org.app.mydukan.fragments.myschemes.MySchemesActivity;
+import org.app.mydukan.fragments.myschemes.fragmetns.BaseFragment;
+import org.app.mydukan.fragments.myschemes.model.Device;
 
-import java.util.ArrayList;
-import java.util.List;
 
-import calc.mydukan.com.calculatortool.Helper.DeviceHelper;
-import calc.mydukan.com.calculatortool.MainActivity;
-import calc.mydukan.com.calculatortool.R;
-import calc.mydukan.com.calculatortool.models.Device;
-import calc.mydukan.com.calculatortool.models.Model;
-
-*/
 /**
  * Created by rojesharunkumar on 20/10/17.
- *//*
+ */
 
 
 public class AddSchemeFrag extends BaseFragment implements RadioGroup.OnCheckedChangeListener,
@@ -62,7 +51,6 @@ public class AddSchemeFrag extends BaseFragment implements RadioGroup.OnCheckedC
 
     private DatabaseReference modelRef;
     private String brandId, brandName;
-    private List<Model> modelsArrayList;
     private ArrayAdapter<String> adapter;
 
 
@@ -107,97 +95,22 @@ public class AddSchemeFrag extends BaseFragment implements RadioGroup.OnCheckedC
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        //   addModelData(brandId);
-
         mMainActivity.showProgress();
-        fetchModelData();
         setCalculatorformUI(view);
     }
 
-    */
-/*private void updateModleData() {
-        String id;
-        for (Model model : modelsArrayList) {
-            id = model.getModelId();
-            DatabaseReference modelRef = FirebaseDatabase.getInstance()
-                    .getReference("models").child(id);
-            model = new Model(id, brandName + " Model 1", "6999");
-            modelRef.setValue(model);
-
-
-        }
-    }*//*
-
-
-    private void addModelData(String brandId) {
-        DatabaseReference modelRef = FirebaseDatabase.getInstance()
-                .getReference("models").child(brandId);
-        String id = modelRef.push().getKey();
-        Model model = new Model(id, brandName + " Model 1", "6999");
-        modelRef.child(id).setValue(model);
-
-        id = modelRef.push().getKey();
-        model = new Model(id, brandName + " Model 2", "7999");
-        modelRef.child(id).setValue(model);
-
-
-        id = modelRef.push().getKey();
-        model = new Model(id, brandName + " Model 3", "8999");
-        modelRef.child(id).setValue(model);
-
-
-        id = modelRef.push().getKey();
-        model = new Model(id, brandName + " Model 4", "9999");
-        modelRef.child(id).setValue(model);
-
-
-        id = modelRef.push().getKey();
-        model = new Model(id, brandName + " Model 5", "10999");
-        modelRef.child(id).setValue(model);
-
-    }
-
-    private void fetchModelData() {
-        modelRef = FirebaseDatabase.getInstance().getReference("models").child(brandId);
-        modelsArrayList = new ArrayList<>();
-        modelListener = modelRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                int i = 0;
-                models = new String[Integer.parseInt(dataSnapshot.getChildrenCount() + "") + 1];
-                models[0] = "- Select Model -";
-                i++;
-                for (DataSnapshot modelsList : dataSnapshot.getChildren()) {
-                    Model brandItem = modelsList.getValue(Model.class);
-                    modelsArrayList.add(brandItem);
-                    models[i] = brandItem.getModelName();
-                    i++;
-                }
-                setModelsAdapter();
-
-                mMainActivity.hideProgressBar();
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                mMainActivity.hideProgressBar();
-            }
-        });
-
-    }
-
     private void setCalculatorformUI(View view) {
-        spnrModles = view.findViewById(R.id.spnr_selectmodel);
+        spnrModles = (AppCompatSpinner) view.findViewById(R.id.spnr_selectmodel);
         setModelsAdapter();
-        mTxtDelarPrice = view.findViewById(R.id.edt_dp);
-        mRg = view.findViewById(R.id.rg);
+        mTxtDelarPrice = (AutoCompleteTextView) view.findViewById(R.id.edt_dp);
+        mRg = (RadioGroup) view.findViewById(R.id.rg);
         mRg.setOnCheckedChangeListener(this);
-        mRgScheme = view.findViewById(R.id.rg_scheme);
+        mRgScheme = (RadioGroup) view.findViewById(R.id.rg_scheme);
         mRgScheme.setOnCheckedChangeListener(this);
-        mEdtValue = view.findViewById(R.id.edt_value);
-        mEdtQuantity = view.findViewById(R.id.edt_quantity);
-        mEdtTarget = view.findViewById(R.id.edt_target);
-        btnAdd = view.findViewById(R.id.btn_add);
+        mEdtValue = (AutoCompleteTextView) view.findViewById(R.id.edt_value);
+        mEdtQuantity = (AutoCompleteTextView) view.findViewById(R.id.edt_quantity);
+        mEdtTarget = (AutoCompleteTextView) view.findViewById(R.id.edt_target);
+        btnAdd = (Button) view.findViewById(R.id.btn_add);
         btnAdd.setOnClickListener(this);
 
         mEdtQuantity.setOnEditorActionListener(new TextView.OnEditorActionListener() {
@@ -227,8 +140,8 @@ public class AddSchemeFrag extends BaseFragment implements RadioGroup.OnCheckedC
                 calculateValue();
             }
         });
-        mSelectedScheme = view.findViewById(R.id.edt_selected_scheme);
-        mCalulatedScheme = view.findViewById(R.id.edt_calulated_scheme);
+        mSelectedScheme = (AutoCompleteTextView) view.findViewById(R.id.edt_selected_scheme);
+        mCalulatedScheme = (AutoCompleteTextView) view.findViewById(R.id.edt_calulated_scheme);
 
         mSelectedScheme.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
@@ -355,6 +268,7 @@ public class AddSchemeFrag extends BaseFragment implements RadioGroup.OnCheckedC
     }
 
     private float getDealPrice(String selectedItem) {
+/*
         Model selectedModel = null;
         for (Model model : modelsArrayList) {
             if (selectedItem.equalsIgnoreCase(model.getModelName())) {
@@ -365,6 +279,8 @@ public class AddSchemeFrag extends BaseFragment implements RadioGroup.OnCheckedC
         if (selectedModel == null)
             return 0;
         return Float.parseFloat(selectedModel.getModelPrice());
+*/
+return  0;
     }
 
     @Override
@@ -410,9 +326,9 @@ public class AddSchemeFrag extends BaseFragment implements RadioGroup.OnCheckedC
 
             DeviceHelper.getInstance().addDevice(device);
 
-        }
+        }/*
         mMainActivity.clearCurrentFragment();
-        mMainActivity.notifyListDataChanged();
+        mMainActivity.notifyListDataChanged();*/
 
     }
 
@@ -422,4 +338,4 @@ public class AddSchemeFrag extends BaseFragment implements RadioGroup.OnCheckedC
         modelRef.removeEventListener(modelListener);
     }
 }
-*/
+
