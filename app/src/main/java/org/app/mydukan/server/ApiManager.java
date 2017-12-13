@@ -2482,6 +2482,9 @@ public class ApiManager {
                             + "/productid/", product.getProductId());
                     childUpdates.put("/claims/" + userId + "/" + supplierId + "/" + claimid
                             + "/productname/", product.getName());
+                    Log.i("Brand Id", product.getCategoryId());
+                    childUpdates.put("/claims/" + userId + "/" + supplierId + "/" + claimid
+                            + "/productCategoryID/", product.getCategoryId());
 
                     //supplier info
                     HashMap<String, Object> supplierInfo = new HashMap<>();
@@ -2489,7 +2492,6 @@ public class ApiManager {
                     supplierInfo.put("name", supplierName);
                     childUpdates.put("/claims/" + userId + "/" + supplierId + "/" + claimid + "/supplierinfo/", supplierInfo);
                 }
-
 
                 //product
                 HashMap<String, Object> productinfo = new HashMap<>();

@@ -114,6 +114,12 @@ public class RecordsActivity extends BaseActivity implements RecordsAdapter.Reco
             public void onSuccess(Object data) {
                 dismissProgress();
                 mRecordList = (ArrayList<Record>)data;
+                if(mRecordList.size() > 0){
+                    for(int i=0; i<mRecordList.size(); i++) {
+                        Log.i("Record ID", mRecordList.get(i).getRecordId());
+                        Log.i("Record Id Catergory", "KU2hE65nFcTF0eYa0u_");
+                    }
+                }
                 if(mRecordList.isEmpty()){
                     mNoDataView.setVisibility(View.VISIBLE);
                     mRecyclerView.setVisibility(View.GONE);

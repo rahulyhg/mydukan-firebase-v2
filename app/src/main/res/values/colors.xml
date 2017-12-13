@@ -92,5 +92,7 @@
     <color name="whitish">#FFffF9</color>
 
 
+    <!-- Price Drop Design-->
+    <color name="yellow">#FEB300</color>
 
 </resources>

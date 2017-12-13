@@ -366,7 +366,8 @@
             android:screenOrientation="portrait" />
         <activity
             android:name=".activities.Search_MyNetworkActivity"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.ActionBar" />
         <activity
             android:name=".activities.MyProfileActivity"
             android:screenOrientation="portrait" />
@@ -396,9 +397,6 @@
             android:name=".activities.MerchantActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".activities.BroadcastActivity"
-            android:screenOrientation="portrait" />
-        <activity
             android:name=".activities.NewSignUpActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
@@ -410,17 +408,10 @@
         </receiver>
 
         <activity
-            android:name=".fragments.YouTubeFragmentActivity"
-            android:screenOrientation="portrait" />
-        <activity
             android:name=".activities.UsersLocationAddress"
             android:screenOrientation="portrait" />
-        <activity
-            android:name=".activities.UserProfile"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name=".activities.CompanyDetails"
-            android:screenOrientation="portrait" />
+        <activity android:name=".activities.UserProfile" />
+        <activity android:name=".activities.CompanyDetails" />
         <activity
             android:name=".activities.IntentForwardingActivity"
             android:launchMode="singleTask">
@@ -438,6 +429,9 @@
 
         <service
             android:name=".services.SyncContacts"
+            android:exported="false" />
+
+        <activity android:name=".activities.PriceDropActivity"></activity>
             android:exported="false" />
 
         <activity android:name=".activities.MyRecordsActivity"></activity>

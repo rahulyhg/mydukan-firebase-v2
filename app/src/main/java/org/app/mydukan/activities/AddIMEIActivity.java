@@ -69,6 +69,11 @@ public class AddIMEIActivity extends BaseActivity {
             if (bundle.containsKey(AppContants.SUPPLIER)) {
                 product = (Product) bundle.getSerializable(AppContants.PRODUCT);
             }
+            if(bundle.containsKey(AppContants.CATEGORY_ID)){
+                if(product != null) {
+                    product.setCategoryId(bundle.getString(AppContants.CATEGORY_ID));
+                }
+            }
         }
 
         textIMEInum = (EditText) findViewById(R.id.tv_IMEINum);
