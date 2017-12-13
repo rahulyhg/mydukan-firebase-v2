@@ -54,6 +54,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Iterator;
@@ -63,7 +64,7 @@ import java.util.Iterator;
 
 public class ProductListActivity extends BaseActivity implements TabLayout.OnTabSelectedListener, ProductFragment.ProductFragmentListener {
 
-    public HashMap<String, ArrayList<Product>> mProductList;
+    public LinkedHashMap<String, ArrayList<Product>> mProductList;
     LayerDrawable icon;
     boolean isProductFetched = false;
     //This is our tablayout
@@ -231,7 +232,7 @@ public class ProductListActivity extends BaseActivity implements TabLayout.OnTab
                         @Override
                         public void onSuccess(Object data) {
                             if (!isProductFetched) {
-                                mProductList = (HashMap<String, ArrayList<Product>>) data;
+                                mProductList = (LinkedHashMap<String, ArrayList<Product>>) data;
                                 ArrayList<Product> list = new ArrayList<Product>();
 
                                 if (!mProductList.isEmpty()) {
@@ -256,7 +257,7 @@ public class ProductListActivity extends BaseActivity implements TabLayout.OnTab
                                         }
                                     }
 
-                                    HashMap<String, ArrayList<Product>> filteredList = new HashMap<String,ArrayList<Product>>();
+                                    LinkedHashMap<String, ArrayList<Product>> filteredList = new LinkedHashMap<String,ArrayList<Product>>();
                                     for (Map.Entry<String, ArrayList<Product>> entry : mProductList.entrySet()) {
                                         if(entry.getValue().size() == 0){
                                             continue;

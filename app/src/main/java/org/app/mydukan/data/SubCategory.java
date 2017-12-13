@@ -30,6 +30,11 @@ public class SubCategory extends Object implements Serializable {
     public String getOrder() {
         return order;
     }
+    public void setOrder(String order) {
+        this.order = order;
+    }
+
+
 
     public HashMap<String, Boolean> getProductlist() {
         return productlist;

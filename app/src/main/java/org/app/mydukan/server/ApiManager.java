@@ -52,14 +52,18 @@ import org.app.mydukan.data.SupplierGroups;
 import org.app.mydukan.data.User;
 import org.app.mydukan.data.Videos;
 import org.app.mydukan.fragments.OneFragment;
+import org.app.mydukan.fragments.ProductFragment;
 import org.app.mydukan.utils.AppContants;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -345,7 +349,7 @@ public class ApiManager {
                         try {
                             User user = dataSnapshot.getValue(User.class);
                             result.onSuccess(user);
-                        }catch (Exception e){
+                        } catch (Exception e) {
                             e.printStackTrace();
                         }
                     }
@@ -1134,9 +1138,9 @@ public class ApiManager {
                             User user = mApp.getPreference().getUser(mctx);
                             String userState = "";
                             String userPin = "";
-                            if (user.getUserinfo().getAddressinfo() != null && user.getUserinfo().getAddressinfo().getState() != null){
+                            if (user.getUserinfo().getAddressinfo() != null && user.getUserinfo().getAddressinfo().getState() != null) {
                                 userState = user.getUserinfo().getAddressinfo().getState();
-                                if(user.getUserinfo().getAddressinfo().getPincode() != null)
+                                if (user.getUserinfo().getAddressinfo().getPincode() != null)
                                     userPin = user.getUserinfo().getAddressinfo().getPincode();
                             }
 
@@ -1273,22 +1277,42 @@ public class ApiManager {
 
         /*Change in logic for Product keys list*/
 
-        categoryRef.addValueEventListener(new ValueEventListener() {
+        categoryRef.orderByChild("order").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()) {
-                    for (DataSnapshot subCatSnapshot : dataSnapshot.getChildren()) {
-                        SubCategory subCategory = subCatSnapshot.getValue(SubCategory.class);
-                        subCategory.setId(subCatSnapshot.getKey());
-                        if (!subCategory.getProductlist().isEmpty()) {
-                            subCategory.setProductIds(new ArrayList<String>(subCategory.getProductlist().keySet()));
-                            subCategory.getProductlist().clear();
+                    try {
+                        for (DataSnapshot subCatSnapshot : dataSnapshot.getChildren()) {
+                            SubCategory subCategory = subCatSnapshot.getValue(SubCategory.class);
+                            subCategory.setId(subCatSnapshot.getKey());
+                            if (!subCategory.getProductlist().isEmpty()) {
+                                subCategory.setProductIds(new ArrayList<String>(subCategory.getProductlist().keySet()));
+                                subCategory.getProductlist().clear();
+                            }
+
+                            subCategoryList.add(subCategory);
                         }
-                        subCategoryList.add(subCategory);
+                        Collections.sort(subCategoryList, new SubCat_OrderComparator());
+                        result.onSuccess(subCategoryList);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        for (DataSnapshot subCatSnapshot : dataSnapshot.getChildren()) {
+                            SubCategory subCategory = subCatSnapshot.getValue(SubCategory.class);
+                            subCategory.setId(subCatSnapshot.getKey());
+                            if (!subCategory.getProductlist().isEmpty()) {
+                                subCategory.setProductIds(new ArrayList<String>(subCategory.getProductlist().keySet()));
+                                subCategory.getProductlist().clear();
+                            }
+
+                            subCategoryList.add(subCategory);
+                        }
+                        result.onSuccess(subCategoryList);
                     }
+
+
                 }
 
-                result.onSuccess(subCategoryList);
+
             }
 
             @Override
@@ -1298,6 +1322,24 @@ public class ApiManager {
         });
 
         /*End of logic in change in productkeys list*/
+    }
+
+    public class SubCat_OrderComparator implements Comparator<SubCategory> {
+
+        public int compare(SubCategory p1, SubCategory p2) {
+
+            if (p1.getOrder() == null || p1.getOrder().isEmpty()) {
+                p1.setOrder("0");
+            }
+            if (p2.getOrder() == null || p2.getOrder().isEmpty()) {
+                p2.setOrder("0");
+            }
+            Integer pMRP1 = Integer.valueOf(p1.getOrder());
+            Integer pMRP2 = Integer.valueOf(p2.getOrder());
+            //descending getPriceDrop().getStartdate();
+            return pMRP1.compareTo(pMRP2) * -1;
+
+        }
     }
 
     private void getProductKeysForGroups(String suppliersId, ArrayList<String> groupIds, final String searchStr,
@@ -1420,17 +1462,17 @@ public class ApiManager {
 
                                 if (productSnapshot.hasChild("platforms")) {
                                     try {
-                                        HashMap<String,String> cPlatforms = new HashMap<String,String>();
+                                        HashMap<String, String> cPlatforms = new HashMap<String, String>();
                                         HashMap<String, HashMap<String, String>> mPlatforms = new HashMap<>();
 
-                                        for (DataSnapshot recipe : productSnapshot.child("platforms").getChildren()){
+                                        for (DataSnapshot recipe : productSnapshot.child("platforms").getChildren()) {
 
-                                            if(recipe!=null){
-                                                cPlatforms = new HashMap<String,String>();
+                                            if (recipe != null) {
+                                                cPlatforms = new HashMap<String, String>();
                                                 for (DataSnapshot platform : recipe.getChildren()) {
-                                                    cPlatforms.put(platform.getKey(),platform.getValue(String.class));
+                                                    cPlatforms.put(platform.getKey(), platform.getValue(String.class));
                                                 }
-                                                mPlatforms.put(recipe.getKey(),cPlatforms);
+                                                mPlatforms.put(recipe.getKey(), cPlatforms);
                                             }
                                             // mPlatforms.put(recipe.getKey(),recipe.getValue(PlatForm_Info.class));
                                         }
@@ -1547,28 +1589,56 @@ public class ApiManager {
 
     private void getProductList(HashMap<String, Product> groupProductsList, ArrayList<SubCategory> subCategoryProductsList,
                                 final ApiResult result) {
+        try {
 
-        Log.d(" **** 03 **** ", "Get Product LIst");
-        final HashMap<String, ArrayList<Product>> mProductMap = new HashMap<>();
-        for (SubCategory subCategory : subCategoryProductsList) {
-            String subCatName = subCategory.getName();
 
-            for (String productkey : subCategory.getProductIds()) {
-                if (groupProductsList.containsKey(productkey)) {
-                    ArrayList<Product> productsList;
-                    if (!mProductMap.containsKey(subCatName)) {
-                        productsList = new ArrayList<>();
-                    } else {
-                        productsList = mProductMap.get(subCatName);
+            Log.d(" **** 03 **** ", "Get Product LIst");
+            final LinkedHashMap<String, ArrayList<Product>> mProductMap = new LinkedHashMap<>();
+            Collections.sort(subCategoryProductsList, new SubCat_OrderComparator());
+            for (SubCategory subCategory : subCategoryProductsList) {
+                String subCatName = subCategory.getName();
+
+                for (String productkey : subCategory.getProductIds()) {
+                    if (groupProductsList.containsKey(productkey)) {
+                        ArrayList<Product> productsList;
+                        if (!mProductMap.containsKey(subCatName)) {
+                            productsList = new ArrayList<>();
+                        } else {
+                            productsList = mProductMap.get(subCatName);
+                        }
+
+                        productsList.add(groupProductsList.get(productkey));
+                        mProductMap.put(subCatName, productsList);
                     }
-
-                    productsList.add(groupProductsList.get(productkey));
-                    mProductMap.put(subCatName, productsList);
                 }
             }
+
+            result.onSuccess(mProductMap);
+        } catch (Exception e) {
+            e.printStackTrace();
+            Log.d(" **** 03 **** ", "Get Product LIst");
+            final LinkedHashMap<String, ArrayList<Product>> mProductMap = new LinkedHashMap<>();
+            for (SubCategory subCategory : subCategoryProductsList) {
+                String subCatName = subCategory.getName();
+
+                for (String productkey : subCategory.getProductIds()) {
+                    if (groupProductsList.containsKey(productkey)) {
+                        ArrayList<Product> productsList;
+                        if (!mProductMap.containsKey(subCatName)) {
+                            productsList = new ArrayList<>();
+                        } else {
+                            productsList = mProductMap.get(subCatName);
+                        }
+
+                        productsList.add(groupProductsList.get(productkey));
+                        mProductMap.put(subCatName, productsList);
+                    }
+                }
+            }
+
+            result.onSuccess(mProductMap);
         }
 
-        result.onSuccess(mProductMap);
 
     }
 
@@ -1594,7 +1664,7 @@ public class ApiManager {
                                 getProductList(stockProductsList, subCategoryProductlist, new ApiResult() {
                                     @Override
                                     public void onSuccess(Object data) {
-                                        HashMap<String, ArrayList<Product>> productMap = (HashMap<String, ArrayList<Product>>) data;
+                                        LinkedHashMap<String, ArrayList<Product>> productMap = (LinkedHashMap<String, ArrayList<Product>>) data;
                                         result.onSuccess(productMap);
                                     }
 
@@ -1847,7 +1917,7 @@ public class ApiManager {
                         videosList.add(mvideos);
                     }
                     result.onSuccess(videosList);
-                }else{
+                } else {
                     result.onFailure(mctx.getString(R.string.status_failed));
                 }
 
@@ -1859,7 +1929,6 @@ public class ApiManager {
             }
         });
     }
-
 
 
     public void getOrderList(final String supplierId, String uid, final ApiResult result) {
@@ -2088,7 +2157,7 @@ public class ApiManager {
                             } else {
                                 result.onSuccess(mctx.getString(R.string.error_updatefailed));
                             }
-                        }catch (Exception e){
+                        } catch (Exception e) {
                             e.printStackTrace();
                         }
 
@@ -2283,7 +2352,7 @@ public class ApiManager {
     public void refreshTheSupplierGroups(final String supplierId, final ApiResult result) {
         FirebaseUser firebaseUser = mApp.getFirebaseAuth().getCurrentUser();
         String uid = "";
-        if(firebaseUser != null && firebaseUser.getUid() != null && !firebaseUser.getUid().isEmpty()) {
+        if (firebaseUser != null && firebaseUser.getUid() != null && !firebaseUser.getUid().isEmpty()) {
             uid = firebaseUser.getUid();
         }
         final String userId = uid;
@@ -2298,9 +2367,9 @@ public class ApiManager {
                 }
                 String userState = "";
                 String userPin = "";
-                if (user.getUserinfo().getAddressinfo() != null && user.getUserinfo().getAddressinfo().getState() != null){
+                if (user.getUserinfo().getAddressinfo() != null && user.getUserinfo().getAddressinfo().getState() != null) {
                     userState = user.getUserinfo().getAddressinfo().getState();
-                    if(user.getUserinfo().getAddressinfo().getPincode() != null)
+                    if (user.getUserinfo().getAddressinfo().getPincode() != null)
                         userPin = user.getUserinfo().getAddressinfo().getPincode();
                 }
 
@@ -2316,9 +2385,9 @@ public class ApiManager {
 
                         if (criteria.hasChild("state")) {
                             for (DataSnapshot stateSnapshot : criteria.child("state").getChildren()) {
-                                Log.e("snap State", stateSnapshot.getKey() );
+                                Log.e("snap State", stateSnapshot.getKey());
                                 if (stateSnapshot.getKey().toLowerCase().equals(userState)) {
-                                    Log.e("True","true");
+                                    Log.e("True", "true");
                                     if (!groupIds.contains(criteriaSnapshot.getKey())) {
                                         groupIds.add(criteriaSnapshot.getKey());
                                     }
@@ -2968,30 +3037,30 @@ public class ApiManager {
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     HashMap<String, Object> map = new HashMap<>();
                     map = (HashMap<String, Object>) dataSnapshot.getValue();
-                    if(map.containsKey(feedUserId)) {
+                    if (map.containsKey(feedUserId)) {
                         Feed feed = new Feed();
                         Map<String, String> keymap = (Map<String, String>) map.get(feedUserId);
                         JSONObject object = new JSONObject(keymap);
                         try {
-                            if(object.has("liked"))
+                            if (object.has("liked"))
                                 feed.setLiked(object.getBoolean("liked"));
-                            if(object.has("time"))
+                            if (object.has("time"))
                                 feed.setTime(object.getString("time"));
-                            if(object.has("link"))
+                            if (object.has("link"))
                                 feed.setLink(object.getString("link"));
-                            if(object.has("idFeed"))
+                            if (object.has("idFeed"))
                                 feed.setIdFeed(object.getString("idFeed"));
-                            if(object.has("idUser"))
+                            if (object.has("idUser"))
                                 feed.setIdUser(object.getString("idUser"));
-                            if(object.has("text"))
+                            if (object.has("text"))
                                 feed.setText(object.getString("text"));
-                            if(object.has("name"))
+                            if (object.has("name"))
                                 feed.setName(object.getString("name"));
-                            if(object.has("photoAvatar"))
+                            if (object.has("photoAvatar"))
                                 feed.setPhotoAvatar(object.getString("photoAvatar"));
-                            if(object.has("photoFeed"))
+                            if (object.has("photoFeed"))
                                 feed.setPhotoFeed(object.getString("photoFeed"));
-                            if(object.has("likeCount"))
+                            if (object.has("likeCount"))
                                 feed.setLikeCount(object.getInt("likeCount"));
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -2999,6 +3068,7 @@ public class ApiManager {
                         apiResult.onSuccess(feed);
                     }
                 }
+
                 @Override
                 public void onCancelled(DatabaseError databaseError) {
 

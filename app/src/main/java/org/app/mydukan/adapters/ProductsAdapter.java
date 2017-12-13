@@ -342,7 +342,7 @@ public class ProductsAdapter extends RecyclerView.Adapter<ProductsAdapter.ViewHo
             super(itemView);
             mProductLayout = (CardView) itemView.findViewById(R.id.product_table);
 
-            mProductLayout.setBackgroundResource(R.drawable.bg_product);
+            mProductLayout.setBackgroundResource(R.drawable.btn_shadow);
 
             mProductName = (TextView) itemView.findViewById(R.id.modelName);
             mStatusPrice = (TextView) itemView.findViewById(R.id.discountPrice);
