@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/My Dukan Live.iml" filepath="$PROJECT_DIR$/.idea/My Dukan Live.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/MyDukan.iml" filepath="$PROJECT_DIR$/.idea/MyDukan.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://$PROJECT_DIR$/libraries/appdukan/libraries_appdukan.iml" filepath="$PROJECT_DIR$/libraries/appdukan/libraries_appdukan.iml" />
