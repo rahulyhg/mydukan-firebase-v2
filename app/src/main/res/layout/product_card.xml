@@ -5,14 +5,14 @@
     android:id="@+id/product_table"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="2dp"
-    app:cardElevation="5dp">
+   >
 
+    <!-- android:background="@drawable/bg_product"   FFffF5-->
 <LinearLayout
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:padding="1dp"
-    android:background="@drawable/bg_product"
+    android:background="@color/whitish"
     android:orientation="vertical">
 
     <LinearLayout
