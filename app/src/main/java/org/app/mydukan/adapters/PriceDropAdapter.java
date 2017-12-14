@@ -199,11 +199,11 @@ public class PriceDropAdapter extends RecyclerView.Adapter<PriceDropAdapter.View
                 holder.priceDropCount.setText(String.valueOf(map.get(categoryList.get(position))));
                 break;*/
 
-            /*case *//*"-KkvKrWFqJR7tpaAb7Sy"*//*"TECNO":
+            case /*"-KkvKrWFqJR7tpaAb7Sy"*/"TECNO":
                 //TECNO
                 holder.brandLogo.setBackground(ContextCompat.getDrawable(mContext, R.drawable.logo_tecno));
                 holder.priceDropCount.setText(String.valueOf(map.get(categoryList.get(position))));
-                break;*/
+                break;
 
             case /*"-KTmMpmpYcsv3XVjr3Nl"*/"HTC":
                 //HTC
