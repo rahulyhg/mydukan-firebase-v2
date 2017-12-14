@@ -4,7 +4,6 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.IdRes;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.support.v7.widget.AppCompatSpinner;
 import android.text.Editable;
 import android.text.TextUtils;
@@ -19,6 +18,7 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.RadioGroup;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -26,9 +26,17 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
 
 import org.app.mydukan.R;
+import org.app.mydukan.data.Product;
+import org.app.mydukan.data.Scheme;
 import org.app.mydukan.fragments.myschemes.MySchemesActivity;
 import org.app.mydukan.fragments.myschemes.fragmetns.BaseFragment;
+import org.app.mydukan.fragments.myschemes.fragmetns.MySelectedSchemesHelper;
 import org.app.mydukan.fragments.myschemes.model.Device;
+import org.app.mydukan.server.ApiManager;
+import org.app.mydukan.server.ApiResult;
+
+import java.util.ArrayList;
+import java.util.HashMap;
 
 
 /**
@@ -40,18 +48,23 @@ public class AddSchemeFrag extends BaseFragment implements RadioGroup.OnCheckedC
         AdapterView.OnItemSelectedListener, View.OnClickListener {
 
 
-    private AppCompatSpinner spnrModles;
     String[] models = {"- Select Model -"};
     private AutoCompleteTextView mTxtDelarPrice, mEdtQuantity, mEdtTarget, mEdtValue, mCalulatedScheme, mSelectedScheme;
     private RadioGroup mRg, mRgScheme;
     private float mdealPrice = 0.0f;
     private Button btnAdd;
     private MySchemesActivity mMainActivity;
-    private ValueEventListener modelListener;
 
     private DatabaseReference modelRef;
     private String brandId, brandName;
     private ArrayAdapter<String> adapter;
+    private HashMap<String, ArrayList<Product>> mProductList;
+    ArrayList<Product> mModelsList;
+    private String[] category;
+    private ArrayAdapter<String> mCategoryAdapter;
+    private ArrayAdapter<String> mModelAdapter;
+    private Spinner mSpnrCategory;
+    private Spinner mSpnrModel;
 
 
     public static AddSchemeFrag newInstance(String id, String name) {
@@ -71,6 +84,7 @@ public class AddSchemeFrag extends BaseFragment implements RadioGroup.OnCheckedC
         if (getArguments() != null) {
             brandId = getArguments().getString("brand_id");
             brandName = getArguments().getString("brand_name");
+
         }
     }
 
@@ -78,11 +92,56 @@ public class AddSchemeFrag extends BaseFragment implements RadioGroup.OnCheckedC
     public void onAttach(Context context) {
         super.onAttach(context);
         mMainActivity = (MySchemesActivity) context;
+        mMainActivity.showProgress();
     }
 
-    @Override
-    public void onDetach() {
-        super.onDetach();
+    private void getProductList() {
+
+        try {
+            ApiManager.getInstance(getActivity()).getSupplierProductList(MySelectedSchemesHelper.getInstance().getCurrentSupplier(),
+                    brandId,
+                    null, new ApiResult() {
+                        @Override
+                        public void onSuccess(Object data) {
+                            mProductList = (HashMap<String, ArrayList<Product>>) data;
+                            if (mProductList != null && mProductList.size() > 0) {
+                                category = new String[mProductList.size() + 1];
+                                category[0] = "- Select Category -";
+                                int i = 1;
+                                for (String key : mProductList.keySet()) {
+                                    category[i++] = key;
+                                }
+                                setAdapter(category);
+                            }
+                            mMainActivity.dismissProgress();
+                        }
+
+                        @Override
+                        public void onFailure(String response) {
+
+                        }
+                    });
+        } catch (Exception e) {
+
+        }
+    }
+
+
+    public void setAdapter(String[] category) {
+        mCategoryAdapter = new ArrayAdapter(getActivity(),
+                android.R.layout.simple_spinner_item, category);
+        mCategoryAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        mSpnrCategory.setOnItemSelectedListener(this);
+        mSpnrCategory.setAdapter(mCategoryAdapter);
+    }
+
+
+    public void setModelAdapter(String[] models) {
+        mModelAdapter = new ArrayAdapter(getActivity(),
+                android.R.layout.simple_spinner_item, models);
+        mModelAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        mSpnrModel.setOnItemSelectedListener(this);
+        mSpnrModel.setAdapter(mModelAdapter);
     }
 
     @Nullable
@@ -100,8 +159,10 @@ public class AddSchemeFrag extends BaseFragment implements RadioGroup.OnCheckedC
     }
 
     private void setCalculatorformUI(View view) {
-        spnrModles = (AppCompatSpinner) view.findViewById(R.id.spnr_selectmodel);
-        setModelsAdapter();
+        mSpnrCategory = (Spinner) view.findViewById(R.id.sprn_category);
+        mSpnrModel = (Spinner) view.findViewById(R.id.sprn_model);
+        String[] category = {"- Select Cateogry -"};
+        setAdapter(category);
         mTxtDelarPrice = (AutoCompleteTextView) view.findViewById(R.id.edt_dp);
         mRg = (RadioGroup) view.findViewById(R.id.rg);
         mRg.setOnCheckedChangeListener(this);
@@ -112,6 +173,10 @@ public class AddSchemeFrag extends BaseFragment implements RadioGroup.OnCheckedC
         mEdtTarget = (AutoCompleteTextView) view.findViewById(R.id.edt_target);
         btnAdd = (Button) view.findViewById(R.id.btn_add);
         btnAdd.setOnClickListener(this);
+
+
+        // Fetch all Models
+        getProductList();
 
         mEdtQuantity.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
@@ -194,8 +259,8 @@ public class AddSchemeFrag extends BaseFragment implements RadioGroup.OnCheckedC
         adapter = new ArrayAdapter(getActivity(),
                 android.R.layout.simple_spinner_item, models);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spnrModles.setOnItemSelectedListener(this);
-        spnrModles.setAdapter(adapter);
+        mSpnrModel.setOnItemSelectedListener(this);
+        mSpnrModel.setAdapter(adapter);
 
     }
 
@@ -246,19 +311,30 @@ public class AddSchemeFrag extends BaseFragment implements RadioGroup.OnCheckedC
         mCalulatedScheme.setText(incentiveAmount + "");
     }
 
-
     @Override
-    public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+    public void onItemSelected(AdapterView<?> adapterView, View view, int pos, long l) {
         switch (adapterView.getId()) {
-            case R.id.spnr_selectmodel: {
-
-                mdealPrice = getDealPrice((String) spnrModles.getSelectedItem());
-                if (mRg.getChildAt(0).isSelected()) {
-                    mTxtDelarPrice.setText(mdealPrice + "");
-                } else {
-                    mTxtDelarPrice.setText((mdealPrice + (mdealPrice * 88) / 10000) + "");
+            case R.id.sprn_category:
+                mSpnrModel.setVisibility(View.VISIBLE);
+                if (pos != 0) {
+                    mModelsList = mProductList.get(category[pos]);
+                    models = new String[mModelsList.size() + 1];
+                    models[0] = new String("- Select Model -");
+                    for (int i = 1; i < mModelsList.size() + 1; i++) {
+                        models[i] = mModelsList.get(i - 1).getName();
+                    }
+                    setModelAdapter(models);
                 }
-
+                break;
+            case R.id.sprn_model: {
+                if (pos != 0) {
+                    mdealPrice = mModelsList.get(pos - 1).getPriceInt();
+                    if (mRg.getChildAt(0).isSelected()) {
+                        mTxtDelarPrice.setText(mdealPrice + "");
+                    } else {
+                        mTxtDelarPrice.setText((mdealPrice + (mdealPrice * 88) / 10000) + "");
+                    }
+                }
             }
             break;
             default:
@@ -280,7 +356,7 @@ public class AddSchemeFrag extends BaseFragment implements RadioGroup.OnCheckedC
             return 0;
         return Float.parseFloat(selectedModel.getModelPrice());
 */
-return  0;
+        return 0;
     }
 
     @Override
@@ -301,7 +377,9 @@ return  0;
     }
 
     private void addModel() {
-        if (spnrModles.getSelectedItem().toString().equalsIgnoreCase(models[0])) {
+        if (mSpnrCategory.getSelectedItem().toString().equalsIgnoreCase(category[0])) {
+            Toast.makeText(getActivity(), "Select Category", Toast.LENGTH_SHORT).show();
+        } else if (mSpnrModel.getSelectedItem().toString().equalsIgnoreCase(models[0])) {
             Toast.makeText(getActivity(), "Select Model", Toast.LENGTH_SHORT).show();
         } else if (TextUtils.isEmpty(mEdtTarget.getText().toString())) {
             mEdtTarget.setError("Enter target");
@@ -311,7 +389,8 @@ return  0;
             mSelectedScheme.setError("Enter per handset value / %");
         } else {
             Device device = new Device();
-            device.setModel(spnrModles.getSelectedItem().toString().trim());
+            device.setCategory(mSpnrCategory.getSelectedItem().toString().trim());
+            device.setModel(mSpnrModel.getSelectedItem().toString().trim());
             device.setTarget(mEdtTarget.getText().toString().trim());
             device.setQuantity(mEdtQuantity.getText().toString().trim());
             device.setDp(mTxtDelarPrice.getText().toString().trim());
@@ -326,16 +405,15 @@ return  0;
 
             DeviceHelper.getInstance().addDevice(device);
 
-        }/*
-        mMainActivity.clearCurrentFragment();
-        mMainActivity.notifyListDataChanged();*/
+        }
+        mMainActivity.popCurrentFragment();
+        mMainActivity.notifyListDataChanged();
 
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        modelRef.removeEventListener(modelListener);
     }
 }
 

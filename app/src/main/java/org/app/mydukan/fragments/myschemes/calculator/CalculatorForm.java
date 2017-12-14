@@ -34,6 +34,7 @@ import org.app.mydukan.fragments.myschemes.adapter.AddedModelsAdapter;
 import org.app.mydukan.fragments.myschemes.adapter.GridSpacingItemDecoration;
 import org.app.mydukan.fragments.myschemes.fragmetns.BaseFragment;
 import org.app.mydukan.fragments.myschemes.fragmetns.MySelectedSchemesHelper;
+import org.app.mydukan.fragments.myschemes.model.Device;
 import org.app.mydukan.utils.DatePickerFragment;
 import org.app.mydukan.utils.NetworkUtil;
 
@@ -44,7 +45,7 @@ import io.fabric.sdk.android.services.network.NetworkUtils;
 
 
 public class CalculatorForm extends BaseFragment
-        implements AdapterView.OnItemSelectedListener, View.OnClickListener,DatePickerDialog.OnDateSetListener {
+        implements AdapterView.OnItemSelectedListener, View.OnClickListener, DatePickerDialog.OnDateSetListener {
 
     private MySchemesActivity mActivity;
     AppCompatSpinner spnrBrands, spnrSchemes, sprnMonth;
@@ -126,10 +127,10 @@ public class CalculatorForm extends BaseFragment
     private void setBrandSpinner() {
         if (getActivity() != null) {
             brandArrayList = MySelectedSchemesHelper.getInstance().getAllSelectedSchemesList();
-            brand = new String[brandArrayList.size()+1];
+            brand = new String[brandArrayList.size() + 1];
             brand[0] = new String("- Select Brand -");
-            for(int i =1;i<brandArrayList.size()+1;i++){
-                brand[i] = brandArrayList.get(i-1).get(0).getCategory();
+            for (int i = 1; i < brandArrayList.size() + 1; i++) {
+                brand[i] = brandArrayList.get(i - 1).get(0).getCategory();
             }
             ArrayAdapter<String> adapter = new ArrayAdapter(getActivity(),
                     android.R.layout.simple_spinner_item, brand);
@@ -186,10 +187,10 @@ public class CalculatorForm extends BaseFragment
     }
 
     private void loadSchemesSpinner(int i) {
-        schemesArrayList =brandArrayList.get(i);
-        schemes = new String[schemesArrayList.size()+1];
+        schemesArrayList = brandArrayList.get(i);
+        schemes = new String[schemesArrayList.size() + 1];
         schemes[0] = new String("- Select Scheme -");
-        int j =1;
+        int j = 1;
         for (Scheme schemeItem : schemesArrayList) {
             schemes[j] = schemeItem.getName();
             j++;
@@ -205,14 +206,6 @@ public class CalculatorForm extends BaseFragment
         spnrSchemes.setAdapter(schemeAdapter);
     }
 
-    private String getBrandId(String selectedItemName) {
-      /*  for (Brands brand : brandArrayList) {
-            if (brand.getBrandTitle().equalsIgnoreCase(selectedItemName)) {
-                return brand.getBrandId();
-            }
-        }*/
-        return null;
-    }
 
     private void reset() {
         spnrSchemes.setVisibility(View.GONE);
@@ -240,7 +233,7 @@ public class CalculatorForm extends BaseFragment
 
     @Override
     public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-        setMonthYear(month,year);
+        setMonthYear(month, year);
     }
 
 
@@ -258,6 +251,7 @@ public class CalculatorForm extends BaseFragment
                 break;
         }
     }
+
     public void showDatePickerDialog() {
 
         DialogFragment newFragment = new DatePickerFragment();
@@ -275,13 +269,14 @@ public class CalculatorForm extends BaseFragment
     private void gotoAddSchemeItemFrag() {
         String selectedBrandTitle = (String) spnrBrands.getSelectedItem();
         AddSchemeFrag frag = AddSchemeFrag.
-                newInstance(getBrandId(selectedBrandTitle), selectedBrandTitle);
+                newInstance(MySelectedSchemesHelper
+                        .getInstance().getCategoryId(selectedBrandTitle), selectedBrandTitle);
         mActivity.addFragment(frag, true);
     }
 
 
     public void notifyData() {
-        /*if (adapter != null) {
+        if (adapter != null) {
             adapter.updateList(getModelList());
             adapter.notifyDataSetChanged();
             if (DeviceHelper.getInstance().getDeviceList() != null
@@ -290,7 +285,19 @@ public class CalculatorForm extends BaseFragment
                 btnGetSummary.setVisibility(View.VISIBLE);
                 recyclerView.setVisibility(View.VISIBLE);
             }
-        }*/
+        }
+    }
+
+
+    private List<String> getModelList() {
+        int size = DeviceHelper.getInstance().getListSize();
+        List<Device> arylst = DeviceHelper.getInstance().getDeviceList();
+        List<String> modelsArry = new ArrayList<>();
+        for (int i = 0; i < size; i++) {
+            modelsArry.add(arylst.get(i).getModel());
+        }
+
+        return modelsArry;
     }
 
     @Override

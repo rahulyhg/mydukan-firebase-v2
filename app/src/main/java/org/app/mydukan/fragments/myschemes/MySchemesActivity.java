@@ -13,6 +13,7 @@ import android.widget.RadioButton;
 import org.app.mydukan.R;
 import org.app.mydukan.activities.BaseActivity;
 import org.app.mydukan.activities.Schemes.SchemeListActivity;
+import org.app.mydukan.fragments.myschemes.calculator.CalculatorForm;
 import org.app.mydukan.fragments.myschemes.fragmetns.AddSchemeFragment;
 import org.app.mydukan.fragments.myschemes.fragmetns.DashBoardFragment;
 
@@ -95,5 +96,12 @@ public class MySchemesActivity extends BaseActivity {
 
     public void popCurrentFragment() {
         fragmentManager.popBackStack();
+    }
+
+    public void notifyListDataChanged() {
+        fragment = fragmentManager.findFragmentById(R.id.container);
+        if (fragment != null && fragment instanceof  CalculatorForm) {
+            ((CalculatorForm) fragment).notifyData();
+        }
     }
 }

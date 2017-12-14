@@ -5,6 +5,7 @@ package org.app.mydukan.fragments.myschemes.model;
  */
 
 public class Device {
+    String category;
     String model;
     String target;
     String quantity;
@@ -76,6 +77,13 @@ public class Device {
 
     public void setIncentiveAmount(String incentiveAmount) {
         this.incentiveAmount = incentiveAmount;
+    }
+    public String getCategory() {
+        return category;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
     }
 
 }
