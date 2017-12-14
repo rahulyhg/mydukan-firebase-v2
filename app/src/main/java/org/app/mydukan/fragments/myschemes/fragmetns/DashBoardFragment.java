@@ -105,18 +105,15 @@ public class DashBoardFragment extends Fragment implements View.OnClickListener 
 
     private void loadMySchemesFragment() {
         fragment = MyBrandsFragments.newInstance();
-        mActivity.addFragment(fragment, true);
+        mActivity.addFragment(fragment, true,MyBrandsFragments.class.getSimpleName());
     }
 
-    private void loadSchemesFragment() {
-       /* fragment = AllBrandsFragments.newInstance();
-        mActivity.addFragment(fragment, true);
-*/
-    }
 
     private void loadCalculatorFragment() {
         CalculatorForm calculatorForm = CalculatorForm.newInstance();
-        mActivity.addFragment(calculatorForm, true);
+        mActivity.addFragment(calculatorForm, true,CalculatorForm.class.getSimpleName());
 
     }
+
+
 }

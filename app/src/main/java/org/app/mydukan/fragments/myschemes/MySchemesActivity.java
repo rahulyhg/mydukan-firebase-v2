@@ -55,16 +55,16 @@ public class MySchemesActivity extends BaseActivity {
 
     private void setDashBoardFragment() {
         DashBoardFragment fragment = DashBoardFragment.newInstance();
-        addFragment(fragment, false);
+        addFragment(fragment, false,DashBoardFragment.class.getSimpleName());
     }
 
 
-    public void addFragment(Fragment frag, boolean hasToAdd) {
+    public void addFragment(Fragment frag, boolean hasToAdd,String tag) {
         fragmentManager = getSupportFragmentManager();
         fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.add(R.id.container, frag);
         if (hasToAdd)
-            fragmentTransaction.addToBackStack(null);
+            fragmentTransaction.addToBackStack(tag);
         fragmentTransaction.commit();
 
 
@@ -96,6 +96,7 @@ public class MySchemesActivity extends BaseActivity {
 
     public void popCurrentFragment() {
         fragmentManager.popBackStack();
+        fragmentManager.executePendingTransactions();
     }
 
     public void notifyListDataChanged() {

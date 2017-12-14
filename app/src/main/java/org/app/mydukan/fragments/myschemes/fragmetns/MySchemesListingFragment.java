@@ -26,6 +26,7 @@ import org.app.mydukan.data.Scheme;
 import org.app.mydukan.fragments.myschemes.MySchemesActivity;
 import org.app.mydukan.fragments.myschemes.adapter.GridSpacingItemDecoration;
 import org.app.mydukan.fragments.myschemes.adapter.MySchemesAdapter;
+import org.app.mydukan.fragments.myschemes.calculator.AddSchemeFrag;
 import org.app.mydukan.fragments.myschemes.calculator.CalculatorForm;
 import org.app.mydukan.utils.AppContants;
 import org.app.mydukan.utils.SharedPrefsUtils;
@@ -147,13 +148,13 @@ public class MySchemesListingFragment extends Fragment
 
     private void loadCalculatorFragment() {
         CalculatorForm calculatorForm = CalculatorForm.newInstance();
-        mActivity.addFragment(calculatorForm, true);
+        mActivity.addFragment(calculatorForm, true,CalculatorForm.class.getSimpleName());
 
     }
 
     private void gotoAddSchemeFragment(String category) {
         AddSchemeFragment fragment = AddSchemeFragment.newInstance(category);
-        mActivity.addFragment(fragment,true);
+        mActivity.addFragment(fragment,true, AddSchemeFrag.class.getSimpleName());
     }
 
 

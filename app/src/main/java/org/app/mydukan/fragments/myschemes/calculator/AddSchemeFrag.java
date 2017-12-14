@@ -112,13 +112,15 @@ public class AddSchemeFrag extends BaseFragment implements RadioGroup.OnCheckedC
                                     category[i++] = key;
                                 }
                                 setAdapter(category);
+                                models[0] = new String("- Select Model -");
+                                setModelAdapter(models);
                             }
                             mMainActivity.dismissProgress();
                         }
 
                         @Override
                         public void onFailure(String response) {
-
+                            mMainActivity.dismissProgress();
                         }
                     });
         } catch (Exception e) {
@@ -233,8 +235,6 @@ public class AddSchemeFrag extends BaseFragment implements RadioGroup.OnCheckedC
                 calulateScheme();
             }
         });
-
-        mMainActivity.dismissProgress();
 
     }
 

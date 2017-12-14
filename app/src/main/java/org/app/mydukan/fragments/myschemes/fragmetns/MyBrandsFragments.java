@@ -110,7 +110,7 @@ public class MyBrandsFragments extends BaseFragment implements BrandsAdapter.IBr
 
     private void gotoMySchemesFragment(List<Scheme> brand) {
         MySchemesListingFragment frag = MySchemesListingFragment.newInstance(brand);
-        mActivity.addFragment(frag, true);
+        mActivity.addFragment(frag, true,MySchemesListingFragment.class.getSimpleName());
     }
 }
 

@@ -178,6 +178,7 @@ public class AddSchemeFragment extends BaseFragment implements View.OnClickListe
                 showDatePickerDialog();
                 break;
             case R.id.btn_addscheme:
+
                 break;
             case R.id.btn_capture_doc:
                 dispatchTakePictureIntent();

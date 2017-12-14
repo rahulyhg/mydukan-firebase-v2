@@ -49,6 +49,7 @@ public class CalculatorForm extends BaseFragment
 
     private MySchemesActivity mActivity;
     AppCompatSpinner spnrBrands, spnrSchemes, sprnMonth;
+    private String TAG = CalculatorForm.class.getSimpleName();
 
     String[] brand = {"- Select Brand -"};
     // Brands
@@ -99,7 +100,24 @@ public class CalculatorForm extends BaseFragment
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         setCalculatorUI();
+        setCalculatorData();
     }
+
+
+    private void setCalculatorData() {
+        adapter = new AddedModelsAdapter();
+
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
+        recyclerView = (RecyclerView) getView().findViewById(R.id.lst_schemes);
+        recyclerView.setLayoutManager(layoutManager);
+        recyclerView.addItemDecoration(
+                new GridSpacingItemDecoration(2, Utils.dpToPx(10), true));
+        adapter.updateList(getModelList());
+        recyclerView.setAdapter(adapter);
+
+
+    }
+
 
     private void setCalculatorUI() {
         View view = getView();
@@ -261,9 +279,9 @@ public class CalculatorForm extends BaseFragment
 
 
     private void gotoPdfScreen() {
-   /*     PdfFragment pdfFragment = PdfFragment.newInstance();
-        mActivity.addFragment(pdfFragment, true);
-*/
+       PdfFragment pdfFragment = PdfFragment.newInstance();
+        mActivity.addFragment(pdfFragment, true,PdfFragment.class.getSimpleName());
+
     }
 
     private void gotoAddSchemeItemFrag() {
@@ -271,9 +289,14 @@ public class CalculatorForm extends BaseFragment
         AddSchemeFrag frag = AddSchemeFrag.
                 newInstance(MySelectedSchemesHelper
                         .getInstance().getCategoryId(selectedBrandTitle), selectedBrandTitle);
-        mActivity.addFragment(frag, true);
+        mActivity.addFragment(frag, true, AddSchemeFrag.class.getSimpleName());
     }
 
+
+    @Override
+    public void onResume() {
+        super.onResume();
+    }
 
     public void notifyData() {
         if (adapter != null) {
@@ -304,6 +327,7 @@ public class CalculatorForm extends BaseFragment
     public void onDestroyView() {
         super.onDestroyView();
         if (mActivity != null) {
+            DeviceHelper.getInstance().resetDevice();
             mActivity.dismissProgress();
         }
     }
