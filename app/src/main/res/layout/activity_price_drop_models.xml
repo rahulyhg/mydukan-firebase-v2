@@ -19,6 +19,9 @@
             android:layout_width="1dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:paddingRight="20dp"
+            android:paddingTop="15dp"
+            android:paddingBottom="15dp"
             android:layout_gravity="center"
             android:src="@drawable/ic_action_arrowleft"/>
 
@@ -30,7 +33,7 @@
             android:text="Price Drop"
             android:textStyle="bold"
             android:textColor="@color/white"
-            android:textSize="22sp"
+            android:textSize="@dimen/largetextSize"
             android:gravity="center_vertical"/>
 
     </LinearLayout>
