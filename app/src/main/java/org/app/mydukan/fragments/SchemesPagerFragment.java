@@ -5,8 +5,8 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 
-import org.app.mydukan.data.Product;
 import org.app.mydukan.data.Scheme;
+import org.app.mydukan.fragments.myschemes.fragmetns.MySelectedSchemesHelper;
 import org.app.mydukan.utils.AppContants;
 
 import java.util.ArrayList;
@@ -39,7 +39,7 @@ public class SchemesPagerFragment extends FragmentStatePagerAdapter {
         bundle.putString(AppContants.SUPPLIER_NAME, supplierName);
         bundle.putString(AppContants.SUPPLIER_ID, supplierId);
         schemeFragment.setArguments(bundle);
-        schemeFragment.setData(mSchemeList.get(position));
+        schemeFragment.setData(mSchemeList.get(position),position);
         return schemeFragment;
     }
 
@@ -52,5 +52,7 @@ public class SchemesPagerFragment extends FragmentStatePagerAdapter {
         mSchemeList.clear();
         mSchemeList.addAll(list);
         tabCount = mSchemeList.size();
+        MySelectedSchemesHelper.getInstance()
+                .setAllProductsList(mSchemeList);
     }
 }

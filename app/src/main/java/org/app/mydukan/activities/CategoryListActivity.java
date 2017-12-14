@@ -57,11 +57,13 @@ import org.app.mydukan.data.AppSubscriptionInfo;
 import org.app.mydukan.data.Category;
 import org.app.mydukan.data.SupplierBindData;
 import org.app.mydukan.data.User;
+import org.app.mydukan.fragments.myschemes.fragmetns.MySelectedSchemesHelper;
 import org.app.mydukan.server.ApiManager;
 import org.app.mydukan.server.ApiResult;
 import org.app.mydukan.utils.AppContants;
 import org.app.mydukan.utils.AppPreference;
 import org.app.mydukan.utils.NetworkUtil;
+import org.app.mydukan.utils.SharedPrefsUtils;
 import org.app.mydukan.utils.Utils;
 
 import java.util.ArrayList;
@@ -139,6 +141,8 @@ public class CategoryListActivity extends BaseActivity implements CategoryAdapte
             if (bundle.containsKey(AppContants.SUPPLIER)) {
                 supplierData = (SupplierBindData) bundle.getSerializable(AppContants.SUPPLIER);
                 mSupplierId = supplierData.getId();
+                SharedPrefsUtils.setStringPreference(this,"supplier_name",supplierData.getName());
+                SharedPrefsUtils.setStringPreference(this,"supplier_id",supplierData.getId());
 
             }
         }
@@ -593,6 +597,8 @@ public class CategoryListActivity extends BaseActivity implements CategoryAdapte
                     compareCategoryList();
                     mAdapter.addItems(mCategoryList);
                     mAdapter.notifyDataSetChanged();
+                    // Save it
+                    MySelectedSchemesHelper.getInstance().storeCategoryList(mCategoryList);
 
                     for (int i = 0; i < ((ArrayList<Category>) data).size(); ++i) {
                         String item = ((ArrayList<Category>) data).get(i).getName();

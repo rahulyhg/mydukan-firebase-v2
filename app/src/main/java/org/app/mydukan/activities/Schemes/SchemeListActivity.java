@@ -1,12 +1,16 @@
 package org.app.mydukan.activities.Schemes;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
+import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.CompoundButton;
+import android.widget.RadioButton;
 import android.widget.TextView;
 
 import com.google.android.gms.ads.AdRequest;
@@ -17,7 +21,11 @@ import org.app.mydukan.R;
 import org.app.mydukan.activities.BaseActivity;
 import org.app.mydukan.application.MyDukan;
 import org.app.mydukan.data.Scheme;
+import org.app.mydukan.data.SchemeRecord;
+import org.app.mydukan.fragments.SchemeFragment;
 import org.app.mydukan.fragments.SchemesPagerFragment;
+import org.app.mydukan.fragments.myschemes.MySchemesActivity;
+import org.app.mydukan.fragments.myschemes.fragmetns.MySelectedSchemesHelper;
 import org.app.mydukan.server.ApiManager;
 import org.app.mydukan.server.ApiResult;
 import org.app.mydukan.utils.AppContants;
@@ -43,6 +51,11 @@ public class SchemeListActivity extends BaseActivity implements TabLayout.OnTabS
     private HashMap<String, ArrayList<Scheme>> mSchemesList = new HashMap<>();
     private String mSupplierId;
     private String mSupplierName;
+    private RadioButton mMySchemesTab, mSchemesTab;
+
+    //Creating a  pager adapter
+    SchemesPagerFragment adapter;
+
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -83,6 +96,30 @@ public class SchemeListActivity extends BaseActivity implements TabLayout.OnTabS
                 cALdview.setVisibility(View.GONE);
             }
         }
+        // Set My Schemes Tab
+        mMySchemesTab = (RadioButton) findViewById(R.id.tab_myschemes);
+        mMySchemesTab.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    gotoMySchemesFragment();
+                }
+            }
+        });
+        mSchemesTab = (RadioButton) findViewById(R.id.tab_schemes);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mSchemesTab.setChecked(true);
+    }
+
+    private void gotoMySchemesFragment() {
+        mSchemesTab.setOnCheckedChangeListener(null);
+        mSchemesTab.setChecked(true);
+        Intent mySchemesIntent = new Intent(this, MySchemesActivity.class);
+        startActivity(mySchemesIntent);
     }
 
     private void setupActionBar() {
@@ -110,11 +147,11 @@ public class SchemeListActivity extends BaseActivity implements TabLayout.OnTabS
         mViewPager = (ViewPager) findViewById(R.id.pager);
         mViewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(mTabLayout));
 
-        //Creating a  pager adapter
-        SchemesPagerFragment adapter = new SchemesPagerFragment(getSupportFragmentManager(), mSupplierName, mSupplierId,
+        adapter = new SchemesPagerFragment(getSupportFragmentManager(), mSupplierName, mSupplierId,
                 new ArrayList<ArrayList<Scheme>>(mSchemesList.values()));
         //Adding adapter to pager
         mViewPager.setAdapter(adapter);
+
     }
 
     private void setTabs(){
@@ -150,6 +187,7 @@ public class SchemeListActivity extends BaseActivity implements TabLayout.OnTabS
         return super.onOptionsItemSelected(item);
     }
 
+
     private void getSchemesList(){
         showProgress();
         ApiManager.getInstance(SchemeListActivity.this).getSchemeList(mSupplierId, mApp.getFirebaseAuth().getCurrentUser().getUid(),
@@ -158,18 +196,21 @@ public class SchemeListActivity extends BaseActivity implements TabLayout.OnTabS
                 public void onSuccess(Object data) {
                     mSchemesList.clear();
                     mSchemesList.putAll((HashMap<String, ArrayList<Scheme>>) data);
-                    dismissProgress();
                     if(!mSchemesList.isEmpty()) {
                         mNoDataView.setVisibility(View.GONE);
                         mViewPager.setVisibility(View.VISIBLE);
 
                         setTabs();
                         ((SchemesPagerFragment) mViewPager.getAdapter()).setData(new ArrayList<ArrayList<Scheme>>(mSchemesList.values()));
-                        ((SchemesPagerFragment) mViewPager.getAdapter()).notifyDataSetChanged();
+
                     }else{
                         mNoDataView.setVisibility(View.VISIBLE);
                         mViewPager.setVisibility(View.GONE);
+                        dismissProgress();
                     }
+
+                    // TODO
+                    filterSchemesList();
                 }
 
                 @Override
@@ -179,5 +220,25 @@ public class SchemeListActivity extends BaseActivity implements TabLayout.OnTabS
                     mViewPager.setVisibility(View.GONE);
                 }
             });
+    }
+
+    private void filterSchemesList() {
+        ApiManager.getInstance(this).getSchemeRecordList(new ApiResult() {
+            @Override
+            public void onSuccess(Object data) {
+                MySelectedSchemesHelper.getInstance().setRecordList((ArrayList<SchemeRecord>) data);
+                MySelectedSchemesHelper.getInstance().updateMySelectedList((ArrayList<SchemeRecord>) data);
+                // Notify Data set
+                if(adapter != null && adapter.getCount() >0){
+                    ((SchemesPagerFragment) mViewPager.getAdapter()).notifyDataSetChanged();
+                }
+                dismissProgress();
+            }
+
+            @Override
+            public void onFailure(String response) {
+                dismissProgress();
+            }
+        });
     }
 }

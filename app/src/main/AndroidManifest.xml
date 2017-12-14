@@ -99,6 +99,7 @@
                 <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
             </intent-filter>
         </service>
+        <activity android:name=".fragments.myschemes.MySchemesActivity"/>
 
         <activity android:name=".activities.LaunchActivity">
             <intent-filter>

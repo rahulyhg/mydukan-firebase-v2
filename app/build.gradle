@@ -190,6 +190,8 @@ dependencies {
     compile 'com.google.code.gson:gson:2.3.1'
     compile 'swarajsaaj:otpreader:1.1'
     compile 'com.google.guava:guava:23.5-android'
+    compile files('libs/android SDK/PGSDK_V2.0.jar')
+    compile 'com.itextpdf:itextpdf:5.0.6'
 //    compile 'org.apache.logging.log4j:log4j-api:2.3'
 //    compile 'org.apache.logging.log4j:log4j-core:2.3'
 //    compile 'com.atteq:android-log4j2-support:2.3'

@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_margin="2dp"
+    android:background="@android:color/white"
+    android:orientation="horizontal">
+
+    <HorizontalScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:scrollbars="none">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <View
+                android:layout_width="1px"
+                android:layout_height="wrap_content"
+                android:background="#000000" />
+
+            <TextView
+                android:id="@+id/lbl_model"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:padding="5dp"
+                android:text="Model"
+                android:textStyle="normal" />
+
+            <View
+                android:layout_width="1px"
+                android:layout_height="wrap_content"
+                android:background="#000000" />
+
+            <TextView
+                android:id="@+id/lbl_target"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:padding="5dp"
+                android:text="Target"
+                android:textStyle="normal" />
+
+            <View
+                android:layout_width="1px"
+                android:layout_height="wrap_content"
+                android:background="#000000" />
+
+            <TextView
+                android:id="@+id/lbl_qty"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+
+                android:padding="3dp"
+                android:text="Quantity"
+                android:textStyle="normal" />
+
+            <View
+                android:layout_width="1px"
+                android:layout_height="wrap_content"
+                android:background="#000000" />
+
+            <TextView
+                android:id="@+id/lbl_dp_withvat"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:padding="3dp"
+
+                android:text="DP"
+                android:textSize="18sp"
+                android:textStyle="normal" />
+
+            <View
+                android:layout_width="1px"
+                android:layout_height="wrap_content"
+                android:background="#000000" />
+
+            <TextView
+                android:id="@+id/lbl_value"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:padding="3dp"
+                android:text="Value"
+                android:textSize="18sp"
+
+                android:textStyle="normal" />
+
+            <View
+                android:layout_width="1px"
+                android:layout_height="wrap_content"
+                android:background="#000000" />
+
+            <TextView
+                android:id="@+id/lbl_schemeperhandset"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:padding="3dp"
+                android:text="Scheme Per handset/ Percentage"
+                android:textStyle="normal" />
+
+            <View
+                android:layout_width="1px"
+                android:layout_height="wrap_content"
+                android:background="#000000" />
+
+            <TextView
+                android:id="@+id/lbl_incentiveamount"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:padding="3dp"
+
+                android:text="Incentive Amount"
+                android:textStyle="normal" />
+
+            <View
+                android:layout_width="1px"
+                android:layout_height="wrap_content"
+                android:background="#000000" />
+        </LinearLayout>
+    </HorizontalScrollView>
+</LinearLayout>

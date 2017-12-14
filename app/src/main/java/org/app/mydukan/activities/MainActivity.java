@@ -70,6 +70,7 @@ import org.app.mydukan.data.ImageModel;
 import org.app.mydukan.data.Supplier;
 import org.app.mydukan.data.SupplierBindData;
 import org.app.mydukan.data.User;
+import org.app.mydukan.fragments.myschemes.fragmetns.MySelectedSchemesHelper;
 import org.app.mydukan.server.ApiManager;
 import org.app.mydukan.server.ApiResult;
 import org.app.mydukan.utils.AppContants;
@@ -1230,6 +1231,8 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         supplierData.setGroupIds(supplier.getSupplierGroups().getGroupIds());
         // Answers.getInstance().logCustom(new CustomEvent("Supplier click").putCustomAttribute("Name", supplier.getUserinfo().getName()));
 
+        // Save currently selected Supplier
+        MySelectedSchemesHelper.getInstance().saveCurrentSupplier(supplierData);
         Intent intent = new Intent(MainActivity.this, CategoryListActivity.class);
         intent.putExtra(AppContants.SUPPLIER, supplierData);
         startActivity(intent);
