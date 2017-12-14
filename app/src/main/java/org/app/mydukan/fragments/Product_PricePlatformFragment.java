@@ -25,7 +25,13 @@ import org.app.mydukan.server.ApiManager;
 import org.app.mydukan.server.ApiResult;
 import org.app.mydukan.utils.AppContants;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import static org.app.mydukan.activities.ProductDescriptionActivity.fullpage;
@@ -50,7 +56,7 @@ public class Product_PricePlatformFragment extends Fragment {
 
     ListView list_pricePlatform;
     private TextView mOthersTextView;
-
+    private HashMap<String, HashMap<String, String>> mProductList = new HashMap<>();
 
     public Product_PricePlatformFragment() {
         // Required empty public constructor
@@ -175,14 +181,74 @@ public class Product_PricePlatformFragment extends Fragment {
 
 
         if (mProduct.getmPlatforms()!=null && mProduct.getmPlatforms().size()>0){
-
+            try{
         /*    String comparePrice="";
             Set<String> platformName=mProduct.getmPlatforms().keySet();
             for (String mplatform:mProduct.getmPlatforms().keySet()) {
                 comparePrice=comparePrice+mplatform+": "+"₹ "+mProduct.getmPlatforms().get(mplatform)+" | ";
             }*/
-            PricePlatformAdapter adapter = new PricePlatformAdapter(context, mProduct.getmPlatforms());
+
+
+          /*  mProductList.putAll(mProduct.getmPlatforms());
+
+            ArrayList<String> mData = new ArrayList();
+            mData.addAll(mProductList.keySet());
+
+            HashMap<String, String> companyFounder = new HashMap<String, String>();
+
+            for ( String cData:mData) {
+                companyFounder.put(cData,mProductList.get(cData).get("price"));
+            }
+
+            // get entrySet from HashMap object
+            Set<Map.Entry<String, String>> companyFounderSet = companyFounder.entrySet();
+            // convert HashMap to List of Map entries
+            List<Map.Entry<String, String>> companyFounderListEntry =
+                    new ArrayList<Map.Entry<String, String>>(companyFounderSet);
+
+            // sort list of entries using Collections class utility method sort(ls, cmptr)
+            Collections.sort(companyFounderListEntry,
+                    new Comparator<Map.Entry<String, String>>() {
+                            //Integer.valueOf(es2.getValue().trim())
+                        @Override
+                        public int compare(Map.Entry<String, String> es1,
+                                           Map.Entry<String, String> es2) {
+                            return Integer.valueOf(es1.getValue().trim()).compareTo(Integer.valueOf(es2.getValue().trim()));
+                        }
+                    });
+
+             // store into LinkedHashMap for maintaining insertion order
+            Map<String, String> companyFounderLHMap =
+                    new LinkedHashMap<String, String>();
+
+            // iterating list and storing in LinkedHahsMap
+            for(Map.Entry<String, String> map : companyFounderListEntry){
+                companyFounderLHMap.put(map.getKey(), map.getValue());
+            }
+
+            System.out.println("Sorting HashMap by its Values in descending order\n");
+
+            // iterate LinkedHashMap to retrieved stored values
+            for(Map.Entry<String, String> lhmap : companyFounderLHMap.entrySet()){
+                System.out.println("Key : "  + lhmap.getKey() + "\t\t"
+                        + "Value : "  + lhmap.getValue());
+            }
+*/
+          /*  Collections.sort((List<HashMap<String, HashMap<String, String>>>) mProductList, new PriceComparator());
+            Collections.reverse((List<?>) mProductList);*/
+
+            PricePlatformAdapter adapter = new PricePlatformAdapter(context,mProduct.getmPlatforms());
+
             list_pricePlatform.setAdapter(adapter);
+
+        }catch (Exception e){
+            e.printStackTrace();
+
+            PricePlatformAdapter adapter = new PricePlatformAdapter(context,mProduct.getmPlatforms());
+            list_pricePlatform.setAdapter(adapter);
+        }
+
+
         }else{
             mOthersTextView.setVisibility(View.VISIBLE);
             mOthersTextView.setText("Not available");
@@ -200,5 +266,51 @@ public class Product_PricePlatformFragment extends Fragment {
             mOthersTextView.setText("Not available");
         }*/
     }
+    /*private class PriceComparator implements Comparator<HashMap<String, HashMap<String, String>>> {
+
+   *//*     public int compare(Product p1, Product p2) {
+            if (mApp.getUtils().isStringEmpty(p1.getPrice())) {
+                p1.setPrice("0");
+                //mItem.get(item).get("price")
+            }
+
+            if (mApp.getUtils().isStringEmpty(p2.getPrice())) {
+                p2.setPrice("0");
+            }
+
+            int price1 = Integer.valueOf(p1.getPrice().trim());
+            int price2 = Integer.valueOf(p2.getPrice().trim());
+
+            if (price1 > price2) {
+                return 1;
+            } else if (price1 < price2) {
+                return -1;
+            } else {
+                return 0;
+            }
+        }*//*
+
+        @Override
+        public int compare(HashMap<String, HashMap<String, String>> obj1, HashMap<String, HashMap<String, String>> obj2) {
+
+            int result=0;
+           ArrayList mData = new ArrayList();
+            mData.addAll(obj1.keySet());
+
+            ArrayList kData = new ArrayList();
+            kData.addAll(obj2.keySet());
+
+
+            HashMap<String, HashMap<String, String>> price1 = (HashMap<String, HashMap<String, String>>) obj1;
+            HashMap<String, HashMap<String, String>> price2 = (HashMap<String, HashMap<String, String>>) obj2;
+
+            for ( Object cData:mData) {
+                HashMap<String, String> companyFounder =
+                        new HashMap<String, String>();
+                result= price1.get(cData).get("price").compareTo(price2.get(kData).get("price"));
+            }
+            return result;
+        }
+    }*/
 
 }

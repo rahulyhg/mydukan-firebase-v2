@@ -55,6 +55,7 @@ public class AppContants {
     public final static String NOTIFICATION = "notification";
 
     public final static String  REMOTECONFIG_VID= "RemoteConfig_Vid";
+    public final static String  REMOTECONFIG_SCHEMES_SUBSCRIPTION= "RemoteConfig_SCHEMES_SUBSCRIPTION";
 
     public final static String CATEGORY_ID = "category_id";
     public final static String DOARECORD = "doarecord";
