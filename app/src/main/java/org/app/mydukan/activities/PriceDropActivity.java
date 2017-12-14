@@ -1,10 +1,13 @@
 package org.app.mydukan.activities;
 
+import android.media.Image;
 import android.os.Bundle;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import org.app.mydukan.R;
@@ -27,6 +30,8 @@ public class PriceDropActivity extends BaseActivity {
 
     RecyclerView priceDropList;
     private TextView mNoDataView;
+    private TextView heading;
+    private ImageView back;
 
     private SupplierBindData mSupplier;
     private String mCategoryId;
@@ -41,6 +46,8 @@ public class PriceDropActivity extends BaseActivity {
     private HashMap<String, Integer> priceDropCount = new HashMap<>();
     private PriceDropAdapter priceDropAdapter;
     ArrayList<Product> list = new ArrayList<Product>();
+    List<String> categoryList = new ArrayList<>();
+    Bundle bundle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,9 +58,13 @@ public class PriceDropActivity extends BaseActivity {
         priceDropList = (RecyclerView) findViewById(R.id.pricedrop_list);
         mApp = (MyDukan) getApplicationContext();
         mNoDataView = (TextView) findViewById(R.id.nodata_view);
+        heading = (TextView) findViewById(R.id.heading);
+        back = (ImageView)findViewById(R.id.back);
+
+        heading.setText("Price Drop");
 
         //Getting Bundle..
-        Bundle bundle = getIntent().getExtras();
+        bundle = getIntent().getExtras();
         if (bundle != null) {
             if (bundle.containsKey(AppContants.SUPPLIER)) {
                 mSupplier = (SupplierBindData) bundle.getSerializable(AppContants.SUPPLIER);
@@ -78,8 +89,20 @@ public class PriceDropActivity extends BaseActivity {
             }
         }
 
+        back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+
         getProductList();
 
+    }
+
+    @Override
+    public void onBackPressed() {
+        finish();
     }
 
     private void getProductList() {
@@ -95,7 +118,9 @@ public class PriceDropActivity extends BaseActivity {
 
                                 for(Map.Entry<String, ArrayList<Product>> entry : mProductList.entrySet()){
                                     ArrayList<Product> prods = entry.getValue();
-                                    list = entry.getValue();
+                                    list.addAll(entry.getValue());
+                                    categoryList.add(entry.getKey());
+                                    priceDropCount.put(entry.getKey(), prods.size());
                                     for(Iterator<Product> iterator = prods.iterator(); iterator.hasNext();){
                                         Product p = iterator.next();
                                         if(ptype.equals("DP")) {
@@ -199,17 +224,16 @@ public class PriceDropActivity extends BaseActivity {
     }
 
     private void arrangeBrandModels(){
-        List<String> categoryList = new ArrayList<>();
         for(int i=0; i<list.size(); i++){
-            if(priceDropCount.containsKey(list.get(i).getCategoryId())){
+            System.out.println("Category Id: "+list.get(i).getCategoryId());
+            /*if(priceDropCount.containsKey(list.get(i))){
                 priceDropCount.put(list.get(i).getCategoryId(), priceDropCount.get(list.get(i).getCategoryId()+1));
             }
             else{
                 priceDropCount.put(list.get(i).getCategoryId(), 1);
-                categoryList.add(list.get(i).getCategoryId());
-            }
+            }*/
         }
-        priceDropAdapter = new PriceDropAdapter(list, PriceDropActivity.this, priceDropCount, categoryList);
+        priceDropAdapter = new PriceDropAdapter(mProductList, PriceDropActivity.this, priceDropCount, categoryList, mSupplier);
         priceDropList.setLayoutManager(new LinearLayoutManager(this));
         priceDropList.setAdapter(priceDropAdapter);
     }

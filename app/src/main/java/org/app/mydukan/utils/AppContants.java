@@ -88,7 +88,7 @@ public class AppContants {
     //=============DB Constants==================
     public final static String CHAT_USER="chat_USER";
 
-
+    public final static String BRAND_NAME = "brandName";
 }
 
 

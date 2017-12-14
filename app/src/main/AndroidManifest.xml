@@ -431,10 +431,12 @@
             android:name=".services.SyncContacts"
             android:exported="false" />
 
-        <activity android:name=".activities.PriceDropActivity"></activity>
-            android:exported="false" />
-
-        <activity android:name=".activities.MyRecordsActivity"></activity>
+        <activity android:name=".activities.PriceDropActivity" />
+        android:exported="false" />
+        <activity android:name=".activities.MyRecordsActivity" />
+        <activity android:name=".activities.RecordPriceDropActivity" />
+        <activity android:name=".activities.PriceDropModels" />
+        <activity android:name=".activities.RecordClaimActivity"></activity>
     </application>
 
 </manifest>
