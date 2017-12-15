@@ -2,6 +2,9 @@ package org.app.mydukan.emailSending;
 
 import android.os.AsyncTask;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+
 import org.app.mydukan.utils.AppContants;
 
 /**
@@ -12,12 +15,17 @@ public class SendEmail {
 
 
     public void sendEmail(String tag,String msg){
+        try {
+            SendMail sendMail = new SendMail();
+            String[] params = new String[2];
+            params[0] = tag;
+            FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
 
-        SendMail sendMail = new SendMail();
-        String[] params = new String[2];
-        params[0] = tag;
-        params[1] = msg;
-        sendMail.execute(params);
+            params[1] = "User ID : "+ firebaseUser.getUid() +" User Email ID + "+  firebaseUser.getEmail() + "\n" + msg;
+            sendMail.execute(params);
+        }catch (Throwable ex){
+            System.out.print(ex.toString());
+        }
     }
 
     private class SendMail extends AsyncTask<String, Integer, Void> {
