@@ -32,11 +32,12 @@ public class RecordInfoAdapter extends RecyclerView.Adapter<RecordInfoAdapter.Vi
     private RecordsInfoAdapterListener mListener;
 
 
-    public RecordInfoAdapter(Context context,RecordsInfoAdapterListener listener) {
+    public RecordInfoAdapter(Context context,RecordsInfoAdapterListener listener, List<RecordInfo> mRecordsList) {
         mContext = context;
-        mRecordsList = new ArrayList<RecordInfo>();
+        this.mRecordsList = new ArrayList<RecordInfo>();
         mApp = (MyDukan) mContext.getApplicationContext();
         mListener = listener;
+        this.mRecordsList = mRecordsList;
     }
 
     public void addItems(ArrayList<RecordInfo> list) {
@@ -63,27 +64,27 @@ public class RecordInfoAdapter extends RecyclerView.Adapter<RecordInfoAdapter.Vi
         holder.mIMEIView.setText(record.getImei());
         holder.mAmountView.setText( mApp.getUtils().getPriceFormat(String.valueOf(record.getPrice())));
         setupStatusSpinner(holder.mStatusSpinner);
-       if(record.getStatus().equalsIgnoreCase("claim")){
+       if(record.getStatus().equalsIgnoreCase("claim") || record.getStatus().equalsIgnoreCase("Pending by Distributor")){
             holder.mStatusSpinner.setSelection(0);
         } else {
             holder.mStatusSpinner.setSelection(1);
         }
 
-       if(record.getStatus().equalsIgnoreCase("claim") || record.getStatus().equalsIgnoreCase("Settled by Distributor")){
-            holder.checkSetteled.setChecked(true);
-           holder.checkSetteled.setText("Settled by Distributor");
-        } else {
-            holder.checkSetteled.setChecked(false);
+       if(record.getStatus().equalsIgnoreCase("Pending by Distributor") || record.getStatus().equalsIgnoreCase("claim")){
+           holder.checkSetteled.setChecked(false);
            holder.checkSetteled.setText("Pending by Distributor");
-        }
-
+       }
+       else {
+           holder.checkSetteled.setChecked(true);
+           holder.checkSetteled.setText("Settled by Distributor");
+       }
 
         holder.mUpdateBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 String mStatus;
                 if( holder.checkSetteled.isChecked()){
-                  mStatus="Settled by Distributor";
+                    mStatus="Settled by Distributor";
                     holder.checkSetteled.setText(mStatus);
                 }else{
                     mStatus="Pending by Distributor";

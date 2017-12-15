@@ -25,13 +25,12 @@ public class MyRecordsActivity extends AppCompatActivity {
         btn_records_calculator = (RelativeLayout) findViewById(R.id.btn_records_calculator);
         btn_records_earnings = (RelativeLayout) findViewById(R.id.btn_records_earnings);
 
-
         btn_records_my_pricedrops.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 /*Intent intent = new Intent(MyRecordsActivity.this, RecordPriceDropActivity.class);
                 startActivity(intent);*/
-                Intent record = new Intent(MyRecordsActivity.this, RecordsActivity.class);
+                Intent record = new Intent(MyRecordsActivity.this, RecordPriceDropActivity.class);
                 startActivity(record);
             }
         });

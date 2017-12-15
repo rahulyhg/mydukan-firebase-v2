@@ -42,6 +42,8 @@ public class RecordsActivity extends BaseActivity implements RecordsAdapter.Reco
     private MyDukan mApp;
     private RecordsAdapter mAdapter;
     private ArrayList<Record> mRecordList;
+    private String brandName = "";
+    private ArrayList<Record> recordArrayList;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -49,6 +51,7 @@ public class RecordsActivity extends BaseActivity implements RecordsAdapter.Reco
         setContentView(R.layout.activity_records);
 
         mApp = (MyDukan) getApplicationContext();
+        recordArrayList = new ArrayList<>();
 
         mBottomToolBar = (Toolbar) findViewById(R.id.bottomToolbar);
         mBottomToolBar.findViewById(R.id.schemeBtn).setOnClickListener(new View.OnClickListener() {
@@ -58,6 +61,15 @@ public class RecordsActivity extends BaseActivity implements RecordsAdapter.Reco
                 startActivity(intent);
             }
         });
+
+        Bundle bundle = getIntent().getExtras();
+        if(bundle.containsKey(AppContants.BRAND_NAME)){
+            brandName = bundle.getString(AppContants.BRAND_NAME);
+        }
+        if(bundle.containsKey(AppContants.PRODUCT)){
+            recordArrayList = (ArrayList<Record>)bundle.getSerializable(AppContants.PRODUCT);
+        }
+
 //        mBottomToolBar.findViewById(R.mCatId.doaBtn).setOnClickListener(new View.OnClickListener() {
 //            @Override
 //            public void onClick(View view) {
@@ -66,15 +78,36 @@ public class RecordsActivity extends BaseActivity implements RecordsAdapter.Reco
 //            }
 //        });
         setupActionBar();
-        BaseActivity.showOkAlert(this,"Records","All Price Drop Model IMEI entered will be stored in Records for Retailer to keep track.","OK");
+//        BaseActivity.showOkAlert(this,"Records","All Price Drop Model IMEI entered will be stored in Records for Retailer to keep track.","OK");
         setupRecordsView();
-        fetchTheRecords();
+//        fetchTheRecords();
+        setAdapter();
+    }
+
+    private void setAdapter() {
+
+        if(recordArrayList.isEmpty()){
+            mNoDataView.setVisibility(View.VISIBLE);
+            mRecyclerView.setVisibility(View.GONE);
+        } else {
+            mNoDataView.setVisibility(View.GONE);
+            mRecyclerView.setVisibility(View.VISIBLE);
+            mAdapter = new RecordsAdapter(RecordsActivity.this, this, recordArrayList);
+            mRecyclerView.setLayoutManager(new LinearLayoutManager(RecordsActivity.this));
+            mRecyclerView.setAdapter(mAdapter);
+//            mAdapter.addItems(recordArrayList);
+            mAdapter.notifyDataSetChanged();
+        }
+
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
+//                finish();
+                Intent intent = new Intent(RecordsActivity.this, RecordPriceDropActivity.class);
+                startActivity(intent);
                 finish();
                 return true;
         }
@@ -94,15 +127,14 @@ public class RecordsActivity extends BaseActivity implements RecordsAdapter.Reco
     }
 
     private void setupRecordsView() {
-        mAdapter = new RecordsAdapter(RecordsActivity.this, RecordsActivity.this);
+        mAdapter = new RecordsAdapter(RecordsActivity.this, RecordsActivity.this, recordArrayList);
 
         mNoDataView = (TextView) findViewById(R.id.nodata_view);
         mNoDataView.setText("No Records");
 
         //setup the recyclerview
         mRecyclerView = (RecyclerView) findViewById(R.id.listview);
-        mRecyclerView.addItemDecoration(new SimpleDividerItemDecoration(
-                RecordsActivity.this.getApplicationContext(), false));
+        mRecyclerView.addItemDecoration(new SimpleDividerItemDecoration(RecordsActivity.this.getApplicationContext(), false));
         mRecyclerView.setLayoutManager(new LinearLayoutManager(RecordsActivity.this));
         mRecyclerView.setAdapter(mAdapter);
     }
@@ -140,17 +172,17 @@ public class RecordsActivity extends BaseActivity implements RecordsAdapter.Reco
 
     private void deleteTheRecord(final int position){
         showProgress();
-        if(mRecordList.size() < position) {
+        if(recordArrayList.size() < position) {
             return;
         }
-        Record record = mRecordList.get(position);
+        Record record = recordArrayList.get(position);
         ApiManager.getInstance(RecordsActivity.this).deleteRecord(record.getSupplierInfo().getId(), record.getRecordId(), new ApiResult() {
             @Override
             public void onSuccess(Object data) {
                 dismissProgress();
                 Object mdata=data;
-                mRecordList.remove(position);
-                mAdapter.addItems(mRecordList);
+                recordArrayList.remove(position);
+//                mAdapter.addItems(recordArrayList);
                 mAdapter.notifyDataSetChanged();
             }
 
@@ -165,11 +197,11 @@ public class RecordsActivity extends BaseActivity implements RecordsAdapter.Reco
 
     @Override
     public void OnClick(int position) {
-        if(mRecordList.size() < position) {
+        if(recordArrayList.size() < position) {
             return;
         }
         Intent intent = new Intent(RecordsActivity.this, RecordDetailsActivity.class);
-        intent.putExtra(AppContants.RECORD, mRecordList.get(position));
+        intent.putExtra(AppContants.RECORD, recordArrayList.get(position));
         startActivity(intent);
     }
 
@@ -178,5 +210,12 @@ public class RecordsActivity extends BaseActivity implements RecordsAdapter.Reco
         if(position >= 0){
             deleteTheRecord(position);
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        Intent intent = new Intent(RecordsActivity.this, RecordPriceDropActivity.class);
+        startActivity(intent);
+        finish();
     }
 }

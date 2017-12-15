@@ -123,6 +123,7 @@ public class CategoryListActivity extends BaseActivity implements CategoryAdapte
     private FirebaseRemoteConfig mFirebaseRemoteConfig;
     String remoteDisp_Subscription, remoteSearchServiCecenters;
     String enableProductPage = "false";
+    String brand = "";
 
     private static final String LOADING_PHRASE_CONFIG_KEY3 = "showSubscriptionPage";
     private static final String LOADING_PHRASE_CONFIG_KEY4 = "servicecenters_enable";
@@ -298,6 +299,7 @@ public class CategoryListActivity extends BaseActivity implements CategoryAdapte
                                 intent.putExtra(AppContants.CATEGORY_ID, mCatId);
                                 intent.putExtra(AppContants.SUPPLIER, supplierData);
                                 intent.putExtra(AppContants.USER_DETAILS, userdetails);
+                                intent.putExtra(AppContants.BRAND_NAME, brand);
                                 startActivity(intent);
                             }
                             else{
@@ -320,6 +322,7 @@ public class CategoryListActivity extends BaseActivity implements CategoryAdapte
                                 intent1.putExtra(AppContants.CATEGORY_ID, mCatId);
                                 intent1.putExtra(AppContants.SUPPLIER, supplierData);
                                 intent1.putExtra(AppContants.USER_DETAILS, userdetails);
+                                intent1.putExtra(AppContants.BRAND_NAME, brand);
                                 HashMap<String, Integer> minMax = new HashMap<String, Integer>();
                                 minMax.put("Min", minRange);
                                 minMax.put("Max", maxRange);
@@ -359,6 +362,7 @@ public class CategoryListActivity extends BaseActivity implements CategoryAdapte
                             catintent.putExtra(AppContants.CATEGORY_ID, mCatId);
                             catintent.putExtra(AppContants.SUPPLIER, supplierData);
                             catintent.putExtra(AppContants.USER_DETAILS, userdetails);
+                            catintent.putExtra(AppContants.BRAND_NAME, brand);
                             startActivity(catintent);
                             break;
                     }
@@ -420,6 +424,7 @@ public class CategoryListActivity extends BaseActivity implements CategoryAdapte
                                 intent.putExtra(AppContants.CATEGORY_ID, mCatId);
                                 intent.putExtra(AppContants.SUPPLIER, supplierData);
                                 intent.putExtra(AppContants.USER_DETAILS, userdetails);
+                                intent.putExtra(AppContants.BRAND_NAME, brand);
                                 startActivity(intent);
                                 new AppPreference().setSubscribing(getApplicationContext(),false);
                                 return;
@@ -798,6 +803,7 @@ public class CategoryListActivity extends BaseActivity implements CategoryAdapte
                                         intent.putExtra(AppContants.CATEGORY_ID, mCatId);
                                         intent.putExtra(AppContants.SUPPLIER, supplierData);
                                         intent.putExtra(AppContants.USER_DETAILS, userdetails);
+                                        intent.putExtra(AppContants.BRAND_NAME, brand);
                                         HashMap<String, Integer> minMax = new HashMap<String, Integer>();
 
                                         minMax.put("Min", Integer.parseInt((String) tvMin.getText()));
@@ -851,6 +857,7 @@ public class CategoryListActivity extends BaseActivity implements CategoryAdapte
                                         intent.putExtra(AppContants.CATEGORY_ID, mCatId);
                                         intent.putExtra(AppContants.SUPPLIER, supplierData);
                                         intent.putExtra(AppContants.USER_DETAILS, userdetails);
+                                        intent.putExtra(AppContants.BRAND_NAME, brand);
                                         HashMap<String, Integer> minMax = new HashMap<String, Integer>();
 
                                         minMax.put("Min", Integer.parseInt((String) tvMin.getText()));
@@ -904,6 +911,7 @@ public class CategoryListActivity extends BaseActivity implements CategoryAdapte
                                         intent.putExtra(AppContants.CATEGORY_ID, mCatId);
                                         intent.putExtra(AppContants.SUPPLIER, supplierData);
                                         intent.putExtra(AppContants.USER_DETAILS, userdetails);
+                                        intent.putExtra(AppContants.BRAND_NAME, brand);
                                         HashMap<String, Integer> minMax = new HashMap<String, Integer>();
 
                                         minMax.put("Min", Integer.parseInt((String) tvMin.getText()));
@@ -957,6 +965,7 @@ public class CategoryListActivity extends BaseActivity implements CategoryAdapte
                                         intent.putExtra(AppContants.CATEGORY_ID, mCatId);
                                         intent.putExtra(AppContants.SUPPLIER, supplierData);
                                         intent.putExtra(AppContants.USER_DETAILS, userdetails);
+                                        intent.putExtra(AppContants.BRAND_NAME, brand);
                                         HashMap<String, Integer> minMax = new HashMap<String, Integer>();
 
                                         minMax.put("Min", Integer.parseInt((String) tvMin.getText()));
@@ -1010,6 +1019,7 @@ public class CategoryListActivity extends BaseActivity implements CategoryAdapte
                                         intent.putExtra(AppContants.CATEGORY_ID, mCatId);
                                         intent.putExtra(AppContants.SUPPLIER, supplierData);
                                         intent.putExtra(AppContants.USER_DETAILS, userdetails);
+                                        intent.putExtra(AppContants.BRAND_NAME, brand);
                                         HashMap<String, Integer> minMax = new HashMap<String, Integer>();
 
                                         minMax.put("Min", Integer.parseInt((String) tvMin.getText()));
@@ -1063,6 +1073,7 @@ public class CategoryListActivity extends BaseActivity implements CategoryAdapte
                                         intent.putExtra(AppContants.CATEGORY_ID, mCatId);
                                         intent.putExtra(AppContants.SUPPLIER, supplierData);
                                         intent.putExtra(AppContants.USER_DETAILS, userdetails);
+                                        intent.putExtra(AppContants.BRAND_NAME, brand);
                                         HashMap<String, Integer> minMax = new HashMap<String, Integer>();
 
                                         minMax.put("Min", Integer.parseInt((String) tvMin.getText()));
@@ -1115,6 +1126,7 @@ public class CategoryListActivity extends BaseActivity implements CategoryAdapte
                                         intent.putExtra(AppContants.CATEGORY_ID, mCatId);
                                         intent.putExtra(AppContants.SUPPLIER, supplierData);
                                         intent.putExtra(AppContants.USER_DETAILS, userdetails);
+                                        intent.putExtra(AppContants.BRAND_NAME, brand);
                                         HashMap<String, Integer> minMax = new HashMap<String, Integer>();
 
                                         minMax.put("Min", Integer.parseInt((String) tvMin.getText()));
@@ -1169,6 +1181,7 @@ public class CategoryListActivity extends BaseActivity implements CategoryAdapte
                                         intent.putExtra(AppContants.CATEGORY_ID, mCatId);
                                         intent.putExtra(AppContants.SUPPLIER, supplierData);
                                         intent.putExtra(AppContants.USER_DETAILS, userdetails);
+                                        intent.putExtra(AppContants.BRAND_NAME, brand);
                                         HashMap<String, Integer> minMax = new HashMap<String, Integer>();
 
                                         minMax.put("Min", Integer.parseInt((String) tvMin.getText()));
@@ -1222,6 +1235,7 @@ public class CategoryListActivity extends BaseActivity implements CategoryAdapte
                                         intent.putExtra(AppContants.CATEGORY_ID, mCatId);
                                         intent.putExtra(AppContants.SUPPLIER, supplierData);
                                         intent.putExtra(AppContants.USER_DETAILS, userdetails);
+                                        intent.putExtra(AppContants.BRAND_NAME, brand);
                                         HashMap<String, Integer> minMax = new HashMap<String, Integer>();
 
                                         minMax.put("Min", Integer.parseInt((String) tvMin.getText()));
@@ -1275,6 +1289,7 @@ public class CategoryListActivity extends BaseActivity implements CategoryAdapte
                                         intent.putExtra(AppContants.CATEGORY_ID, mCatId);
                                         intent.putExtra(AppContants.SUPPLIER, supplierData);
                                         intent.putExtra(AppContants.USER_DETAILS, userdetails);
+                                        intent.putExtra(AppContants.BRAND_NAME, brand);
                                         HashMap<String, Integer> minMax = new HashMap<String, Integer>();
 
                                         minMax.put("Min", Integer.parseInt((String) tvMin.getText()));
@@ -1305,6 +1320,7 @@ public class CategoryListActivity extends BaseActivity implements CategoryAdapte
                                     intent.putExtra(AppContants.CATEGORY_ID, mCatId);
                                     intent.putExtra(AppContants.SUPPLIER, supplierData);
                                     intent.putExtra(AppContants.USER_DETAILS, userdetails);
+                                    intent.putExtra(AppContants.BRAND_NAME, brand);
                                     HashMap<String, Integer> minMax = new HashMap<String, Integer>();
                                     minMax.put("Min", Integer.parseInt((String) tvMin.getText()));
                                     if (tvMax.getText().equals(AppContants.RANGE_MAX)) {
@@ -1597,8 +1613,9 @@ public class CategoryListActivity extends BaseActivity implements CategoryAdapte
     }
 
     @Override
-    public void OnClick(int position) {
+    public void OnClick(int position, String brandName) {
         if (position >= 0) {
+            brand = brandName;
             open_PageName = "category"; // this will tell us which page has to open
             if(mCategoryList.size() > position) {
                 mCatId = mCategoryList.get(position).getId();
@@ -1635,6 +1652,7 @@ public class CategoryListActivity extends BaseActivity implements CategoryAdapte
                                 intent.putExtra(AppContants.CATEGORY_ID, mCatId);
                                 intent.putExtra(AppContants.SUPPLIER, supplierData);
                                 intent.putExtra(AppContants.USER_DETAILS, userdetails);
+                                intent.putExtra(AppContants.BRAND_NAME, brand);
                                 startActivity(intent);
                             }
                             break;
@@ -1651,6 +1669,7 @@ public class CategoryListActivity extends BaseActivity implements CategoryAdapte
                                 intent.putExtra(AppContants.CATEGORY_ID, mCatId);
                                 intent.putExtra(AppContants.SUPPLIER, supplierData);
                                 intent.putExtra(AppContants.USER_DETAILS, userdetails);
+                                intent.putExtra(AppContants.BRAND_NAME, brand);
                                 startActivity(intent);
                             }
                             break;
@@ -1667,6 +1686,7 @@ public class CategoryListActivity extends BaseActivity implements CategoryAdapte
                                 intent.putExtra(AppContants.CATEGORY_ID, mCatId);
                                 intent.putExtra(AppContants.SUPPLIER, supplierData);
                                 intent.putExtra(AppContants.USER_DETAILS, userdetails);
+                                intent.putExtra(AppContants.BRAND_NAME, brand);
                                 startActivity(intent);
                             }
                             break;
@@ -1683,6 +1703,7 @@ public class CategoryListActivity extends BaseActivity implements CategoryAdapte
                                 intent.putExtra(AppContants.CATEGORY_ID, mCatId);
                                 intent.putExtra(AppContants.SUPPLIER, supplierData);
                                 intent.putExtra(AppContants.USER_DETAILS, userdetails);
+                                intent.putExtra(AppContants.BRAND_NAME, brand);
                                 startActivity(intent);
                             }
                             break;
@@ -1699,6 +1720,7 @@ public class CategoryListActivity extends BaseActivity implements CategoryAdapte
                                 intent.putExtra(AppContants.CATEGORY_ID, mCatId);
                                 intent.putExtra(AppContants.SUPPLIER, supplierData);
                                 intent.putExtra(AppContants.USER_DETAILS, userdetails);
+                                intent.putExtra(AppContants.BRAND_NAME, brand);
                                 startActivity(intent);
                             }
                             break;
@@ -1715,6 +1737,7 @@ public class CategoryListActivity extends BaseActivity implements CategoryAdapte
                                 intent.putExtra(AppContants.CATEGORY_ID, mCatId);
                                 intent.putExtra(AppContants.SUPPLIER, supplierData);
                                 intent.putExtra(AppContants.USER_DETAILS, userdetails);
+                                intent.putExtra(AppContants.BRAND_NAME, brand);
                                 startActivity(intent);
                             }
                             break;
@@ -1731,6 +1754,7 @@ public class CategoryListActivity extends BaseActivity implements CategoryAdapte
                                 intent.putExtra(AppContants.CATEGORY_ID, mCatId);
                                 intent.putExtra(AppContants.SUPPLIER, supplierData);
                                 intent.putExtra(AppContants.USER_DETAILS, userdetails);
+                                intent.putExtra(AppContants.BRAND_NAME, brand);
                                 startActivity(intent);
                             }
                             break;
@@ -1748,6 +1772,7 @@ public class CategoryListActivity extends BaseActivity implements CategoryAdapte
                                 intent.putExtra(AppContants.CATEGORY_ID, mCatId);
                                 intent.putExtra(AppContants.SUPPLIER, supplierData);
                                 intent.putExtra(AppContants.USER_DETAILS, userdetails);
+                                intent.putExtra(AppContants.BRAND_NAME, brand);
                                 startActivity(intent);
                             }
                             break;
@@ -1764,6 +1789,7 @@ public class CategoryListActivity extends BaseActivity implements CategoryAdapte
                                 intent.putExtra(AppContants.CATEGORY_ID, mCatId);
                                 intent.putExtra(AppContants.SUPPLIER, supplierData);
                                 intent.putExtra(AppContants.USER_DETAILS, userdetails);
+                                intent.putExtra(AppContants.BRAND_NAME, brand);
                                 startActivity(intent);
                             }
                             break;
@@ -1780,6 +1806,7 @@ public class CategoryListActivity extends BaseActivity implements CategoryAdapte
                                 intent.putExtra(AppContants.CATEGORY_ID, mCatId);
                                 intent.putExtra(AppContants.SUPPLIER, supplierData);
                                 intent.putExtra(AppContants.USER_DETAILS, userdetails);
+                                intent.putExtra(AppContants.BRAND_NAME, brand);
                                 startActivity(intent);
                             }
                             break;
@@ -1793,6 +1820,7 @@ public class CategoryListActivity extends BaseActivity implements CategoryAdapte
                             intent.putExtra(AppContants.CATEGORY_ID, mCatId);
                             intent.putExtra(AppContants.SUPPLIER, supplierData);
                             intent.putExtra(AppContants.USER_DETAILS, userdetails);
+                            intent.putExtra(AppContants.BRAND_NAME, brand);
                             startActivity(intent);
                             break;
                     }

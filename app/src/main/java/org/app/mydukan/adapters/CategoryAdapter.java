@@ -25,6 +25,7 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.ViewHo
     private Context mContext;
     private MyDukan mApp;
     private ComplaintsAdapterListener mListener;
+    private String brandName = "";
 
     public CategoryAdapter(Context context, String supplierName, ComplaintsAdapterListener listener) {
         mContext = context;
@@ -313,16 +314,274 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.ViewHo
         holder.mCategoryLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mListener.OnClick(position);
+
+                mListener.OnClick(position, getBrandName(position));
             }
         });
 
         holder.mNameView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mListener.OnClick(position);
+                mListener.OnClick(position, getBrandName(position));
             }
         });
+    }
+
+    private String getBrandName(int position){
+
+        Category category = mDataList.get(position);
+        brandName = "";
+        switch (category.getId()) {
+            case "-KTTV8BvY0PpRUOEyKOo":
+                //SAMSUNG = -KTTV8BvY0PpRUOEyKOo
+                brandName = "Samsung";
+                break;
+
+            case "-KuxmE7rc7w4WpFYKWE5":
+                // IPHONE = -KuxmE7rc7w4WpFYKWE5 ,-KuxmE7rc7w4WpFYKWE5
+                brandName = "IPHONE";
+                break;
+
+            case "-KTmmfHzpn5Nn-ZZ0N1A":
+                // GIONEE=  -KTmmfHzpn5Nn-ZZ0N1A
+                brandName = "GIONEE";
+                break;
+
+            case "-KTwazqP9cmccZNbt9hb":
+                // LAVA = -KTwazqP9cmccZNbt9hb
+                brandName = "LAVA";
+                break;
+
+            case "-KrovlBYSgcM3NA8GxAg":
+                // COMIO = -KrovlBYSgcM3NA8GxAg
+                brandName = "COMIO";
+                break;
+
+            case "-KThq1qTj7upEbf5OAGV":
+                // ASUS = -KThq1qTj7upEbf5OAGV
+                brandName = "ASUS";
+                break;
+
+            case "-KTwlJGRrjcnqumXCzGV":
+                // LENOVO =-KTwlJGRrjcnqumXCzGV
+                brandName = "LENOVO";
+                break;
+
+            case "-KU2hE65nFcTF0eYa0u_":
+                // VIVO= -KU2hE65nFcTF0eYa0u_
+                brandName = "VIVO";
+                break;
+
+            case "-KUIMuoS_jziNt_deTkv":
+                //     ITEL    = -KUIMuoS_jziNt_deTkv
+                brandName = "ITEL";
+                break;
+
+            case "-KTx_nTRtIoZtqG_ErSD":
+                // ZIOX =-KTx_nTRtIoZtqG_ErSD
+                brandName = "ZIOX";
+                break;
+
+            case "-KU0J03fDBO4Zrsb3tTz":
+                // MICROMAX SMART PHONES=  -KU0J03fDBO4Zrsb3tTz
+                brandName = "MICROMAX";
+                break;
+
+            case "-KU1r_NUU5DdFPJLS1C2":
+                //XIAOMI= -KU1r_NUU5DdFPJLS1C2
+                brandName = "XIAOMI";
+                break;
+
+            case "-KU23bD-T28Bx3AF87K0":
+                // MOTOROLA = -KU23bD-T28Bx3AF87K0
+                brandName = "MOTOROLA";
+                break;
+
+            case "-KTxmDYOCC_MxyRtu83V":
+                //OPPO= -KTxmDYOCC_MxyRtu83V
+                brandName = "OPPO";
+                break;
+
+            case "-KUSXXe-dC52lGIcD16J":
+                //ZEN
+                brandName = "ZEN";
+                break;
+
+            case "-KTlvtThlXhnokm3hux3":
+                //INTEX= -KTlvtThlXhnokm3hux3
+                brandName = "INTEX";
+                break;
+
+            case "-KTzALKLYilcvlcnM1Z0":
+                // CELKON
+                brandName = "CELKON";
+                break;
+
+            case "-KUFxA23cmu4baJ3BL0P":
+                //NOKIA
+                brandName = "NOKIA";
+                break;
+
+            case "-KkvKrWFqJR7tpaAb7Sy":
+                //TECNO
+                brandName = "TECNO";
+                break;
+
+            case "-KTmMpmpYcsv3XVjr3Nl":
+                //HTC
+                brandName = "HTC";
+                break;
+
+            case "-Kjg5QfunwoNhVUAXz-z":
+                //Google Pixel
+                brandName = "PIXCEL";
+                break;
+
+            case "-KpY9KtzUtnRFFoVLjXO":
+                //SPICE= -KpY9KtzUtnRFFoVLjXO
+                brandName = "SPICE";
+                break;
+
+            case "-KqmnwSZdtFqRtjVqeDh":
+                //COOLPAD
+                brandName = "COOLPAD";
+                break;
+
+            case "-Kum8bSbB3Qq5OSVbUM8":
+                //SMARTRON
+                brandName = "SMARTRON";
+                break;
+
+            case "-KU1tkMWpVGdbiozbdMk":
+                //MICROMAX FEATURE PHONES
+                brandName = "MICROMAX";
+                break;
+            case "-KU2u7z3XVfFrHQiiXAg":
+                //PANASONIC
+                brandName = "PANASONIC";
+                break;
+
+            case "-KU1m3xWbMbRpybhTFyb":
+                //INFOCUS
+                brandName = "INFOCUS";
+                break;
+
+            case "-KTzBkfTUVuHcjKL-_nG":
+                //HUAWEI
+                brandName = "HUAWEI";
+                break;
+
+            case "-KU1oqGw6Vvs9E5R4AAk":
+                //LG
+                brandName = "LG";
+                break;
+
+            case "-KTzBNFwVsjGDHaYfR9A":
+                //LEPHONE =-KTzBNFwVsjGDHaYfR9A
+                brandName = "LEPHONE";
+                break;
+
+            case "-KreSsMPOYr7fsSqyB8C":
+                //MAFE=-KreSsMPOYr7fsSqyB8C
+                brandName = "MAFE";
+                break;
+
+            case "-KepYPQdF-uJOEscF0lm":
+                //m-tech
+                brandName = "M-TECH";
+                break;
+
+            case "-Ksc37Nj0Ye0ZrnbgK8D":
+                //JIVI
+                brandName = "JIVI";
+                break;
+
+            case "-KU7f5qx3Oe-XxEjfbZk":
+                //SONY
+                brandName = "SONY";
+                break;
+
+            case "-KUL97n-vNpLoNW2AK_q":
+                //-KUL97n-vNpLoNW2AK_q =KARBONN
+                brandName = "KARBONN";
+                break;
+
+            case "-KqLd12Ir-CII-o28yST":
+                //LEMON
+                brandName = "LEMON";
+                break;
+
+            case "-KUQDt2SABFB5SMXXRk6":
+                //JIO LYF
+                brandName = "JIO LYF";
+                break;
+
+            case "-Kl2tmit89SZyWuyOaNo":
+                //SAMSUNG ACCESSORIES
+                brandName = "Samsung";
+                break;
+
+            case "-KscjmvCSVlEY6WSloaS":
+                //ORAIMO Accessories
+                brandName = "ORAIMO";
+                break;
+
+            case "-KU6o-IaO1J_H0MDNNyf":
+                //IBALL
+                brandName = "IBALL";
+                break;
+
+            case "-KU1thpXX242Q7NSEzcL":
+                //YU
+                brandName = "YU";
+                break;
+
+            case "-KpJlnV76WbYmrcLHVxh":
+                //Mozomaxx
+                brandName = "Mozomaxx";
+                break;
+
+            case "-KVzHyaGhW1O7FdEjYuo":
+                //ACER
+                brandName = "ACER";
+                break;
+
+            case "-KfQXgzUi2mh4qfHWlI7":
+                //EDGE MOBILE
+                brandName = "EDGE MOBILE";
+                break;
+
+            case "-KULvmv5RjPypNDXYXvR":
+                //VIDEOCON
+                brandName = "VIDEOCON";
+                break;
+
+            case "-KYXXJ0Q3io-JtGMe8bb":
+                //ZOPO
+                brandName = "ZOPO";
+                break;
+
+            case "-KkBlkABWX7NtvkQgtcL":
+                //DETEL
+                brandName = "DETEL";
+                break;
+
+            case "-KkUFMpMIXXPBl-yFPGh":
+                //EXMART
+                brandName = "EXMART";
+                break;
+
+            case "-KusMlizwhhlJ3Clxjtb":
+                //VOTO
+                brandName = "VOTO";
+                break;
+
+            default:
+                brandName = "OTHERS";
+                break;
+        }
+        return brandName;
+
     }
 
     @Override
@@ -342,6 +601,6 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.ViewHo
     }
 
     public interface ComplaintsAdapterListener {
-        void OnClick(int position);
+        void OnClick(int position, String brandName);
     }
 }

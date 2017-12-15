@@ -14,6 +14,7 @@ public class Record extends Object implements Serializable {
     private String productname = "";
     private SupplierInfo supplierinfo;
     private String productCategoryID = "";
+    private String brandName = "";
 
     private ArrayList<RecordInfo> mRecordInfoList = new ArrayList<>();
 
@@ -60,5 +61,13 @@ public class Record extends Object implements Serializable {
 
     public void setProductCategoryID(String productCategoryID) {
         this.productCategoryID = productCategoryID;
+    }
+
+    public String getBrandName() {
+        return brandName;
+    }
+
+    public void setBrandName(String brandName) {
+        this.brandName = brandName;
     }
 }

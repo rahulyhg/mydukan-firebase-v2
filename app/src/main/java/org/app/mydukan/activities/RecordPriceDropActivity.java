@@ -1,7 +1,9 @@
 package org.app.mydukan.activities;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
@@ -47,7 +49,9 @@ public class RecordPriceDropActivity extends BaseActivity {
         back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                finish();
+                /*Intent intent = new Intent(RecordPriceDropActivity.this, MyRecordsActivity.class);
+                startActivity(intent);*/
+                onBackPressed();
             }
         });
 
@@ -60,21 +64,52 @@ public class RecordPriceDropActivity extends BaseActivity {
             @Override
             public void onSuccess(Object data) {
                 dismissProgress();
-                mRecordList = (ArrayList<Record>)data;
-                if(mRecordList.size() > 0){
-                    for(int i=0; i<mRecordList.size(); i++) {
-                        Log.i("Record ID", mRecordList.get(i).getRecordId());
-                        Log.i("Record Id Catergory", "KU2hE65nFcTF0eYa0u_");
-                        if(recordMap.containsKey(mRecordList.get(i).getProductCategoryID())){
-                            recordMap.put(mRecordList.get(i).getProductCategoryID(), recordMap.get(mRecordList.get(i).getProductCategoryID())+1);
+                if(recordMap != null && recordMap.size() > 0){
+                    recordMap.clear();
+                }
+                if(brandList != null && brandList.size() > 0){
+                    brandList.clear();
+                }
+                if(mRecordList != null && mRecordList.size() > 0){
+                    mRecordList.clear();
+                    mRecordList = (ArrayList<Record>)data;
+                    if(mRecordList != null && mRecordList.size() > 0){
+                        for(int i=0; i<mRecordList.size(); i++) {
+                            Log.i("Record ID", mRecordList.get(i).getBrandName());
+                            if(recordMap.containsKey(mRecordList.get(i).getBrandName())){
+                                recordMap.put(mRecordList.get(i).getBrandName(), recordMap.get(mRecordList.get(i).getBrandName())+1);
+                            }
+                            else{
+                                recordMap.put(mRecordList.get(i).getBrandName(), 1);
+                                brandList.add(mRecordList.get(i).getBrandName());
+                            }
                         }
-                        else{
-                            recordMap.put(mRecordList.get(i).getProductCategoryID(), 1);
-                            brandList.add(mRecordList.get(i).getProductCategoryID());
+                    }
+                }else{
+                    mRecordList = (ArrayList<Record>)data;
+                    if(mRecordList != null && mRecordList.size() > 0){
+                        for(int i=0; i<mRecordList.size(); i++) {
+                            Log.i("Record ID", mRecordList.get(i).getBrandName());
+                            if(recordMap.containsKey(mRecordList.get(i).getBrandName())){
+                                recordMap.put(mRecordList.get(i).getBrandName(), recordMap.get(mRecordList.get(i).getBrandName())+1);
+                            }
+                            else{
+                                recordMap.put(mRecordList.get(i).getBrandName(), 1);
+                                brandList.add(mRecordList.get(i).getBrandName());
+                            }
                         }
                     }
                 }
-                if(mRecordList.isEmpty()){
+
+               /* mRecordList = new ArrayList<>();
+                ArrayList<Record> records = (ArrayList<Record>)data;
+                for(int i=0; i<records.size(); i++) {
+                    if (mRecordList != null && !mRecordList.contains(records.get(i))){
+                        mRecordList.add(records.get(i));
+                    }
+                }*/
+
+                if(mRecordList != null && mRecordList.isEmpty()){
                     mNoDataView.setVisibility(View.VISIBLE);
                     myPriceDropList.setVisibility(View.GONE);
                 } else {
@@ -95,7 +130,10 @@ public class RecordPriceDropActivity extends BaseActivity {
     }
 
     private void setAdapter() {
-        priceDropApapter = new RecordPriceDropApapter(recordMap, RecordPriceDropActivity.this, mRecordList, brandList);
+        priceDropApapter = new RecordPriceDropApapter(recordMap, RecordPriceDropActivity.this, RecordPriceDropActivity.this, mRecordList, brandList);
+        myPriceDropList.setLayoutManager(new LinearLayoutManager(this));
+        myPriceDropList.setAdapter(priceDropApapter);
+        priceDropApapter.notifyDataSetChanged();
     }
 
     @Override
@@ -110,6 +148,9 @@ public class RecordPriceDropActivity extends BaseActivity {
 
     @Override
     public void onBackPressed() {
-        finish();
+      /*  Intent intent = new Intent(RecordPriceDropActivity.this, MyRecordsActivity.class);
+        startActivity(intent);*/
+        super.onBackPressed();
+        return;
     }
 }

@@ -27,11 +27,12 @@ public class RecordsAdapter extends RecyclerView.Adapter<RecordsAdapter.ViewHold
     private MyDukan mApp;
     private RecordsAdapter.RecordsAdapterListener mListener;
 
-    public RecordsAdapter(Context context,RecordsAdapter.RecordsAdapterListener listener) {
+    public RecordsAdapter(Context context,RecordsAdapter.RecordsAdapterListener listener, ArrayList<Record> mRecordList) {
         mContext = context;
         mRecordsList = new ArrayList<Record>();
         mApp = (MyDukan) mContext.getApplicationContext();
         mListener = listener;
+        this.mRecordsList = mRecordList;
     }
 
     public void addItems(ArrayList<Record> list) {

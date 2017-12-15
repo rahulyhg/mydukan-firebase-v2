@@ -85,7 +85,7 @@ public class ProductListActivity extends BaseActivity implements TabLayout.OnTab
     int pmin, pmax;
     String ptype="";
     SharedPreferences sharedPreferences;
-    String lounchedDate_User;
+    String lounchedDate_User, brandName = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -115,7 +115,9 @@ public class ProductListActivity extends BaseActivity implements TabLayout.OnTab
             if (bundle.containsKey(AppContants.PRICE_TYPE)) {
                 ptype = bundle.getString(AppContants.PRICE_TYPE);
                 Log.e("Ptype", ptype);
-
+            }
+            if (bundle.containsKey(AppContants.BRAND_NAME)) {
+                brandName = bundle.getString(AppContants.BRAND_NAME);
             }
             if (bundle.containsKey(AppContants.PRICE_RANGE)){
                 Log.d("PRICERANGE", "Found");
@@ -170,7 +172,9 @@ public class ProductListActivity extends BaseActivity implements TabLayout.OnTab
         mBottomToolBar.findViewById(R.id.recordsBtn).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent record = new Intent(ProductListActivity.this, RecordsActivity.class);
+                /*Intent record = new Intent(ProductListActivity.this, RecordsActivity.class);
+                startActivity(record);*/
+                Intent record = new Intent(ProductListActivity.this, MyRecordsActivity.class);
                 startActivity(record);
             }
         });
@@ -190,6 +194,7 @@ public class ProductListActivity extends BaseActivity implements TabLayout.OnTab
     @Override
     public void onTabSelected(TabLayout.Tab tab) {
         viewPager.setCurrentItem(tab.getPosition(), true);
+        Log.i("Brand Name: ", brandName);
     }
     @Override
     public void onTabUnselected(TabLayout.Tab tab) {
@@ -373,7 +378,7 @@ public class ProductListActivity extends BaseActivity implements TabLayout.OnTab
     private void addProductToClaimList(Product product, String imeiNo) {
         showProgress();
         ApiManager.getInstance(ProductListActivity.this).addProductToClaim(mSupplier.getId(), mSupplier.getName(),
-                product, imeiNo, new ApiResult() {
+                product, imeiNo, brandName, new ApiResult() {
                     @Override
                     public void onSuccess(Object data) {
                         String response = (String) data;
@@ -590,6 +595,7 @@ public class ProductListActivity extends BaseActivity implements TabLayout.OnTab
         intent.putExtra(AppContants.SUPPLIER_ID, mSupplier.getId());
         intent.putExtra(AppContants.PRODUCT, product);
         intent.putExtra(AppContants.CATEGORY_ID,mCategoryId);
+        intent.putExtra(AppContants.BRAND_NAME, brandName);
         intent.putExtra(AppContants.SUPPLIER, mSupplier);
         startActivity(intent);
 
@@ -610,7 +616,10 @@ public class ProductListActivity extends BaseActivity implements TabLayout.OnTab
                     public void onClick(DialogInterface dialog, int id) {
                         // if this button is clicked, close
                         // current activity
-                        Intent record = new Intent(ProductListActivity.this, RecordsActivity.class);
+                        /*Intent record = new Intent(ProductListActivity.this, RecordsActivity.class);
+                        startActivity(record);
+                        finish();*/
+                        Intent record = new Intent(ProductListActivity.this, MyRecordsActivity.class);
                         startActivity(record);
                         finish();
                     }

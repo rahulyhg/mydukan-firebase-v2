@@ -2533,7 +2533,7 @@ public class ApiManager {
         });
     }
 
-    public void addProductToClaim(final String supplierId, final String supplierName, final Product product, final String imei,
+    public void addProductToClaim(final String supplierId, final String supplierName, final Product product, final String imei, final String brandName,
                                   final ApiResult result) {
         getProductClaimKey(supplierId, product.getProductId(), product.getName(), new ApiResult() {
             @Override
@@ -2554,6 +2554,9 @@ public class ApiManager {
                     Log.i("Brand Id", product.getCategoryId());
                     childUpdates.put("/claims/" + userId + "/" + supplierId + "/" + claimid
                             + "/productCategoryID/", product.getCategoryId());
+                    childUpdates.put("/claims/" + userId + "/" + supplierId + "/" + claimid
+                            + "/brandName/", brandName);
+
 
                     //supplier info
                     HashMap<String, Object> supplierInfo = new HashMap<>();

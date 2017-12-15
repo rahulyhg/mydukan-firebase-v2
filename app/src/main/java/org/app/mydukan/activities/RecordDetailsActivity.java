@@ -160,8 +160,8 @@ public class RecordDetailsActivity extends BaseActivity implements RecordInfoAda
     }
 
     private void setupRecordListView() {
-        mAdapter = new RecordInfoAdapter(RecordDetailsActivity.this ,this);
-        mAdapter.addItems(mRecordData.getRecordList());
+        mAdapter = new RecordInfoAdapter(RecordDetailsActivity.this ,this, mRecordData.getRecordList());
+//        mAdapter.addItems(mRecordData.getRecordList());
 
         mNoDataView = (TextView) findViewById(R.id.nodata_view);
         mNoDataView.setText("No Data");
@@ -173,6 +173,7 @@ public class RecordDetailsActivity extends BaseActivity implements RecordInfoAda
 
         mRecyclerView.setLayoutManager(new LinearLayoutManager(RecordDetailsActivity.this));
         mRecyclerView.setAdapter(mAdapter);
+        mAdapter.notifyDataSetChanged();
     }
 
     private void setSummaryView() {
@@ -206,7 +207,7 @@ public class RecordDetailsActivity extends BaseActivity implements RecordInfoAda
                     public void onSuccess(Object data) {
                         dismissProgress();
                         mRecordData.getRecordList().get(position).setStatus(status.toLowerCase());
-                        mAdapter.addItems(mRecordData.getRecordList());
+//                        mAdapter.addItems(mRecordData.getRecordList());
                         mAdapter.notifyDataSetChanged();
                     }
 
@@ -231,7 +232,7 @@ public class RecordDetailsActivity extends BaseActivity implements RecordInfoAda
                     dismissProgress();
                     Object mdata= data;
                     mRecordData.getRecordList().remove(position);
-                    mAdapter.addItems(mRecordData.getRecordList());
+//                    mAdapter.addItems(mRecordData.getRecordList());
                     mAdapter.notifyDataSetChanged();
                     setSummaryView(); // TODO: 04-03-2017  test for upadate the total amount and quantity.
                 }

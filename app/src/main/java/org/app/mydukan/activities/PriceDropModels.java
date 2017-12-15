@@ -6,6 +6,7 @@ import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -51,6 +52,8 @@ public class PriceDropModels extends BaseActivity implements ProductFragment.Pro
             brandName = bundle.getString(AppContants.BRAND_NAME);
         }
 
+        Log.i("Brand Name: ",brandName);
+
         heading.setText(brandName.substring(0, 1).toUpperCase() + brandName.substring(1).toLowerCase()+" Price Drops");
 
         back.setOnClickListener(new View.OnClickListener() {
@@ -67,6 +70,16 @@ public class PriceDropModels extends BaseActivity implements ProductFragment.Pro
         fragment.setData(products,false,mSupplier);
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.container, fragment, fragment.getClass().getSimpleName()).addToBackStack(null).commit();
+    }
+
+    @Override
+    public void showProgress() {
+        super.showProgress();
+    }
+
+    @Override
+    public void dismissProgress() {
+        super.dismissProgress();
     }
 
     @Override
@@ -87,6 +100,7 @@ public class PriceDropModels extends BaseActivity implements ProductFragment.Pro
         intent.putExtra(AppContants.SUPPLIER_ID, mSupplier.getId());
         intent.putExtra(AppContants.PRODUCT, product);
         intent.putExtra(AppContants.CATEGORY_ID,"");
+        intent.putExtra(AppContants.BRAND_NAME, brandName);
         intent.putExtra(AppContants.SUPPLIER, mSupplier);
         startActivity(intent);
     }

@@ -290,7 +290,9 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         records_layout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent record = new Intent(MainActivity.this, RecordsActivity.class);
+                /*Intent record = new Intent(MainActivity.this, RecordsActivity.class);
+                startActivity(record);*/
+                 Intent record = new Intent(MainActivity.this, MyRecordsActivity.class);
                 startActivity(record);
             }
         });
@@ -1088,7 +1090,9 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 }).show();
                 break;
             case R.id.nav_record:
-                Intent record = new Intent(MainActivity.this, RecordsActivity.class);
+                /*Intent record = new Intent(MainActivity.this, RecordsActivity.class);
+                startActivity(record);*/
+                Intent record = new Intent(MainActivity.this, MyRecordsActivity.class);
                 startActivity(record);
                 break;
             case R.id.nav_mynetwork:

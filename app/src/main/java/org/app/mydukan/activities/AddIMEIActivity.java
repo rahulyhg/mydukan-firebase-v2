@@ -51,6 +51,7 @@ public class AddIMEIActivity extends BaseActivity {
     private static final String INTRO_SEQUENCE = "sequence_intro";
     private boolean isRevealEnabled = true;
     private SpotlightView spotLight;
+    private String brandName = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,6 +74,9 @@ public class AddIMEIActivity extends BaseActivity {
                 if(product != null) {
                     product.setCategoryId(bundle.getString(AppContants.CATEGORY_ID));
                 }
+            }
+            if(bundle.containsKey(AppContants.BRAND_NAME)){
+                brandName = bundle.getString(AppContants.BRAND_NAME);
             }
         }
 
@@ -209,7 +213,7 @@ public class AddIMEIActivity extends BaseActivity {
 
     private void addProductToClaimList(Product product, String imeiNo) {
         showProgress();
-        ApiManager.getInstance(AddIMEIActivity.this).addProductToClaim(mSupplierId,mSupplier.getName(),product,imeiNo, new ApiResult() {
+        ApiManager.getInstance(AddIMEIActivity.this).addProductToClaim(mSupplierId,mSupplier.getName(),product,imeiNo, brandName, new ApiResult() {
             @Override
             public void onSuccess(Object data) {
                 String response = (String) data;
@@ -246,7 +250,10 @@ public class AddIMEIActivity extends BaseActivity {
                     public void onClick(DialogInterface dialog,int id) {
                         // if this button is clicked, close
                         // current activity
-                        Intent record = new Intent(AddIMEIActivity.this, RecordsActivity.class);
+                        /*Intent record = new Intent(AddIMEIActivity.this, RecordsActivity.class);
+                        startActivity(record);
+                        finish();*/
+                        Intent record = new Intent(AddIMEIActivity.this, MyRecordsActivity.class);
                         startActivity(record);
                         finish();
                     }
