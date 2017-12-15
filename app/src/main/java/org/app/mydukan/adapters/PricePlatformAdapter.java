@@ -27,6 +27,7 @@ import org.app.mydukan.activities.WebViewActivity;
 import org.app.mydukan.application.MyDukan;
 import org.app.mydukan.data.ChattUser;
 import org.app.mydukan.data.PlatForm_Info;
+import org.app.mydukan.data.Product;
 import org.app.mydukan.utils.AppContants;
 
 import java.io.Serializable;
@@ -51,6 +52,7 @@ public class PricePlatformAdapter extends BaseAdapter {
     private MyDukan mApp;
     String mUrl="";
     HashMap<String, HashMap<String, String>> mItem;
+
     public PricePlatformAdapter(Context context, HashMap<String, HashMap<String, String>> map) {
         this. mContext = context;
         inflater = LayoutInflater.from(mContext);
@@ -60,6 +62,8 @@ public class PricePlatformAdapter extends BaseAdapter {
 
         mData.addAll(map.keySet());
         mItem=map;
+
+
         }
 
     public class ViewHolder {
