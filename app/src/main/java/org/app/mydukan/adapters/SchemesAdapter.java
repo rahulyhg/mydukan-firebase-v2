@@ -5,7 +5,9 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import org.app.mydukan.R;
@@ -26,7 +28,7 @@ public class SchemesAdapter extends RecyclerView.Adapter<SchemesAdapter.ViewHold
 
     public SchemesAdapter(Context context, SchemesAdapterListener listener) {
         mContext = context;
-        mSchemesList = new ArrayList<Scheme>();
+        mSchemesList = new ArrayList<>();
         mApp = (MyDukan) mContext.getApplicationContext();
         mListener = listener;
     }
@@ -37,7 +39,7 @@ public class SchemesAdapter extends RecyclerView.Adapter<SchemesAdapter.ViewHold
     }
 
     @Override
-    public SchemesAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         Context context = parent.getContext();
         LayoutInflater inflater = LayoutInflater.from(context);
 
@@ -51,7 +53,7 @@ public class SchemesAdapter extends RecyclerView.Adapter<SchemesAdapter.ViewHold
     }
 
     @Override
-    public void onBindViewHolder(SchemesAdapter.ViewHolder holder, final int position) {
+    public void onBindViewHolder(ViewHolder holder, final int position) {
         Scheme scheme = mSchemesList.get(position);
 
         holder.mNameView.setText(scheme.getName().toUpperCase());
@@ -66,6 +68,16 @@ public class SchemesAdapter extends RecyclerView.Adapter<SchemesAdapter.ViewHold
                 mListener.OnClick(position);
             }
         });
+        holder.mEnrolled.setOnCheckedChangeListener(null);
+        holder.mEnrolled.setChecked(scheme.isHasEnrolled());
+
+        holder.mEnrolled.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                mListener.OnEnrolled(mSchemesList.get(position),position,isChecked);
+
+            }
+        });
     }
 
     @Override
@@ -74,22 +86,25 @@ public class SchemesAdapter extends RecyclerView.Adapter<SchemesAdapter.ViewHold
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        private LinearLayout mSchemeLayout;
+        private RelativeLayout mSchemeLayout;
         private TextView mNameView;
         private TextView mDescriptionView;
         private TextView mValidityView;
+        private CheckBox mEnrolled;
 
         public ViewHolder(final View itemView) {
             super(itemView);
-            mSchemeLayout = (LinearLayout) itemView.findViewById(R.id.schemelayout);
+            mSchemeLayout = (RelativeLayout) itemView.findViewById(R.id.schemelayout);
             mNameView = (TextView) itemView.findViewById(R.id.name);
             mDescriptionView = (TextView) itemView.findViewById(R.id.description);
             mValidityView = (TextView) itemView.findViewById(R.id.validitiy);
+            mEnrolled = (CheckBox) itemView.findViewById(R.id.chk_enrolled);
         }
     }
 
     public interface SchemesAdapterListener {
         void OnClick(int position);
+
         void OnEnrolled(Scheme scheme, int pos, boolean isChecked);
     }
 }
