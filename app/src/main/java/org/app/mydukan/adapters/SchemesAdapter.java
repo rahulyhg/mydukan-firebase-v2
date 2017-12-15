@@ -42,12 +42,9 @@ public class SchemesAdapter extends RecyclerView.Adapter<SchemesAdapter.ViewHold
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         Context context = parent.getContext();
         LayoutInflater inflater = LayoutInflater.from(context);
-
         // Inflate the custom layout
         View contactView = null;
-
         contactView = inflater.inflate(R.layout.schemes_listitem, parent, false);
-
         // Return a new holder instance
         return new ViewHolder(contactView);
     }
@@ -104,7 +101,6 @@ public class SchemesAdapter extends RecyclerView.Adapter<SchemesAdapter.ViewHold
 
     public interface SchemesAdapterListener {
         void OnClick(int position);
-
         void OnEnrolled(Scheme scheme, int pos, boolean isChecked);
     }
 }
