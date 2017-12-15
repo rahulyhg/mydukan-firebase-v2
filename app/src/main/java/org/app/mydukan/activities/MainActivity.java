@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -27,6 +28,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -59,6 +61,7 @@ import com.viewpagerindicator.CirclePageIndicator;
 
 import org.app.mydukan.BuildConfig;
 import org.app.mydukan.R;
+import org.app.mydukan.activities.Schemes.SchemeListActivity;
 import org.app.mydukan.adapters.SlidingImage_Adapter;
 import org.app.mydukan.adapters.SupplierAdapter;
 import org.app.mydukan.appSubscription.PriceDropSubscription;
@@ -112,6 +115,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     private static final String MAINPAGE_CONFIG__IMGBANNER_4 = "showSubscriptionPage";
     private static final String WELCOME_MESSAGE_KEY = "isVideoToBeDsiplayed";
     private static final String WELCOME_MESSAGE_CAPS_KEY = "isVideoToBeDsiplayed";
+    private static final String MAINPAGE_CONFIG_SCHEMES_SUBSCRIPTION = "show_SCHEMES_SUBSCRIPTION"; //REMOTECONFIG_SCHEMES_SUBSCRIPTION
     private static ViewPager mPager;
     private static int currentPage = 0;
     private static int NUM_PAGES = 0;
@@ -125,12 +129,18 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     AdView mAdView;
     AppSubscriptionInfo appSubscriptionInfo = new AppSubscriptionInfo();
     String remoteUrl, remoteToDisplay, remoteDisp_Subscription, remote_imgBanner_one, remote_imgBanner_two, remote_imgBanner_three;
-    LinearLayout whatsapp_layout, records_layout, mynetwork_layout, askRaju_layout, serviceCenter_layout;
+    LinearLayout whatsapp_layout, records_layout, mynetwork_layout, askRaju_layout, serviceCenter_layout,schemes_layout;
     LinearLayout relative_flipper_layout;
     ViewFlipper flipper_promotional;
     int mFlipping = 0; // Initially flipping is off
     ImageView banner1;
+
     boolean isSubscribed = false;
+    private static boolean REMOTECONFIG_SCHEMES_SUBSCRIPTION=false;
+    android.support.v7.app.AlertDialog dialog;
+
+
+
     private ArrayList<ImageModel> imageModelArrayList;
     private int[] myImageList = new int[]{R.drawable.slide1, R.drawable.slide2,
             R.drawable.slide3, R.drawable.slide4
@@ -307,8 +317,45 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
                 Intent nIntent = new Intent(MainActivity.this, ChatActivity.class);
                 nIntent.putExtra("IS_SUBSCRIBED", isSubscribed);
-
                 startActivity(nIntent);
+            }
+        });
+
+        schemes_layout = (LinearLayout) findViewById(R.id.scheme_layout);
+        schemes_layout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                try{
+                   // REMOTECONFIG_SCHEMES_SUBSCRIPTION
+                    if(userdetails != null && userdetails.getUserinfo() != null && userdetails.getUserinfo().getEmailid() != null && !userdetails.getUserinfo().getEmailid().isEmpty())
+                        Answers.getInstance().logCustom(new CustomEvent("Schemes_click")
+                                .putCustomAttribute("USER_ID/ USER_Email:", userID + "/" + userdetails.getUserinfo().getEmailid()));
+
+                    if(REMOTECONFIG_SCHEMES_SUBSCRIPTION){
+
+                        if(isSubscribed){
+                            Intent schemeIntent = new Intent(MainActivity.this, SchemeListActivity.class);
+                            schemeIntent.putExtra(AppContants.SUPPLIER_ID,"WDSLSgxI10eiWVey4RVWY5niElE3");
+                            schemeIntent.putExtra(AppContants.SUPPLIER_NAME, " mobile dp for dealers(prime members)");
+                            startActivity(schemeIntent);
+                        }else{
+                            ShowSubscriptionAleasrt();
+                        }
+                    }else{
+                        Intent schemeIntent = new Intent(MainActivity.this, SchemeListActivity.class);
+                        schemeIntent.putExtra(AppContants.SUPPLIER_ID,"WDSLSgxI10eiWVey4RVWY5niElE3");
+                        schemeIntent.putExtra(AppContants.SUPPLIER_NAME, " mobile dp for dealers(prime members)");
+                        startActivity(schemeIntent);
+                    }
+
+                }catch (Exception e){
+                    Toast.makeText(MainActivity.this, "Some thing went wrong , Please try it after some time.", Toast.LENGTH_SHORT).show();
+
+                }
+
+
+
+
             }
         });
         serviceCenter_layout = (LinearLayout) findViewById(R.id.servicecenter_layout);
@@ -456,6 +503,59 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
         //=================================================================
 //        new CompanyInfo().execute();
+    }
+
+    private void ShowSubscriptionAleasrt() {
+
+            LayoutInflater inflater = getLayoutInflater();
+            View alertLayout = inflater.inflate(R.layout.dialogsubscription, null);
+        android.support.v7.app.AlertDialog.Builder alert = new android.support.v7.app.AlertDialog.Builder(this);
+
+        //    alert.setTitle("Add Filters");    this is set the view from XML inside AlertDialog
+        alert.setView(alertLayout);
+        // disallow cancel of AlertDialog on click of back button and outside touch
+        alert.setCancelable(false);
+
+        alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                Toast.makeText(getBaseContext(), "Please Subscribe the MyDukan to use this feature ", Toast.LENGTH_SHORT).show();
+            }
+        });
+        alert.setPositiveButton("Pay Now", new DialogInterface.OnClickListener() {
+
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                // Page is clicked!
+                if(userdetails != null && userdetails.getUserinfo() != null && userdetails.getUserinfo().getEmailid() != null && !userdetails.getUserinfo().getEmailid().isEmpty())
+
+                    Answers.getInstance().logCustom(new CustomEvent("PaytmButton click")
+                        .putCustomAttribute("USER_ID/ USER_Email:", userID + "/" + userdetails.getUserinfo().getEmailid()));
+
+                if(!isSubscribed){
+                    Intent nIntent = new Intent(MainActivity.this, PaytmGatewayActivity.class);
+                    nIntent.putExtra(AppContants.FP_USER_DETAILS, userdetails);
+                    nIntent.putExtra(AppContants.FP_USER_ID, userdetails.getId());
+                    startActivity(nIntent);
+                }
+            }
+            });
+
+        dialog = alert.create();
+
+        dialog.setOnShowListener(new DialogInterface.OnShowListener() {
+            @Override
+            public void onShow(DialogInterface arg0) {
+                dialog.getButton(android.support.v7.app.AlertDialog.BUTTON_POSITIVE).setTextColor(Color.BLUE);
+
+            }
+        });
+
+        dialog.show();
+
+
     }
 
     private void handleDeepLink() {
@@ -631,6 +731,13 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         } else {
             // mWelcomeTextView.setAllCaps(false);
         }
+        if (mFirebaseRemoteConfig.getBoolean(MAINPAGE_CONFIG_SCHEMES_SUBSCRIPTION)) {
+            REMOTECONFIG_SCHEMES_SUBSCRIPTION=true;
+        }else{
+            REMOTECONFIG_SCHEMES_SUBSCRIPTION=false;
+        }
+
+
         //mWelcomeTextView.setText(welcomeMessage);
     }
     // [END display_welcome_message]
@@ -710,7 +817,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         }
     }
 
-    private void updateSubscriptionInfo(final Context mContext, final AppSubscriptionInfo appSubscriptionInfo) {
+    /*private void updateSubscriptionInfo(final Context mContext, final AppSubscriptionInfo appSubscriptionInfo) {
         userdetails.setAppSubscriptionInfo(appSubscriptionInfo);
         HashMap<String, Object> userInfo = new HashMap<>();
         userInfo.put(AppContants.SUBSCRIPTION_TRIALDAYS, appSubscriptionInfo.getSubscription_TRIALDAYS());
@@ -741,7 +848,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         }
     }
 
-
+*/
     //Request interstitial ad from below method
 
     public void requestNewInterstitial() {
@@ -937,10 +1044,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             case R.id.menu_share:
                 shareTheLink();
                 return true;
-//            case R.mCatId.menu_notification:
-//                Intent intent = new Intent(MainActivity.this, NotificationsActivity.class);
-//                startActivity(intent);
-//                return true;
+
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -957,22 +1061,9 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 //                i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 startActivity(profile);
 
-                /*Intent profile = new Intent(MainActivity.this, SignupActivity.class);
-                profile.putExtra(AppContants.VIEW_TYPE, AppContants.MY_PROFILE);
-                startActivity(profile);
 
-                /*Intent mAccIntent = new Intent(MainActivity.this, MyAccountActivity.class);
-                mAccIntent.putExtra("MyDhukhan_UserId", userID);
-                mAccIntent.putExtra("UserDetails", userdetails);
-                startActivity(mAccIntent);*/
                 break;
 
-       /*     case R.mCatId.nav_chat:
-                Intent chat_Intent = new Intent(MainActivity.this, PostCommentsActivity.class);
-                chat_Intent.putExtra("MyDhukhan_UserId", userID);
-                chat_Intent.putExtra("UserDetails", userdetails);
-                startActivity(chat_Intent);
-                break;*/
 
             case R.id.nav_help:
                 Intent intent = new Intent(MainActivity.this, HelpActivity.class);
@@ -1082,16 +1173,11 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         if(firebaseUser != null && firebaseUser.getEmail() != null && !firebaseUser.getEmail().isEmpty())
             headerText.setText(firebaseUser.getEmail());
-       /* User user = mApp.getPreference().getUser(MainActivity.this);
-        if (user != null && user.getUserinfo() != null) {
-            if (!mApp.getUtils().isStringEmpty(user.getUserinfo().getEmailid())) {
-                headerText.setText(user.getUserinfo().getEmailid());
-            }
-        }*/
+
         navigationView.setNavigationItemSelectedListener(this);
     }
 
-    private void checkUserPresentInDatabase() {
+ /*   private void checkUserPresentInDatabase() {
         showProgress();
         try {
             final FirebaseUser firebaseUser = mApp.getFirebaseAuth().getCurrentUser();
@@ -1106,7 +1192,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                     @Override
                     public void onFailure(String response) {
                         dismissProgress();
-                    /*new android.support.v7.app.AlertDialog.Builder(MainActivity.this)
+                    *//*new android.support.v7.app.AlertDialog.Builder(MainActivity.this)
                             .setTitle("Info")
                             .setMessage("Please fill the Company Details to enter myDukan")
                             .setPositiveButton("OK", new DialogInterface.OnClickListener() {
@@ -1120,7 +1206,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                             })
                             .setCancelable(false)
                             .setIcon(android.R.drawable.ic_dialog_alert)
-                            .show();*/
+                            .show();*//*
 //                    logoutUser();
                     }
                 });
@@ -1130,7 +1216,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         }
 
     }
-
+*/
     private void setupSupplierCard() {
         View supplierView = findViewById(R.id.supplierlayout);
         mSupplierAdapter = new SupplierAdapter(MainActivity.this, AppContants.USER_SUPPLIER, this);

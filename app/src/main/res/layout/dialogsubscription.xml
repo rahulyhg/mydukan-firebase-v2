@@ -23,8 +23,8 @@
 
             <ImageView
                 android:id="@+id/imageDialog_1"
-                android:layout_width="35dp"
-                android:layout_height="45dp"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
                 android:paddingTop="5dp"
                 android:layout_alignEnd="@+id/textView4"
                 android:layout_alignParentTop="true"
@@ -38,7 +38,7 @@
                 android:layout_below="@+id/imageDialog"
                 android:text="BE A PRIME MEMBER \nOF MyDukan."
                 android:textColor="@color/white"
-                android:textSize="@dimen/largertextSizes"
+                android:textSize="@dimen/smalltextSize"
                 android:textStyle="normal|bold"
                 tools:ignore="HardcodedText,ObsoleteLayoutParam" />
 
@@ -63,7 +63,6 @@
             android:scrollbars="none"
             android:layout_marginBottom="10dp"
             tools:ignore="UselessParent">
-
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -226,7 +225,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:layout_marginTop="8dp">
+                    android:layout_marginTop="6dp">
 
                     <TextView
                         android:id="@+id/tv_message_trialUser"
@@ -240,57 +239,6 @@
                         android:textStyle="normal|bold"
                         android:visibility="gone"
                         tools:ignore="ObsoleteLayoutParam" />
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:gravity="center"
-                        android:layout_marginTop="10dp"
-                        android:orientation="horizontal">
-
-                        <Button
-                            android:id="@+id/btn_remaingDays"
-                            android:layout_width="0dp"
-                            android:layout_height="35dp"
-                            android:layout_weight="1"
-                            android:layout_marginRight="20dp"
-                            android:textColor="@color/white"
-                            android:background="@color/colorDivider"
-                            android:padding="5dp"
-                            android:text="Click for free"
-                            android:textStyle="normal"
-                            android:visibility="gone"
-                            tools:ignore="HardcodedText,ObsoleteLayoutParam" />
-
-                        <Button
-                            android:id="@+id/btn_subscription"
-                            android:layout_width="0dp"
-                            android:layout_height="35dp"
-                            android:layout_weight="1"
-                            android:background="#4285F4"
-                            android:maxLines="1"
-                            android:padding="5dp"
-                            android:text="Pay Now"
-                            android:textColor="@color/white"
-                            android:textStyle="normal|bold"
-                            tools:ignore="HardcodedText,ObsoleteLayoutParam,TextViewEdits" />
-
-                    </LinearLayout>
-                    <Button
-                        android:id="@+id/btn_trial"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_below="@+id/tv_message_trialUser"
-                        android:layout_centerHorizontal="true"
-                        android:layout_gravity="center"
-                        android:layout_margin="6dp"
-                        android:padding="6dp"
-                        android:text="Click for FREE TRIAL"
-                        android:textColor="@color/black"
-                        android:textStyle="normal"
-                        android:visibility="visible"
-                        tools:ignore="HardcodedText,ObsoleteLayoutParam" />
-
 
                     <android.support.design.widget.FloatingActionButton
                         android:id="@+id/whatsAppBtn_payment"
@@ -313,7 +261,7 @@
                         android:layout_below="@+id/imageDialog"
                         android:text="You can also pay via :"
                         android:textColor="@color/text_color"
-                        android:layout_marginTop="10dp"
+                        android:layout_marginTop="6dp"
                         android:textStyle="bold"
                         android:textSize="@dimen/microtextSize"
                         tools:ignore="HardcodedText,ObsoleteLayoutParam" />
@@ -333,7 +281,7 @@
                         android:id="@+id/tv_message_whatsapp"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="16dp"
+                        android:layout_marginTop="2dp"
                         android:text="Any Issue? Whatsapp us on 9036770772"
                         android:textSize="@dimen/microtextSize"
                         tools:ignore="HardcodedText" />

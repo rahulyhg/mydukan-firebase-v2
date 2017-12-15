@@ -131,19 +131,21 @@
                             android:id="@+id/banner"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_below="@+id/layout_subscribe">
+                            android:layout_alignParentLeft="true"
+                            android:layout_alignParentStart="true"
+                            android:layout_alignParentTop="true">
 
                             <include
                                 android:id="@+id/viewPagerBanner"
                                 layout="@layout/item_banner_page"
                                 android:layout_width="fill_parent"
                                 android:layout_height="wrap_content"
-                                android:layout_marginBottom="5dp"
-                                >
-                                <View style="@style/Divider"
-                                    android:background="@color/colorBtnBackground"
+                                android:layout_marginBottom="2dp">
+
+                                <View
+                                    style="@style/Divider"
                                     android:layout_margin="2dp"
-                                    />
+                                    android:background="@color/colorBtnBackground" />
                             </include>
                         </LinearLayout>
                         <!--setup supplier layout-->
