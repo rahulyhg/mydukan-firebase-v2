@@ -22,7 +22,7 @@ import java.util.List;
 
 
 /**
- * Created by Shivayogi Hiremath on 11-08-2016.
+ * Created by Shivayogi Hiremath on 11-08-2016. Rojesh Sample One
  */
 public class SupplierAdapter extends
         RecyclerView.Adapter<SupplierAdapter.ViewHolder> {

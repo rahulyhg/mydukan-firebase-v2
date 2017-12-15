@@ -55,6 +55,7 @@ import org.app.mydukan.server.ApiManager;
 import org.app.mydukan.server.ApiResult;
 import org.app.mydukan.utils.AppContants;
 import org.app.mydukan.utils.NetworkUtil;
+import org.app.mydukan.utils.SharedPrefsUtils;
 
 import java.util.Date;
 
@@ -174,6 +175,7 @@ public class LoginActivity extends BaseActivity implements GoogleApiClient.OnCon
                     // User is signed in
                     String PREF_NAME=user.getUid();
                     String UNIQUE_ID=user.getUid()+"@"+user.getDisplayName()+"@"+user.getEmail();
+                    SharedPrefsUtils.setStringPreference(LoginActivity.this,"logged_in_user_email", user.getEmail());
 
                     Log.d(MyDukan.LOGTAG, "onAuthStateChanged:signed_in:" + user.getUid());
                     MoEHelper.getInstance(getApplicationContext()).setUniqueId(UNIQUE_ID); //UNIQUE_ID is used to uniquely identify a user.

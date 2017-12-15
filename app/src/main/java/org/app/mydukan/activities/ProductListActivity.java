@@ -125,7 +125,6 @@ public class ProductListActivity extends BaseActivity implements TabLayout.OnTab
             }
         }
 
-
         //Initializing the tablayout
         tabLayout = (TabLayout) findViewById(R.id.tabLayout);
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
@@ -590,6 +589,7 @@ public class ProductListActivity extends BaseActivity implements TabLayout.OnTab
         Intent intent = new Intent(ProductListActivity.this, AddIMEIActivity.class);
         intent.putExtra(AppContants.SUPPLIER_ID, mSupplier.getId());
         intent.putExtra(AppContants.PRODUCT, product);
+        intent.putExtra(AppContants.CATEGORY_ID,mCategoryId);
         intent.putExtra(AppContants.SUPPLIER, mSupplier);
         startActivity(intent);
 

@@ -51,6 +51,7 @@ public class AddIMEIActivity extends BaseActivity {
     private static final String INTRO_SEQUENCE = "sequence_intro";
     private boolean isRevealEnabled = true;
     private SpotlightView spotLight;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -59,7 +60,6 @@ public class AddIMEIActivity extends BaseActivity {
         mApp = (MyDukan) getApplicationContext();
         Bundle bundle = getIntent().getExtras();
         if (bundle != null) {
-
             if (bundle.containsKey(AppContants.SUPPLIER_ID)) {
                 mSupplierId = bundle.getString(AppContants.SUPPLIER_ID);
             }
@@ -126,7 +126,6 @@ public class AddIMEIActivity extends BaseActivity {
 
         sequence.start();
 
-
         btnYes.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -141,6 +140,7 @@ public class AddIMEIActivity extends BaseActivity {
                 }
             }
         });
+
         btnNO.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -153,7 +153,6 @@ public class AddIMEIActivity extends BaseActivity {
             public void onClick(View v) {
                 scanNow(v);
                 Answers.getInstance().logCustom(new CustomEvent("barcode scanner click").putCustomAttribute("Name", mSupplier.getName()));
-
             }
         });
 
@@ -232,7 +231,6 @@ public class AddIMEIActivity extends BaseActivity {
         });
     }
 
-
     private void showRecordDialog(){
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(AddIMEIActivity.this);
 
@@ -267,7 +265,5 @@ public class AddIMEIActivity extends BaseActivity {
         // show it
         alertDialog.show();
     }
-
-
 
 }

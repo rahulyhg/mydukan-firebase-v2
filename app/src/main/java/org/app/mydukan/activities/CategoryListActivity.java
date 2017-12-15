@@ -57,11 +57,13 @@ import org.app.mydukan.data.AppSubscriptionInfo;
 import org.app.mydukan.data.Category;
 import org.app.mydukan.data.SupplierBindData;
 import org.app.mydukan.data.User;
+import org.app.mydukan.fragments.myschemes.fragmetns.MySelectedSchemesHelper;
 import org.app.mydukan.server.ApiManager;
 import org.app.mydukan.server.ApiResult;
 import org.app.mydukan.utils.AppContants;
 import org.app.mydukan.utils.AppPreference;
 import org.app.mydukan.utils.NetworkUtil;
+import org.app.mydukan.utils.SharedPrefsUtils;
 import org.app.mydukan.utils.Utils;
 
 import java.util.ArrayList;
@@ -139,6 +141,8 @@ public class CategoryListActivity extends BaseActivity implements CategoryAdapte
             if (bundle.containsKey(AppContants.SUPPLIER)) {
                 supplierData = (SupplierBindData) bundle.getSerializable(AppContants.SUPPLIER);
                 mSupplierId = supplierData.getId();
+                SharedPrefsUtils.setStringPreference(this,"supplier_name",supplierData.getName());
+                SharedPrefsUtils.setStringPreference(this,"supplier_id",supplierData.getId());
 
             }
         }
@@ -284,30 +288,59 @@ public class CategoryListActivity extends BaseActivity implements CategoryAdapte
                     //open_PageName="schemes";
                     switch (open_PageName) {
                         case "category":
-                            if(userdetails != null && userdetails.getUserinfo() != null && userdetails.getUserinfo().getEmailid() != null && !userdetails.getUserinfo().getEmailid().isEmpty())
-                            Answers.getInstance().logCustom(new CustomEvent("FreeUseBTN")
-                                    .putCustomAttribute("USER_ID/ USER_Email:", userID + "/" + userdetails.getUserinfo().getEmailid()));
 
-                            Intent intent = new Intent(CategoryListActivity.this, ProductListActivity.class);
-                            intent.putExtra(AppContants.CATEGORY_ID, mCatId);
-                            intent.putExtra(AppContants.SUPPLIER, supplierData);
-                            intent.putExtra(AppContants.USER_DETAILS, userdetails);
-                            startActivity(intent);
+                            if(!mCatId.equalsIgnoreCase("-KX41ilBK4hjaSDIV419")) {
+                                if (userdetails != null && userdetails.getUserinfo() != null && userdetails.getUserinfo().getEmailid() != null && !userdetails.getUserinfo().getEmailid().isEmpty())
+                                    Answers.getInstance().logCustom(new CustomEvent("FreeUseBTN")
+                                            .putCustomAttribute("USER_ID/ USER_Email:", userID + "/" + userdetails.getUserinfo().getEmailid()));
+
+                                Intent intent = new Intent(CategoryListActivity.this, ProductListActivity.class);
+                                intent.putExtra(AppContants.CATEGORY_ID, mCatId);
+                                intent.putExtra(AppContants.SUPPLIER, supplierData);
+                                intent.putExtra(AppContants.USER_DETAILS, userdetails);
+                                startActivity(intent);
+                            }
+                            else{
+                                if (userdetails != null && userdetails.getUserinfo() != null && userdetails.getUserinfo().getEmailid() != null && !userdetails.getUserinfo().getEmailid().isEmpty())
+                                    Answers.getInstance().logCustom(new CustomEvent("FreeUseBTN")
+                                            .putCustomAttribute("USER_ID/ USER_Email:", userID + "/" + userdetails.getUserinfo().getEmailid()));
+
+                                Intent intent = new Intent(CategoryListActivity.this, PriceDropActivity.class);
+                                intent.putExtra(AppContants.CATEGORY_ID, mCatId);
+                                intent.putExtra(AppContants.SUPPLIER, supplierData);
+                                intent.putExtra(AppContants.USER_DETAILS, userdetails);
+                                startActivity(intent);
+                            }
 
                             break;
 
                         case "category_filter":
-                            Intent intent1 = new Intent(CategoryListActivity.this, ProductListActivity.class);
-                            intent1.putExtra(AppContants.CATEGORY_ID, mCatId);
-                            intent1.putExtra(AppContants.SUPPLIER, supplierData);
-                            intent1.putExtra(AppContants.USER_DETAILS, userdetails);
-                            HashMap<String, Integer> minMax = new HashMap<String, Integer>();
-                            minMax.put("Min", minRange);
-                             minMax.put("Max", maxRange);
-                            Log.e("Maxxx", (String) ""+maxRange);
-                            intent1.putExtra(AppContants.PRICE_RANGE, minMax);
-                            intent1.putExtra(AppContants.PRICE_TYPE, price_Type);
-                            startActivity(intent1);
+                            if(!mCatId.equalsIgnoreCase("-KX41ilBK4hjaSDIV419")) {
+                                Intent intent1 = new Intent(CategoryListActivity.this, ProductListActivity.class);
+                                intent1.putExtra(AppContants.CATEGORY_ID, mCatId);
+                                intent1.putExtra(AppContants.SUPPLIER, supplierData);
+                                intent1.putExtra(AppContants.USER_DETAILS, userdetails);
+                                HashMap<String, Integer> minMax = new HashMap<String, Integer>();
+                                minMax.put("Min", minRange);
+                                minMax.put("Max", maxRange);
+                                Log.e("Maxxx", (String) "" + maxRange);
+                                intent1.putExtra(AppContants.PRICE_RANGE, minMax);
+                                intent1.putExtra(AppContants.PRICE_TYPE, price_Type);
+                                startActivity(intent1);
+                            }
+                            else{
+                                Intent intent1 = new Intent(CategoryListActivity.this, PriceDropActivity.class);
+                                intent1.putExtra(AppContants.CATEGORY_ID, mCatId);
+                                intent1.putExtra(AppContants.SUPPLIER, supplierData);
+                                intent1.putExtra(AppContants.USER_DETAILS, userdetails);
+                                HashMap<String, Integer> minMax = new HashMap<String, Integer>();
+                                minMax.put("Min", minRange);
+                                minMax.put("Max", maxRange);
+                                Log.e("Maxxx", (String) "" + maxRange);
+                                intent1.putExtra(AppContants.PRICE_RANGE, minMax);
+                                intent1.putExtra(AppContants.PRICE_TYPE, price_Type);
+                                startActivity(intent1);
+                            }
                             break;
                         case "schemes":
                             Answers.getInstance().logCustom(new CustomEvent("Scheme click")
@@ -564,6 +597,8 @@ public class CategoryListActivity extends BaseActivity implements CategoryAdapte
                     compareCategoryList();
                     mAdapter.addItems(mCategoryList);
                     mAdapter.notifyDataSetChanged();
+                    // Save it
+                    MySelectedSchemesHelper.getInstance().storeCategoryList(mCategoryList);
 
                     for (int i = 0; i < ((ArrayList<Category>) data).size(); ++i) {
                         String item = ((ArrayList<Category>) data).get(i).getName();
@@ -704,7 +739,8 @@ public class CategoryListActivity extends BaseActivity implements CategoryAdapte
                                         Answers.getInstance().logCustom(new CustomEvent(mCategoryList.get(index).getName())
                                                 .putCustomAttribute("USER_ID/ USER_Email:", userID + "/" + userdetails.getUserinfo().getEmailid()));
 
-                                        Intent intent = new Intent(CategoryListActivity.this, ProductListActivity.class);
+//                                        Intent intent = new Intent(CategoryListActivity.this, ProductListActivity.class);
+                                        Intent intent = new Intent(CategoryListActivity.this, PriceDropActivity.class);
                                         intent.putExtra(AppContants.CATEGORY_ID, mCatId);
                                         intent.putExtra(AppContants.SUPPLIER, supplierData);
                                         intent.putExtra(AppContants.USER_DETAILS, userdetails);
@@ -1576,11 +1612,13 @@ public class CategoryListActivity extends BaseActivity implements CategoryAdapte
                                 if(userdetails != null && userdetails.getUserinfo() != null && userdetails.getUserinfo().getEmailid() != null && !userdetails.getUserinfo().getEmailid().isEmpty())
                                 Answers.getInstance().logCustom(new CustomEvent(mCategoryList.get(position).getName())
                                         .putCustomAttribute("USER_ID/ USER_Email:", userID + "/" + userdetails.getUserinfo().getEmailid()));
-                                Intent intent = new Intent(CategoryListActivity.this, ProductListActivity.class);
+//                                Intent intent = new Intent(CategoryListActivity.this, ProductListActivity.class);
+                                Intent intent = new Intent(CategoryListActivity.this, PriceDropActivity.class);
                                 intent.putExtra(AppContants.CATEGORY_ID, mCatId);
                                 intent.putExtra(AppContants.SUPPLIER, supplierData);
                                 intent.putExtra(AppContants.USER_DETAILS, userdetails);
                                 startActivity(intent);
+                                // TODO: 12-12-2017 call the price drop activity ... 
                             }
                             break;
 
