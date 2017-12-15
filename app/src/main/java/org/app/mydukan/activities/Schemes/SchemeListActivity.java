@@ -18,6 +18,7 @@ import org.app.mydukan.R;
 import org.app.mydukan.activities.BaseActivity;
 import org.app.mydukan.application.MyDukan;
 import org.app.mydukan.data.Scheme;
+import org.app.mydukan.emailSending.SendEmail;
 import org.app.mydukan.fragments.SchemesPagerFragment;
 import org.app.mydukan.server.ApiManager;
 import org.app.mydukan.server.ApiResult;
@@ -184,10 +185,12 @@ public class SchemeListActivity extends BaseActivity implements TabLayout.OnTabS
                         }
                     });
         }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - getSchemesList : ",e.toString());
             Crashlytics.log(0,"Exception - SchemeListActivity - getSchemesList : ",e.toString());
         }catch (VirtualMachineError ex){
             StringWriter errors = new StringWriter();
             ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - getSchemesList : ",errors.toString());
             Crashlytics.log(0,"1 - SchemeListActivity - getSchemesList : ",errors.toString());
         }
     }

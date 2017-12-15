@@ -40,6 +40,7 @@ import org.app.mydukan.data.Scheme;
 import org.app.mydukan.data.SchemeInfo;
 import org.app.mydukan.data.SchemeRecord;
 import org.app.mydukan.data.SupplierInfo;
+import org.app.mydukan.emailSending.SendEmail;
 import org.app.mydukan.server.ApiManager;
 import org.app.mydukan.server.ApiResult;
 import org.app.mydukan.utils.AppContants;
@@ -378,10 +379,12 @@ public class SchemeDetailsActivity extends BaseActivity {
                         }
                     });
         }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - getSchemeRecordInfo : ",e.toString());
             Crashlytics.log(0,"Exception - SchemeDetailsActivity - getSchemeRecordInfo : ",e.toString());
         }catch (VirtualMachineError ex){
             StringWriter errors = new StringWriter();
             ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - getSchemeRecordInfo : ",errors.toString());
             Crashlytics.log(0,"1 - SchemeDetailsActivity - getSchemeRecordInfo : ",errors.toString());
         }
     }
@@ -414,10 +417,12 @@ public class SchemeDetailsActivity extends BaseActivity {
                 }
             });
         }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - addSchemeRecord : ",e.toString());
             Crashlytics.log(0,"Exception - SchemeDetailsActivity - addSchemeRecord : ",e.toString());
         }catch (VirtualMachineError ex){
             StringWriter errors = new StringWriter();
             ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - addSchemeRecord : ",errors.toString());
             Crashlytics.log(0,"1 - SchemeDetailsActivity - addSchemeRecord : ",errors.toString());
         }
 

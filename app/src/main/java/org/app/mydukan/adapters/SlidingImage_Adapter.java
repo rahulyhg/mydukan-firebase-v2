@@ -23,8 +23,11 @@ import org.app.mydukan.activities.PaytmGatewayActivity;
 import org.app.mydukan.appSubscription.PriceDropSubscription;
 import org.app.mydukan.data.ImageModel;
 import org.app.mydukan.data.User;
+import org.app.mydukan.emailSending.SendEmail;
 import org.app.mydukan.utils.AppContants;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
 
 public class SlidingImage_Adapter extends PagerAdapter {
@@ -93,9 +96,12 @@ public class SlidingImage_Adapter extends PagerAdapter {
             // imageView.setImageResource(imageModelArrayList.get(position).getImage_drawable());
             view.addView(imageLayout, 0);
         }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - instantiateItem : ",e.toString());
             e.printStackTrace();
-        }catch (OutOfMemoryError e){
-            e.printStackTrace();
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - instantiateItem : ",errors.toString());
         }
         return imageLayout;
     }

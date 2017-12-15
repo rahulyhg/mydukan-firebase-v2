@@ -16,6 +16,7 @@ import org.app.mydukan.adapters.OrderAdapter;
 import org.app.mydukan.application.MyDukan;
 import org.app.mydukan.data.Order;
 import org.app.mydukan.data.OrderProduct;
+import org.app.mydukan.emailSending.SendEmail;
 import org.app.mydukan.utils.AppContants;
 import org.app.mydukan.utils.SimpleDividerItemDecoration;
 
@@ -89,10 +90,12 @@ public class OrderDetailsActivity extends BaseActivity {
             setSummaryCard();
             getProductList();
         }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - onCreate : ",e.toString());
             Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() + " - onCreate : ",e.toString());
         }catch (VirtualMachineError ex){
             StringWriter errors = new StringWriter();
             ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - onCreate : ",errors.toString());
             Crashlytics.log(0,this.getClass().getSimpleName() + " - onCreate : ",errors.toString());
         }
     }

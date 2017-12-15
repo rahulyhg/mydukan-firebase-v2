@@ -35,6 +35,7 @@ import org.app.mydukan.application.MyDukan;
 import org.app.mydukan.data.Product;
 import org.app.mydukan.data.SupplierBindData;
 import org.app.mydukan.data.User;
+import org.app.mydukan.emailSending.SendEmail;
 import org.app.mydukan.fragments.ProductFragment;
 import org.app.mydukan.fragments.ProductPagerFragment;
 import org.app.mydukan.server.ApiManager;
@@ -183,10 +184,12 @@ public class ProductListActivity extends BaseActivity implements TabLayout.OnTab
                 return;
             }
         }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - onCreate : ",e.toString());
             Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() + " - onCreate : ",e.toString());
         }catch (VirtualMachineError ex){
             StringWriter errors = new StringWriter();
             ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - onCreate : ",errors.toString());
             Crashlytics.log(0,this.getClass().getSimpleName() + " - onCreate : ",errors.toString());
         }
     }
@@ -341,10 +344,12 @@ public class ProductListActivity extends BaseActivity implements TabLayout.OnTab
                     });
         } catch (Exception e){
             dismissProgress();
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - getProductList : ",e.toString());
             Crashlytics.log(0,"Exception - ProductListActivity - getProductList : ",e.toString());
         }catch (VirtualMachineError ex){
             StringWriter errors = new StringWriter();
             ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - getProductList : ",errors.toString());
             Crashlytics.log(0,"1 - ProductListActivity - getProductList : ",errors.toString());
         }
     }
@@ -379,10 +384,12 @@ public class ProductListActivity extends BaseActivity implements TabLayout.OnTab
                         }
                     });
         }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - addProductToCart : ",e.toString());
             Crashlytics.log(0,"Exception - ProductListActivity - addProductToCart : ",e.toString());
         }catch (VirtualMachineError ex){
             StringWriter errors = new StringWriter();
             ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - addProductToCart : ",errors.toString());
             Crashlytics.log(0,"1 - ProductListActivity - addProductToCart : ",errors.toString());
         }
     }
@@ -411,10 +418,12 @@ public class ProductListActivity extends BaseActivity implements TabLayout.OnTab
                         }
                     });
         }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - addProductToClaimList : ",e.toString());
             Crashlytics.log(0,"Exception - ProductListActivity - addProductToClaimList : ",e.toString());
         }catch (VirtualMachineError ex){
             StringWriter errors = new StringWriter();
             ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - addProductToClaimList : ",errors.toString());
             Crashlytics.log(0,"1 - ProductListActivity - addProductToClaimList : ",errors.toString());
         }
     }

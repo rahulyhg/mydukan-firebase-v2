@@ -22,6 +22,7 @@ import org.app.mydukan.R;
 import org.app.mydukan.application.MyDukan;
 import org.app.mydukan.data.Product;
 import org.app.mydukan.data.SupplierBindData;
+import org.app.mydukan.emailSending.SendEmail;
 import org.app.mydukan.server.ApiManager;
 import org.app.mydukan.server.ApiResult;
 import org.app.mydukan.utils.AppContants;
@@ -152,10 +153,12 @@ public class AddIMEIActivity extends BaseActivity {
                 }
             });
         }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - onCreate : ",e.toString());
             Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() + " - onCreate : ",e.toString());
         }catch (VirtualMachineError ex){
             StringWriter errors = new StringWriter();
             ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - onCreate : ",errors.toString());
             Crashlytics.log(0,this.getClass().getSimpleName() + " - onCreate : ",errors.toString());
         }
 
@@ -234,10 +237,12 @@ public class AddIMEIActivity extends BaseActivity {
                 }
             });
         }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - addProductToClaimList : ",e.toString());
             Crashlytics.log(0,"Exception - AddIMEIActivity - addProductToClaimList : ",e.toString());
         }catch (VirtualMachineError ex){
             StringWriter errors = new StringWriter();
             ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - addProductToClaimList : ",errors.toString());
             Crashlytics.log(0,"1 - AddIMEIActivity - addProductToClaimList : ",errors.toString());
         }
     }

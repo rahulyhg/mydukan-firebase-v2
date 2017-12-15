@@ -33,6 +33,7 @@ import org.app.mydukan.R;
 import org.app.mydukan.activities.ProductDescriptionActivity;
 import org.app.mydukan.data.Product;
 import org.app.mydukan.data.SupplierBindData;
+import org.app.mydukan.emailSending.SendEmail;
 import org.app.mydukan.server.ApiManager;
 import org.app.mydukan.server.ApiResult;
 import org.app.mydukan.utils.AppContants;
@@ -151,10 +152,12 @@ public class DescriptionFragment extends Fragment {
             fetchProductAndShow();
 //        fullpage.setVisibility(View.VISIBLE);
         }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - onCreate : ",e.toString());
             Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() + " - onCreate : ",e.toString());
         }catch (VirtualMachineError ex){
             StringWriter errors = new StringWriter();
             ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - onCreate : ",errors.toString());
             Crashlytics.log(0,this.getClass().getSimpleName() + " - onCreate : ",errors.toString());
         }
         return mView;
@@ -253,10 +256,12 @@ public class DescriptionFragment extends Fragment {
                         }
                     });
         }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - fetchProductAndShow : ",e.toString());
             Crashlytics.log(0,"Exception - DescriptionFragment - fetchProductAndShow : ",e.toString());
         }catch (VirtualMachineError ex){
             StringWriter errors = new StringWriter();
             ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - fetchProductAndShow : ",errors.toString());
             Crashlytics.log(0,"1 - DescriptionFragment - fetchProductAndShow : ",errors.toString());
         }
     }
@@ -418,12 +423,22 @@ public class DescriptionFragment extends Fragment {
 
         @Override
         public void onPageStarted(WebView view, String url, Bitmap favicon) {
-            super.onPageStarted(view, url, favicon);
-            mProgress = new ProgressDialog(context);
-            //  mProgress.setTitle(getString(R.string.Please_wait));
-            mProgress.setMessage(getString(R.string.Page_is_loading));
-            mProgress.setCancelable(true);
-            mProgress.show();
+            try {
+                super.onPageStarted(view, url, favicon);
+                mProgress = new ProgressDialog(context);
+                //  mProgress.setTitle(getString(R.string.Please_wait));
+                mProgress.setMessage(getString(R.string.Page_is_loading));
+                mProgress.setCancelable(true);
+                mProgress.show();
+            }catch (Exception e){
+                new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - onPageStarted : ",e.toString());
+                Crashlytics.log(0,"Exception - DescriptionFragment - onPageStarted : ",e.toString());
+            }catch (VirtualMachineError ex){
+                StringWriter errors = new StringWriter();
+                ex.printStackTrace(new PrintWriter(errors));
+                new SendEmail().sendEmail(this.getClass().getSimpleName() + " - onPageStarted : ",errors.toString());
+                Crashlytics.log(0,"1 - DescriptionFragment - onPageStarted : ",errors.toString());
+            }
         }
 
         @Override
@@ -437,7 +452,13 @@ public class DescriptionFragment extends Fragment {
                     mProgress = null;
                 }
             }catch (Exception e){
-                e.printStackTrace();
+                new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - onPageFinished : ",e.toString());
+                Crashlytics.log(0,"Exception - DescriptionFragment - onPageFinished : ",e.toString());
+            }catch (VirtualMachineError ex){
+                StringWriter errors = new StringWriter();
+                ex.printStackTrace(new PrintWriter(errors));
+                new SendEmail().sendEmail(this.getClass().getSimpleName() + " - onPageFinished : ",errors.toString());
+                Crashlytics.log(0,"1 - DescriptionFragment - onPageFinished : ",errors.toString());
             }
         }
 

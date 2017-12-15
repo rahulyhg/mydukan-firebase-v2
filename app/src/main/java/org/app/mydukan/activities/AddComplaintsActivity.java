@@ -16,6 +16,7 @@ import com.crashlytics.android.Crashlytics;
 import org.app.mydukan.R;
 import org.app.mydukan.application.MyDukan;
 import org.app.mydukan.data.ComplaintConstants;
+import org.app.mydukan.emailSending.SendEmail;
 import org.app.mydukan.server.ApiManager;
 import org.app.mydukan.server.ApiResult;
 import org.app.mydukan.utils.AppContants;
@@ -177,10 +178,12 @@ public class AddComplaintsActivity extends BaseActivity {
                 }
             });
         }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - addSupplierComplaint : ",e.toString());
             Crashlytics.log(0,"Exception - AddComplaintsActivity - addSupplierComplaint : ",e.toString());
         }catch (VirtualMachineError ex){
             StringWriter errors = new StringWriter();
             ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - addSupplierComplaint : ",errors.toString());
             Crashlytics.log(0,"1 - AddComplaintsActivity - addSupplierComplaint : ",errors.toString());
         }
 

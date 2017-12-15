@@ -34,6 +34,7 @@ import org.app.mydukan.data.Feed;
 import org.app.mydukan.data.Product;
 import org.app.mydukan.data.Supplier;
 import org.app.mydukan.data.SupplierBindData;
+import org.app.mydukan.emailSending.SendEmail;
 import org.app.mydukan.server.ApiManager;
 import org.app.mydukan.server.ApiResult;
 import org.app.mydukan.utils.AppContants;
@@ -219,10 +220,12 @@ public class MydukanMessagingService extends FirebaseMessagingService {
                 }
             });
         } catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - retrieveProductData : ",e.toString());
             Crashlytics.log(0,"Exception - MydukanMessagingService - retrieveProductData : ",e.toString());
         }catch (VirtualMachineError ex){
             StringWriter errors = new StringWriter();
             ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - retrieveProductData : ",errors.toString());
             Crashlytics.log(0,"1 - MydukanMessagingService - retrieveProductData : ",errors.toString());
         }
     }
@@ -240,10 +243,12 @@ public class MydukanMessagingService extends FirebaseMessagingService {
                 }
             });
         } catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - retrieveFeedsData : ",e.toString());
             Crashlytics.log(0,"Exception - MydukanMessagingService - retrieveFeedsData : ",e.toString());
         }catch (VirtualMachineError ex){
             StringWriter errors = new StringWriter();
             ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - retrieveFeedsData : ",errors.toString());
             Crashlytics.log(0,"1 - MydukanMessagingService - retrieveFeedsData : ",errors.toString());
         }
     }

@@ -23,6 +23,7 @@ import com.google.android.youtube.player.YouTubePlayer.Provider;
 import com.google.android.youtube.player.YouTubePlayerView;
 
 import org.app.mydukan.R;
+import org.app.mydukan.emailSending.SendEmail;
 import org.app.mydukan.utils.AppContants;
 import org.app.mydukan.youtube.Config;
 
@@ -135,10 +136,12 @@ public class VideoActivity extends YouTubeBaseActivity implements YouTubePlayer.
             // Initializing v/home/rk/Desktop/Photos.zipideo player with developer key
             youTubeView.initialize(Config.DEVELOPER_KEY, this);
         }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - onCreate : ",e.toString());
             Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() + " - onCreate : ",e.toString());
         }catch (VirtualMachineError ex){
             StringWriter errors = new StringWriter();
             ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - onCreate : ",errors.toString());
             Crashlytics.log(0,this.getClass().getSimpleName() + " - onCreate : ",errors.toString());
         }
 

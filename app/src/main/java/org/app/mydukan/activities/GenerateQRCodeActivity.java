@@ -32,6 +32,7 @@ import com.squareup.picasso.Picasso;
 import org.app.mydukan.R;
 import org.app.mydukan.application.MyDukan;
 import org.app.mydukan.data.User;
+import org.app.mydukan.emailSending.SendEmail;
 import org.app.mydukan.server.ApiManager;
 import org.app.mydukan.server.ApiResult;
 import org.app.mydukan.utils.AppContants;
@@ -105,10 +106,12 @@ public class GenerateQRCodeActivity extends BaseActivity implements OnClickListe
                 getUserProfile();
             }
         }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - onCreate : ",e.toString());
             Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() + " - onCreate : ",e.toString());
         }catch (VirtualMachineError ex){
             StringWriter errors = new StringWriter();
             ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - onCreate : ",errors.toString());
             Crashlytics.log(0,this.getClass().getSimpleName() + " - onCreate : ",errors.toString());
         }
     }
@@ -140,37 +143,50 @@ public class GenerateQRCodeActivity extends BaseActivity implements OnClickListe
                 });
             }
         }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - upLoadQRCode : ",e.toString());
             Crashlytics.log(0,"Exception - GenerateQRCodeActivity - upLoadQRCode : ",e.toString());
         }catch (VirtualMachineError ex){
             StringWriter errors = new StringWriter();
             ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - upLoadQRCode : ",errors.toString());
             Crashlytics.log(0,"2 - GenerateQRCodeActivity - upLoadQRCode : ",errors.toString());
         }
     }
 
     private void getUserProfile() {
-        if (mApp.getFirebaseAuth().getCurrentUser() == null) {
-            return;
-        }
-        ApiManager.getInstance(GenerateQRCodeActivity.this).getUserProfile(mApp.getFirebaseAuth().getCurrentUser().getUid(), new ApiResult() {
-            @Override
-            public void onSuccess(Object data) {
-                if (data != null) {
-                    userdetails = (User) data;
-                    myDukhan_UserId=mApp.getFirebaseAuth().getCurrentUser().getUid();
-                    if (userdetails!=null){
-                        initView(GenerateQRCodeActivity.this, myDukhan_UserId, userdetails);//Initialise the Activity View.
+        try {
+            if (mApp.getFirebaseAuth().getCurrentUser() == null) {
+                return;
+            }
+            ApiManager.getInstance(GenerateQRCodeActivity.this).getUserProfile(mApp.getFirebaseAuth().getCurrentUser().getUid(), new ApiResult() {
+                @Override
+                public void onSuccess(Object data) {
+                    if (data != null) {
+                        userdetails = (User) data;
+                        myDukhan_UserId = mApp.getFirebaseAuth().getCurrentUser().getUid();
+                        if (userdetails != null) {
+                            initView(GenerateQRCodeActivity.this, myDukhan_UserId, userdetails);//Initialise the Activity View.
+                        }
+                        dismissProgress();
+                        return;
                     }
-                    dismissProgress();
-                    return;
                 }
-            }
-            @Override
-            public void onFailure(String response) {
-                //Do when there is no data present in firebase
-                dismissProgress();
-            }
-        });
+
+                @Override
+                public void onFailure(String response) {
+                    //Do when there is no data present in firebase
+                    dismissProgress();
+                }
+            });
+        }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - getUserProfile : ",e.toString());
+            Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() + " - getUserProfile : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - getUserProfile : ",errors.toString());
+            Crashlytics.log(0,this.getClass().getSimpleName() + " - getUserProfile : ",errors.toString());
+        }
     }
 
 
@@ -303,10 +319,12 @@ public class GenerateQRCodeActivity extends BaseActivity implements OnClickListe
                 }
             });
         }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - onCreate : ",e.toString());
             Crashlytics.log(0,"Exception - GenerateQRCodeActivity - addQrCodeUrl : ",e.toString());
         }catch (VirtualMachineError ex){
             StringWriter errors = new StringWriter();
             ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - onCreate : ",errors.toString());
             Crashlytics.log(0,"1 - GenerateQRCodeActivity - addQrCodeUrl : ",errors.toString());
         }
     }

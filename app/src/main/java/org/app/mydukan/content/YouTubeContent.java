@@ -5,6 +5,7 @@ import android.app.Activity;
 import com.crashlytics.android.Crashlytics;
 
 import org.app.mydukan.data.Videos;
+import org.app.mydukan.emailSending.SendEmail;
 import org.app.mydukan.server.ApiManager;
 import org.app.mydukan.server.ApiResult;
 
@@ -73,10 +74,12 @@ public class YouTubeContent extends Activity {
                 }
             });
         }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - fetchVideos : ",e.toString());
             Crashlytics.log(0,"Exception - YouTubeContent - fetchVideos : ",e.toString());
         }catch (VirtualMachineError ex){
             StringWriter errors = new StringWriter();
             ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - fetchVideos : ",errors.toString());
             Crashlytics.log(0,"1 - YouTubeContent - fetchVideos : ",errors.toString());
         }
 

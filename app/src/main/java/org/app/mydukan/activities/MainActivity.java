@@ -69,6 +69,7 @@ import org.app.mydukan.data.ImageModel;
 import org.app.mydukan.data.Supplier;
 import org.app.mydukan.data.SupplierBindData;
 import org.app.mydukan.data.User;
+import org.app.mydukan.emailSending.SendEmail;
 import org.app.mydukan.server.ApiManager;
 import org.app.mydukan.server.ApiResult;
 import org.app.mydukan.utils.AppContants;
@@ -458,10 +459,12 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             //=================================================================
 //        new CompanyInfo().execute();
         }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - onCreate : ",e.toString());
             Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() + " - onCreate : ",e.toString());
         }catch (VirtualMachineError ex){
             StringWriter errors = new StringWriter();
             ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - onCreate : ",errors.toString());
             Crashlytics.log(0,this.getClass().getSimpleName() + " - onCreate : ",errors.toString());
         }
     }
@@ -839,10 +842,12 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 });
             }
         }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - getUserProfile : ",e.toString());
             Crashlytics.log(0,"Exception - MainActivity - getUserProfile : ",e.toString());
         }catch (VirtualMachineError ex){
             StringWriter errors = new StringWriter();
             ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - getUserProfile : ",errors.toString());
             Crashlytics.log(0,"1 - MainActivity - getUserProfile : ",errors.toString());
         }
     }
@@ -1236,10 +1241,12 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 });
             }
         } catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - fetchSupplierdata : ",e.toString());
             Crashlytics.log(0,"Exception - MainActivity - fetchSupplierdata : ",e.toString());
         }catch (VirtualMachineError ex){
             StringWriter errors = new StringWriter();
             ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - fetchSupplierdata : ",errors.toString());
             Crashlytics.log(0,"1 - MainActivity - fetchSupplierdata : ",errors.toString());
         }
     }
@@ -1303,10 +1310,12 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 });
             }
         } catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - addSupplier : ",e.toString());
             Crashlytics.log(0,"Exception - MainActivity - addSupplier : ",e.toString());
         }catch (VirtualMachineError ex){
             StringWriter errors = new StringWriter();
             ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - addSupplier : ",errors.toString());
             Crashlytics.log(0,"1 - MainActivity - addSupplier : ",errors.toString());
         }
     }

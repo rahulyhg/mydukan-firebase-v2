@@ -34,6 +34,7 @@ import org.app.mydukan.activities.FeedPrifileActivity;
 import org.app.mydukan.activities.WebViewActivity;
 import org.app.mydukan.adapters.AdapterListFeed;
 import org.app.mydukan.data.Feed;
+import org.app.mydukan.emailSending.SendEmail;
 import org.app.mydukan.server.ApiManager;
 import org.app.mydukan.server.ApiResult;
 import org.app.mydukan.services.VolleyNetworkRequest;
@@ -101,10 +102,12 @@ public class OneFragment extends Fragment implements AdapterListFeed.OnClickItem
             AdRequest adRequest = new AdRequest.Builder().build();
             mAdView.loadAd(adRequest);
         }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - onCreate : ",e.toString());
             Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() + " - onCreate : ",e.toString());
         }catch (VirtualMachineError ex){
             StringWriter errors = new StringWriter();
             ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - onCreate : ",errors.toString());
             Crashlytics.log(0,this.getClass().getSimpleName() + " - onCreate : ",errors.toString());
         }
         return mView;
@@ -196,10 +199,12 @@ public class OneFragment extends Fragment implements AdapterListFeed.OnClickItem
             });
         } catch (Exception e){
             showProgress(false);
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - retriveFeedsData : ",e.toString());
             Crashlytics.log(0,"Exception - OneFargment - retriveFeedsData : ",e.toString());
         }catch (VirtualMachineError ex){
             StringWriter errors = new StringWriter();
             ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - retriveFeedsData : ",errors.toString());
             Crashlytics.log(0,"1 - OneFargment - retriveFeedsData : ",errors.toString());
         }
     }

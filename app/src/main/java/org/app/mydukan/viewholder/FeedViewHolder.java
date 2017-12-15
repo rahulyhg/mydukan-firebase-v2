@@ -29,8 +29,11 @@ import org.app.mydukan.activities.MyNetworksActivity;
 import org.app.mydukan.adapters.AdapterListFeed;
 import org.app.mydukan.adapters.CircleTransform;
 import org.app.mydukan.data.Feed;
+import org.app.mydukan.emailSending.SendEmail;
 import org.app.mydukan.utils.Utils;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.text.ParseException;
 
 /**
@@ -134,10 +137,19 @@ public class FeedViewHolder extends RecyclerView.ViewHolder implements View.OnCl
             ivContent.setVisibility(View.GONE);
             return;
         }
-        StorageReference storageRefFeed = FirebaseStorage.getInstance().getReferenceFromUrl(url);
-        Picasso.with(ivContent.getContext()).load(url).placeholder(R.drawable.img_holder)
-                .resize(300, 180) // optional
-                .into(ivContent);
+        try {
+            StorageReference storageRefFeed = FirebaseStorage.getInstance().getReferenceFromUrl(url);
+            Picasso.with(ivContent.getContext()).load(url).placeholder(R.drawable.img_holder)
+                    .resize(300, 180) // optional
+                    .into(ivContent);
+        }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - setIvContent : ",e.toString());
+            e.printStackTrace();
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - setIvContent : ",errors.toString());
+        }
         //    Glide.with(ivContent.getContext()).using(new FirebaseImageLoader()).load(storageRefFeed).placeholder(R.drawable.img_holder).centerCrop().override(300,300).into(ivContent);
     }
 

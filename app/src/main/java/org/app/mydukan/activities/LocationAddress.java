@@ -12,6 +12,8 @@ import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
 
+import org.app.mydukan.emailSending.SendEmail;
+
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -129,9 +131,11 @@ public class LocationAddress {
                     }
                 }catch (Exception e){
                     Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() + " - onCreate : ",e.toString());
+                    new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - onCreate : ",e.toString());
                 }catch (VirtualMachineError ex){
                     StringWriter errors = new StringWriter();
                     ex.printStackTrace(new PrintWriter(errors));
+                    new SendEmail().sendEmail(this.getClass().getSimpleName() + " - onCreate : ",errors.toString());
                     Crashlytics.log(0,this.getClass().getSimpleName() + " - onCreate : ",errors.toString());
                 }
             }

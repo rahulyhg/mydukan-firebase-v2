@@ -15,6 +15,7 @@ import com.moe.pushlibrary.MoEHelper;
 import com.twitter.sdk.android.core.TwitterAuthConfig;
 import com.twitter.sdk.android.core.TwitterCore;
 
+import org.app.mydukan.emailSending.SendEmail;
 import org.app.mydukan.server.ApiManager;
 import org.app.mydukan.server.ApiResult;
 import org.app.mydukan.utils.AppContants;
@@ -124,10 +125,12 @@ public class MyDukan extends Application {
 
             }
         }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - checkAndSendToken : ",e.toString());
             Crashlytics.log(0,"Exception - MyDukan - checkAndSendToken : ",e.toString());
         }catch (VirtualMachineError ex){
             StringWriter errors = new StringWriter();
             ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - checkAndSendToken : ",errors.toString());
             Crashlytics.log(0,"1 - MyDukan - checkAndSendToken : ",errors.toString());
         }
     }

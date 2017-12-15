@@ -17,6 +17,7 @@ import org.app.mydukan.activities.Schemes.SchemeDetailsActivity;
 import org.app.mydukan.adapters.SchemesAdapter;
 import org.app.mydukan.application.MyDukan;
 import org.app.mydukan.data.Scheme;
+import org.app.mydukan.emailSending.SendEmail;
 import org.app.mydukan.utils.AppContants;
 import org.app.mydukan.utils.SimpleDividerItemDecoration;
 
@@ -60,10 +61,12 @@ public class SchemeFragment extends android.support.v4.app.Fragment implements S
             setupSchemeCard(v);
             setTheSchemes();
         }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - onCreate : ",e.toString());
             Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() + " - onCreate : ",e.toString());
         }catch (VirtualMachineError ex){
             StringWriter errors = new StringWriter();
             ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - onCreate : ",errors.toString());
             Crashlytics.log(0,this.getClass().getSimpleName() + " - onCreate : ",errors.toString());
         }
         return v;

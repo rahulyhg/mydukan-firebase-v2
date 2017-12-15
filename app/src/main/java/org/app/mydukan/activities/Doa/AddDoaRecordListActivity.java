@@ -25,6 +25,7 @@ import org.app.mydukan.data.Category;
 import org.app.mydukan.data.DoaRecord;
 import org.app.mydukan.data.ProductInfo;
 import org.app.mydukan.data.SupplierInfo;
+import org.app.mydukan.emailSending.SendEmail;
 import org.app.mydukan.server.ApiManager;
 import org.app.mydukan.server.ApiResult;
 import org.app.mydukan.utils.AppContants;
@@ -228,10 +229,12 @@ public class AddDoaRecordListActivity extends BaseActivity {
                 }
             });
         }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - setupCategorySpinner : ",e.toString());
             Crashlytics.log(0,"Exception - AddDoaRecordListActivity - setupCategorySpinner : ",e.toString());
         }catch (VirtualMachineError ex){
             StringWriter errors = new StringWriter();
             ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - setupCategorySpinner : ",errors.toString());
             Crashlytics.log(0,"1 - AddDoaRecordListActivity - setupCategorySpinner : ",errors.toString());
         }
     }
@@ -270,10 +273,12 @@ public class AddDoaRecordListActivity extends BaseActivity {
                 }
             });
         }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - setupNameSpinner : ",e.toString());
             Crashlytics.log(0,"Exception - AddDoaRecordListActivity - setupNameSpinner : ",e.toString());
         }catch (VirtualMachineError ex){
             StringWriter errors = new StringWriter();
             ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - setupNameSpinner : ",errors.toString());
             Crashlytics.log(0,"1 - AddDoaRecordListActivity - setupNameSpinner : ",errors.toString());
         }
     }
@@ -379,10 +384,12 @@ public class AddDoaRecordListActivity extends BaseActivity {
                         }
                     });
         }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - addDoaRecord : ",e.toString());
             Crashlytics.log(0,"Exception - AddDoaRecordListActivity - addDoaRecord : ",e.toString());
         }catch (VirtualMachineError ex){
             StringWriter errors = new StringWriter();
             ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - addDoaRecord : ",errors.toString());
             Crashlytics.log(0,"1 - AddDoaRecordListActivity - addDoaRecord : ",errors.toString());
         }
 

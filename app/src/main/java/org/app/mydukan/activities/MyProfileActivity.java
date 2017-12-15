@@ -57,6 +57,7 @@ import org.app.mydukan.application.MyDukan;
 import org.app.mydukan.data.ChattUser;
 import org.app.mydukan.data.Feed;
 import org.app.mydukan.data.User;
+import org.app.mydukan.emailSending.SendEmail;
 import org.app.mydukan.server.ApiManager;
 import org.app.mydukan.server.ApiResult;
 import org.app.mydukan.utils.AppContants;
@@ -616,10 +617,12 @@ public class MyProfileActivity extends BaseActivity implements MyFeedAdapter.OnC
                 }
             });
         }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - getProfileData : ",e.toString());
             Crashlytics.log(0,"Exception - MyProfileActivity - getProfileData : ",e.toString());
         }catch (VirtualMachineError ex){
             StringWriter errors = new StringWriter();
             ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - getProfileData : ",errors.toString());
             Crashlytics.log(0,"1 - MyProfileActivity - getProfileData : ",errors.toString());
         }
     }

@@ -11,6 +11,7 @@ import com.crashlytics.android.Crashlytics;
 
 import org.app.mydukan.R;
 import org.app.mydukan.data.Videos;
+import org.app.mydukan.emailSending.SendEmail;
 import org.app.mydukan.server.ApiManager;
 import org.app.mydukan.server.ApiResult;
 
@@ -49,10 +50,12 @@ public class VideoListFragment extends ListFragment {
 
             fetchVideos();
         }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - onCreate : ",e.toString());
             Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() + " - onCreate : ",e.toString());
         }catch (VirtualMachineError ex){
             StringWriter errors = new StringWriter();
             ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - onCreate : ",errors.toString());
             Crashlytics.log(0,this.getClass().getSimpleName() + " - onCreate : ",errors.toString());
         }
 
@@ -140,25 +143,35 @@ public class VideoListFragment extends ListFragment {
         }*/
     }
     private void fetchVideos() {
-        ApiManager.getInstance(getActivity()).getVideosList(new ApiResult() {
-            @Override
-            public void onSuccess(Object data) {
-                if(data!=null){
-                   videosList = (ArrayList<Videos>) data;
+        try {
+            ApiManager.getInstance(getActivity()).getVideosList(new ApiResult() {
+                @Override
+                public void onSuccess(Object data) {
+                    if (data != null) {
+                        videosList = (ArrayList<Videos>) data;
 
                  /*   for (Videos vSnapshot : videosList ) {
                         addItem(new YouTubeVideo(vSnapshot.getVideoID(), vSnapshot.getVideoINFO()));
                     }*/
-                    setListAdapter(new VideoListAdapter(getActivity(),videosList));
+                        setListAdapter(new VideoListAdapter(getActivity(), videosList));
+                    }
                 }
-            }
 
-            @Override
-            public void onFailure(String response) {
+                @Override
+                public void onFailure(String response) {
 
 
-            }
-        });
+                }
+            });
+        }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - fetchVideos : ",e.toString());
+            Crashlytics.log(0,"Exception - YouTubeContent - fetchVideos : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - fetchVideos : ",errors.toString());
+            Crashlytics.log(0,"1 - YouTubeContent - fetchVideos : ",errors.toString());
+        }
 
     }
 

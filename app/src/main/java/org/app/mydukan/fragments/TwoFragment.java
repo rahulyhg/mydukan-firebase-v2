@@ -27,6 +27,7 @@ import com.google.firebase.auth.FirebaseUser;
 import org.app.mydukan.R;
 import org.app.mydukan.adapters.AdapterListFeed;
 import org.app.mydukan.data.Feed;
+import org.app.mydukan.emailSending.SendEmail;
 import org.app.mydukan.services.VolleyNetworkRequest;
 import org.app.mydukan.utils.AppContants;
 import org.app.mydukan.utils.FeedRetriever2;
@@ -91,10 +92,12 @@ public class TwoFragment extends Fragment implements AdapterListFeed.OnClickItem
             AdRequest adRequest = new AdRequest.Builder().build();
             mAdView.loadAd(adRequest);
         }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - onCreate : ",e.toString());
             Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() + " - onCreate : ",e.toString());
         }catch (VirtualMachineError ex){
             StringWriter errors = new StringWriter();
             ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - onCreate : ",errors.toString());
             Crashlytics.log(0,this.getClass().getSimpleName() + " - onCreate : ",errors.toString());
         }
         return mView;

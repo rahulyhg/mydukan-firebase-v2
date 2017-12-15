@@ -58,6 +58,7 @@ import org.app.mydukan.data.AppSubscriptionInfo;
 import org.app.mydukan.data.Category;
 import org.app.mydukan.data.SupplierBindData;
 import org.app.mydukan.data.User;
+import org.app.mydukan.emailSending.SendEmail;
 import org.app.mydukan.server.ApiManager;
 import org.app.mydukan.server.ApiResult;
 import org.app.mydukan.utils.AppContants;
@@ -361,52 +362,64 @@ public class CategoryListActivity extends BaseActivity implements CategoryAdapte
             mFirebaseRemoteConfig.setConfigSettings(configSettings);
             fetchWelcome();
         }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - onCreate : ",e.toString());
             Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() + " - onCreate : ",e.toString());
         }catch (VirtualMachineError ex){
             StringWriter errors = new StringWriter();
             ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - onCreate : ",errors.toString());
             Crashlytics.log(0,this.getClass().getSimpleName() + " - onCreate : ",errors.toString());
         }
 
     }
 
     private void updateSubscriptionInfo(final Context mContext, final AppSubscriptionInfo appSubscriptionInfo) {
-        userdetails.setAppSubscriptionInfo(appSubscriptionInfo);
-        HashMap<String, Object> userInfo = new HashMap<>();
-        userInfo.put(AppContants.SUBSCRIPTION_TRIALDAYS, appSubscriptionInfo.getSubscription_TRIALDAYS());
-        userInfo.put(AppContants.SUBSCRIPTION_TRIALSTARTDATE, appSubscriptionInfo.getSubscription_TRIALSTARTDATE());
-        userInfo.put(AppContants.SUBSCRIPTION_EXTRAINFO, appSubscriptionInfo.getSubcription_EXTRAINFO());
-        userInfo.put(AppContants.SUBSCRIPTION_USERID, userID);
-        //Initialize AppDukan
-        new AppPreference().setSubscribing(getApplicationContext(),true);
-        ApiManager.getInstance(mContext).updateUserSubscription(mApp.getFirebaseAuth().getCurrentUser().getUid(),
-                userInfo, new ApiResult() {
-                    @Override
-                    public void onSuccess(Object data) {
-                        Log.i(MyDukan.LOGTAG, "User updated successfully");
-                        if (userdetails != null) {
-                            if (userdetails.getAppSubscriptionInfo() != null) {
-                                if(userdetails != null && userdetails.getUserinfo() != null && userdetails.getUserinfo().getEmailid() != null && !userdetails.getUserinfo().getEmailid().isEmpty())
-                                    Answers.getInstance().logCustom(new CustomEvent("FreeUseBTN")
-                                            .putCustomAttribute("USER_ID/ USER_Email:", userID + "/" + userdetails.getUserinfo().getEmailid()));
+        try {
+            userdetails.setAppSubscriptionInfo(appSubscriptionInfo);
+            HashMap<String, Object> userInfo = new HashMap<>();
+            userInfo.put(AppContants.SUBSCRIPTION_TRIALDAYS, appSubscriptionInfo.getSubscription_TRIALDAYS());
+            userInfo.put(AppContants.SUBSCRIPTION_TRIALSTARTDATE, appSubscriptionInfo.getSubscription_TRIALSTARTDATE());
+            userInfo.put(AppContants.SUBSCRIPTION_EXTRAINFO, appSubscriptionInfo.getSubcription_EXTRAINFO());
+            userInfo.put(AppContants.SUBSCRIPTION_USERID, userID);
+            //Initialize AppDukan
+            new AppPreference().setSubscribing(getApplicationContext(), true);
+            ApiManager.getInstance(mContext).updateUserSubscription(mApp.getFirebaseAuth().getCurrentUser().getUid(),
+                    userInfo, new ApiResult() {
+                        @Override
+                        public void onSuccess(Object data) {
+                            Log.i(MyDukan.LOGTAG, "User updated successfully");
+                            if (userdetails != null) {
+                                if (userdetails.getAppSubscriptionInfo() != null) {
+                                    if (userdetails != null && userdetails.getUserinfo() != null && userdetails.getUserinfo().getEmailid() != null && !userdetails.getUserinfo().getEmailid().isEmpty())
+                                        Answers.getInstance().logCustom(new CustomEvent("FreeUseBTN")
+                                                .putCustomAttribute("USER_ID/ USER_Email:", userID + "/" + userdetails.getUserinfo().getEmailid()));
 
-                                Intent intent = new Intent(CategoryListActivity.this, ProductListActivity.class);
-                                intent.putExtra(AppContants.CATEGORY_ID, mCatId);
-                                intent.putExtra(AppContants.SUPPLIER, supplierData);
-                                intent.putExtra(AppContants.USER_DETAILS, userdetails);
-                                startActivity(intent);
-                                new AppPreference().setSubscribing(getApplicationContext(),false);
-                                return;
+                                    Intent intent = new Intent(CategoryListActivity.this, ProductListActivity.class);
+                                    intent.putExtra(AppContants.CATEGORY_ID, mCatId);
+                                    intent.putExtra(AppContants.SUPPLIER, supplierData);
+                                    intent.putExtra(AppContants.USER_DETAILS, userdetails);
+                                    startActivity(intent);
+                                    new AppPreference().setSubscribing(getApplicationContext(), false);
+                                    return;
+                                }
                             }
                         }
-                    }
 
-                    @Override
-                    public void onFailure(String response) {
-                        Log.i(MyDukan.LOGTAG, "Failed to update user profile");
-                        new AppPreference().setSubscribing(getApplicationContext(),false);
-                    }
-                });
+                        @Override
+                        public void onFailure(String response) {
+                            Log.i(MyDukan.LOGTAG, "Failed to update user profile");
+                            new AppPreference().setSubscribing(getApplicationContext(), false);
+                        }
+                    });
+        }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - onCreate : ",e.toString());
+            Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() + " - onCreate : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - onCreate : ",errors.toString());
+            Crashlytics.log(0,this.getClass().getSimpleName() + " - onCreate : ",errors.toString());
+        }
     }
 
 
@@ -484,31 +497,41 @@ public class CategoryListActivity extends BaseActivity implements CategoryAdapte
 
     private void getUserProfile() {
 
-        if (mViewType == AppContants.SIGN_UP) {
-            mApp.getPreference().setAppState(CategoryListActivity.this, new AppStateContants().HOME_SCREEN);
-        }
-        if (mApp.getFirebaseAuth().getCurrentUser() == null) {
-            return;
-        }
-        ApiManager.getInstance(CategoryListActivity.this).getUserProfile(mApp.getFirebaseAuth().getCurrentUser().getUid(), new ApiResult() {
-            @Override
-            public void onSuccess(Object data) {
+        try {
+            if (mViewType == AppContants.SIGN_UP) {
+                mApp.getPreference().setAppState(CategoryListActivity.this, new AppStateContants().HOME_SCREEN);
+            }
+            if (mApp.getFirebaseAuth().getCurrentUser() == null) {
+                return;
+            }
+            ApiManager.getInstance(CategoryListActivity.this).getUserProfile(mApp.getFirebaseAuth().getCurrentUser().getUid(), new ApiResult() {
+                @Override
+                public void onSuccess(Object data) {
 
-                if (data != null) {
-                    userdetails = (User) data;
-                    String mId = mApp.getFirebaseAuth().getCurrentUser().getUid();
-                    //validateSubScriptionUtils(CategoryListActivity.this, userID, userdetails);
-                    dismissProgress();
-                    return;
+                    if (data != null) {
+                        userdetails = (User) data;
+                        String mId = mApp.getFirebaseAuth().getCurrentUser().getUid();
+                        //validateSubScriptionUtils(CategoryListActivity.this, userID, userdetails);
+                        dismissProgress();
+                        return;
+                    }
                 }
-            }
 
-            @Override
-            public void onFailure(String response) {
-                //Do when there is no data present in firebase
-                dismissProgress();
-            }
-        });
+                @Override
+                public void onFailure(String response) {
+                    //Do when there is no data present in firebase
+                    dismissProgress();
+                }
+            });
+        }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - onCreate : ",e.toString());
+            Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() + " - onCreate : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - onCreate : ",errors.toString());
+            Crashlytics.log(0,this.getClass().getSimpleName() + " - onCreate : ",errors.toString());
+        }
     }
 
 
@@ -596,10 +619,12 @@ public class CategoryListActivity extends BaseActivity implements CategoryAdapte
                 }
             });
         }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - fetchCategoryData : ",e.toString());
             Crashlytics.log(0,"Exception - CategoryListActivity - fetchCategoryData : ",e.toString());
         }catch (VirtualMachineError ex){
             StringWriter errors = new StringWriter();
             ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - fetchCategoryData : ",errors.toString());
             Crashlytics.log(0,"1 - CategoryListActivity - fetchCategoryData : ",errors.toString());
         }
     }

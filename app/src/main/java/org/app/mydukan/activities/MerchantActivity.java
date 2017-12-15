@@ -34,6 +34,7 @@ import com.paytm.pgsdk.PaytmPaymentTransactionCallback;
 
 import org.app.mydukan.R;
 import org.app.mydukan.data.User;
+import org.app.mydukan.emailSending.SendEmail;
 import org.app.mydukan.utils.AppContants;
 
 import java.io.PrintWriter;
@@ -114,9 +115,11 @@ public class MerchantActivity extends Activity {
             GetsubscriptionPlans();
         }catch (Exception e){
             Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() + " - onCreate : ",e.toString());
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - onCreate : ",e.toString());
         }catch (VirtualMachineError ex){
             StringWriter errors = new StringWriter();
             ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - onCreate : ",errors.toString());
             Crashlytics.log(0,this.getClass().getSimpleName() + " - onCreate : ",errors.toString());
         }
 

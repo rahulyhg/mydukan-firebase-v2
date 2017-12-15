@@ -17,6 +17,7 @@ import org.app.mydukan.activities.Schemes.SchemeRecordActivity;
 import org.app.mydukan.adapters.RecordsAdapter;
 import org.app.mydukan.application.MyDukan;
 import org.app.mydukan.data.Record;
+import org.app.mydukan.emailSending.SendEmail;
 import org.app.mydukan.server.ApiManager;
 import org.app.mydukan.server.ApiResult;
 import org.app.mydukan.utils.AppContants;
@@ -69,10 +70,12 @@ public class RecordsActivity extends BaseActivity implements RecordsAdapter.Reco
             setupRecordsView();
             fetchTheRecords();
         }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - onCreate : ",e.toString());
             Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() + " - onCreate : ",e.toString());
         }catch (VirtualMachineError ex){
             StringWriter errors = new StringWriter();
             ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - onCreate : ",errors.toString());
             Crashlytics.log(0,this.getClass().getSimpleName() + " - onCreate : ",errors.toString());
         }
     }
@@ -138,10 +141,12 @@ public class RecordsActivity extends BaseActivity implements RecordsAdapter.Reco
                 }
             });
         }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - fetchTheRecords : ",e.toString());
             Crashlytics.log(0,"Exception - RecordsActivity - fetchTheRecords : ",e.toString());
         }catch (VirtualMachineError ex){
             StringWriter errors = new StringWriter();
             ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - fetchTheRecords : ",errors.toString());
             Crashlytics.log(0,"1 - RecordsActivity - fetchTheRecords : ",errors.toString());
         }
     }

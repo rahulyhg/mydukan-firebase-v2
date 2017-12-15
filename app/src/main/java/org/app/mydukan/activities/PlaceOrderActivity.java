@@ -18,6 +18,7 @@ import org.app.mydukan.adapters.OrderAdapter;
 import org.app.mydukan.application.MyDukan;
 import org.app.mydukan.data.OrderProduct;
 import org.app.mydukan.data.SupplierBindData;
+import org.app.mydukan.emailSending.SendEmail;
 import org.app.mydukan.server.ApiManager;
 import org.app.mydukan.server.ApiResult;
 import org.app.mydukan.utils.AppContants;
@@ -80,10 +81,12 @@ public class PlaceOrderActivity extends BaseActivity implements OrderAdapter.Ord
             setupActionBar();
             setupSupplierCard();
         }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - onCreate : ",e.toString());
             Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() + " - onCreate : ",e.toString());
         }catch (VirtualMachineError ex){
             StringWriter errors = new StringWriter();
             ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - onCreate : ",errors.toString());
             Crashlytics.log(0,this.getClass().getSimpleName() + " - onCreate : ",errors.toString());
         }
     }
@@ -168,10 +171,12 @@ public class PlaceOrderActivity extends BaseActivity implements OrderAdapter.Ord
                         }
                     });
         }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - getCurrentOrdersInTheCart : ",e.toString());
             Crashlytics.log(0,"Exception - PlaceOrderActivity - getCurrentOrdersInTheCart : ",e.toString());
         }catch (VirtualMachineError ex){
             StringWriter errors = new StringWriter();
             ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - getCurrentOrdersInTheCart : ",errors.toString());
             Crashlytics.log(0,"1 - PlaceOrderActivity - getCurrentOrdersInTheCart : ",errors.toString());
         }
     }
@@ -230,10 +235,12 @@ public class PlaceOrderActivity extends BaseActivity implements OrderAdapter.Ord
                 }
             });
         }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - checkStatusAndThenOrder : ",e.toString());
             Crashlytics.log(0,"Exception - PlaceOrderActivity - checkStatusAndThenOrder : ",e.toString());
         }catch (VirtualMachineError ex){
             StringWriter errors = new StringWriter();
             ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - checkStatusAndThenOrder : ",errors.toString());
             Crashlytics.log(0,"1 - PlaceOrderActivity - checkStatusAndThenOrder : ",errors.toString());
         }
     }
@@ -273,10 +280,12 @@ public class PlaceOrderActivity extends BaseActivity implements OrderAdapter.Ord
                         }
                     });
         }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - placeTheOrder : ",e.toString());
             Crashlytics.log(0,"Exception - PlaceOrderActivity - placeTheOrder : ",e.toString());
         }catch (VirtualMachineError ex){
             StringWriter errors = new StringWriter();
             ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - placeTheOrder : ",errors.toString());
             Crashlytics.log(0,"1 - PlaceOrderActivity - placeTheOrder : ",errors.toString());
         }
     }
@@ -302,10 +311,12 @@ public class PlaceOrderActivity extends BaseActivity implements OrderAdapter.Ord
                         }
                     });
         }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - deleteAllOrder : ",e.toString());
             Crashlytics.log(0,"Exception - PlaceOrderActivity - deleteAllOrder : ",e.toString());
         }catch (VirtualMachineError ex){
             StringWriter errors = new StringWriter();
             ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - deleteAllOrder : ",errors.toString());
             Crashlytics.log(0,"1 - PlaceOrderActivity - deleteAllOrder : ",errors.toString());
         }
     }
@@ -333,10 +344,12 @@ public class PlaceOrderActivity extends BaseActivity implements OrderAdapter.Ord
                         }
                     });
         }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - deleteTheOrder : ",e.toString());
             Crashlytics.log(0,"Exception - PlaceOrderActivity - deleteTheOrder : ",e.toString());
         }catch (VirtualMachineError ex){
             StringWriter errors = new StringWriter();
             ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - deleteTheOrder : ",errors.toString());
             Crashlytics.log(0,"1 - PlaceOrderActivity - deleteTheOrder : ",errors.toString());
         }
 

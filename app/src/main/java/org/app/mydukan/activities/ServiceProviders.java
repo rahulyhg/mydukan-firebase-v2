@@ -21,6 +21,7 @@ import org.app.mydukan.R;
 import org.app.mydukan.adapters.ServiceCenterAdapter;
 import org.app.mydukan.application.MyDukan;
 import org.app.mydukan.data.ServiceCenterInfo;
+import org.app.mydukan.emailSending.SendEmail;
 import org.app.mydukan.server.ApiManager;
 import org.app.mydukan.server.ApiResult;
 import org.app.mydukan.utils.AppContants;
@@ -192,10 +193,12 @@ public class ServiceProviders extends BaseActivity {
                 }
             });
         }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - onCreate : ",e.toString());
             Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() + " - onCreate : ",e.toString());
         }catch (VirtualMachineError ex){
             StringWriter errors = new StringWriter();
             ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - onCreate : ",errors.toString());
             Crashlytics.log(0,this.getClass().getSimpleName() + " - onCreate : ",errors.toString());
         }
 
@@ -236,10 +239,12 @@ public class ServiceProviders extends BaseActivity {
                 }
             });
         }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - fetchDropdownData : ",e.toString());
             Crashlytics.log(0,"Exception - ServiceProviders - fetchDropdownData : ",e.toString());
         }catch (VirtualMachineError ex){
             StringWriter errors = new StringWriter();
             ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - fetchDropdownData : ",errors.toString());
             Crashlytics.log(0,"1 - ServiceProviders - fetchDropdownData : ",errors.toString());
         }
     }
@@ -317,10 +322,12 @@ public class ServiceProviders extends BaseActivity {
                 }
             });
         }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - fetchServiceCentersData : ",e.toString());
             Crashlytics.log(0,"Exception - ServiceProviders - fetchServiceCentersData : ",e.toString());
         }catch (VirtualMachineError ex){
             StringWriter errors = new StringWriter();
             ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - fetchServiceCentersData : ",errors.toString());
             Crashlytics.log(0,"1 - ServiceProviders - fetchServiceCentersData : ",errors.toString());
         }
     }

@@ -27,6 +27,7 @@ import org.app.mydukan.R;
 import org.app.mydukan.application.MyDukan;
 import org.app.mydukan.data.Product;
 import org.app.mydukan.data.SupplierBindData;
+import org.app.mydukan.emailSending.SendEmail;
 import org.app.mydukan.fragments.DescriptionFragment;
 import org.app.mydukan.fragments.KeySpecification;
 import org.app.mydukan.fragments.Product_PricePlatformFragment;
@@ -161,10 +162,12 @@ public class ProductDescriptionActivity extends BaseActivity {
             });
 
         }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - onCreate : ",e.toString());
             Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() + " - onCreate : ",e.toString());
         }catch (VirtualMachineError ex){
             StringWriter errors = new StringWriter();
             ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - onCreate : ",errors.toString());
             Crashlytics.log(0,this.getClass().getSimpleName() + " - onCreate : ",errors.toString());
         }
     }
@@ -345,10 +348,12 @@ public class ProductDescriptionActivity extends BaseActivity {
                         }
                     });
         }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - fetchProductAndShow : ",e.toString());
             Crashlytics.log(0,"Exception - ProductDescriptionActivity - fetchProductAndShow : ",e.toString());
         }catch (VirtualMachineError ex){
             StringWriter errors = new StringWriter();
             ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - fetchProductAndShow : ",errors.toString());
             Crashlytics.log(0,"1 - ProductDescriptionActivity - fetchProductAndShow : ",errors.toString());
         }
     }
@@ -420,10 +425,12 @@ public class ProductDescriptionActivity extends BaseActivity {
                         }
                     });
         }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - addProductToCart : ",e.toString());
             Crashlytics.log(0,"Exception - ProductDescriptionActivity - addProductToCart : ",e.toString());
         }catch (VirtualMachineError ex){
             StringWriter errors = new StringWriter();
             ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - addProductToCart : ",errors.toString());
             Crashlytics.log(0,"1 - ProductDescriptionActivity - addProductToCart : ",errors.toString());
         }
     }

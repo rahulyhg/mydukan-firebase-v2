@@ -16,6 +16,7 @@ import org.app.mydukan.activities.BaseActivity;
 import org.app.mydukan.adapters.SchemeRecordAdapter;
 import org.app.mydukan.application.MyDukan;
 import org.app.mydukan.data.SchemeRecord;
+import org.app.mydukan.emailSending.SendEmail;
 import org.app.mydukan.server.ApiManager;
 import org.app.mydukan.server.ApiResult;
 import org.app.mydukan.utils.SimpleDividerItemDecoration;
@@ -113,10 +114,12 @@ public class SchemeRecordActivity extends BaseActivity {
                 }
             });
         }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - fetchTheRecords : ",e.toString());
             Crashlytics.log(0,"Exception - SchemeRecordActivity - fetchTheRecords : ",e.toString());
         }catch (VirtualMachineError ex){
             StringWriter errors = new StringWriter();
             ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - fetchTheRecords : ",errors.toString());
             Crashlytics.log(0,"1 - SchemeRecordActivity - fetchTheRecords : ",errors.toString());
         }
     }

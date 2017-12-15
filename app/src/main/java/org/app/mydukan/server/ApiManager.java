@@ -7,6 +7,7 @@ import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
+import com.crashlytics.android.Crashlytics;
 import com.crashlytics.android.answers.Answers;
 import com.crashlytics.android.answers.LoginEvent;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -51,12 +52,15 @@ import org.app.mydukan.data.SupplierBindData;
 import org.app.mydukan.data.SupplierGroups;
 import org.app.mydukan.data.User;
 import org.app.mydukan.data.Videos;
+import org.app.mydukan.emailSending.SendEmail;
 import org.app.mydukan.fragments.OneFragment;
 import org.app.mydukan.utils.AppContants;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -2604,20 +2608,30 @@ public class ApiManager {
     }
 
     public void deleteRecordInfo(String supplierId, String recordId, String recordInfoId, final ApiResult result) {
-        String userId = mApp.getFirebaseAuth().getCurrentUser().getUid();
+        try {
+            String userId = mApp.getFirebaseAuth().getCurrentUser().getUid();
 
-        DatabaseReference recordRef = FirebaseDatabase.getInstance().
-                getReference("claims/" + userId + "/" + supplierId + "/" + recordId + "/productlist/" + recordInfoId);
-        recordRef.removeValue(new DatabaseReference.CompletionListener() {
-            @Override
-            public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
-                if (databaseError == null) {
-                    result.onSuccess(mctx.getString(R.string.status_success));
-                } else {
-                    result.onFailure(mctx.getString(R.string.error_deletefailed));
+            DatabaseReference recordRef = FirebaseDatabase.getInstance().
+                    getReference("claims/" + userId + "/" + supplierId + "/" + recordId + "/productlist/" + recordInfoId);
+            recordRef.removeValue(new DatabaseReference.CompletionListener() {
+                @Override
+                public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+                    if (databaseError == null) {
+                        result.onSuccess(mctx.getString(R.string.status_success));
+                    } else {
+                        result.onFailure(mctx.getString(R.string.error_deletefailed));
+                    }
                 }
-            }
-        });
+            });
+        }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - deleteRecordInfo : ",e.toString());
+            Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() + " - deleteRecordInfo : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - deleteRecordInfo : ",errors.toString());
+            Crashlytics.log(0,this.getClass().getSimpleName() + " - deleteRecordInfo : ",errors.toString());
+        }
     }
 
     private HashMap<String, Object> createSchemeRecordInfo(SchemeRecord record) {

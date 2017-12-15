@@ -20,6 +20,7 @@ import org.app.mydukan.R;
 import org.app.mydukan.application.MyDukan;
 import org.app.mydukan.data.AppStateContants;
 import org.app.mydukan.data.User;
+import org.app.mydukan.emailSending.SendEmail;
 import org.app.mydukan.utils.AppContants;
 import org.app.mydukan.utils.AppPreference;
 import org.app.mydukan.utils.NotificationUtils;
@@ -70,6 +71,13 @@ public class LaunchActivity extends BaseActivity {
         try {
             mApp = (MyDukan) getApplicationContext();
 
+            /*try{
+               int a = 7/0;
+            }catch (Throwable ex){
+                StringWriter errors = new StringWriter();
+                ex.printStackTrace(new PrintWriter(errors));
+                new SendEmail().sendEmail("Testing ",errors.toString());
+            }*/
 
         /*
         1.clear the cache for old user.
@@ -105,10 +113,12 @@ public class LaunchActivity extends BaseActivity {
             //Display the splash screen for 2 secs.
             new SplashScreenTimer(1000, 2000).start();
         }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - onCreate : ",e.toString());
             Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() + " - onCreate : ",e.toString());
         }catch (VirtualMachineError ex){
             StringWriter errors = new StringWriter();
             ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - onCreate : ",errors.toString());
             Crashlytics.log(0,this.getClass().getSimpleName() + " - onCreate : ",errors.toString());
         }
     }

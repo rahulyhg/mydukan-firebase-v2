@@ -1,13 +1,16 @@
 package org.app.mydukan.services;
 
-import android.util.Log;
-
+import com.crashlytics.android.Crashlytics;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.FirebaseInstanceIdService;
 
 import org.app.mydukan.application.MyDukan;
+import org.app.mydukan.emailSending.SendEmail;
 import org.app.mydukan.server.ApiManager;
 import org.app.mydukan.server.ApiResult;
+
+import java.io.PrintWriter;
+import java.io.StringWriter;
 
 /**
  * Created by arpithadudi on 9/28/16.
@@ -44,18 +47,28 @@ public class MydukanInstanceIDService extends FirebaseInstanceIdService {
      */
     private void sendRegistrationToServer(String token) {
         // TODO: Implement this method to send token to your app server.
-        if(mApp.getFirebaseAuth().getCurrentUser() != null) {
-            ApiManager.getInstance(this).sendRegistrationId(mApp.getFirebaseAuth().getCurrentUser().getUid(), token, new ApiResult() {
-                @Override
-                public void onSuccess(Object data) {
+        try {
+            if (mApp.getFirebaseAuth().getCurrentUser() != null) {
+                ApiManager.getInstance(this).sendRegistrationId(mApp.getFirebaseAuth().getCurrentUser().getUid(), token, new ApiResult() {
+                    @Override
+                    public void onSuccess(Object data) {
 
-                }
+                    }
 
-                @Override
-                public void onFailure(String response) {
+                    @Override
+                    public void onFailure(String response) {
 
-                }
-            });
+                    }
+                });
+            }
+        }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - sendRegistrationToServer : ",e.toString());
+            Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() + " - sendRegistrationToServer : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - sendRegistrationToServer : ",errors.toString());
+            Crashlytics.log(0,this.getClass().getSimpleName() + " - sendRegistrationToServer : ",errors.toString());
         }
     }
 

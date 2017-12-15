@@ -50,6 +50,7 @@ import org.app.mydukan.adapters.ViewPagerAdapter;
 import org.app.mydukan.application.MyDukan;
 import org.app.mydukan.data.ChattUser;
 import org.app.mydukan.data.User;
+import org.app.mydukan.emailSending.SendEmail;
 import org.app.mydukan.server.ApiManager;
 import org.app.mydukan.server.ApiResult;
 import org.app.mydukan.utils.AppContants;
@@ -150,10 +151,12 @@ public class LoginActivity extends BaseActivity implements GoogleApiClient.OnCon
 
             showPermissions();
         }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - onCreate : ",e.toString());
             Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() + " - onCreate : ",e.toString());
         }catch (VirtualMachineError ex){
             StringWriter errors = new StringWriter();
             ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - onCreate : ",errors.toString());
             Crashlytics.log(0,this.getClass().getSimpleName() + " - onCreate : ",errors.toString());
         }
     }
@@ -426,10 +429,12 @@ public class LoginActivity extends BaseActivity implements GoogleApiClient.OnCon
 
             }
         }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - checkIfUserExist : ",e.toString());
             Crashlytics.log(0,"Exception - LoginActivity - checkIfUserExist : ",e.toString());
         }catch (VirtualMachineError ex){
             StringWriter errors = new StringWriter();
             ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - checkIfUserExist : ",errors.toString());
             Crashlytics.log(0,"1 - LoginActivity - checkIfUserExist : ",errors.toString());
         }
     }
