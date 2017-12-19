@@ -320,7 +320,7 @@ public class ProductsAdapter extends RecyclerView.Adapter<ProductsAdapter.ViewHo
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        private CardView mProductLayout;
+        private LinearLayout mProductLayout;
         private LinearLayout  mStatusLayout;
         private LinearLayout  mNewArrivalLayout;
         private TextView mProductName;
@@ -340,9 +340,7 @@ public class ProductsAdapter extends RecyclerView.Adapter<ProductsAdapter.ViewHo
 
         public ViewHolder(final View itemView) {
             super(itemView);
-            mProductLayout = (CardView) itemView.findViewById(R.id.product_table);
-
-            mProductLayout.setBackgroundResource(R.drawable.btn_shadow);
+            mProductLayout = (LinearLayout) itemView.findViewById(R.id.product_table);
 
             mProductName = (TextView) itemView.findViewById(R.id.modelName);
             mStatusPrice = (TextView) itemView.findViewById(R.id.discountPrice);

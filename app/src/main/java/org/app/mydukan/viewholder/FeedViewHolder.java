@@ -138,6 +138,7 @@ public class FeedViewHolder extends RecyclerView.ViewHolder implements View.OnCl
         Picasso.with(ivContent.getContext()).load(url).placeholder(R.drawable.img_holder)
                 .resize(300, 180) // optional
                 .into(ivContent);
+        ivContent.setVisibility(View.VISIBLE);
         //    Glide.with(ivContent.getContext()).using(new FirebaseImageLoader()).load(storageRefFeed).placeholder(R.drawable.img_holder).centerCrop().override(300,300).into(ivContent);
     }
 

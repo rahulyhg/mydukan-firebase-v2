@@ -4,7 +4,8 @@
     android:id="@+id/cardView"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginBottom="8dp">
+    android:layout_marginBottom="4dp"
+    android:layout_marginTop="4dp">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -96,7 +97,8 @@
             android:linksClickable="true"
             android:text="Click here for more Info"
             android:textAlignment="textStart"
-            android:textSize="16sp" />
+            android:textSize="16sp"
+            android:layout_gravity="start" />
 
         <ImageView
             android:id="@+id/iv_feed"
@@ -108,7 +110,7 @@
             android:layout_marginTop="8dp"
             android:adjustViewBounds="true"
             android:scaleType="fitCenter"
-            android:visibility="gone"
+            android:visibility="visible"
             tools:ignore="ContentDescription,ObsoleteLayoutParam" />
 
         <View
