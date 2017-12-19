@@ -60,6 +60,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="10dp"
+        android:visibility="gone"
         android:background="@drawable/btn_shadow">
 
 
@@ -99,7 +100,7 @@
             android:layout_centerVertical="true"
             android:gravity="center"
             android:padding="10dp"
-            android:text="Earnings"
+            android:text="Summary"
             android:textColor="@color/colorPrimary"
             android:textSize="24sp" />
 
