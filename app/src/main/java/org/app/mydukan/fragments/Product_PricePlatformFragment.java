@@ -2,7 +2,10 @@ package org.app.mydukan.fragments;
 
 
 import android.app.ProgressDialog;
+import android.content.ActivityNotFoundException;
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -16,8 +19,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import org.app.mydukan.R;
+import org.app.mydukan.activities.Webview2Activity;
+import org.app.mydukan.adapters.CategoryAdapter;
 import org.app.mydukan.adapters.KeySpecificationAdapter;
 import org.app.mydukan.adapters.PricePlatformAdapter;
+import org.app.mydukan.adapters.PricePlatformAdapterListener;
 import org.app.mydukan.data.PlatForm_Info;
 import org.app.mydukan.data.Product;
 import org.app.mydukan.data.SupplierBindData;
@@ -40,7 +46,7 @@ import static org.app.mydukan.activities.ProductDescriptionActivity.mApp;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class Product_PricePlatformFragment extends Fragment {
+public class Product_PricePlatformFragment extends Fragment implements  AdapterView.OnItemSelectedListener, PricePlatformAdapterListener {
 
 
     View mView;
@@ -237,14 +243,14 @@ public class Product_PricePlatformFragment extends Fragment {
           /*  Collections.sort((List<HashMap<String, HashMap<String, String>>>) mProductList, new PriceComparator());
             Collections.reverse((List<?>) mProductList);*/
 
-            PricePlatformAdapter adapter = new PricePlatformAdapter(context,mProduct.getmPlatforms());
+            PricePlatformAdapter adapter = new PricePlatformAdapter(context,mProduct.getmPlatforms(),this);
 
             list_pricePlatform.setAdapter(adapter);
 
         }catch (Exception e){
             e.printStackTrace();
 
-            PricePlatformAdapter adapter = new PricePlatformAdapter(context,mProduct.getmPlatforms());
+            PricePlatformAdapter adapter = new PricePlatformAdapter(context,mProduct.getmPlatforms(),this);
             list_pricePlatform.setAdapter(adapter);
         }
 
@@ -265,6 +271,67 @@ public class Product_PricePlatformFragment extends Fragment {
       mOthersTextView.setVisibility(View.VISIBLE);
             mOthersTextView.setText("Not available");
         }*/
+    }
+
+    @Override
+    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> parent) {
+
+    }
+
+    @Override
+    public void OnClick(int position, String platForm_URL) {
+        try{
+            String  mUrl= platForm_URL;
+            if(mUrl!=null){
+               /* Intent intent = new Intent(context, WebviewActivity.class);
+                intent.putExtra(AppContants.VIEW_PLATFORM,mUrl );
+                startActivity(intent);*/
+              //  openWebPage(mUrl);
+              startOpenWebPage(mUrl);
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+
+        }
+    }
+    public boolean startOpenWebPage(String url) {
+        boolean result = false;
+        if (!url.startsWith("http://") && !url.startsWith("https://"))
+            url = "http://" + url;
+
+        Uri webpage = Uri.parse(url);
+        Intent intent = new Intent(Intent.ACTION_VIEW, webpage);
+
+        try {
+            startActivity(intent);
+            result = true;
+        }catch (Exception e){
+            try {
+                if (url.startsWith("http://")){
+                    startOpenWebPage(url.replace("http://","https://"));
+                }
+            } catch (ActivityNotFoundException ex) {
+                Toast.makeText(context, "No application can handle this request. Please install a web browser or check your URL.",  Toast.LENGTH_LONG).show();
+                ex.printStackTrace();
+            }
+        }
+        return result;
+    }
+
+    public void openWebPage(String url) {
+        try {
+            Uri webpage = Uri.parse(url);
+            Intent myIntent = new Intent(Intent.ACTION_VIEW, webpage);
+            startActivity(myIntent);
+        } catch (ActivityNotFoundException e) {
+            Toast.makeText(context, "No application can handle this request. Please install a web browser or check your URL.",  Toast.LENGTH_LONG).show();
+            e.printStackTrace();
+        }
     }
     /*private class PriceComparator implements Comparator<HashMap<String, HashMap<String, String>>> {
 

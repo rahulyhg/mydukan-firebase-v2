@@ -1294,6 +1294,7 @@ public class ApiManager {
                             subCategoryList.add(subCategory);
                         }
                         Collections.sort(subCategoryList, new SubCat_OrderComparator());
+                       // Collections.reverse(subCategoryList);
                         result.onSuccess(subCategoryList);
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -1310,10 +1311,7 @@ public class ApiManager {
                         result.onSuccess(subCategoryList);
                     }
 
-
                 }
-
-
             }
 
             @Override
