@@ -83,17 +83,37 @@ public class MyDukan extends Application {
     }
 
     public FirebaseAuth getFirebaseAuth() {
-        if (mFirebaseAuth == null) {
-            mFirebaseAuth = FirebaseAuth.getInstance();
+        try {
+            if (mFirebaseAuth == null) {
+                mFirebaseAuth = FirebaseAuth.getInstance();
+            }
+        }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - getFirebaseAuth : ",e.toString());
+            Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() + " - getFirebaseAuth : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - getFirebaseAuth : ",ex.toString());
+            Crashlytics.log(0,this.getClass().getSimpleName() + " - getFirebaseAuth : ",ex.toString());
         }
         return mFirebaseAuth;
     }
 
     public String getUserId() {
         String UserId = null;
-        if (mFirebaseAuth == null) {
-            mFirebaseAuth = FirebaseAuth.getInstance();
-            UserId = String.valueOf(mFirebaseAuth.getInstance().getCurrentUser());
+        try {
+            if (mFirebaseAuth == null) {
+                mFirebaseAuth = FirebaseAuth.getInstance();
+                UserId = String.valueOf(mFirebaseAuth.getInstance().getCurrentUser());
+            }
+        }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - getUserId : ",e.toString());
+            Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() + " - getUserId : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - getUserId : ",ex.toString());
+            Crashlytics.log(0,this.getClass().getSimpleName() + " - getUserId : ",ex.toString());
         }
         return UserId;
     }
@@ -130,8 +150,8 @@ public class MyDukan extends Application {
         }catch (VirtualMachineError ex){
             StringWriter errors = new StringWriter();
             ex.printStackTrace(new PrintWriter(errors));
-            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - checkAndSendToken : ",errors.toString());
-            Crashlytics.log(0,"1 - MyDukan - checkAndSendToken : ",errors.toString());
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - checkAndSendToken : ",ex.toString());
+            Crashlytics.log(0,"1 - MyDukan - checkAndSendToken : ",ex.toString());
         }
     }
 

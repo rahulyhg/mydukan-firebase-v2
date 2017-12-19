@@ -367,8 +367,8 @@ public class CategoryListActivity extends BaseActivity implements CategoryAdapte
         }catch (VirtualMachineError ex){
             StringWriter errors = new StringWriter();
             ex.printStackTrace(new PrintWriter(errors));
-            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - onCreate : ",errors.toString());
-            Crashlytics.log(0,this.getClass().getSimpleName() + " - onCreate : ",errors.toString());
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - onCreate : ",ex.toString());
+            Crashlytics.log(0,this.getClass().getSimpleName() + " - onCreate : ",ex.toString());
         }
 
     }
@@ -417,8 +417,8 @@ public class CategoryListActivity extends BaseActivity implements CategoryAdapte
         }catch (VirtualMachineError ex){
             StringWriter errors = new StringWriter();
             ex.printStackTrace(new PrintWriter(errors));
-            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - onCreate : ",errors.toString());
-            Crashlytics.log(0,this.getClass().getSimpleName() + " - onCreate : ",errors.toString());
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - onCreate : ",ex.toString());
+            Crashlytics.log(0,this.getClass().getSimpleName() + " - onCreate : ",ex.toString());
         }
     }
 
@@ -427,38 +427,48 @@ public class CategoryListActivity extends BaseActivity implements CategoryAdapte
      * Fetch a welcome message from the Remote Config service, and then activate it.
      */
     private void fetchWelcome() {
-        remoteDisp_Subscription = mFirebaseRemoteConfig.getString(LOADING_PHRASE_CONFIG_KEY3);
-        remoteSearchServiCecenters = mFirebaseRemoteConfig.getString(LOADING_PHRASE_CONFIG_KEY4);
-        //  displayWelcomeMessage();LOADING_PHRASE_CONFIG_KEY3
+        try {
+            remoteDisp_Subscription = mFirebaseRemoteConfig.getString(LOADING_PHRASE_CONFIG_KEY3);
+            remoteSearchServiCecenters = mFirebaseRemoteConfig.getString(LOADING_PHRASE_CONFIG_KEY4);
+            //  displayWelcomeMessage();LOADING_PHRASE_CONFIG_KEY3
 
-        long cacheExpiration = 1500; // 1 hour in seconds.
-        //long cacheExpiration = 3; // 1 hour in seconds.
+            long cacheExpiration = 1500; // 1 hour in seconds.
+            //long cacheExpiration = 3; // 1 hour in seconds.
 
-        // If your app is using developer mode, cacheExpiration is set to 0, so each fetch will
-        // retrieve values from the service.
-        if (mFirebaseRemoteConfig.getInfo().getConfigSettings().isDeveloperModeEnabled()) {
-            cacheExpiration = 0;
-        }
-        // [START fetch_config_with_callback]
-        // cacheExpirationSeconds is set to cacheExpiration here, indicating the next fetch request
-        // will use fetch data from the Remote Config service, rather than cached parameter values,
-        // if cached parameter values are more than cacheExpiration seconds old.
-        // See Best Practices in the README for more information.
-        mFirebaseRemoteConfig.fetch(cacheExpiration).addOnCompleteListener(this, new OnCompleteListener<Void>() {
-            @Override
-            public void onComplete(@NonNull Task<Void> task) {
-                if (task.isSuccessful()) {
-                    // Toast.makeText(MainActivity.this, "Fetch Succeeded", Toast.LENGTH_SHORT).show();
-                    displayWelcomeMessage();
-                    // After config data is successfully fetched, it must be activated before newly fetched
-                    // values are returned.
-                    mFirebaseRemoteConfig.activateFetched();
-                } else {
-                    Toast.makeText(CategoryListActivity.this, "Unable to dowload data,Please check the Internet Connection.", Toast.LENGTH_SHORT).show();
-                }
-                // displayWelcomeMessage();
+            // If your app is using developer mode, cacheExpiration is set to 0, so each fetch will
+            // retrieve values from the service.
+            if (mFirebaseRemoteConfig.getInfo().getConfigSettings().isDeveloperModeEnabled()) {
+                cacheExpiration = 0;
             }
-        });
+            // [START fetch_config_with_callback]
+            // cacheExpirationSeconds is set to cacheExpiration here, indicating the next fetch request
+            // will use fetch data from the Remote Config service, rather than cached parameter values,
+            // if cached parameter values are more than cacheExpiration seconds old.
+            // See Best Practices in the README for more information.
+            mFirebaseRemoteConfig.fetch(cacheExpiration).addOnCompleteListener(this, new OnCompleteListener<Void>() {
+                @Override
+                public void onComplete(@NonNull Task<Void> task) {
+                    if (task.isSuccessful()) {
+                        // Toast.makeText(MainActivity.this, "Fetch Succeeded", Toast.LENGTH_SHORT).show();
+                        displayWelcomeMessage();
+                        // After config data is successfully fetched, it must be activated before newly fetched
+                        // values are returned.
+                        mFirebaseRemoteConfig.activateFetched();
+                    } else {
+                        Toast.makeText(CategoryListActivity.this, "Unable to dowload data,Please check the Internet Connection.", Toast.LENGTH_SHORT).show();
+                    }
+                    // displayWelcomeMessage();
+                }
+            });
+        }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - fetchWelcome : ",e.toString());
+            Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() + " - fetchWelcome : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - fetchWelcome : ",ex.toString());
+            Crashlytics.log(0,this.getClass().getSimpleName() + " - fetchWelcome : ",ex.toString());
+        }
         // [END fetch_config_with_callback]
     }
 
@@ -529,8 +539,8 @@ public class CategoryListActivity extends BaseActivity implements CategoryAdapte
         }catch (VirtualMachineError ex){
             StringWriter errors = new StringWriter();
             ex.printStackTrace(new PrintWriter(errors));
-            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - onCreate : ",errors.toString());
-            Crashlytics.log(0,this.getClass().getSimpleName() + " - onCreate : ",errors.toString());
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - onCreate : ",ex.toString());
+            Crashlytics.log(0,this.getClass().getSimpleName() + " - onCreate : ",ex.toString());
         }
     }
 
@@ -624,8 +634,8 @@ public class CategoryListActivity extends BaseActivity implements CategoryAdapte
         }catch (VirtualMachineError ex){
             StringWriter errors = new StringWriter();
             ex.printStackTrace(new PrintWriter(errors));
-            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - fetchCategoryData : ",errors.toString());
-            Crashlytics.log(0,"1 - CategoryListActivity - fetchCategoryData : ",errors.toString());
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - fetchCategoryData : ",ex.toString());
+            Crashlytics.log(0,"1 - CategoryListActivity - fetchCategoryData : ",ex.toString());
         }
     }
 

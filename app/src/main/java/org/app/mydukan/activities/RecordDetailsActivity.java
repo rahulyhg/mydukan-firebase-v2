@@ -76,8 +76,8 @@ public class RecordDetailsActivity extends BaseActivity implements RecordInfoAda
         }catch (VirtualMachineError ex){
             StringWriter errors = new StringWriter();
             ex.printStackTrace(new PrintWriter(errors));
-            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - onCreate : ",errors.toString());
-            Crashlytics.log(0,this.getClass().getSimpleName() + " - onCreate : ",errors.toString());
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - onCreate : ",ex.toString());
+            Crashlytics.log(0,this.getClass().getSimpleName() + " - onCreate : ",ex.toString());
         }
     }
 
@@ -234,8 +234,8 @@ public class RecordDetailsActivity extends BaseActivity implements RecordInfoAda
         }catch (VirtualMachineError ex){
             StringWriter errors = new StringWriter();
             ex.printStackTrace(new PrintWriter(errors));
-            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - OnUpdateClick : ",errors.toString());
-            Crashlytics.log(0,"1 - RecordDetailsActivity - OnUpdateClick : ",errors.toString());
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - OnUpdateClick : ",ex.toString());
+            Crashlytics.log(0,"1 - RecordDetailsActivity - OnUpdateClick : ",ex.toString());
         }
 
     }
@@ -270,8 +270,8 @@ public class RecordDetailsActivity extends BaseActivity implements RecordInfoAda
         }catch (VirtualMachineError ex){
             StringWriter errors = new StringWriter();
             ex.printStackTrace(new PrintWriter(errors));
-            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - OnDeleteClick : ",errors.toString());
-            Crashlytics.log(0,"1 - RecordDetailsActivity - OnDeleteClick : ",errors.toString());
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - OnDeleteClick : ",ex.toString());
+            Crashlytics.log(0,"1 - RecordDetailsActivity - OnDeleteClick : ",ex.toString());
         }
 
     }

@@ -11,6 +11,7 @@ import com.crashlytics.android.Crashlytics;
 import com.moe.pushlibrary.MoEHelper;
 
 import org.app.mydukan.R;
+import org.app.mydukan.emailSending.SendEmail;
 import org.app.mydukan.utils.ProgressSpinner;
 
 import java.io.PrintWriter;
@@ -33,11 +34,13 @@ public class BaseActivity extends AppCompatActivity {
                 mProgress.setCanceledOnTouchOutside(false);
             }
         }catch (Exception e){
-            Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() +" - showProgress : ",e.toString());
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - onCreate : ",e.toString());
+            Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() +" - onCreate : ",e.toString());
         }catch (VirtualMachineError ex){
             StringWriter errors = new StringWriter();
             ex.printStackTrace(new PrintWriter(errors));
-            Crashlytics.log(0,this.getClass().getSimpleName() +" - showProgress : ",errors.toString());
+            Crashlytics.log(0,this.getClass().getSimpleName() +" - onCreate : ",ex.toString());
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - onCreate : ",ex.toString());
         }
     }
 
@@ -48,11 +51,13 @@ public class BaseActivity extends AppCompatActivity {
             }
             mProgress = null;
         }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - dismissProgress : ",e.toString());
             Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() +" - dismissProgress : ",e.toString());
         }catch (VirtualMachineError ex){
             StringWriter errors = new StringWriter();
             ex.printStackTrace(new PrintWriter(errors));
-            Crashlytics.log(0,this.getClass().getSimpleName() +" - dismissProgress : ",errors.toString());
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - dismissProgress : ",ex.toString());
+            Crashlytics.log(0,this.getClass().getSimpleName() +" - dismissProgress : ",ex.toString());
         }
     }
 
@@ -106,11 +111,13 @@ public class BaseActivity extends AppCompatActivity {
             super.onSaveInstanceState(outState);
             mHelper.onSaveInstanceState(outState);
         }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - onSaveInstanceState : ",e.toString());
             Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() +" - onSaveInstanceState : ",e.toString());
         }catch (VirtualMachineError ex){
             StringWriter errors = new StringWriter();
             ex.printStackTrace(new PrintWriter(errors));
-            Crashlytics.log(0,this.getClass().getSimpleName() +" - onSaveInstanceState : ",errors.toString());
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - onSaveInstanceState : ",ex.toString());
+            Crashlytics.log(0,this.getClass().getSimpleName() +" - onSaveInstanceState : ",ex.toString());
         }
     }
 
@@ -120,11 +127,13 @@ public class BaseActivity extends AppCompatActivity {
             super.onRestoreInstanceState(savedInstanceState);
             mHelper.onRestoreInstanceState(savedInstanceState);
         }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - onRestoreInstanceState : ",e.toString());
             Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() +" - onRestoreInstanceState : ",e.toString());
         }catch (VirtualMachineError ex){
             StringWriter errors = new StringWriter();
             ex.printStackTrace(new PrintWriter(errors));
-            Crashlytics.log(0,this.getClass().getSimpleName() +" - onRestoreInstanceState : ",errors.toString());
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - onRestoreInstanceState : ",ex.toString());
+            Crashlytics.log(0,this.getClass().getSimpleName() +" - onRestoreInstanceState : ",ex.toString());
         }
     }
 }

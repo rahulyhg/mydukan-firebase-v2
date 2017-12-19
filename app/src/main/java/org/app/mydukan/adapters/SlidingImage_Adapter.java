@@ -101,7 +101,7 @@ public class SlidingImage_Adapter extends PagerAdapter {
         }catch (VirtualMachineError ex){
             StringWriter errors = new StringWriter();
             ex.printStackTrace(new PrintWriter(errors));
-            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - instantiateItem : ",errors.toString());
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - instantiateItem : ",ex.toString());
         }
         return imageLayout;
     }

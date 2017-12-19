@@ -190,8 +190,8 @@ public class SchemeListActivity extends BaseActivity implements TabLayout.OnTabS
         }catch (VirtualMachineError ex){
             StringWriter errors = new StringWriter();
             ex.printStackTrace(new PrintWriter(errors));
-            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - getSchemesList : ",errors.toString());
-            Crashlytics.log(0,"1 - SchemeListActivity - getSchemesList : ",errors.toString());
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - getSchemesList : ",ex.toString());
+            Crashlytics.log(0,"1 - SchemeListActivity - getSchemesList : ",ex.toString());
         }
     }
 }

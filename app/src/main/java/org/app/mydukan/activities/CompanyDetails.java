@@ -154,8 +154,8 @@ public class CompanyDetails extends BaseActivity implements View.OnClickListener
         }catch (VirtualMachineError ex){
             StringWriter errors = new StringWriter();
             ex.printStackTrace(new PrintWriter(errors));
-            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - onCreate : ",errors.toString());
-            Crashlytics.log(0,this.getClass().getSimpleName() + " - onCreate : ",errors.toString());
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - onCreate : ",ex.toString());
+            Crashlytics.log(0,this.getClass().getSimpleName() + " - onCreate : ",ex.toString());
         }
 
     }
@@ -286,8 +286,8 @@ public class CompanyDetails extends BaseActivity implements View.OnClickListener
         }catch (VirtualMachineError ex){
             StringWriter errors = new StringWriter();
             ex.printStackTrace(new PrintWriter(errors));
-            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - getUserProfile : ",errors.toString());
-            Crashlytics.log(0,"1 - CompanyDetails - getUserProfile : ",errors.toString());
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - getUserProfile : ",ex.toString());
+            Crashlytics.log(0,"1 - CompanyDetails - getUserProfile : ",ex.toString());
         }
     }
 
@@ -335,8 +335,8 @@ public class CompanyDetails extends BaseActivity implements View.OnClickListener
         }catch (VirtualMachineError ex){
             StringWriter errors = new StringWriter();
             ex.printStackTrace(new PrintWriter(errors));
-            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - updateCompanyVCard : ",errors.toString());
-            Crashlytics.log(0,"1 - CompanyDetails - updateCompanyVCard : ",errors.toString());
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - updateCompanyVCard : ",ex.toString());
+            Crashlytics.log(0,"1 - CompanyDetails - updateCompanyVCard : ",ex.toString());
         }
     }
 

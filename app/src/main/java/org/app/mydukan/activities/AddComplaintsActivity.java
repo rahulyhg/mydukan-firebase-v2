@@ -80,11 +80,13 @@ public class AddComplaintsActivity extends BaseActivity {
             mSupplierNameView.setText(mSupplierName);
             setupComplaintTypeSpinner();
         }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - onCreate : ",e.toString());
             Crashlytics.log(0,"Exception - AddComplaintsActivity - onCreate : ",e.toString());
         }catch (VirtualMachineError ex){
             StringWriter errors = new StringWriter();
             ex.printStackTrace(new PrintWriter(errors));
-            Crashlytics.log(0,"AddComplaintsActivity - onCreate : ",errors.toString());
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - onCreate : ",ex.toString());
+            Crashlytics.log(0,"AddComplaintsActivity - onCreate : ",ex.toString());
         }
     }
 
@@ -183,8 +185,8 @@ public class AddComplaintsActivity extends BaseActivity {
         }catch (VirtualMachineError ex){
             StringWriter errors = new StringWriter();
             ex.printStackTrace(new PrintWriter(errors));
-            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - addSupplierComplaint : ",errors.toString());
-            Crashlytics.log(0,"1 - AddComplaintsActivity - addSupplierComplaint : ",errors.toString());
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - addSupplierComplaint : ",ex.toString());
+            Crashlytics.log(0,"1 - AddComplaintsActivity - addSupplierComplaint : ",ex.toString());
         }
 
     }

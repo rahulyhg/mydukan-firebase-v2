@@ -94,8 +94,8 @@ public class KeySpecification extends Fragment {
         }catch (VirtualMachineError ex){
             StringWriter errors = new StringWriter();
             ex.printStackTrace(new PrintWriter(errors));
-            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - onCreate : ",errors.toString());
-            Crashlytics.log(0,this.getClass().getSimpleName() + " - onCreate : ",errors.toString());
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - onCreate : ",ex.toString());
+            Crashlytics.log(0,this.getClass().getSimpleName() + " - onCreate : ",ex.toString());
         }
         return mView;
     }
@@ -152,8 +152,8 @@ public class KeySpecification extends Fragment {
         }catch (VirtualMachineError ex){
             StringWriter errors = new StringWriter();
             ex.printStackTrace(new PrintWriter(errors));
-            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - fetchProductAndShow : ",errors.toString());
-            Crashlytics.log(0,"1 - KeySpecification - fetchProductAndShow : ",errors.toString());
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - fetchProductAndShow : ",ex.toString());
+            Crashlytics.log(0,"1 - KeySpecification - fetchProductAndShow : ",ex.toString());
         }
     }
 

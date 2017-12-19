@@ -5,7 +5,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -13,11 +12,15 @@ import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.crashlytics.android.Crashlytics;
+
 import org.app.mydukan.R;
 import org.app.mydukan.application.MyDukan;
-import org.app.mydukan.data.Record;
 import org.app.mydukan.data.RecordInfo;
+import org.app.mydukan.emailSending.SendEmail;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -58,48 +61,58 @@ public class RecordInfoAdapter extends RecyclerView.Adapter<RecordInfoAdapter.Vi
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, final int position) {
-        RecordInfo record = mRecordsList.get(position);
+        try {
+            RecordInfo record = mRecordsList.get(position);
 
-        holder.mIMEIView.setText(record.getImei());
-        holder.mAmountView.setText( mApp.getUtils().getPriceFormat(String.valueOf(record.getPrice())));
-        setupStatusSpinner(holder.mStatusSpinner);
-       if(record.getStatus().equalsIgnoreCase("claim")){
-            holder.mStatusSpinner.setSelection(0);
-        } else {
-            holder.mStatusSpinner.setSelection(1);
-        }
+            holder.mIMEIView.setText(record.getImei());
+            holder.mAmountView.setText(mApp.getUtils().getPriceFormat(String.valueOf(record.getPrice())));
+            setupStatusSpinner(holder.mStatusSpinner);
+            if (record.getStatus().equalsIgnoreCase("claim")) {
+                holder.mStatusSpinner.setSelection(0);
+            } else {
+                holder.mStatusSpinner.setSelection(1);
+            }
 
-       if(record.getStatus().equalsIgnoreCase("claim") || record.getStatus().equalsIgnoreCase("Settled by Distributor")){
-            holder.checkSetteled.setChecked(true);
-           holder.checkSetteled.setText("Settled by Distributor");
-        } else {
-            holder.checkSetteled.setChecked(false);
-           holder.checkSetteled.setText("Pending by Distributor");
-        }
+            if (record.getStatus().equalsIgnoreCase("claim") || record.getStatus().equalsIgnoreCase("Settled by Distributor")) {
+                holder.checkSetteled.setChecked(true);
+                holder.checkSetteled.setText("Settled by Distributor");
+            } else {
+                holder.checkSetteled.setChecked(false);
+                holder.checkSetteled.setText("Pending by Distributor");
+            }
 
 
-        holder.mUpdateBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String mStatus;
-                if( holder.checkSetteled.isChecked()){
-                  mStatus="Settled by Distributor";
-                    holder.checkSetteled.setText(mStatus);
-                }else{
-                    mStatus="Pending by Distributor";
-                    holder.checkSetteled.setText(mStatus);
+            holder.mUpdateBtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    String mStatus;
+                    if (holder.checkSetteled.isChecked()) {
+                        mStatus = "Settled by Distributor";
+                        holder.checkSetteled.setText(mStatus);
+                    } else {
+                        mStatus = "Pending by Distributor";
+                        holder.checkSetteled.setText(mStatus);
+                    }
+                    mListener.OnUpdateClick(position, mStatus);
+                    // mListener.OnUpdateClick(position,holder.mStatusSpinner.getSelectedItem().toString());
                 }
-                mListener.OnUpdateClick(position,mStatus);
-               // mListener.OnUpdateClick(position,holder.mStatusSpinner.getSelectedItem().toString());
-            }
-        });
+            });
 
-        holder.mDeleteBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mListener.OnDeleteClick(position);
-            }
-        });
+            holder.mDeleteBtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    mListener.OnDeleteClick(position);
+                }
+            });
+        }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - onBindViewHolder : ",e.toString());
+            Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() + " - onBindViewHolder : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - onBindViewHolder : ",ex.toString());
+            Crashlytics.log(0,this.getClass().getSimpleName() + " - onBindViewHolder : ",ex.toString());
+        }
     }
 
     private void setupStatusSpinner(Spinner spinner){

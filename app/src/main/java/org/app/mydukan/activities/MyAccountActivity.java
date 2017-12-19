@@ -51,8 +51,8 @@ public class MyAccountActivity extends AppCompatActivity {
         }catch (VirtualMachineError ex){
             StringWriter errors = new StringWriter();
             ex.printStackTrace(new PrintWriter(errors));
-            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - onCreate : ",errors.toString());
-            Crashlytics.log(0,this.getClass().getSimpleName() + " - onCreate : ",errors.toString());
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - onCreate : ",ex.toString());
+            Crashlytics.log(0,this.getClass().getSimpleName() + " - onCreate : ",ex.toString());
         }
 
     }
@@ -99,8 +99,8 @@ public class MyAccountActivity extends AppCompatActivity {
         }catch (VirtualMachineError ex){
             StringWriter errors = new StringWriter();
             ex.printStackTrace(new PrintWriter(errors));
-            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - getUserProfile : ",errors.toString());
-            Crashlytics.log(0,"1 - MyAccountActivity - getUserProfile : ",errors.toString());
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - getUserProfile : ",ex.toString());
+            Crashlytics.log(0,"1 - MyAccountActivity - getUserProfile : ",ex.toString());
         }
     }
 

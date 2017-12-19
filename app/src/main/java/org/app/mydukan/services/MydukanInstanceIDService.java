@@ -67,8 +67,8 @@ public class MydukanInstanceIDService extends FirebaseInstanceIdService {
         }catch (VirtualMachineError ex){
             StringWriter errors = new StringWriter();
             ex.printStackTrace(new PrintWriter(errors));
-            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - sendRegistrationToServer : ",errors.toString());
-            Crashlytics.log(0,this.getClass().getSimpleName() + " - sendRegistrationToServer : ",errors.toString());
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - sendRegistrationToServer : ",ex.toString());
+            Crashlytics.log(0,this.getClass().getSimpleName() + " - sendRegistrationToServer : ",ex.toString());
         }
     }
 

@@ -142,8 +142,8 @@ public class ComplaintsListActivity extends BaseActivity implements ComplaintsAd
         }catch (VirtualMachineError ex){
             StringWriter errors = new StringWriter();
             ex.printStackTrace(new PrintWriter(errors));
-            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - onCreate : ",errors.toString());
-            Crashlytics.log(0,this.getClass().getSimpleName() + " - onCreate : ",errors.toString());
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - onCreate : ",ex.toString());
+            Crashlytics.log(0,this.getClass().getSimpleName() + " - onCreate : ",ex.toString());
         }
 
     }
@@ -217,8 +217,8 @@ public class ComplaintsListActivity extends BaseActivity implements ComplaintsAd
         }catch (VirtualMachineError ex){
             StringWriter errors = new StringWriter();
             ex.printStackTrace(new PrintWriter(errors));
-            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - fetchComplaintsData : ",errors.toString());
-            Crashlytics.log(0,"1 - ComplaintsListActivity - fetchComplaintsData : ",errors.toString());
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - fetchComplaintsData : ",ex.toString());
+            Crashlytics.log(0,"1 - ComplaintsListActivity - fetchComplaintsData : ",ex.toString());
         }
     }
 

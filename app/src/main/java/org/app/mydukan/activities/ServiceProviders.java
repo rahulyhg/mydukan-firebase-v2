@@ -198,8 +198,8 @@ public class ServiceProviders extends BaseActivity {
         }catch (VirtualMachineError ex){
             StringWriter errors = new StringWriter();
             ex.printStackTrace(new PrintWriter(errors));
-            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - onCreate : ",errors.toString());
-            Crashlytics.log(0,this.getClass().getSimpleName() + " - onCreate : ",errors.toString());
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - onCreate : ",ex.toString());
+            Crashlytics.log(0,this.getClass().getSimpleName() + " - onCreate : ",ex.toString());
         }
 
      /*
@@ -244,8 +244,8 @@ public class ServiceProviders extends BaseActivity {
         }catch (VirtualMachineError ex){
             StringWriter errors = new StringWriter();
             ex.printStackTrace(new PrintWriter(errors));
-            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - fetchDropdownData : ",errors.toString());
-            Crashlytics.log(0,"1 - ServiceProviders - fetchDropdownData : ",errors.toString());
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - fetchDropdownData : ",ex.toString());
+            Crashlytics.log(0,"1 - ServiceProviders - fetchDropdownData : ",ex.toString());
         }
     }
 
@@ -327,8 +327,8 @@ public class ServiceProviders extends BaseActivity {
         }catch (VirtualMachineError ex){
             StringWriter errors = new StringWriter();
             ex.printStackTrace(new PrintWriter(errors));
-            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - fetchServiceCentersData : ",errors.toString());
-            Crashlytics.log(0,"1 - ServiceProviders - fetchServiceCentersData : ",errors.toString());
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - fetchServiceCentersData : ",ex.toString());
+            Crashlytics.log(0,"1 - ServiceProviders - fetchServiceCentersData : ",ex.toString());
         }
     }
 

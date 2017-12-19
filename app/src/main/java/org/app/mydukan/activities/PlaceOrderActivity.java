@@ -86,8 +86,8 @@ public class PlaceOrderActivity extends BaseActivity implements OrderAdapter.Ord
         }catch (VirtualMachineError ex){
             StringWriter errors = new StringWriter();
             ex.printStackTrace(new PrintWriter(errors));
-            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - onCreate : ",errors.toString());
-            Crashlytics.log(0,this.getClass().getSimpleName() + " - onCreate : ",errors.toString());
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - onCreate : ",ex.toString());
+            Crashlytics.log(0,this.getClass().getSimpleName() + " - onCreate : ",ex.toString());
         }
     }
 
@@ -176,8 +176,8 @@ public class PlaceOrderActivity extends BaseActivity implements OrderAdapter.Ord
         }catch (VirtualMachineError ex){
             StringWriter errors = new StringWriter();
             ex.printStackTrace(new PrintWriter(errors));
-            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - getCurrentOrdersInTheCart : ",errors.toString());
-            Crashlytics.log(0,"1 - PlaceOrderActivity - getCurrentOrdersInTheCart : ",errors.toString());
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - getCurrentOrdersInTheCart : ",ex.toString());
+            Crashlytics.log(0,"1 - PlaceOrderActivity - getCurrentOrdersInTheCart : ",ex.toString());
         }
     }
 
@@ -240,8 +240,8 @@ public class PlaceOrderActivity extends BaseActivity implements OrderAdapter.Ord
         }catch (VirtualMachineError ex){
             StringWriter errors = new StringWriter();
             ex.printStackTrace(new PrintWriter(errors));
-            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - checkStatusAndThenOrder : ",errors.toString());
-            Crashlytics.log(0,"1 - PlaceOrderActivity - checkStatusAndThenOrder : ",errors.toString());
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - checkStatusAndThenOrder : ",ex.toString());
+            Crashlytics.log(0,"1 - PlaceOrderActivity - checkStatusAndThenOrder : ",ex.toString());
         }
     }
 
@@ -285,8 +285,8 @@ public class PlaceOrderActivity extends BaseActivity implements OrderAdapter.Ord
         }catch (VirtualMachineError ex){
             StringWriter errors = new StringWriter();
             ex.printStackTrace(new PrintWriter(errors));
-            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - placeTheOrder : ",errors.toString());
-            Crashlytics.log(0,"1 - PlaceOrderActivity - placeTheOrder : ",errors.toString());
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - placeTheOrder : ",ex.toString());
+            Crashlytics.log(0,"1 - PlaceOrderActivity - placeTheOrder : ",ex.toString());
         }
     }
 
@@ -316,8 +316,8 @@ public class PlaceOrderActivity extends BaseActivity implements OrderAdapter.Ord
         }catch (VirtualMachineError ex){
             StringWriter errors = new StringWriter();
             ex.printStackTrace(new PrintWriter(errors));
-            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - deleteAllOrder : ",errors.toString());
-            Crashlytics.log(0,"1 - PlaceOrderActivity - deleteAllOrder : ",errors.toString());
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - deleteAllOrder : ",ex.toString());
+            Crashlytics.log(0,"1 - PlaceOrderActivity - deleteAllOrder : ",ex.toString());
         }
     }
 
@@ -349,8 +349,8 @@ public class PlaceOrderActivity extends BaseActivity implements OrderAdapter.Ord
         }catch (VirtualMachineError ex){
             StringWriter errors = new StringWriter();
             ex.printStackTrace(new PrintWriter(errors));
-            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - deleteTheOrder : ",errors.toString());
-            Crashlytics.log(0,"1 - PlaceOrderActivity - deleteTheOrder : ",errors.toString());
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - deleteTheOrder : ",ex.toString());
+            Crashlytics.log(0,"1 - PlaceOrderActivity - deleteTheOrder : ",ex.toString());
         }
 
     }

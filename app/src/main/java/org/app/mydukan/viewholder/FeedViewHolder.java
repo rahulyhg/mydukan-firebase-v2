@@ -13,6 +13,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.crashlytics.android.Crashlytics;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -59,54 +60,64 @@ public class FeedViewHolder extends RecyclerView.ViewHolder implements View.OnCl
 
     public FeedViewHolder(final View itemView, final AdapterListFeed.OnClickItemFeed onClickItemFeed) {
         super(itemView);
-        auth = FirebaseAuth.getInstance().getCurrentUser();
-        itemView.setOnClickListener(this);
+        try {
+            auth = FirebaseAuth.getInstance().getCurrentUser();
+            itemView.setOnClickListener(this);
 
-        ivAvatar = (ImageView) itemView.findViewById(R.id.iv_avatar);
-        tvName = (TextView) itemView.findViewById(R.id.tv_name);
-        tvTime = (TextView) itemView.findViewById(R.id.tv_time);
-        tvLike = (TextView) itemView.findViewById(R.id.tv_like);
-        tvContent = (TextView) itemView.findViewById(R.id.tv_content);
-        tvLink = (TextView) itemView.findViewById(R.id.tv_contentLink);
-        ivContent = (ImageView) itemView.findViewById(R.id.iv_feed);
-        ivLike = (ImageView) itemView.findViewById(R.id.iv_like);
-        followBTN = (Button) itemView.findViewById(R.id.btn_follow);
-        viewProfile = (RelativeLayout) itemView.findViewById(R.id.layout_vProfile);
-        commentTV = (TextView) itemView.findViewById(R.id.commentTV);
-        overflowImage = itemView.findViewById(R.id.overflowMenu);
-        like = itemView.findViewById(R.id.like);
-        comment = itemView.findViewById(R.id.comment);
-        like.setOnClickListener(this);
-        comment.setOnClickListener(this);
-        followBTN.setOnClickListener(this);
-        viewProfile.setOnClickListener(this);
-        tvLink.setOnClickListener(this);
-        this.onClickItemFeed = onClickItemFeed;
+            ivAvatar = (ImageView) itemView.findViewById(R.id.iv_avatar);
+            tvName = (TextView) itemView.findViewById(R.id.tv_name);
+            tvTime = (TextView) itemView.findViewById(R.id.tv_time);
+            tvLike = (TextView) itemView.findViewById(R.id.tv_like);
+            tvContent = (TextView) itemView.findViewById(R.id.tv_content);
+            tvLink = (TextView) itemView.findViewById(R.id.tv_contentLink);
+            ivContent = (ImageView) itemView.findViewById(R.id.iv_feed);
+            ivLike = (ImageView) itemView.findViewById(R.id.iv_like);
+            followBTN = (Button) itemView.findViewById(R.id.btn_follow);
+            viewProfile = (RelativeLayout) itemView.findViewById(R.id.layout_vProfile);
+            commentTV = (TextView) itemView.findViewById(R.id.commentTV);
+            overflowImage = itemView.findViewById(R.id.overflowMenu);
+            like = itemView.findViewById(R.id.like);
+            comment = itemView.findViewById(R.id.comment);
+            like.setOnClickListener(this);
+            comment.setOnClickListener(this);
+            followBTN.setOnClickListener(this);
+            viewProfile.setOnClickListener(this);
+            tvLink.setOnClickListener(this);
+            this.onClickItemFeed = onClickItemFeed;
 
-        overflowImage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                PopupMenu popupMenu = new PopupMenu(itemView.getContext(), overflowImage);
-                MenuInflater inflater = popupMenu.getMenuInflater();
-                inflater.inflate(R.menu.feed_popup_menu, popupMenu.getMenu());
-                if (!deletable) {
-                    Menu m = popupMenu.getMenu();
-                    m.removeItem(R.id.delete);
-                }
-
-                popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-                    @Override
-                    public boolean onMenuItemClick(MenuItem item) {
-                        View view=new View(itemView.getContext());
-                        view.setId(item.getItemId());
-                        FeedViewHolder.this.onClick(view);
-                        return true;
+            overflowImage.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    PopupMenu popupMenu = new PopupMenu(itemView.getContext(), overflowImage);
+                    MenuInflater inflater = popupMenu.getMenuInflater();
+                    inflater.inflate(R.menu.feed_popup_menu, popupMenu.getMenu());
+                    if (!deletable) {
+                        Menu m = popupMenu.getMenu();
+                        m.removeItem(R.id.delete);
                     }
-                });
 
-                popupMenu.show();
-            }
-        });
+                    popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                        @Override
+                        public boolean onMenuItemClick(MenuItem item) {
+                            View view = new View(itemView.getContext());
+                            view.setId(item.getItemId());
+                            FeedViewHolder.this.onClick(view);
+                            return true;
+                        }
+                    });
+
+                    popupMenu.show();
+                }
+            });
+        }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - FeedViewHolder : ",e.toString());
+            Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() + " - FeedViewHolder : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - FeedViewHolder : ",ex.toString());
+            Crashlytics.log(0,this.getClass().getSimpleName() + " - FeedViewHolder : ",ex.toString());
+        }
     }
 
     public void setIvAvatar(String url) {
@@ -148,7 +159,7 @@ public class FeedViewHolder extends RecyclerView.ViewHolder implements View.OnCl
         }catch (VirtualMachineError ex){
             StringWriter errors = new StringWriter();
             ex.printStackTrace(new PrintWriter(errors));
-            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - setIvContent : ",errors.toString());
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - setIvContent : ",ex.toString());
         }
         //    Glide.with(ivContent.getContext()).using(new FirebaseImageLoader()).load(storageRefFeed).placeholder(R.drawable.img_holder).centerCrop().override(300,300).into(ivContent);
     }
@@ -189,30 +200,40 @@ public class FeedViewHolder extends RecyclerView.ViewHolder implements View.OnCl
     }
 
     public void getLikes(final Feed feed) {
-        changeLikeUI(feed);
-        final DatabaseReference referenceLike = FirebaseDatabase.getInstance().getReference().child(MyNetworksActivity.LIKE_ROOT + "/" + feed.getIdFeed());
+        try {
+            changeLikeUI(feed);
+            final DatabaseReference referenceLike = FirebaseDatabase.getInstance().getReference().child(MyNetworksActivity.LIKE_ROOT + "/" + feed.getIdFeed());
 
-        referenceLike.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
+            referenceLike.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
 
-                if (dataSnapshot == null) {
-                    return;
+                    if (dataSnapshot == null) {
+                        return;
+                    }
+                    feed.setLikeCount((int) dataSnapshot.getChildrenCount());
+                    if (dataSnapshot.child(auth.getUid()).exists()) {
+                        feed.setLiked(true);
+                    } else {
+                        feed.setLiked(false);
+                    }
+                    changeLikeUI(feed);
                 }
-                feed.setLikeCount((int) dataSnapshot.getChildrenCount());
-                if (dataSnapshot.child(auth.getUid()).exists()) {
-                    feed.setLiked(true);
-                } else {
-                    feed.setLiked(false);
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
                 }
-                changeLikeUI(feed);
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
+            });
+        }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - getLikes : ",e.toString());
+            Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() + " - getLikes : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - getLikes : ",ex.toString());
+            Crashlytics.log(0,this.getClass().getSimpleName() + " - getLikes : ",ex.toString());
+        }
     }
 
     private void changeLikeUI(Feed feed) {

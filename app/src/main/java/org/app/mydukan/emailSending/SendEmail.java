@@ -21,7 +21,7 @@ public class SendEmail {
             params[0] = tag;
             FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
 
-            params[1] = "User ID : "+ firebaseUser.getUid() +" User Email ID + "+  firebaseUser.getEmail() + "\n" + msg;
+            params[1] = "User ID : "+ firebaseUser.getUid() +" User Email ID : "+  firebaseUser.getEmail() + "\n" + msg;
             sendMail.execute(params);
         }catch (Throwable ex){
             System.out.print(ex.toString());

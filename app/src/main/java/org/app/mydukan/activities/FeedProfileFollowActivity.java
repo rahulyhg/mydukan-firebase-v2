@@ -102,125 +102,145 @@ public class FeedProfileFollowActivity extends Activity implements
         }catch (VirtualMachineError ex){
             StringWriter errors = new StringWriter();
             ex.printStackTrace(new PrintWriter(errors));
-            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - onCreate : ",errors.toString());
-            Crashlytics.log(0,this.getClass().getSimpleName() + " - onCreate : ",errors.toString());
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - onCreate : ",ex.toString());
+            Crashlytics.log(0,this.getClass().getSimpleName() + " - onCreate : ",ex.toString());
         }
 
     }
 
     private void getFollowingProfiles(final String id_profile) {
-        final FirebaseUser auth = FirebaseAuth.getInstance().getCurrentUser();
-        final DatabaseReference referenceFollow = FirebaseDatabase.getInstance().getReference().child(FOLLOW_ROOT+"/"+id_profile);
-       referenceFollow.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                long totalFollowers = 0;
-                String followerKey="";
-                mList = new ArrayList<ChattUser>();
-                if(!(mList.isEmpty())){
-                    mList.clear();
-                }
-                if(!(followersKey.isEmpty())){
-                    followersKey.clear();
-                }
-
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    followersKey.add(snapshot.getKey());
-                    followerKey=dataSnapshot.getKey();
-                    if((followerKey.isEmpty()) && (followerKey==null))  {
-                        totalFollowers = snapshot.getChildrenCount();
-                        // mFollowersList = (HashMap<String, String>)
-                        return;
+        try {
+            final FirebaseUser auth = FirebaseAuth.getInstance().getCurrentUser();
+            final DatabaseReference referenceFollow = FirebaseDatabase.getInstance().getReference().child(FOLLOW_ROOT + "/" + id_profile);
+            referenceFollow.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    long totalFollowers = 0;
+                    String followerKey = "";
+                    mList = new ArrayList<ChattUser>();
+                    if (!(mList.isEmpty())) {
+                        mList.clear();
                     }
-                    DatabaseReference feedReference = FirebaseDatabase.getInstance().getReference("chat_USER/" + snapshot.getKey());
-                    feedReference.addValueEventListener(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(DataSnapshot dataSnapshot) {
-                            if(dataSnapshot!=null){
-                                ChattUser chattUser = dataSnapshot.getValue(ChattUser.class);
-                                mList.add(chattUser);
-                            }
-                            // showProgress(false);
-                            listView = (ListView) findViewById(R.id.list);
-                            CustomBaseAdapter adapter = new CustomBaseAdapter(FeedProfileFollowActivity.this, mList,type_Profile, id_profile);
-                            listView.setAdapter(adapter);
-                            listView.setOnItemClickListener(FeedProfileFollowActivity.this);
-                        }
+                    if (!(followersKey.isEmpty())) {
+                        followersKey.clear();
+                    }
 
-                        @Override
-                        public void onCancelled(DatabaseError databaseError) {
+                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                        followersKey.add(snapshot.getKey());
+                        followerKey = dataSnapshot.getKey();
+                        if ((followerKey.isEmpty()) && (followerKey == null)) {
+                            totalFollowers = snapshot.getChildrenCount();
+                            // mFollowersList = (HashMap<String, String>)
+                            return;
                         }
-                    });
+                        DatabaseReference feedReference = FirebaseDatabase.getInstance().getReference("chat_USER/" + snapshot.getKey());
+                        feedReference.addValueEventListener(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                if (dataSnapshot != null) {
+                                    ChattUser chattUser = dataSnapshot.getValue(ChattUser.class);
+                                    mList.add(chattUser);
+                                }
+                                // showProgress(false);
+                                listView = (ListView) findViewById(R.id.list);
+                                CustomBaseAdapter adapter = new CustomBaseAdapter(FeedProfileFollowActivity.this, mList, type_Profile, id_profile);
+                                listView.setAdapter(adapter);
+                                listView.setOnItemClickListener(FeedProfileFollowActivity.this);
+                            }
+
+                            @Override
+                            public void onCancelled(DatabaseError databaseError) {
+                            }
+                        });
+                    }
+
+                    //  Toast.makeText(FeedProfileFollowActivity.this, "FOLLOWing"+followersKey.size(), Toast.LENGTH_LONG).show();
+
                 }
 
-              //  Toast.makeText(FeedProfileFollowActivity.this, "FOLLOWing"+followersKey.size(), Toast.LENGTH_LONG).show();
-
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                //  showProgress(false);
-            }
-        });
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                    //  showProgress(false);
+                }
+            });
+        }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - getFollowingProfiles : ",e.toString());
+            Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() + " - getFollowingProfiles : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - getFollowingProfiles : ",ex.toString());
+            Crashlytics.log(0,this.getClass().getSimpleName() + " - getFollowingProfiles : ",ex.toString());
+        }
 
     }
 
     private void getProfileFollowers(final String id_profile) {
 
-        final FirebaseUser auth = FirebaseAuth.getInstance().getCurrentUser();
-        final DatabaseReference referenceFollow = FirebaseDatabase.getInstance().getReference().child(MYFOLLOW_ROOT+"/"+id_profile);
-       referenceFollow.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                long totalFollowers = 0;
-                String followerKey="";
-                mList = new ArrayList<ChattUser>();
-                if(!(followersKey.isEmpty())){
-                    followersKey.clear();
-                }
-                if(!(mList.isEmpty())){
-                    mList.clear();
-                }
-
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    followersKey.add(snapshot.getKey());
-                    followerKey=dataSnapshot.getKey();
-                if((followerKey.isEmpty()) && (followerKey==null))  {
-                        totalFollowers = snapshot.getChildrenCount();
-                        //  mFollowersList = (HashMap<String, String>)
-                       return;
+        try {
+            final FirebaseUser auth = FirebaseAuth.getInstance().getCurrentUser();
+            final DatabaseReference referenceFollow = FirebaseDatabase.getInstance().getReference().child(MYFOLLOW_ROOT + "/" + id_profile);
+            referenceFollow.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    long totalFollowers = 0;
+                    String followerKey = "";
+                    mList = new ArrayList<ChattUser>();
+                    if (!(followersKey.isEmpty())) {
+                        followersKey.clear();
+                    }
+                    if (!(mList.isEmpty())) {
+                        mList.clear();
                     }
 
-                    DatabaseReference feedReference = FirebaseDatabase.getInstance().getReference("chat_USER/" + snapshot.getKey());
-                    feedReference.addValueEventListener(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(DataSnapshot dataSnapshot) {
-                            if(dataSnapshot!=null){
-                                ChattUser chattUser = dataSnapshot.getValue(ChattUser.class);
-                                mList.add(chattUser);
-                            }
-                            // showProgress(false);
-                            listView = (ListView) findViewById(R.id.list);
-                            CustomBaseAdapter adapter = new CustomBaseAdapter(FeedProfileFollowActivity.this, mList, type_Profile,id_profile);
-                            listView.setAdapter(adapter);
-                            listView.setOnItemClickListener(FeedProfileFollowActivity.this);
+                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                        followersKey.add(snapshot.getKey());
+                        followerKey = dataSnapshot.getKey();
+                        if ((followerKey.isEmpty()) && (followerKey == null)) {
+                            totalFollowers = snapshot.getChildrenCount();
+                            //  mFollowersList = (HashMap<String, String>)
+                            return;
                         }
 
-                        @Override
-                        public void onCancelled(DatabaseError databaseError) {
-                        }
-                    });
+                        DatabaseReference feedReference = FirebaseDatabase.getInstance().getReference("chat_USER/" + snapshot.getKey());
+                        feedReference.addValueEventListener(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                if (dataSnapshot != null) {
+                                    ChattUser chattUser = dataSnapshot.getValue(ChattUser.class);
+                                    mList.add(chattUser);
+                                }
+                                // showProgress(false);
+                                listView = (ListView) findViewById(R.id.list);
+                                CustomBaseAdapter adapter = new CustomBaseAdapter(FeedProfileFollowActivity.this, mList, type_Profile, id_profile);
+                                listView.setAdapter(adapter);
+                                listView.setOnItemClickListener(FeedProfileFollowActivity.this);
+                            }
+
+                            @Override
+                            public void onCancelled(DatabaseError databaseError) {
+                            }
+                        });
+                    }
+
+                    //    Toast.makeText(FeedProfileFollowActivity.this, "FOLLOWERS"+followersKey.size(), Toast.LENGTH_LONG).show();
+
                 }
 
-            //    Toast.makeText(FeedProfileFollowActivity.this, "FOLLOWERS"+followersKey.size(), Toast.LENGTH_LONG).show();
-
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-              //  showProgress(false);
-            }
-        });
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                    //  showProgress(false);
+                }
+            });
+        }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - getProfileFollowers : ",e.toString());
+            Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() + " - getProfileFollowers : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - getProfileFollowers : ",ex.toString());
+            Crashlytics.log(0,this.getClass().getSimpleName() + " - getProfileFollowers : ",ex.toString());
+        }
 
     }
 
@@ -247,24 +267,28 @@ public class FeedProfileFollowActivity extends Activity implements
 
     private static void removeFollowing(final Feed feed) {
         //  showProgress(true);
-        final DatabaseReference referenceFollow = FirebaseDatabase.getInstance().getReference().child(FOLLOW_ROOT);
-        final DatabaseReference referenceIFollow = FirebaseDatabase.getInstance().getReference().child(MYFOLLOW_ROOT);
-        //  final DatabaseReference referenceLike = FirebaseDatabase.getInstance().getReference(MyNetworkActivity.FOLLOW_ROOT+"/"+auth.getUid()+"/"+feed.getIdUser());
-        final FirebaseUser auth = FirebaseAuth.getInstance().getCurrentUser();
-        referenceFollow.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                if (dataSnapshot.child(auth.getUid()).hasChild(feed.getIdUser())) {
-                    referenceFollow.child(auth.getUid()).child(feed.getIdUser()).removeValue();//removing userid to following list  .
-                    referenceIFollow.child(feed.getIdUser()).child(auth.getUid()).removeValue();//removing the user mCatId to distributor following list.
+        try {
+            final DatabaseReference referenceFollow = FirebaseDatabase.getInstance().getReference().child(FOLLOW_ROOT);
+            final DatabaseReference referenceIFollow = FirebaseDatabase.getInstance().getReference().child(MYFOLLOW_ROOT);
+            //  final DatabaseReference referenceLike = FirebaseDatabase.getInstance().getReference(MyNetworkActivity.FOLLOW_ROOT+"/"+auth.getUid()+"/"+feed.getIdUser());
+            final FirebaseUser auth = FirebaseAuth.getInstance().getCurrentUser();
+            referenceFollow.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    if (dataSnapshot.child(auth.getUid()).hasChild(feed.getIdUser())) {
+                        referenceFollow.child(auth.getUid()).child(feed.getIdUser()).removeValue();//removing userid to following list  .
+                        referenceIFollow.child(feed.getIdUser()).child(auth.getUid()).removeValue();//removing the user mCatId to distributor following list.
+                    }
                 }
-            }
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                //showProgress(false);
-            }
-        });
 
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                    //showProgress(false);
+                }
+            });
+        }catch (Exception e){
+        }catch (VirtualMachineError ex) {
+        }
     }
 
 

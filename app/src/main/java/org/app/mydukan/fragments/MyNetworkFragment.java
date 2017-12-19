@@ -99,8 +99,8 @@ public class MyNetworkFragment extends Fragment implements AdapterListFeed.OnCli
         }catch (VirtualMachineError ex){
             StringWriter errors = new StringWriter();
             ex.printStackTrace(new PrintWriter(errors));
-            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - onCreate : ",errors.toString());
-            Crashlytics.log(0,this.getClass().getSimpleName() + " - onCreate : ",errors.toString());
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - onCreate : ",ex.toString());
+            Crashlytics.log(0,this.getClass().getSimpleName() + " - onCreate : ",ex.toString());
         }
         return mView;
     }
@@ -167,11 +167,13 @@ public class MyNetworkFragment extends Fragment implements AdapterListFeed.OnCli
             feedRetriever.getFeeds(10, false);
             mSwipeRefereshLayout.setRefreshing(true);
         }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - onViewCreated : ",e.toString());
             Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() + " - onViewCreated : ",e.toString());
         }catch (VirtualMachineError ex){
             StringWriter errors = new StringWriter();
             ex.printStackTrace(new PrintWriter(errors));
-            Crashlytics.log(0,this.getClass().getSimpleName() + " - onViewCreated : ",errors.toString());
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - onViewCreated : ",ex.toString());
+            Crashlytics.log(0,this.getClass().getSimpleName() + " - onViewCreated : ",ex.toString());
         }
     }
 

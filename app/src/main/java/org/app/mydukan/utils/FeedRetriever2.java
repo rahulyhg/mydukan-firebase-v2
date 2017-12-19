@@ -1,5 +1,6 @@
 package org.app.mydukan.utils;
 
+import com.crashlytics.android.Crashlytics;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -10,7 +11,10 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import org.app.mydukan.data.Feed;
+import org.app.mydukan.emailSending.SendEmail;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -39,17 +43,27 @@ public class FeedRetriever2 {
 
 
     public FeedRetriever2(OnFeedRetrievedListener onFeedRetrievedListener) {
-        this.user = FirebaseAuth.getInstance().getCurrentUser();
-        queue = new PriorityQueue<>(100, new Comparator<Feed>() {
-            @Override
-            public int compare(Feed feed1, Feed feed2) {
-                //todo check if comparator needs to be reversed
-                return feed2.getIdFeed().compareTo(feed1.getIdFeed());
-            }
-        });
-        this.onFeedRetrievedListener = onFeedRetrievedListener;
-        userListPolled = false;
-        hasPreDeterminedList = false;
+        try {
+            this.user = FirebaseAuth.getInstance().getCurrentUser();
+            queue = new PriorityQueue<>(100, new Comparator<Feed>() {
+                @Override
+                public int compare(Feed feed1, Feed feed2) {
+                    //todo check if comparator needs to be reversed
+                    return feed2.getIdFeed().compareTo(feed1.getIdFeed());
+                }
+            });
+            this.onFeedRetrievedListener = onFeedRetrievedListener;
+            userListPolled = false;
+            hasPreDeterminedList = false;
+        }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - FeedRetriever2 : ",e.toString());
+            Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() + " - FeedRetriever2 : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - FeedRetriever2 : ",ex.toString());
+            Crashlytics.log(0,this.getClass().getSimpleName() + " - FeedRetriever2 : ",ex.toString());
+        }
     }
 
     public FeedRetriever2(String[] followList, OnFeedRetrievedListener onFeedRetrievedListener) {
@@ -115,25 +129,35 @@ public class FeedRetriever2 {
     }
 
     private void retrieveFollowList(final OnFeedRetrievedListener onFeedRetrievedListener) {
-        final DatabaseReference referenceFollow = FirebaseDatabase.getInstance().getReference().child(FOLLOW_ROOT + "/" + user.getUid());
-        referenceFollow.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                List<String> users = new ArrayList<String>();
-                if (dataSnapshot != null) {
-                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                        users.add(snapshot.getKey());
+        try {
+            final DatabaseReference referenceFollow = FirebaseDatabase.getInstance().getReference().child(FOLLOW_ROOT + "/" + user.getUid());
+            referenceFollow.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    List<String> users = new ArrayList<String>();
+                    if (dataSnapshot != null) {
+                        for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                            users.add(snapshot.getKey());
+                        }
                     }
+                    retrieveFeeds(users, onFeedRetrievedListener);
+
                 }
-                retrieveFeeds(users, onFeedRetrievedListener);
 
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                onFeedRetrievedListener.onError();
-            }
-        });
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                    onFeedRetrievedListener.onError();
+                }
+            });
+        }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - retrieveFollowList : ",e.toString());
+            Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() + " - retrieveFollowList : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - retrieveFollowList : ",ex.toString());
+            Crashlytics.log(0,this.getClass().getSimpleName() + " - retrieveFollowList : ",ex.toString());
+        }
     }
 
     private void retrieveFeeds(final List<String> users, final OnFeedRetrievedListener onFeedRetrievedListener) {
@@ -159,38 +183,48 @@ public class FeedRetriever2 {
     }
 
     private void retrieveFeeds(String uId, final OnFeedRetrievedListener onFeedRetrievedListener) {
-        DatabaseReference feedReference = FirebaseDatabase.getInstance().getReference().child(FEED_ROOT).getRef();
+        try {
+            DatabaseReference feedReference = FirebaseDatabase.getInstance().getReference().child(FEED_ROOT).getRef();
        /* Query query = feedReference.orderByKey();
         if (follows.feeds.size() > 0) {
             query = query.endAt(follows.feeds.get(0).getIdFeed());
         }
         query = query.limitToLast(11);//+1 for removing redundant element*/
-        Query query = feedReference.orderByChild("idUser").equalTo(uId);
-        query.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
+            Query query = feedReference.orderByChild("idUser").equalTo(uId);
+            query.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
 
-                if (dataSnapshot != null) {
-                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                        Feed feed = snapshot.getValue(Feed.class);
-                        queue.offer(feed);
+                    if (dataSnapshot != null) {
+                        for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                            Feed feed = snapshot.getValue(Feed.class);
+                            queue.offer(feed);
+                        }
+
+                    }
+                    if (onFeedRetrievedListener != null) {
+                        onFeedRetrievedListener.onFeedRetrieved(null);
                     }
 
-                }
-                if (onFeedRetrievedListener != null) {
-                    onFeedRetrievedListener.onFeedRetrieved(null);
+
                 }
 
-
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                if (onFeedRetrievedListener != null) {
-                    onFeedRetrievedListener.onError();
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                    if (onFeedRetrievedListener != null) {
+                        onFeedRetrievedListener.onError();
+                    }
                 }
-            }
-        });
+            });
+        }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - retrieveFeeds : ",e.toString());
+            Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() + " - retrieveFeeds : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - retrieveFeeds : ",ex.toString());
+            Crashlytics.log(0,this.getClass().getSimpleName() + " - retrieveFeeds : ",ex.toString());
+        }
     }
 
     public interface OnFeedRetrievedListener {

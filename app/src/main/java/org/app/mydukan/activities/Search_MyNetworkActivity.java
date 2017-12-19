@@ -111,8 +111,8 @@ public class Search_MyNetworkActivity extends AppCompatActivity {
         }catch (VirtualMachineError ex){
             StringWriter errors = new StringWriter();
             ex.printStackTrace(new PrintWriter(errors));
-            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - onCreate : ",errors.toString());
-            Crashlytics.log(0,this.getClass().getSimpleName() + " - onCreate : ",errors.toString());
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - onCreate : ",ex.toString());
+            Crashlytics.log(0,this.getClass().getSimpleName() + " - onCreate : ",ex.toString());
         }
 
     }
@@ -130,22 +130,32 @@ public class Search_MyNetworkActivity extends AppCompatActivity {
     }
 
     private void getFollowings() {
-        swipeRefreshLayout.setRefreshing(true);
-        final FirebaseUser auth = FirebaseAuth.getInstance().getCurrentUser();
-        final DatabaseReference referenceFollowing = FirebaseDatabase.getInstance().getReference().child(FOLLOWING_ROOT+"/"+auth.getUid());
-        referenceFollowing.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                mAdapter.setFollowing(dataSnapshot);
-                reSyncContacts();
-            }
+        try {
+            swipeRefreshLayout.setRefreshing(true);
+            final FirebaseUser auth = FirebaseAuth.getInstance().getCurrentUser();
+            final DatabaseReference referenceFollowing = FirebaseDatabase.getInstance().getReference().child(FOLLOWING_ROOT + "/" + auth.getUid());
+            referenceFollowing.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    mAdapter.setFollowing(dataSnapshot);
+                    reSyncContacts();
+                }
 
 
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                showProgress(false);
-            }
-        });
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                    showProgress(false);
+                }
+            });
+        }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - getFollowings : ",e.toString());
+            Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() + " - getFollowings : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - getFollowings : ",ex.toString());
+            Crashlytics.log(0,this.getClass().getSimpleName() + " - getFollowings : ",ex.toString());
+        }
     }
 
     private void loadData() {

@@ -55,8 +55,8 @@ public class VideoListFragment extends ListFragment {
         }catch (VirtualMachineError ex){
             StringWriter errors = new StringWriter();
             ex.printStackTrace(new PrintWriter(errors));
-            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - onCreate : ",errors.toString());
-            Crashlytics.log(0,this.getClass().getSimpleName() + " - onCreate : ",errors.toString());
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - onCreate : ",ex.toString());
+            Crashlytics.log(0,this.getClass().getSimpleName() + " - onCreate : ",ex.toString());
         }
 
 
@@ -169,8 +169,8 @@ public class VideoListFragment extends ListFragment {
         }catch (VirtualMachineError ex){
             StringWriter errors = new StringWriter();
             ex.printStackTrace(new PrintWriter(errors));
-            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - fetchVideos : ",errors.toString());
-            Crashlytics.log(0,"1 - YouTubeContent - fetchVideos : ",errors.toString());
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - fetchVideos : ",ex.toString());
+            Crashlytics.log(0,"1 - YouTubeContent - fetchVideos : ",ex.toString());
         }
 
     }

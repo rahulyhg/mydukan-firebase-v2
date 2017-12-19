@@ -5,14 +5,18 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.crashlytics.android.Crashlytics;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 
 import org.app.mydukan.R;
 import org.app.mydukan.data.Feed;
+import org.app.mydukan.emailSending.SendEmail;
 import org.app.mydukan.viewholder.FeedViewHolder;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -50,19 +54,29 @@ public class AdapterListFeed extends RecyclerView.Adapter<FeedViewHolder> {
     @Override
     public void onBindViewHolder(FeedViewHolder holder, int position) {
 
-        Feed feed = mList.get(position);
-        holder.currFeed = feed;
+        try {
+            Feed feed = mList.get(position);
+            holder.currFeed = feed;
 
-        holder.setTvName(feed.getName());
-        holder.setTvContent(feed.getText());
-        holder.setTvTime(feed.getTime());
-        holder.setIvAvatar(feed.getPhotoAvatar());
-        holder.setIvContent(feed.getPhotoFeed());
-        if (feed.getLink() != null) {
-            holder.setTvLink(feed.getLink());
+            holder.setTvName(feed.getName());
+            holder.setTvContent(feed.getText());
+            holder.setTvTime(feed.getTime());
+            holder.setIvAvatar(feed.getPhotoAvatar());
+            holder.setIvContent(feed.getPhotoFeed());
+            if (feed.getLink() != null) {
+                holder.setTvLink(feed.getLink());
+            }
+            holder.getLikes(feed);
+            holder.setDeletable(feed.getIdUser().equalsIgnoreCase(auth.getUid()));
+        }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - onBindViewHolder : ",e.toString());
+            Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() + " - onBindViewHolder : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - onBindViewHolder : ",ex.toString());
+            Crashlytics.log(0,this.getClass().getSimpleName() + " - onBindViewHolder : ",ex.toString());
         }
-        holder.getLikes(feed);
-        holder.setDeletable(feed.getIdUser().equalsIgnoreCase(auth.getUid()));
 //        holder.changeFollowing(feed.getIdUser());
 
     }

@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.Nullable;
 
+import com.crashlytics.android.Crashlytics;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -17,9 +18,12 @@ import com.google.firebase.database.ValueEventListener;
 import org.app.mydukan.activities.CommentsActivity;
 import org.app.mydukan.activities.WebViewActivity;
 import org.app.mydukan.data.Feed;
+import org.app.mydukan.emailSending.SendEmail;
 import org.app.mydukan.services.VolleyNetworkRequest;
 
+import java.io.PrintWriter;
 import java.io.Serializable;
+import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -37,82 +41,100 @@ import static org.app.mydukan.fragments.TwoFragment.LIKE_ROOT;
 public class FeedUtils {
 
     public static void getFeed(final String feedId, String userId, @Nullable final OnDataRetrieved onDataRetrieved) {
-        DatabaseReference feedReference = FirebaseDatabase.getInstance().getReference().child(FEED_ROOT + "/" + feedId).getRef();
-        feedReference.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                if (onDataRetrieved != null) {
-                    if (dataSnapshot != null) {
-                        Feed feed = dataSnapshot.getValue(Feed.class);
-                        if (feed != null) {
-                            onDataRetrieved.onSuccess(feed);
+        try {
+            DatabaseReference feedReference = FirebaseDatabase.getInstance().getReference().child(FEED_ROOT + "/" + feedId).getRef();
+            feedReference.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    if (onDataRetrieved != null) {
+                        if (dataSnapshot != null) {
+                            Feed feed = dataSnapshot.getValue(Feed.class);
+                            if (feed != null) {
+                                onDataRetrieved.onSuccess(feed);
+                            } else
+                                onDataRetrieved.onFailure();
                         } else
                             onDataRetrieved.onFailure();
-                    } else
-                        onDataRetrieved.onFailure();
+                    }
+
+
                 }
 
-
-
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                if (onDataRetrieved != null)
-                    onDataRetrieved.onFailure();
-            }
-        });
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                    if (onDataRetrieved != null)
+                        onDataRetrieved.onFailure();
+                }
+            });
+        }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + "FeedUtils" + " - getFeed : ",e.toString());
+            Crashlytics.log(0,"Exception - " + "FeedUtils" + " - getFeed : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail("FeedUtils" + " - getFeed : ",ex.toString());
+            Crashlytics.log(0,"FeedUtils" + " - getFeed : ",ex.toString());
+        }
     }
 
 
     public static void addLike(final Feed feed, final VolleyNetworkRequest jsonRequest) {
-        final DatabaseReference referenceLike = FirebaseDatabase.getInstance().getReference().child(LIKE_ROOT+"/"+feed.getIdFeed());
-        final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        if(user==null){
-            return;
-        }
-        referenceLike.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                if (dataSnapshot == null) {
-                    referenceLike.child(user.getUid()).setValue(true);
-                    return;
-                }
-                if (dataSnapshot.hasChild(user.getUid())) {
-                    referenceLike.child(user.getUid()).removeValue();
-                } else {
-                    referenceLike.child(user.getUid()).setValue(true);
-                    getUserToken(feed.getIdUser(), user.getDisplayName(), "like");
-                }
+        try {
+            final DatabaseReference referenceLike = FirebaseDatabase.getInstance().getReference().child(LIKE_ROOT + "/" + feed.getIdFeed());
+            final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+            if (user == null) {
+                return;
             }
+            referenceLike.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    if (dataSnapshot == null) {
+                        referenceLike.child(user.getUid()).setValue(true);
+                        return;
+                    }
+                    if (dataSnapshot.hasChild(user.getUid())) {
+                        referenceLike.child(user.getUid()).removeValue();
+                    } else {
+                        referenceLike.child(user.getUid()).setValue(true);
+                        getUserToken(feed.getIdUser(), user.getDisplayName(), "like");
+                    }
+                }
 
-            public void getUserToken(final String auth, final String name, final String type){
-                final DatabaseReference referenceFcm = FirebaseDatabase.getInstance().getReference().child("fcmregistration");
+                public void getUserToken(final String auth, final String name, final String type) {
+                    final DatabaseReference referenceFcm = FirebaseDatabase.getInstance().getReference().child("fcmregistration");
 //        final String auth = FirebaseAuth.getInstance().getCurrentUser().getUid();
-                referenceFcm.addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        HashMap<String, Object> map = new HashMap<>();
-                        map = (HashMap<String, Object>) dataSnapshot.getValue();
-                        if(map.containsKey(auth)) {
-                            System.out.println("User Token Comment: " + map.get(auth));
-                            jsonRequest.JsonObjectRequest((String)map.get(auth), name, type, feed.getIdFeed());
+                    referenceFcm.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            HashMap<String, Object> map = new HashMap<>();
+                            map = (HashMap<String, Object>) dataSnapshot.getValue();
+                            if (map.containsKey(auth)) {
+                                System.out.println("User Token Comment: " + map.get(auth));
+                                jsonRequest.JsonObjectRequest((String) map.get(auth), name, type, feed.getIdFeed());
+                            }
                         }
-                    }
 
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
 
-                    }
-                });
-            }
+                        }
+                    });
+                }
 
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
 
-            }
-        });
-
+                }
+            });
+        }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + "FeedUtils" + " - addLike : ",e.toString());
+            Crashlytics.log(0,"Exception - " + "FeedUtils" + " - addLike : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail("FeedUtils" + " - addLike : ",ex.toString());
+            Crashlytics.log(0,"FeedUtils" + " - addLike : ",ex.toString());
+        }
     }
 
     public static void delete(Feed feed, @Nullable final OnCompletion onCompletion) {

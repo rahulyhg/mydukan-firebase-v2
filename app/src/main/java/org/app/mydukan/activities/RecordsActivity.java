@@ -75,8 +75,8 @@ public class RecordsActivity extends BaseActivity implements RecordsAdapter.Reco
         }catch (VirtualMachineError ex){
             StringWriter errors = new StringWriter();
             ex.printStackTrace(new PrintWriter(errors));
-            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - onCreate : ",errors.toString());
-            Crashlytics.log(0,this.getClass().getSimpleName() + " - onCreate : ",errors.toString());
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - onCreate : ",ex.toString());
+            Crashlytics.log(0,this.getClass().getSimpleName() + " - onCreate : ",ex.toString());
         }
     }
 
@@ -146,8 +146,8 @@ public class RecordsActivity extends BaseActivity implements RecordsAdapter.Reco
         }catch (VirtualMachineError ex){
             StringWriter errors = new StringWriter();
             ex.printStackTrace(new PrintWriter(errors));
-            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - fetchTheRecords : ",errors.toString());
-            Crashlytics.log(0,"1 - RecordsActivity - fetchTheRecords : ",errors.toString());
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - fetchTheRecords : ",ex.toString());
+            Crashlytics.log(0,"1 - RecordsActivity - fetchTheRecords : ",ex.toString());
         }
     }
 
@@ -175,11 +175,13 @@ public class RecordsActivity extends BaseActivity implements RecordsAdapter.Reco
                 }
             });
         }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - deleteTheRecord : ",e.toString());
             Crashlytics.log(0,"Exception - RecordsActivity - deleteTheRecord : ",e.toString());
         }catch (VirtualMachineError ex){
             StringWriter errors = new StringWriter();
             ex.printStackTrace(new PrintWriter(errors));
-            Crashlytics.log(0,"1 - RecordsActivity - deleteTheRecord : ",errors.toString());
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - deleteTheRecord : ",ex.toString());
+            Crashlytics.log(0,"1 - RecordsActivity - deleteTheRecord : ",ex.toString());
         }
     }
 

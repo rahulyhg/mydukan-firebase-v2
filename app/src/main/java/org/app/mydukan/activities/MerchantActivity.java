@@ -119,21 +119,22 @@ public class MerchantActivity extends Activity {
         }catch (VirtualMachineError ex){
             StringWriter errors = new StringWriter();
             ex.printStackTrace(new PrintWriter(errors));
-            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - onCreate : ",errors.toString());
-            Crashlytics.log(0,this.getClass().getSimpleName() + " - onCreate : ",errors.toString());
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - onCreate : ",ex.toString());
+            Crashlytics.log(0,this.getClass().getSimpleName() + " - onCreate : ",ex.toString());
         }
 
     }
 
     private void GetsubscriptionPlans() {
 
-            //showProgress(true);
+        //showProgress(true);
+        try {
             mList = new ArrayList<>();
             DatabaseReference feedReference = FirebaseDatabase.getInstance().getReference("subscription_plans");
             feedReference.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
-                    if(dataSnapshot!=null){
+                    if (dataSnapshot != null) {
 
                         InitPlansView();
                     }
@@ -144,8 +145,17 @@ public class MerchantActivity extends Activity {
                 public void onCancelled(DatabaseError databaseError) {
                 }
             });
-
+        }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - GetsubscriptionPlans : ",e.toString());
+            Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() + " - GetsubscriptionPlans : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - GetsubscriptionPlans : ",ex.toString());
+            Crashlytics.log(0,this.getClass().getSimpleName() + " - GetsubscriptionPlans : ",ex.toString());
         }
+
+    }
 
 
 
@@ -194,12 +204,12 @@ public class MerchantActivity extends Activity {
     }
 
 
-     private void initOrderId() {
-            Random r = new Random(System.currentTimeMillis());
-            orderId = "ORDER" + (1 + r.nextInt(2)) * 10000
-                    + r.nextInt(10000);
+    private void initOrderId() {
+        Random r = new Random(System.currentTimeMillis());
+        orderId = "ORDER" + (1 + r.nextInt(2)) * 10000
+                + r.nextInt(10000);
 
-        }
+    }
     private String createPostBody(Map<String, String> params) {
         StringBuilder sbPost = new StringBuilder();
         for (String key : params.keySet()) {

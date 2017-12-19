@@ -107,8 +107,8 @@ public class OneFragment extends Fragment implements AdapterListFeed.OnClickItem
         }catch (VirtualMachineError ex){
             StringWriter errors = new StringWriter();
             ex.printStackTrace(new PrintWriter(errors));
-            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - onCreate : ",errors.toString());
-            Crashlytics.log(0,this.getClass().getSimpleName() + " - onCreate : ",errors.toString());
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - onCreate : ",ex.toString());
+            Crashlytics.log(0,this.getClass().getSimpleName() + " - onCreate : ",ex.toString());
         }
         return mView;
     }
@@ -204,8 +204,8 @@ public class OneFragment extends Fragment implements AdapterListFeed.OnClickItem
         }catch (VirtualMachineError ex){
             StringWriter errors = new StringWriter();
             ex.printStackTrace(new PrintWriter(errors));
-            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - retriveFeedsData : ",errors.toString());
-            Crashlytics.log(0,"1 - OneFargment - retriveFeedsData : ",errors.toString());
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - retriveFeedsData : ",ex.toString());
+            Crashlytics.log(0,"1 - OneFargment - retriveFeedsData : ",ex.toString());
         }
     }
 

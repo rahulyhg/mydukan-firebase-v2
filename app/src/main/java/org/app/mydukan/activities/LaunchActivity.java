@@ -6,10 +6,13 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
 import com.crashlytics.android.answers.Answers;
 import com.crashlytics.android.answers.CustomEvent;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -76,8 +79,23 @@ public class LaunchActivity extends BaseActivity {
             }catch (Throwable ex){
                 StringWriter errors = new StringWriter();
                 ex.printStackTrace(new PrintWriter(errors));
-                new SendEmail().sendEmail("Testing ",errors.toString());
+                new SendEmail().sendEmail("Testing ",ex.toString());
             }*/
+
+            try{
+                FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+                if(firebaseUser.getEmail() != null) {
+                    if(firebaseUser.getEmail().equalsIgnoreCase("testisynergy@gmail.com")
+                            || firebaseUser.getEmail().equalsIgnoreCase("charkhaamit@gmail.com")
+                            || firebaseUser.getEmail().equalsIgnoreCase("sonamt@5fworld.com")
+                            || firebaseUser.getEmail().equalsIgnoreCase("pzende@gmail.com")
+                            || firebaseUser.getEmail().equalsIgnoreCase("viraj.isynergy@gmail.com")) {
+                        Toast.makeText(getApplicationContext(), "19th Dec Release ", Toast.LENGTH_LONG).show();
+                    }
+                }
+            }catch (Throwable ex){
+                new SendEmail().sendEmail("Testing Toast ",ex.toString());
+            }
 
         /*
         1.clear the cache for old user.
@@ -119,8 +137,8 @@ TEsting
         }catch (VirtualMachineError ex){
             StringWriter errors = new StringWriter();
             ex.printStackTrace(new PrintWriter(errors));
-            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - onCreate : ",errors.toString());
-            Crashlytics.log(0,this.getClass().getSimpleName() + " - onCreate : ",errors.toString());
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - onCreate : ",ex.toString());
+            Crashlytics.log(0,this.getClass().getSimpleName() + " - onCreate : ",ex.toString());
         }
     }
 
@@ -136,11 +154,13 @@ TEsting
                 getNotificationData(bundle);
             }
         }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - onNewIntent : ",e.toString());
             Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() + " - onNewIntent : ",e.toString());
         }catch (VirtualMachineError ex){
             StringWriter errors = new StringWriter();
             ex.printStackTrace(new PrintWriter(errors));
-            Crashlytics.log(0,this.getClass().getSimpleName() + " - onNewIntent : ",errors.toString());
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - onNewIntent : ",ex.toString());
+            Crashlytics.log(0,this.getClass().getSimpleName() + " - onNewIntent : ",ex.toString());
         }
     }
 
@@ -230,11 +250,13 @@ TEsting
                 }
             });
         }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - openActivity : ",e.toString());
             Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() + " - openActivity : ",e.toString());
         }catch (VirtualMachineError ex){
             StringWriter errors = new StringWriter();
             ex.printStackTrace(new PrintWriter(errors));
-            Crashlytics.log(0,this.getClass().getSimpleName() + " - openActivity : ",errors.toString());
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - openActivity : ",ex.toString());
+            Crashlytics.log(0,this.getClass().getSimpleName() + " - openActivity : ",ex.toString());
         }
 
     }

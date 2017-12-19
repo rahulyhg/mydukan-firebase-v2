@@ -212,8 +212,8 @@ public class AddSchemeRecordActivity extends BaseActivity {
         }catch (VirtualMachineError ex){
             StringWriter errors = new StringWriter();
             ex.printStackTrace(new PrintWriter(errors));
-            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - getSchemeRecordInfo : ",errors.toString());
-            Crashlytics.log(0,"1 - AddSchemeRecordActivity - getSchemeRecordInfo : ",errors.toString());
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - getSchemeRecordInfo : ",ex.toString());
+            Crashlytics.log(0,"1 - AddSchemeRecordActivity - getSchemeRecordInfo : ",ex.toString());
         }
     }
 
@@ -245,8 +245,8 @@ public class AddSchemeRecordActivity extends BaseActivity {
         }catch (VirtualMachineError ex){
             StringWriter errors = new StringWriter();
             ex.printStackTrace(new PrintWriter(errors));
-            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - addSchemeRecord : ",errors.toString());
-            Crashlytics.log(0,"1 - AddSchemeRecordActivity - addSchemeRecord : ",errors.toString());
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - addSchemeRecord : ",ex.toString());
+            Crashlytics.log(0,"1 - AddSchemeRecordActivity - addSchemeRecord : ",ex.toString());
         }
 
     }

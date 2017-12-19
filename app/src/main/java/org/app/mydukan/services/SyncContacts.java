@@ -12,6 +12,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
+import com.crashlytics.android.Crashlytics;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
@@ -25,9 +26,12 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 import org.app.mydukan.data.Contact;
 import org.app.mydukan.data.ContactUsers;
+import org.app.mydukan.emailSending.SendEmail;
 import org.app.mydukan.utils.AppContants;
 import org.app.mydukan.utils.Utils;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -61,57 +65,76 @@ public class SyncContacts extends IntentService {
     private static boolean isRunning;
 
     public static void searchContacts(String phoneNumber, @Nullable final UserRetrieved userRetrieved, final Map<String, String> contactMap) {
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        final DocumentReference doc = db.collection(CONTACT_COLLECTION).document(phoneNumber);
-        doc.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                if (task.isSuccessful()) {
-                    DocumentSnapshot document = task.getResult();
-                    if (document != null && document.exists()) {
-                        Log.d(TAG, "DocumentSnapshot data: " + task.getResult().getData());
-                        List<Map.Entry<String, Object>> list = new ArrayList<>(document.getData().entrySet());
-                        getUser(list.get(0).getKey(), userRetrieved, contactMap);
+        try {
+            FirebaseFirestore db = FirebaseFirestore.getInstance();
+            final DocumentReference doc = db.collection(CONTACT_COLLECTION).document(phoneNumber);
+            doc.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                    if (task.isSuccessful()) {
+                        DocumentSnapshot document = task.getResult();
+                        if (document != null && document.exists()) {
+                            Log.d(TAG, "DocumentSnapshot data: " + task.getResult().getData());
+                            List<Map.Entry<String, Object>> list = new ArrayList<>(document.getData().entrySet());
+                            getUser(list.get(0).getKey(), userRetrieved, contactMap);
+                        } else {
+                            Log.d(TAG, "No such document");
+                            if (userRetrieved != null)
+                                userRetrieved.onUserNotExists();
+                        }
                     } else {
-                        Log.d(TAG, "No such document");
+                        Log.d(TAG, "get failed with ", task.getException());
                         if (userRetrieved != null)
-                            userRetrieved.onUserNotExists();
+                            userRetrieved.onError(task.getException());
                     }
-                } else {
-                    Log.d(TAG, "get failed with ", task.getException());
-                    if (userRetrieved != null)
-                        userRetrieved.onError(task.getException());
                 }
-            }
-        });
+            });
+        }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + "SyncContacts" + " - searchContacts : ",e.toString());
+            Crashlytics.log(0,"Exception - " + "SyncContacts" + " - searchContacts : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail("SyncContacts" + " - searchContacts : ",ex.toString());
+            Crashlytics.log(0,"SyncContacts" + " - searchContacts : ",ex.toString());
+        }
     }
 
     private static void getUser(final String userId, @Nullable final UserRetrieved userRetrieved, final Map<String, String> contactMap) {
-        DatabaseReference userRef = FirebaseDatabase.getInstance().getReference(AppContants.CHAT_USER + "/" + userId);
-        //addListenerForSingleValueEvent
-        userRef.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                // Get user value
-                if (userRetrieved != null) {
-                    if (dataSnapshot != null && dataSnapshot.exists()) {
-                        ContactUsers user = dataSnapshot.getValue(ContactUsers.class);
-                        user.setContactName(contactMap.get(user.getPhoneNumber()) ==null? "" :contactMap.get(user.getPhoneNumber()) );
-                        userRetrieved.onUserRetrieved(user);
+        try {
+            DatabaseReference userRef = FirebaseDatabase.getInstance().getReference(AppContants.CHAT_USER + "/" + userId);
+            //addListenerForSingleValueEvent
+            userRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    // Get user value
+                    if (userRetrieved != null) {
+                        if (dataSnapshot != null && dataSnapshot.exists()) {
+                            ContactUsers user = dataSnapshot.getValue(ContactUsers.class);
+                            user.setContactName(contactMap.get(user.getPhoneNumber()) == null ? "" : contactMap.get(user.getPhoneNumber()));
+                            userRetrieved.onUserRetrieved(user);
+                        } else {
+                            userRetrieved.onUserNotExists();
+                        }
                     }
-                    else {
-                        userRetrieved.onUserNotExists();
-                    }
+
                 }
 
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                if (userRetrieved != null)
-                    userRetrieved.onError(databaseError.toException());
-            }
-        });
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                    if (userRetrieved != null)
+                        userRetrieved.onError(databaseError.toException());
+                }
+            });
+        }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + "SyncContacts" + " - getUser : ",e.toString());
+            Crashlytics.log(0,"Exception - " + "SyncContacts" + " - getUser : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail("SyncContacts" + " - getUser : ",ex.toString());
+            Crashlytics.log(0,"SyncContacts" + " - getUser : ",ex.toString());
+        }
     }
 
     public static Map<String, String> getNumberMap(Context context) {
@@ -205,35 +228,45 @@ public class SyncContacts extends IntentService {
     }
 
     private void syncNewContactsAddedInDB(String lastSyncedUser) {
-        DatabaseReference chatUsers = FirebaseDatabase.getInstance().getReference().child(AppContants.CHAT_USER);
-        chatUsers.orderByKey().startAt(lastSyncedUser).addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                if (dataSnapshot != null) {
-                    ContactUsers lastChild = null;
-                    for (DataSnapshot userSnap : dataSnapshot.getChildren()) {
-                        ContactUsers user = userSnap.getValue(ContactUsers.class);
-                        lastChild = user;
-                        if (user.getPhoneNumber() == null)
-                            continue;
-                        user.setPhoneNumber(Utils.formatNumber(user.getPhoneNumber()));
-                        if (contactMap.containsKey(user.getPhoneNumber())) {
-                            user.setContactName(contactMap.get(user.getPhoneNumber()));
-                            users.add(user);
+        try {
+            DatabaseReference chatUsers = FirebaseDatabase.getInstance().getReference().child(AppContants.CHAT_USER);
+            chatUsers.orderByKey().startAt(lastSyncedUser).addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    if (dataSnapshot != null) {
+                        ContactUsers lastChild = null;
+                        for (DataSnapshot userSnap : dataSnapshot.getChildren()) {
+                            ContactUsers user = userSnap.getValue(ContactUsers.class);
+                            lastChild = user;
+                            if (user.getPhoneNumber() == null)
+                                continue;
+                            user.setPhoneNumber(Utils.formatNumber(user.getPhoneNumber()));
+                            if (contactMap.containsKey(user.getPhoneNumber())) {
+                                user.setContactName(contactMap.get(user.getPhoneNumber()));
+                                users.add(user);
+                            }
+                        }
+                        if (lastChild != null) {
+                            setLastSyncedUser(lastChild.getuId());
                         }
                     }
-                    if (lastChild != null) {
-                        setLastSyncedUser(lastChild.getuId());
-                    }
+                    syncNewPhoneBookContacts();     //syncs new/edited contacts from phone book
                 }
-                syncNewPhoneBookContacts();     //syncs new/edited contacts from phone book
-            }
 
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                syncNewPhoneBookContacts();     //syncs new/edited contacts from phone book
-            }
-        });
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                    syncNewPhoneBookContacts();     //syncs new/edited contacts from phone book
+                }
+            });
+        }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - syncNewContactsAddedInDB : ",e.toString());
+            Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() + " - syncNewContactsAddedInDB : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - syncNewContactsAddedInDB : ",ex.toString());
+            Crashlytics.log(0,this.getClass().getSimpleName() + " - syncNewContactsAddedInDB : ",ex.toString());
+        }
     }
 
     private void syncUsersWithPhoneBook() {
@@ -338,28 +371,37 @@ public class SyncContacts extends IntentService {
     }
 
     private void getLastUserInDB() {
-        DatabaseReference chatUsers = FirebaseDatabase.getInstance().getReference().child(AppContants.CHAT_USER);
-        chatUsers.orderByKey().limitToLast(1).addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                if (dataSnapshot != null) {
-                    ContactUsers lastChild = null;
-                    for (DataSnapshot userSnap : dataSnapshot.getChildren()) {
-                        lastChild = userSnap.getValue(ContactUsers.class);
+        try {
+            DatabaseReference chatUsers = FirebaseDatabase.getInstance().getReference().child(AppContants.CHAT_USER);
+            chatUsers.orderByKey().limitToLast(1).addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    if (dataSnapshot != null) {
+                        ContactUsers lastChild = null;
+                        for (DataSnapshot userSnap : dataSnapshot.getChildren()) {
+                            lastChild = userSnap.getValue(ContactUsers.class);
+                        }
+                        if (lastChild != null) {
+                            setLastSyncedUser(lastChild.getuId());
+                        }
                     }
-                    if (lastChild != null) {
-                        setLastSyncedUser(lastChild.getuId());
-                    }
+                    sendFinishedResult();
                 }
-                sendFinishedResult();
-            }
 
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                sendFinishedResult();
-            }
-        });
-
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                    sendFinishedResult();
+                }
+            });
+        }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - getLastUserInDB : ",e.toString());
+            Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() + " - getLastUserInDB : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - getLastUserInDB : ",ex.toString());
+            Crashlytics.log(0,this.getClass().getSimpleName() + " - getLastUserInDB : ",ex.toString());
+        }
     }
 
     private void sendFinishedResult() {

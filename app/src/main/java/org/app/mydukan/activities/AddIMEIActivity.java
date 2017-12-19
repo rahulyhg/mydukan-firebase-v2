@@ -158,8 +158,8 @@ public class AddIMEIActivity extends BaseActivity {
         }catch (VirtualMachineError ex){
             StringWriter errors = new StringWriter();
             ex.printStackTrace(new PrintWriter(errors));
-            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - onCreate : ",errors.toString());
-            Crashlytics.log(0,this.getClass().getSimpleName() + " - onCreate : ",errors.toString());
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - onCreate : ",ex.toString());
+            Crashlytics.log(0,this.getClass().getSimpleName() + " - onCreate : ",ex.toString());
         }
 
     }
@@ -242,8 +242,8 @@ public class AddIMEIActivity extends BaseActivity {
         }catch (VirtualMachineError ex){
             StringWriter errors = new StringWriter();
             ex.printStackTrace(new PrintWriter(errors));
-            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - addProductToClaimList : ",errors.toString());
-            Crashlytics.log(0,"1 - AddIMEIActivity - addProductToClaimList : ",errors.toString());
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - addProductToClaimList : ",ex.toString());
+            Crashlytics.log(0,"1 - AddIMEIActivity - addProductToClaimList : ",ex.toString());
         }
     }
 

@@ -234,8 +234,8 @@ public class AddDoaRecordListActivity extends BaseActivity {
         }catch (VirtualMachineError ex){
             StringWriter errors = new StringWriter();
             ex.printStackTrace(new PrintWriter(errors));
-            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - setupCategorySpinner : ",errors.toString());
-            Crashlytics.log(0,"1 - AddDoaRecordListActivity - setupCategorySpinner : ",errors.toString());
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - setupCategorySpinner : ",ex.toString());
+            Crashlytics.log(0,"1 - AddDoaRecordListActivity - setupCategorySpinner : ",ex.toString());
         }
     }
 
@@ -278,8 +278,8 @@ public class AddDoaRecordListActivity extends BaseActivity {
         }catch (VirtualMachineError ex){
             StringWriter errors = new StringWriter();
             ex.printStackTrace(new PrintWriter(errors));
-            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - setupNameSpinner : ",errors.toString());
-            Crashlytics.log(0,"1 - AddDoaRecordListActivity - setupNameSpinner : ",errors.toString());
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - setupNameSpinner : ",ex.toString());
+            Crashlytics.log(0,"1 - AddDoaRecordListActivity - setupNameSpinner : ",ex.toString());
         }
     }
 
@@ -389,8 +389,8 @@ public class AddDoaRecordListActivity extends BaseActivity {
         }catch (VirtualMachineError ex){
             StringWriter errors = new StringWriter();
             ex.printStackTrace(new PrintWriter(errors));
-            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - addDoaRecord : ",errors.toString());
-            Crashlytics.log(0,"1 - AddDoaRecordListActivity - addDoaRecord : ",errors.toString());
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - addDoaRecord : ",ex.toString());
+            Crashlytics.log(0,"1 - AddDoaRecordListActivity - addDoaRecord : ",ex.toString());
         }
 
     }

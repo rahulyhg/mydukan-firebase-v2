@@ -9,11 +9,16 @@ import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.crashlytics.android.Crashlytics;
+
 import org.app.mydukan.R;
 import org.app.mydukan.application.MyDukan;
 import org.app.mydukan.data.Record;
 import org.app.mydukan.data.RecordInfo;
+import org.app.mydukan.emailSending.SendEmail;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -53,36 +58,46 @@ public class RecordsAdapter extends RecyclerView.Adapter<RecordsAdapter.ViewHold
 
     @Override
     public void onBindViewHolder(RecordsAdapter.ViewHolder holder, final int position) {
-        Record record = mRecordsList.get(position);
-
-        holder.mNameView.setText(mApp.getUtils().toCamelCase(record.getProductname()));
-        holder.mQuantityView.setText(mContext.getString(R.string.quantity) + ":" +
-               record.getRecordList().size());
-
-        long amount = 0l;
         try {
-            for (RecordInfo recordInfo: record.getRecordList()) {
-                amount += Long.valueOf(recordInfo.getPrice());
+            Record record = mRecordsList.get(position);
+
+            holder.mNameView.setText(mApp.getUtils().toCamelCase(record.getProductname()));
+            holder.mQuantityView.setText(mContext.getString(R.string.quantity) + ":" +
+                    record.getRecordList().size());
+
+            long amount = 0l;
+            try {
+                for (RecordInfo recordInfo : record.getRecordList()) {
+                    amount += Long.valueOf(recordInfo.getPrice());
+                }
+            } catch (Exception e) {
+
             }
+            holder.mAmountView.setText("Total Amount: " + mApp.getUtils().getPriceFormat(String.valueOf(amount)));
+
+
+            holder.mRecordLayout.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    mListener.OnClick(position);
+                }
+            });
+
+            holder.mDeleteBtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    mListener.OnDeleteClick(position);
+                }
+            });
         }catch (Exception e){
-
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - onBindViewHolder : ",e.toString());
+            Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() + " - onBindViewHolder : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - onBindViewHolder : ",ex.toString());
+            Crashlytics.log(0,this.getClass().getSimpleName() + " - onBindViewHolder : ",ex.toString());
         }
-        holder.mAmountView.setText("Total Amount: " + mApp.getUtils().getPriceFormat(String.valueOf(amount)));
-
-
-        holder.mRecordLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mListener.OnClick(position);
-            }
-        });
-
-        holder.mDeleteBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mListener.OnDeleteClick(position);
-            }
-        });
     }
 
     @Override

@@ -156,8 +156,8 @@ public class LoginActivity extends BaseActivity implements GoogleApiClient.OnCon
         }catch (VirtualMachineError ex){
             StringWriter errors = new StringWriter();
             ex.printStackTrace(new PrintWriter(errors));
-            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - onCreate : ",errors.toString());
-            Crashlytics.log(0,this.getClass().getSimpleName() + " - onCreate : ",errors.toString());
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - onCreate : ",ex.toString());
+            Crashlytics.log(0,this.getClass().getSimpleName() + " - onCreate : ",ex.toString());
         }
     }
 
@@ -175,11 +175,13 @@ public class LoginActivity extends BaseActivity implements GoogleApiClient.OnCon
                     .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
                     .build();
         }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - setupGoogleClient : ",e.toString());
             Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() + " - setupGoogleClient : ",e.toString());
         }catch (VirtualMachineError ex){
             StringWriter errors = new StringWriter();
             ex.printStackTrace(new PrintWriter(errors));
-            Crashlytics.log(0,this.getClass().getSimpleName() + " - setupGoogleClient : ",errors.toString());
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - setupGoogleClient : ",ex.toString());
+            Crashlytics.log(0,this.getClass().getSimpleName() + " - setupGoogleClient : ",ex.toString());
         }
     }
 
@@ -217,7 +219,7 @@ public class LoginActivity extends BaseActivity implements GoogleApiClient.OnCon
         }catch (VirtualMachineError ex){
             StringWriter errors = new StringWriter();
             ex.printStackTrace(new PrintWriter(errors));
-            Crashlytics.log(0,this.getClass().getSimpleName() + " - setupFirebaseAuthListener : ",errors.toString());
+            Crashlytics.log(0,this.getClass().getSimpleName() + " - setupFirebaseAuthListener : ",ex.toString());
         }
     }
 
@@ -250,11 +252,13 @@ public class LoginActivity extends BaseActivity implements GoogleApiClient.OnCon
 
             }
         }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - showPermissions : ",e.toString());
             Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() + " - showPermissions : ",e.toString());
         }catch (VirtualMachineError ex){
             StringWriter errors = new StringWriter();
             ex.printStackTrace(new PrintWriter(errors));
-            Crashlytics.log(0,this.getClass().getSimpleName() + " - showPermissions : ",errors.toString());
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - showPermissions : ",ex.toString());
+            Crashlytics.log(0,this.getClass().getSimpleName() + " - showPermissions : ",ex.toString());
         }
     }
 
@@ -354,11 +358,13 @@ public class LoginActivity extends BaseActivity implements GoogleApiClient.OnCon
                         }
                     });
         }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - firebaseAuthWithGoogle : ",e.toString());
             Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() + " - firebaseAuthWithGoogle : ",e.toString());
         }catch (VirtualMachineError ex){
             StringWriter errors = new StringWriter();
             ex.printStackTrace(new PrintWriter(errors));
-            Crashlytics.log(0,this.getClass().getSimpleName() + " - firebaseAuthWithGoogle : ",errors.toString());
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - firebaseAuthWithGoogle : ",ex.toString());
+            Crashlytics.log(0,this.getClass().getSimpleName() + " - firebaseAuthWithGoogle : ",ex.toString());
         }
     }
 
@@ -434,8 +440,8 @@ public class LoginActivity extends BaseActivity implements GoogleApiClient.OnCon
         }catch (VirtualMachineError ex){
             StringWriter errors = new StringWriter();
             ex.printStackTrace(new PrintWriter(errors));
-            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - checkIfUserExist : ",errors.toString());
-            Crashlytics.log(0,"1 - LoginActivity - checkIfUserExist : ",errors.toString());
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - checkIfUserExist : ",ex.toString());
+            Crashlytics.log(0,"1 - LoginActivity - checkIfUserExist : ",ex.toString());
         }
     }
 
@@ -498,11 +504,13 @@ public class LoginActivity extends BaseActivity implements GoogleApiClient.OnCon
                 }
             });
         }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - openActivity : ",e.toString());
             Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() + " - openActivity : ",e.toString());
         }catch (VirtualMachineError ex){
             StringWriter errors = new StringWriter();
             ex.printStackTrace(new PrintWriter(errors));
-            Crashlytics.log(0,this.getClass().getSimpleName() + " - openActivity : ",errors.toString());
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - openActivity : ",ex.toString());
+            Crashlytics.log(0,this.getClass().getSimpleName() + " - openActivity : ",ex.toString());
         }
     }
 
@@ -525,11 +533,13 @@ public class LoginActivity extends BaseActivity implements GoogleApiClient.OnCon
 
             }
         }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - sendUserFirebase : ",e.toString());
             Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() + " - sendUserFirebase : ",e.toString());
         }catch (VirtualMachineError ex){
             StringWriter errors = new StringWriter();
             ex.printStackTrace(new PrintWriter(errors));
-            Crashlytics.log(0,this.getClass().getSimpleName() + " - sendUserFirebase : ",errors.toString());
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - sendUserFirebase : ",ex.toString());
+            Crashlytics.log(0,this.getClass().getSimpleName() + " - sendUserFirebase : ",ex.toString());
         }
     }
 
@@ -569,11 +579,13 @@ public class LoginActivity extends BaseActivity implements GoogleApiClient.OnCon
                 dismissProgress();
             }
         }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - onActivityResult : ",e.toString());
             Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() + " - onActivityResult : ",e.toString());
         }catch (VirtualMachineError ex){
             StringWriter errors = new StringWriter();
             ex.printStackTrace(new PrintWriter(errors));
-            Crashlytics.log(0,this.getClass().getSimpleName() + " - onActivityResult : ",errors.toString());
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - onActivityResult : ",ex.toString());
+            Crashlytics.log(0,this.getClass().getSimpleName() + " - onActivityResult : ",ex.toString());
         }
 
     }
@@ -594,11 +606,13 @@ public class LoginActivity extends BaseActivity implements GoogleApiClient.OnCon
             googleLogout();
             MoEHelper.getInstance(getApplicationContext()).logoutUser();
         }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - onCreate : ",e.toString());
             Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() + " - logoutUser: ",e.toString());
         }catch (VirtualMachineError ex){
             StringWriter errors = new StringWriter();
             ex.printStackTrace(new PrintWriter(errors));
-            Crashlytics.log(0,this.getClass().getSimpleName() + " - logoutUser : ",errors.toString());
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - onCreate : ",ex.toString());
+            Crashlytics.log(0,this.getClass().getSimpleName() + " - logoutUser : ",ex.toString());
         }
     }
     private void googleLogout() {
@@ -607,11 +621,13 @@ public class LoginActivity extends BaseActivity implements GoogleApiClient.OnCon
                 Auth.GoogleSignInApi.signOut(mGoogleApiClient);
             }
         }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - googleLogout : ",e.toString());
             Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() + " - googleLogout: ",e.toString());
         }catch (VirtualMachineError ex){
             StringWriter errors = new StringWriter();
             ex.printStackTrace(new PrintWriter(errors));
-            Crashlytics.log(0,this.getClass().getSimpleName() + " - googleLogout : ",errors.toString());
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - googleLogout : ",ex.toString());
+            Crashlytics.log(0,this.getClass().getSimpleName() + " - googleLogout : ",ex.toString());
         }
     }
 
@@ -637,11 +653,13 @@ public class LoginActivity extends BaseActivity implements GoogleApiClient.OnCon
 
             dots[0].setImageDrawable(getResources().getDrawable(R.drawable.selecteditem_dot));
         }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - setUiPageViewController : ",e.toString());
             Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() + " - setUiPageViewController: ",e.toString());
         }catch (VirtualMachineError ex){
             StringWriter errors = new StringWriter();
             ex.printStackTrace(new PrintWriter(errors));
-            Crashlytics.log(0,this.getClass().getSimpleName() + " - setUiPageViewController : ",errors.toString());
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - setUiPageViewController : ",ex.toString());
+            Crashlytics.log(0,this.getClass().getSimpleName() + " - setUiPageViewController : ",ex.toString());
         }
     }
 

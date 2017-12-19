@@ -27,6 +27,7 @@ import com.moengage.pushbase.push.MoEngageNotificationUtils;
 import org.app.mydukan.R;
 import org.app.mydukan.activities.MainActivity;
 import org.app.mydukan.application.MyDukan;
+import org.app.mydukan.emailSending.SendEmail;
 import org.app.mydukan.utils.AppContants;
 
 import java.io.InputStream;
@@ -102,11 +103,13 @@ public class FirebaseDataReceiver extends WakefulBroadcastReceiver {
                 }
             }
         }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - onReceive : ",e.toString());
             Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() + " - onReceive : ",e.toString());
         }catch (VirtualMachineError ex){
             StringWriter errors = new StringWriter();
             ex.printStackTrace(new PrintWriter(errors));
-            Crashlytics.log(0,this.getClass().getSimpleName() + " - v : ",errors.toString());
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - onCreate : ",ex.toString());
+            Crashlytics.log(0,this.getClass().getSimpleName() + " - onReceive : ",ex.toString());
         }
     }
 

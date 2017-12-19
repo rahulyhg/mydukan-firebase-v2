@@ -174,8 +174,8 @@ public class SupplierListActivity extends BaseActivity implements SupplierAdapte
                     } catch (VirtualMachineError ex) {
                         StringWriter errors = new StringWriter();
                         ex.printStackTrace(new PrintWriter(errors));
-                        new SendEmail().sendEmail("2" +this.getClass().getSimpleName() + " - onCreate : ",errors.toString());
-                        Crashlytics.log(0, "2 - SupplierListActivity - addsupplierbyinvitebtn - OnClick : ", errors.toString());
+                        new SendEmail().sendEmail("2" +this.getClass().getSimpleName() + " - onCreate : ",ex.toString());
+                        Crashlytics.log(0, "2 - SupplierListActivity - addsupplierbyinvitebtn - OnClick : ", ex.toString());
                     }
                 }
             });
@@ -186,8 +186,8 @@ public class SupplierListActivity extends BaseActivity implements SupplierAdapte
         }catch (VirtualMachineError ex){
             StringWriter errors = new StringWriter();
             ex.printStackTrace(new PrintWriter(errors));
-            new SendEmail().sendEmail("1"+this.getClass().getSimpleName() + " - onCreate : ",errors.toString());
-            Crashlytics.log(0,this.getClass().getSimpleName() + " - onCreate : ",errors.toString());
+            new SendEmail().sendEmail("1"+this.getClass().getSimpleName() + " - onCreate : ",ex.toString());
+            Crashlytics.log(0,this.getClass().getSimpleName() + " - onCreate : ",ex.toString());
         }
     }
 
@@ -294,8 +294,8 @@ public class SupplierListActivity extends BaseActivity implements SupplierAdapte
         }catch (VirtualMachineError ex){
             StringWriter errors = new StringWriter();
             ex.printStackTrace(new PrintWriter(errors));
-            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - fetchSupplierdata : ",errors.toString());
-            Crashlytics.log(0,"1 - SupplierListActivity - fetchSupplierdata : ",errors.toString());
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - fetchSupplierdata : ",ex.toString());
+            Crashlytics.log(0,"1 - SupplierListActivity - fetchSupplierdata : ",ex.toString());
         }
     }
 
@@ -323,8 +323,8 @@ public class SupplierListActivity extends BaseActivity implements SupplierAdapte
         }catch (VirtualMachineError ex){
             StringWriter errors = new StringWriter();
             ex.printStackTrace(new PrintWriter(errors));
-            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - addthissupplier : ",errors.toString());
-            Crashlytics.log(0,"1 - SupplierListActivity - addthissupplier : ",errors.toString());
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - addthissupplier : ",ex.toString());
+            Crashlytics.log(0,"1 - SupplierListActivity - addthissupplier : ",ex.toString());
         }
     }
 

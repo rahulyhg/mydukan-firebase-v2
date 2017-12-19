@@ -167,8 +167,8 @@ public class ProductDescriptionActivity extends BaseActivity {
         }catch (VirtualMachineError ex){
             StringWriter errors = new StringWriter();
             ex.printStackTrace(new PrintWriter(errors));
-            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - onCreate : ",errors.toString());
-            Crashlytics.log(0,this.getClass().getSimpleName() + " - onCreate : ",errors.toString());
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - onCreate : ",ex.toString());
+            Crashlytics.log(0,this.getClass().getSimpleName() + " - onCreate : ",ex.toString());
         }
     }
 
@@ -353,8 +353,8 @@ public class ProductDescriptionActivity extends BaseActivity {
         }catch (VirtualMachineError ex){
             StringWriter errors = new StringWriter();
             ex.printStackTrace(new PrintWriter(errors));
-            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - fetchProductAndShow : ",errors.toString());
-            Crashlytics.log(0,"1 - ProductDescriptionActivity - fetchProductAndShow : ",errors.toString());
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - fetchProductAndShow : ",ex.toString());
+            Crashlytics.log(0,"1 - ProductDescriptionActivity - fetchProductAndShow : ",ex.toString());
         }
     }
 
@@ -430,8 +430,8 @@ public class ProductDescriptionActivity extends BaseActivity {
         }catch (VirtualMachineError ex){
             StringWriter errors = new StringWriter();
             ex.printStackTrace(new PrintWriter(errors));
-            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - addProductToCart : ",errors.toString());
-            Crashlytics.log(0,"1 - ProductDescriptionActivity - addProductToCart : ",errors.toString());
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - addProductToCart : ",ex.toString());
+            Crashlytics.log(0,"1 - ProductDescriptionActivity - addProductToCart : ",ex.toString());
         }
     }
 

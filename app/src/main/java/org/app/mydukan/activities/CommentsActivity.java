@@ -140,8 +140,8 @@ public class CommentsActivity extends AppCompatActivity {
         }catch (VirtualMachineError ex){
             StringWriter errors = new StringWriter();
             ex.printStackTrace(new PrintWriter(errors));
-            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - onCreate : ",errors.toString());
-            Crashlytics.log(0,this.getClass().getSimpleName() + " - onCreate : ",errors.toString());
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - onCreate : ",ex.toString());
+            Crashlytics.log(0,this.getClass().getSimpleName() + " - onCreate : ",ex.toString());
         }
 
     }
@@ -327,48 +327,67 @@ public class CommentsActivity extends AppCompatActivity {
 
     private void getComments() {
 
-        final DatabaseReference referenceFollow = FirebaseDatabase.getInstance().getReference().child(COMMENT_ROOT + "/" + feed.getIdFeed());
-        referenceFollow.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                commentList.clear();
-                if (dataSnapshot != null) {
-                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                        //for(DataSnapshot commentSnapshot: snapshot.getChildren())
-                        commentList.add(snapshot.getValue(Comment.class));
+        try {
+            final DatabaseReference referenceFollow = FirebaseDatabase.getInstance().getReference().child(COMMENT_ROOT + "/" + feed.getIdFeed());
+            referenceFollow.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    commentList.clear();
+                    if (dataSnapshot != null) {
+                        for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                            //for(DataSnapshot commentSnapshot: snapshot.getChildren())
+                            commentList.add(snapshot.getValue(Comment.class));
+                        }
                     }
+                    toggleLoading();
+                    mAdapter.notifyDataSetChanged();
                 }
-                toggleLoading();
-                mAdapter.notifyDataSetChanged();
-            }
 
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-            }
-        });
-
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                }
+            });
+        }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - getComments : ",e.toString());
+            Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() + " - getComments : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - getComments : ",ex.toString());
+            Crashlytics.log(0,this.getClass().getSimpleName() + " - getComments : ",ex.toString());
+        }
 
     }
 
     public void getUserToken(final String auth, final String name, final String type){
-        final DatabaseReference referenceFcm = FirebaseDatabase.getInstance().getReference().child("fcmregistration");
+        try {
+            final DatabaseReference referenceFcm = FirebaseDatabase.getInstance().getReference().child("fcmregistration");
 //        final String auth = FirebaseAuth.getInstance().getCurrentUser().getUid();
-        referenceFcm.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                HashMap<String, Object> map = new HashMap<>();
-                map = (HashMap<String, Object>) dataSnapshot.getValue();
-                if(map.containsKey(auth)) {
-                    System.out.println("User Token Comment: " + map.get(auth));
-                    jsonRequest.JsonObjectRequest((String)map.get(auth), name, type, feed.getIdFeed());
+            referenceFcm.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    HashMap<String, Object> map = new HashMap<>();
+                    map = (HashMap<String, Object>) dataSnapshot.getValue();
+                    if (map.containsKey(auth)) {
+                        System.out.println("User Token Comment: " + map.get(auth));
+                        jsonRequest.JsonObjectRequest((String) map.get(auth), name, type, feed.getIdFeed());
+                    }
                 }
-            }
 
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
 
-            }
-        });
+                }
+            });
+        }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - getUserToken : ",e.toString());
+            Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() + " - getUserToken : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - getUserToken : ",ex.toString());
+            Crashlytics.log(0,this.getClass().getSimpleName() + " - getUserToken : ",ex.toString());
+        }
     }
 
     private void toggleLoading() {

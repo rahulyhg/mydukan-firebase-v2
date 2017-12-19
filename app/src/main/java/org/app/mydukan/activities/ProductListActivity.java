@@ -189,8 +189,8 @@ public class ProductListActivity extends BaseActivity implements TabLayout.OnTab
         }catch (VirtualMachineError ex){
             StringWriter errors = new StringWriter();
             ex.printStackTrace(new PrintWriter(errors));
-            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - onCreate : ",errors.toString());
-            Crashlytics.log(0,this.getClass().getSimpleName() + " - onCreate : ",errors.toString());
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - onCreate : ",ex.toString());
+            Crashlytics.log(0,this.getClass().getSimpleName() + " - onCreate : ",ex.toString());
         }
     }
     @Override
@@ -349,8 +349,8 @@ public class ProductListActivity extends BaseActivity implements TabLayout.OnTab
         }catch (VirtualMachineError ex){
             StringWriter errors = new StringWriter();
             ex.printStackTrace(new PrintWriter(errors));
-            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - getProductList : ",errors.toString());
-            Crashlytics.log(0,"1 - ProductListActivity - getProductList : ",errors.toString());
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - getProductList : ",ex.toString());
+            Crashlytics.log(0,"1 - ProductListActivity - getProductList : ",ex.toString());
         }
     }
 
@@ -389,8 +389,8 @@ public class ProductListActivity extends BaseActivity implements TabLayout.OnTab
         }catch (VirtualMachineError ex){
             StringWriter errors = new StringWriter();
             ex.printStackTrace(new PrintWriter(errors));
-            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - addProductToCart : ",errors.toString());
-            Crashlytics.log(0,"1 - ProductListActivity - addProductToCart : ",errors.toString());
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - addProductToCart : ",ex.toString());
+            Crashlytics.log(0,"1 - ProductListActivity - addProductToCart : ",ex.toString());
         }
     }
 
@@ -423,8 +423,8 @@ public class ProductListActivity extends BaseActivity implements TabLayout.OnTab
         }catch (VirtualMachineError ex){
             StringWriter errors = new StringWriter();
             ex.printStackTrace(new PrintWriter(errors));
-            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - addProductToClaimList : ",errors.toString());
-            Crashlytics.log(0,"1 - ProductListActivity - addProductToClaimList : ",errors.toString());
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - addProductToClaimList : ",ex.toString());
+            Crashlytics.log(0,"1 - ProductListActivity - addProductToClaimList : ",ex.toString());
         }
     }
 

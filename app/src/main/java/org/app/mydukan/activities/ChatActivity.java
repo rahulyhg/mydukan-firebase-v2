@@ -141,82 +141,92 @@ public class ChatActivity extends AppCompatActivity implements AIListener{
                 @Override
                 public void onClick(View view) {
 
-                    String message = editText.getText().toString().trim();
-                    DatabaseReference tmp = count_ref.child(uid).child(formattedDate);
-                    tmp.addListenerForSingleValueEvent(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(DataSnapshot dataSnapshot) {
-                            if (dataSnapshot.exists()) {
-                                msgCount[0] = dataSnapshot.getValue(Integer.class);
-                                msgCount[0] += 1;
-                                count_ref.child(uid).child(formattedDate).setValue(msgCount[0]);
-                                Log.e("Updating entry", Integer.toString(msgCount[0]));
+                    try {
+                        String message = editText.getText().toString().trim();
+                        DatabaseReference tmp = count_ref.child(uid).child(formattedDate);
+                        tmp.addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                if (dataSnapshot.exists()) {
+                                    msgCount[0] = dataSnapshot.getValue(Integer.class);
+                                    msgCount[0] += 1;
+                                    count_ref.child(uid).child(formattedDate).setValue(msgCount[0]);
+                                    Log.e("Updating entry", Integer.toString(msgCount[0]));
+                                }
                             }
-                        }
 
-                        @Override
-                        public void onCancelled(DatabaseError databaseError) {
-                            Log.e("Failed", databaseError.getMessage());
-                        }
-                    });
-                    if (msgCount[0] == 0) {
-                        Map<String, Object> childUpdates = new HashMap<>();
-                        childUpdates.put("/chatCount/" + uid + "/" + formattedDate + "/", 1);
+                            @Override
+                            public void onCancelled(DatabaseError databaseError) {
+                                Log.e("Failed", databaseError.getMessage());
+                            }
+                        });
+                        if (msgCount[0] == 0) {
+                            Map<String, Object> childUpdates = new HashMap<>();
+                            childUpdates.put("/chatCount/" + uid + "/" + formattedDate + "/", 1);
 
-                        FirebaseDatabase.getInstance().getReference().updateChildren(childUpdates,
-                                new DatabaseReference.CompletionListener() {
-                                    @Override
-                                    public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
-                                        if (databaseError == null) {
-                                            Log.e("Chatbot firebase init:", "failure");
-                                        } else {
-                                            msgCount[0] += 1;
+                            FirebaseDatabase.getInstance().getReference().updateChildren(childUpdates,
+                                    new DatabaseReference.CompletionListener() {
+                                        @Override
+                                        public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+                                            if (databaseError == null) {
+                                                Log.e("Chatbot firebase init:", "failure");
+                                            } else {
+                                                msgCount[0] += 1;
+                                            }
                                         }
+                                    });
+                        }
+                        if (msgCount[0] >= freeLimit && !isSubscribed) {
+                            ChatMessage chatMessage = new ChatMessage(notSubscribed, "bot");
+                            chat_ref.child(uid).push().setValue(chatMessage);
+                            return;
+                        }
+
+                        if (!message.equals("")) {
+                            Log.e("Message", message);
+                            ChatMessage chatMessage = new ChatMessage(message, "user");
+                            chat_ref.child(uid).push().setValue(chatMessage);
+
+                            aiRequest.setQuery(message);
+                            new AsyncTask<AIRequest, Void, AIResponse>() {
+
+                                @Override
+                                protected AIResponse doInBackground(AIRequest... aiRequests) {
+                                    final AIRequest request = aiRequests[0];
+                                    try {
+                                        final AIResponse response = aiDataService.request(aiRequest);
+                                        return response;
+                                    } catch (AIServiceException e) {
                                     }
-                                });
-                    }
-                    if (msgCount[0] >= freeLimit && !isSubscribed) {
-                        ChatMessage chatMessage = new ChatMessage(notSubscribed, "bot");
-                        chat_ref.child(uid).push().setValue(chatMessage);
-                        return;
-                    }
-
-                    if (!message.equals("")) {
-                        Log.e("Message", message);
-                        ChatMessage chatMessage = new ChatMessage(message, "user");
-                        chat_ref.child(uid).push().setValue(chatMessage);
-
-                        aiRequest.setQuery(message);
-                        new AsyncTask<AIRequest, Void, AIResponse>() {
-
-                            @Override
-                            protected AIResponse doInBackground(AIRequest... aiRequests) {
-                                final AIRequest request = aiRequests[0];
-                                try {
-                                    final AIResponse response = aiDataService.request(aiRequest);
-                                    return response;
-                                } catch (AIServiceException e) {
+                                    return null;
                                 }
-                                return null;
-                            }
 
-                            @Override
-                            protected void onPostExecute(AIResponse response) {
-                                if (response != null) {
-                                    Result result = response.getResult();
-                                    String reply = result.getFulfillment().getSpeech();
-                                    ChatMessage chatMessage = new ChatMessage(reply, "bot");
-                                    chat_ref.child(uid).push().setValue(chatMessage);
+                                @Override
+                                protected void onPostExecute(AIResponse response) {
+                                    if (response != null) {
+                                        Result result = response.getResult();
+                                        String reply = result.getFulfillment().getSpeech();
+                                        ChatMessage chatMessage = new ChatMessage(reply, "bot");
+                                        chat_ref.child(uid).push().setValue(chatMessage);
+                                    }
                                 }
-                            }
-                        }.execute(aiRequest);
-                    } else {
-                        aiService.startListening();
+                            }.execute(aiRequest);
+                        } else {
+                            aiService.startListening();
+                        }
+
+                        editText.setText("");
+                    }catch (Exception e){
+                        new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - 1onCreate : ",e.toString());
+                        Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() + " - 1onCreate : ",e.toString());
+                    }catch (VirtualMachineError ex){
+                        StringWriter errors = new StringWriter();
+                        ex.printStackTrace(new PrintWriter(errors));
+                        new SendEmail().sendEmail(this.getClass().getSimpleName() + " - 1onCreate : ",ex.toString());
+                        Crashlytics.log(0,this.getClass().getSimpleName() + " - 1onCreate : ",ex.toString());
                     }
-
-                    editText.setText("");
-
                 }
+
             });
 
 
@@ -293,8 +303,8 @@ public class ChatActivity extends AppCompatActivity implements AIListener{
         }catch (VirtualMachineError ex){
             StringWriter errors = new StringWriter();
             ex.printStackTrace(new PrintWriter(errors));
-            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - onCreate : ",errors.toString());
-            Crashlytics.log(0,this.getClass().getSimpleName() + " - onCreate : ",errors.toString());
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - onCreate : ",ex.toString());
+            Crashlytics.log(0,this.getClass().getSimpleName() + " - onCreate : ",ex.toString());
         }
 
     }

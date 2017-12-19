@@ -73,8 +73,8 @@ public class OrderListActivity extends BaseActivity implements MyOrderAdapter.Or
         }catch (VirtualMachineError ex){
             StringWriter errors = new StringWriter();
             ex.printStackTrace(new PrintWriter(errors));
-            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - onCreate : ",errors.toString());
-            Crashlytics.log(0,this.getClass().getSimpleName() + " - onCreate : ",errors.toString());
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - onCreate : ",ex.toString());
+            Crashlytics.log(0,this.getClass().getSimpleName() + " - onCreate : ",ex.toString());
         }
     }
     public void onBackPressed() {
@@ -151,8 +151,8 @@ public class OrderListActivity extends BaseActivity implements MyOrderAdapter.Or
         }catch (VirtualMachineError ex){
             StringWriter errors = new StringWriter();
             ex.printStackTrace(new PrintWriter(errors));
-            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - fetchCategoryData : ",errors.toString());
-            Crashlytics.log(0,"1 - OrderListActivity - fetchCategoryData : ",errors.toString());
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - fetchCategoryData : ",ex.toString());
+            Crashlytics.log(0,"1 - OrderListActivity - fetchCategoryData : ",ex.toString());
         }
     }
 

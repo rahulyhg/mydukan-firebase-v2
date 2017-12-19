@@ -11,13 +11,17 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
+
+import com.crashlytics.android.Crashlytics;
 
 import org.app.mydukan.R;
 import org.app.mydukan.application.MyDukan;
 import org.app.mydukan.data.Product;
+import org.app.mydukan.emailSending.SendEmail;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -88,231 +92,240 @@ public class ProductsAdapter extends
     @Override
     public void onBindViewHolder(ViewHolder holder, final int position) {
         //clear the holder.
-        holder.mProductName.setText("");
-        holder.mProductPrice.setText("");
-        holder.mProductMOPPrice.setText("");
-        holder.mProductMRPPrice.setText("");
-        currentProduct = mProductData.get(position);
+        try {
+            holder.mProductName.setText("");
+            holder.mProductPrice.setText("");
+            holder.mProductMOPPrice.setText("");
+            holder.mProductMRPPrice.setText("");
+            currentProduct = mProductData.get(position);
 
-        holder.mInfobtn.setVisibility(View.GONE);
-        holder.mProductLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mListener.OnProductOpenClick(position,VIEW);
-            }
-        });
-        holder.mInfobtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mListener.OnProductOpenClick(position,VIEW);
-            }
-        });
-
-        holder.mAddToCart.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mListener.OnProductOpenClick(position,ADD_CART);
-            }
-        });
-
-        holder.mClaimBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mListener.OnProductClaimClick(position);
-            }
-        });
-
-        holder.mProductName.setText(mApp.getUtils().toSameCase(currentProduct.getName().trim().toString()));
-
-        if(mApp.getUtils().getPriceFormat(currentProduct.getMrp())!=null ){
-            holder.mProductMRPPrice.setVisibility(View.VISIBLE);
-            holder.mProductMRPPrice.setText(currentProduct.getMrp());
-
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                String valueMRP=currentProduct.getMrp();
-                switch(valueMRP){
-
-                    //January, February, March, April, May, June, July, August, September, October, November, December
-
-                    case "1":
-                        holder.mProductMRPPrice.setText("January");
-                        break;
-                    case "2":
-                        holder.mProductMRPPrice.setText("February");
-                        break;
-                    case "3":
-                        holder.mProductMRPPrice.setText("March");
-                        break;
-                    case "4":
-                        holder.mProductMRPPrice.setText("April");
-                        break;
-                    case "5":
-                        holder.mProductMRPPrice.setText("May");
-                        break;
-                    case "6":
-                        holder.mProductMRPPrice.setText("June");
-                        break;
-                    case "7":
-                        holder.mProductMRPPrice.setText("July");
-                        break;
-                    case "8":
-                        holder.mProductMRPPrice.setText("August");
-                        break;
-                    case "9":
-                        holder.mProductMRPPrice.setText("September");
-                        break;
-                    case "10":
-                        holder.mProductMRPPrice.setText("October");
-                        break;
-                    case "11":
-                        holder.mProductMRPPrice.setText("November");
-                        break;
-                    case "12":
-                        holder.mProductMRPPrice.setText("December");
-                        break;
-                    default:
-                        holder.mProductMRPPrice.setText("");
-                        break;
+            holder.mInfobtn.setVisibility(View.GONE);
+            holder.mProductLayout.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    mListener.OnProductOpenClick(position, VIEW);
                 }
+            });
+            holder.mInfobtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    mListener.OnProductOpenClick(position, VIEW);
+                }
+            });
+
+            holder.mAddToCart.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    mListener.OnProductOpenClick(position, ADD_CART);
+                }
+            });
+
+            holder.mClaimBtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    mListener.OnProductClaimClick(position);
+                }
+            });
+
+            holder.mProductName.setText(mApp.getUtils().toSameCase(currentProduct.getName().trim().toString()));
+
+            if (mApp.getUtils().getPriceFormat(currentProduct.getMrp()) != null) {
+                holder.mProductMRPPrice.setVisibility(View.VISIBLE);
+                holder.mProductMRPPrice.setText(currentProduct.getMrp());
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                    String valueMRP = currentProduct.getMrp();
+                    switch (valueMRP) {
+
+                        //January, February, March, April, May, June, July, August, September, October, November, December
+
+                        case "1":
+                            holder.mProductMRPPrice.setText("January");
+                            break;
+                        case "2":
+                            holder.mProductMRPPrice.setText("February");
+                            break;
+                        case "3":
+                            holder.mProductMRPPrice.setText("March");
+                            break;
+                        case "4":
+                            holder.mProductMRPPrice.setText("April");
+                            break;
+                        case "5":
+                            holder.mProductMRPPrice.setText("May");
+                            break;
+                        case "6":
+                            holder.mProductMRPPrice.setText("June");
+                            break;
+                        case "7":
+                            holder.mProductMRPPrice.setText("July");
+                            break;
+                        case "8":
+                            holder.mProductMRPPrice.setText("August");
+                            break;
+                        case "9":
+                            holder.mProductMRPPrice.setText("September");
+                            break;
+                        case "10":
+                            holder.mProductMRPPrice.setText("October");
+                            break;
+                        case "11":
+                            holder.mProductMRPPrice.setText("November");
+                            break;
+                        case "12":
+                            holder.mProductMRPPrice.setText("December");
+                            break;
+                        default:
+                            holder.mProductMRPPrice.setText("");
+                            break;
+                    }
 
 
+                }
             }
-        }
-        if(mSupplierID!=null){
-            if(mSupplierID.equals("RcJ1L4mWaZeIe2wRO3ejHOmcSxf2")){
-                holder.mProductMOPPrice.setVisibility(View.GONE);
-                holder.mProductPrice.setVisibility(View.GONE);
-            }else{
+            if (mSupplierID != null) {
+                if (mSupplierID.equals("RcJ1L4mWaZeIe2wRO3ejHOmcSxf2")) {
+                    holder.mProductMOPPrice.setVisibility(View.GONE);
+                    holder.mProductPrice.setVisibility(View.GONE);
+                } else {
+                    holder.mProductPrice.setText(mApp.getUtils().getPriceFormat(currentProduct.getPrice()));
+                    if (mApp.getUtils().getPriceFormat(currentProduct.getMop()) != null) {
+                        holder.mProductMOPPrice.setVisibility(View.VISIBLE);
+                        holder.mProductMOPPrice.setText("MOP: " + mApp.getUtils().getPriceFormat(currentProduct.getMop()));
+                    } else {
+                        holder.mProductMOPPrice.setVisibility(View.GONE);
+                    }
+                }
+            } else {
                 holder.mProductPrice.setText(mApp.getUtils().getPriceFormat(currentProduct.getPrice()));
-                if(mApp.getUtils().getPriceFormat(currentProduct.getMop())!=null){
+                if (mApp.getUtils().getPriceFormat(currentProduct.getMop()) != null) {
                     holder.mProductMOPPrice.setVisibility(View.VISIBLE);
-                    holder.mProductMOPPrice.setText("MOP: "+mApp.getUtils().getPriceFormat(currentProduct.getMop()));
-                }else{
+                    holder.mProductMOPPrice.setText("MOP: " + mApp.getUtils().getPriceFormat(currentProduct.getMop()));
+                } else {
                     holder.mProductMOPPrice.setVisibility(View.GONE);
                 }
             }
-        }else{
-            holder.mProductPrice.setText(mApp.getUtils().getPriceFormat(currentProduct.getPrice()));
-            if(mApp.getUtils().getPriceFormat(currentProduct.getMop())!=null){
-                holder.mProductMOPPrice.setVisibility(View.VISIBLE);
-                holder.mProductMOPPrice.setText("MOP: "+mApp.getUtils().getPriceFormat(currentProduct.getMop()));
-            }else{
-                holder.mProductMOPPrice.setVisibility(View.GONE);
+
+            if (currentProduct.getIsnew() == true) {
+                holder.mNewArrival.setVisibility(View.VISIBLE);
+            } else {
+                holder.mNewArrival.setVisibility(View.GONE);
             }
-        }
 
-        if(currentProduct.getIsnew()==true){
-            holder.mNewArrival.setVisibility(View.VISIBLE);
-        }else{
-            holder.mNewArrival.setVisibility(View.GONE);
-        }
+            //======showing the product price platform.=====
 
-        //======showing the product price platform.=====
-
-       if (currentProduct.getmPlatforms()!=null && currentProduct.getmPlatforms().size()>0){
-            holder.mpricePlatform.setVisibility(View.VISIBLE);
-            String comparePrice="ComparePrices:-";
-            Set<String> platformName=currentProduct.getmPlatforms().keySet();
-            for (String mplatform:currentProduct.getmPlatforms().keySet()) {
-               // currentProduct.getmPlatforms().get(mplatform).getPrice()
-                comparePrice=comparePrice+" "+mplatform+": "+"₹ "+currentProduct.getmPlatforms().get(mplatform).get("price")+" | ";
+            if (currentProduct.getmPlatforms() != null && currentProduct.getmPlatforms().size() > 0) {
+                holder.mpricePlatform.setVisibility(View.VISIBLE);
+                String comparePrice = "ComparePrices:-";
+                Set<String> platformName = currentProduct.getmPlatforms().keySet();
+                for (String mplatform : currentProduct.getmPlatforms().keySet()) {
+                    // currentProduct.getmPlatforms().get(mplatform).getPrice()
+                    comparePrice = comparePrice + " " + mplatform + ": " + "₹ " + currentProduct.getmPlatforms().get(mplatform).get("price") + " | ";
+                }
+                holder.mpricePlatform.setText(mApp.getUtils().toCamelCase(comparePrice));
+                holder.mpricePlatform.setSelected(true);
+            } else {
+                holder.mpricePlatform.setVisibility(View.GONE);
             }
-            holder.mpricePlatform.setText( mApp.getUtils().toCamelCase(comparePrice));
-           holder.mpricePlatform.setSelected(true);
-        }else{
-            holder.mpricePlatform.setVisibility(View.GONE);
-        }
 
-        //=================================
-        if (currentProduct.getPriceDrop() != null && currentProduct.getPriceDrop().getStartdate() != 0l) {
-            holder.mStatusLayout.setVisibility(View.VISIBLE);
-            holder.mStatusLabel.setVisibility(View.VISIBLE);
-            holder.mClaimBtn.setVisibility(View.VISIBLE);
-            holder.mStatusLabelDate.setVisibility(View.VISIBLE);
-            holder.mStatusPrice.setVisibility(View.INVISIBLE);
-
-            holder.mStatusLabel.setText(R.string.label_price_drop);
-            holder.mStatusLabelDate.setText("Effective From " + String.valueOf(mApp.getUtils().dateFormatter(
-                    currentProduct.getPriceDrop().getStartdate(), "dd-MM-yy")));
-
-            if(!mApp.getUtils().isStringEmpty(currentProduct.getPriceDrop().getDropamount())){
-                holder.mStatusPrice.setVisibility(View.VISIBLE);
-                holder.mStatusPrice.setText(mApp.getUtils().getPriceFormat(currentProduct.getPriceDrop().getDropamount()));
-            }
-            holder.mStatusPrice.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    mListener.OnProductClaimClick(position);
-                }
-            });
-            holder.mStatusLabel.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    mListener.OnProductClaimClick(position);
-                }
-            });
-            holder.mStatusLayout.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    mListener.OnProductClaimClick(position);
-                }
-            });
-
-        } else if (currentProduct.getOffer() != null && currentProduct.getOffer().getStartdate() != 0l && currentProduct.getOffer().getEnddate() != 0l) {
-            if (currentProduct.getOffer().getStartdate() != 0l && currentProduct.getOffer().getEnddate() != 0l) {
+            //=================================
+            if (currentProduct.getPriceDrop() != null && currentProduct.getPriceDrop().getStartdate() != 0l) {
                 holder.mStatusLayout.setVisibility(View.VISIBLE);
                 holder.mStatusLabel.setVisibility(View.VISIBLE);
+                holder.mClaimBtn.setVisibility(View.VISIBLE);
                 holder.mStatusLabelDate.setVisibility(View.VISIBLE);
                 holder.mStatusPrice.setVisibility(View.INVISIBLE);
-                holder.mClaimBtn.setVisibility(View.GONE);
 
-                holder.mStatusLabel.setText(R.string.label_offer);
-                holder.mStatusLabelDate.setText("Effective From "
-                        + String.valueOf(mApp.getUtils().dateFormatter(currentProduct.getOffer().getStartdate(), "dd-MM-yy")) +" to "
-                        + String.valueOf(mApp.getUtils().dateFormatter(currentProduct.getOffer().getEnddate(), "dd-MM-yy")));
+                holder.mStatusLabel.setText(R.string.label_price_drop);
+                holder.mStatusLabelDate.setText("Effective From " + String.valueOf(mApp.getUtils().dateFormatter(
+                        currentProduct.getPriceDrop().getStartdate(), "dd-MM-yy")));
 
-                if(!mApp.getUtils().isStringEmpty(currentProduct.getOffer().getOfferamount())){
+                if (!mApp.getUtils().isStringEmpty(currentProduct.getPriceDrop().getDropamount())) {
                     holder.mStatusPrice.setVisibility(View.VISIBLE);
-                    holder.mStatusPrice.setText(mApp.getUtils().getPriceFormat(currentProduct.getOffer().getOfferamount()));
+                    holder.mStatusPrice.setText(mApp.getUtils().getPriceFormat(currentProduct.getPriceDrop().getDropamount()));
                 }
-            }
-        }else if(currentProduct.getIsnew()){
-            holder.mStatusLayout.setVisibility(View.VISIBLE);
-            holder.mStatusLabel.setVisibility(View.VISIBLE);
-            holder.mStatusLabelDate.setVisibility(View.GONE);
-            holder.mClaimBtn.setVisibility(View.GONE);
-            holder.mStatusPrice.setVisibility(View.INVISIBLE);
+                holder.mStatusPrice.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        mListener.OnProductClaimClick(position);
+                    }
+                });
+                holder.mStatusLabel.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        mListener.OnProductClaimClick(position);
+                    }
+                });
+                holder.mStatusLayout.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        mListener.OnProductClaimClick(position);
+                    }
+                });
 
-            holder.mStatusLabel.setText(R.string.label_new_product);
-            holder.mStatusLabel.setBackgroundColor(Color.rgb(236,39,35));
-        } else {
-            holder.mStatusLayout.setVisibility(View.INVISIBLE);
-            holder.mStatusLabel.setVisibility(View.INVISIBLE);
-            holder.mStatusLabelDate.setVisibility(View.GONE);
-            holder.mStatusPrice.setVisibility(View.GONE);
-            holder.mClaimBtn.setVisibility(View.GONE);
-        }
+            } else if (currentProduct.getOffer() != null && currentProduct.getOffer().getStartdate() != 0l && currentProduct.getOffer().getEnddate() != 0l) {
+                if (currentProduct.getOffer().getStartdate() != 0l && currentProduct.getOffer().getEnddate() != 0l) {
+                    holder.mStatusLayout.setVisibility(View.VISIBLE);
+                    holder.mStatusLabel.setVisibility(View.VISIBLE);
+                    holder.mStatusLabelDate.setVisibility(View.VISIBLE);
+                    holder.mStatusPrice.setVisibility(View.INVISIBLE);
+                    holder.mClaimBtn.setVisibility(View.GONE);
 
-        if(isCartEnabled){
-            holder.mAddToCart.setVisibility(View.VISIBLE);
-            holder.mStockCount.setVisibility(View.VISIBLE);
+                    holder.mStatusLabel.setText(R.string.label_offer);
+                    holder.mStatusLabelDate.setText("Effective From "
+                            + String.valueOf(mApp.getUtils().dateFormatter(currentProduct.getOffer().getStartdate(), "dd-MM-yy")) + " to "
+                            + String.valueOf(mApp.getUtils().dateFormatter(currentProduct.getOffer().getEnddate(), "dd-MM-yy")));
 
-            if(currentProduct.getStockremaining() <= 0){
-                holder.mAddToCart.setVisibility(View.INVISIBLE);
-                holder.mStockCount.setText("No Stock");
-                holder.mStockCount.setVisibility(View.GONE);
-            } else if(currentProduct.getStockremaining() <= 5){
-                holder.mStockCount.setText("Limited Stock");
+                    if (!mApp.getUtils().isStringEmpty(currentProduct.getOffer().getOfferamount())) {
+                        holder.mStatusPrice.setVisibility(View.VISIBLE);
+                        holder.mStatusPrice.setText(mApp.getUtils().getPriceFormat(currentProduct.getOffer().getOfferamount()));
+                    }
+                }
+            } else if (currentProduct.getIsnew()) {
+                holder.mStatusLayout.setVisibility(View.VISIBLE);
+                holder.mStatusLabel.setVisibility(View.VISIBLE);
+                holder.mStatusLabelDate.setVisibility(View.GONE);
+                holder.mClaimBtn.setVisibility(View.GONE);
+                holder.mStatusPrice.setVisibility(View.INVISIBLE);
+
+                holder.mStatusLabel.setText(R.string.label_new_product);
+                holder.mStatusLabel.setBackgroundColor(Color.rgb(236, 39, 35));
             } else {
-                holder.mStockCount.setVisibility(View.GONE);
+                holder.mStatusLayout.setVisibility(View.INVISIBLE);
+                holder.mStatusLabel.setVisibility(View.INVISIBLE);
+                holder.mStatusLabelDate.setVisibility(View.GONE);
+                holder.mStatusPrice.setVisibility(View.GONE);
+                holder.mClaimBtn.setVisibility(View.GONE);
             }
-        } else {
-            holder.mAddToCart.setVisibility(View.GONE);
-            holder.mStockCount.setVisibility(View.GONE);
-            holder.mCartoptionLayout.setVisibility(View.GONE);
+
+            if (isCartEnabled) {
+                holder.mAddToCart.setVisibility(View.VISIBLE);
+                holder.mStockCount.setVisibility(View.VISIBLE);
+
+                if (currentProduct.getStockremaining() <= 0) {
+                    holder.mAddToCart.setVisibility(View.INVISIBLE);
+                    holder.mStockCount.setText("No Stock");
+                    holder.mStockCount.setVisibility(View.GONE);
+                } else if (currentProduct.getStockremaining() <= 5) {
+                    holder.mStockCount.setText("Limited Stock");
+                } else {
+                    holder.mStockCount.setVisibility(View.GONE);
+                }
+            } else {
+                holder.mAddToCart.setVisibility(View.GONE);
+                holder.mStockCount.setVisibility(View.GONE);
+                holder.mCartoptionLayout.setVisibility(View.GONE);
+            }
+
+        }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - onBindViewHolder : ",e.toString());
+            Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() + " - onBindViewHolder : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - onBindViewHolder : ",ex.toString());
+            Crashlytics.log(0,this.getClass().getSimpleName() + " - onBindViewHolder : ",ex.toString());
         }
-
-
     }
 
     @Override

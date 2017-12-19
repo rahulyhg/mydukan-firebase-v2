@@ -464,8 +464,8 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         }catch (VirtualMachineError ex){
             StringWriter errors = new StringWriter();
             ex.printStackTrace(new PrintWriter(errors));
-            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - onCreate : ",errors.toString());
-            Crashlytics.log(0,this.getClass().getSimpleName() + " - onCreate : ",errors.toString());
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - onCreate : ",ex.toString());
+            Crashlytics.log(0,this.getClass().getSimpleName() + " - onCreate : ",ex.toString());
         }
     }
 
@@ -501,11 +501,13 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 Toast.makeText(this, "Incomplete link!", Toast.LENGTH_SHORT).show();
             }
         }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - handleDeepLink : ",e.toString());
             Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() + " - handleDeepLink : ",e.toString());
         }catch (VirtualMachineError ex){
             StringWriter errors = new StringWriter();
             ex.printStackTrace(new PrintWriter(errors));
-            Crashlytics.log(0,this.getClass().getSimpleName() + " - handleDeepLink : ",errors.toString());
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - handleDeepLink : ",ex.toString());
+            Crashlytics.log(0,this.getClass().getSimpleName() + " - handleDeepLink : ",ex.toString());
         }
 
 
@@ -709,11 +711,13 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             }
 
         }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - getBannerImages : ",e.toString());
             Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() + " - getBannerImages : ",e.toString());
         }catch (VirtualMachineError ex){
             StringWriter errors = new StringWriter();
             ex.printStackTrace(new PrintWriter(errors));
-            Crashlytics.log(0,this.getClass().getSimpleName() + " - getBannerImages : ",errors.toString());
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - getBannerImages : ",ex.toString());
+            Crashlytics.log(0,this.getClass().getSimpleName() + " - getBannerImages : ",ex.toString());
         }
 
     }
@@ -847,8 +851,8 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         }catch (VirtualMachineError ex){
             StringWriter errors = new StringWriter();
             ex.printStackTrace(new PrintWriter(errors));
-            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - getUserProfile : ",errors.toString());
-            Crashlytics.log(0,"1 - MainActivity - getUserProfile : ",errors.toString());
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - getUserProfile : ",ex.toString());
+            Crashlytics.log(0,"1 - MainActivity - getUserProfile : ",ex.toString());
         }
     }
 
@@ -927,11 +931,13 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 });
             }
         }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - getUserSubscription : ",e.toString());
             Crashlytics.log(0,"Exception - MainActivity - getUserSubscription : ",e.toString());
         }catch (VirtualMachineError ex){
             StringWriter errors = new StringWriter();
             ex.printStackTrace(new PrintWriter(errors));
-            Crashlytics.log(0,"1 - MainActivity - getUserSubscription : ",errors.toString());
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - getUserSubscription : ",ex.toString());
+            Crashlytics.log(0,"1 - MainActivity - getUserSubscription : ",ex.toString());
         }
     }
 
@@ -1246,8 +1252,8 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         }catch (VirtualMachineError ex){
             StringWriter errors = new StringWriter();
             ex.printStackTrace(new PrintWriter(errors));
-            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - fetchSupplierdata : ",errors.toString());
-            Crashlytics.log(0,"1 - MainActivity - fetchSupplierdata : ",errors.toString());
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - fetchSupplierdata : ",ex.toString());
+            Crashlytics.log(0,"1 - MainActivity - fetchSupplierdata : ",ex.toString());
         }
     }
 
@@ -1315,8 +1321,8 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         }catch (VirtualMachineError ex){
             StringWriter errors = new StringWriter();
             ex.printStackTrace(new PrintWriter(errors));
-            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - addSupplier : ",errors.toString());
-            Crashlytics.log(0,"1 - MainActivity - addSupplier : ",errors.toString());
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - addSupplier : ",ex.toString());
+            Crashlytics.log(0,"1 - MainActivity - addSupplier : ",ex.toString());
         }
     }
 

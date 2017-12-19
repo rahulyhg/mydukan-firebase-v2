@@ -152,37 +152,47 @@ public class MyNetworksActivity extends AppCompatActivity {
         }catch (VirtualMachineError ex){
             StringWriter errors = new StringWriter();
             ex.printStackTrace(new PrintWriter(errors));
-            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - onCreate : ",errors.toString());
-            Crashlytics.log(0,this.getClass().getSimpleName() + " - onCreate : ",errors.toString());
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - onCreate : ",ex.toString());
+            Crashlytics.log(0,this.getClass().getSimpleName() + " - onCreate : ",ex.toString());
         }
 
     }
 
     private void getCurrentUserData(FirebaseUser auth) {
         //showProgress(true);
-        mList = new ArrayList<>();
-        if(auth == null || auth.getUid() == null || auth.getUid().isEmpty())
-            return;
+        try {
+            mList = new ArrayList<>();
+            if (auth == null || auth.getUid() == null || auth.getUid().isEmpty())
+                return;
 
-        DatabaseReference feedReference = FirebaseDatabase.getInstance().getReference("chat_USER/" + auth.getUid());
-        feedReference.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                if(dataSnapshot!=null){
-                    chattUser = dataSnapshot.getValue(ChattUser.class);
-                    userType =  chattUser.getUserType();
-                    InitProfileView(chattUser);
-                    if(userType.equalsIgnoreCase("Ditributor")){
+            DatabaseReference feedReference = FirebaseDatabase.getInstance().getReference("chat_USER/" + auth.getUid());
+            feedReference.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    if (dataSnapshot != null) {
+                        chattUser = dataSnapshot.getValue(ChattUser.class);
+                        userType = chattUser.getUserType();
+                        InitProfileView(chattUser);
+                        if (userType.equalsIgnoreCase("Ditributor")) {
 
+                        }
                     }
+                    // showProgress(false);
                 }
-                // showProgress(false);
-            }
 
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-            }
-        });
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                }
+            });
+        }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - getCurrentUserData : ",e.toString());
+            Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() + " - getCurrentUserData : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - getCurrentUserData : ",ex.toString());
+            Crashlytics.log(0,this.getClass().getSimpleName() + " - getCurrentUserData : ",ex.toString());
+        }
 
     }
     @Override

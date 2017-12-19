@@ -225,8 +225,8 @@ public class MydukanMessagingService extends FirebaseMessagingService {
         }catch (VirtualMachineError ex){
             StringWriter errors = new StringWriter();
             ex.printStackTrace(new PrintWriter(errors));
-            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - retrieveProductData : ",errors.toString());
-            Crashlytics.log(0,"1 - MydukanMessagingService - retrieveProductData : ",errors.toString());
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - retrieveProductData : ",ex.toString());
+            Crashlytics.log(0,"1 - MydukanMessagingService - retrieveProductData : ",ex.toString());
         }
     }
 
@@ -248,8 +248,8 @@ public class MydukanMessagingService extends FirebaseMessagingService {
         }catch (VirtualMachineError ex){
             StringWriter errors = new StringWriter();
             ex.printStackTrace(new PrintWriter(errors));
-            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - retrieveFeedsData : ",errors.toString());
-            Crashlytics.log(0,"1 - MydukanMessagingService - retrieveFeedsData : ",errors.toString());
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - retrieveFeedsData : ",ex.toString());
+            Crashlytics.log(0,"1 - MydukanMessagingService - retrieveFeedsData : ",ex.toString());
         }
     }
 

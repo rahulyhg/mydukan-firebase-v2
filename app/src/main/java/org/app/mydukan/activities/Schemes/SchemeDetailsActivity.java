@@ -384,8 +384,8 @@ public class SchemeDetailsActivity extends BaseActivity {
         }catch (VirtualMachineError ex){
             StringWriter errors = new StringWriter();
             ex.printStackTrace(new PrintWriter(errors));
-            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - getSchemeRecordInfo : ",errors.toString());
-            Crashlytics.log(0,"1 - SchemeDetailsActivity - getSchemeRecordInfo : ",errors.toString());
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - getSchemeRecordInfo : ",ex.toString());
+            Crashlytics.log(0,"1 - SchemeDetailsActivity - getSchemeRecordInfo : ",ex.toString());
         }
     }
 
@@ -422,8 +422,8 @@ public class SchemeDetailsActivity extends BaseActivity {
         }catch (VirtualMachineError ex){
             StringWriter errors = new StringWriter();
             ex.printStackTrace(new PrintWriter(errors));
-            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - addSchemeRecord : ",errors.toString());
-            Crashlytics.log(0,"1 - SchemeDetailsActivity - addSchemeRecord : ",errors.toString());
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - addSchemeRecord : ",ex.toString());
+            Crashlytics.log(0,"1 - SchemeDetailsActivity - addSchemeRecord : ",ex.toString());
         }
 
     }

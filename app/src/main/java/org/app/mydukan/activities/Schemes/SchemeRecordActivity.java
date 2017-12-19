@@ -119,8 +119,8 @@ public class SchemeRecordActivity extends BaseActivity {
         }catch (VirtualMachineError ex){
             StringWriter errors = new StringWriter();
             ex.printStackTrace(new PrintWriter(errors));
-            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - fetchTheRecords : ",errors.toString());
-            Crashlytics.log(0,"1 - SchemeRecordActivity - fetchTheRecords : ",errors.toString());
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - fetchTheRecords : ",ex.toString());
+            Crashlytics.log(0,"1 - SchemeRecordActivity - fetchTheRecords : ",ex.toString());
         }
     }
 }

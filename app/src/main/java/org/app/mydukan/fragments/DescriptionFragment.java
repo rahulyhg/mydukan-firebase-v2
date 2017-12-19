@@ -152,13 +152,13 @@ public class DescriptionFragment extends Fragment {
             fetchProductAndShow();
 //        fullpage.setVisibility(View.VISIBLE);
         }catch (Exception e){
-            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - onCreate : ",e.toString());
-            Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() + " - onCreate : ",e.toString());
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - onCreateView : ",e.toString());
+            Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() + " - onCreateView : ",e.toString());
         }catch (VirtualMachineError ex){
             StringWriter errors = new StringWriter();
             ex.printStackTrace(new PrintWriter(errors));
-            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - onCreate : ",errors.toString());
-            Crashlytics.log(0,this.getClass().getSimpleName() + " - onCreate : ",errors.toString());
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - onCreateView : ",ex.toString());
+            Crashlytics.log(0,this.getClass().getSimpleName() + " - onCreateView : ",ex.toString());
         }
         return mView;
 
@@ -168,12 +168,12 @@ public class DescriptionFragment extends Fragment {
         if (ContextCompat.checkSelfPermission(getActivity(), android.Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED)
             return;
 
-        if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(), android.Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+        /*if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(), android.Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
             //If the user has denied the permission previously your code will come to this block
             //Here you can explain why you need this permission
             //Explain here why you need this permission
             requestStoragePermission();
-        }
+        }*/
         //And finally ask for the permission
         ActivityCompat.requestPermissions(getActivity(), new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE}, STORAGE_PERMISSION_CODE);
     }
@@ -261,8 +261,8 @@ public class DescriptionFragment extends Fragment {
         }catch (VirtualMachineError ex){
             StringWriter errors = new StringWriter();
             ex.printStackTrace(new PrintWriter(errors));
-            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - fetchProductAndShow : ",errors.toString());
-            Crashlytics.log(0,"1 - DescriptionFragment - fetchProductAndShow : ",errors.toString());
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - fetchProductAndShow : ",ex.toString());
+            Crashlytics.log(0,"1 - DescriptionFragment - fetchProductAndShow : ",ex.toString());
         }
     }
 
@@ -436,8 +436,8 @@ public class DescriptionFragment extends Fragment {
             }catch (VirtualMachineError ex){
                 StringWriter errors = new StringWriter();
                 ex.printStackTrace(new PrintWriter(errors));
-                new SendEmail().sendEmail(this.getClass().getSimpleName() + " - onPageStarted : ",errors.toString());
-                Crashlytics.log(0,"1 - DescriptionFragment - onPageStarted : ",errors.toString());
+                new SendEmail().sendEmail(this.getClass().getSimpleName() + " - onPageStarted : ",ex.toString());
+                Crashlytics.log(0,"1 - DescriptionFragment - onPageStarted : ",ex.toString());
             }
         }
 
@@ -457,8 +457,8 @@ public class DescriptionFragment extends Fragment {
             }catch (VirtualMachineError ex){
                 StringWriter errors = new StringWriter();
                 ex.printStackTrace(new PrintWriter(errors));
-                new SendEmail().sendEmail(this.getClass().getSimpleName() + " - onPageFinished : ",errors.toString());
-                Crashlytics.log(0,"1 - DescriptionFragment - onPageFinished : ",errors.toString());
+                new SendEmail().sendEmail(this.getClass().getSimpleName() + " - onPageFinished : ",ex.toString());
+                Crashlytics.log(0,"1 - DescriptionFragment - onPageFinished : ",ex.toString());
             }
         }
 

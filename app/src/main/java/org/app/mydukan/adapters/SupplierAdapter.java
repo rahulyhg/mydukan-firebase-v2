@@ -10,13 +10,18 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import com.crashlytics.android.Crashlytics;
+
 import org.app.mydukan.R;
 import org.app.mydukan.application.MyDukan;
 import org.app.mydukan.data.Supplier;
-import org.app.mydukan.data.User;
+import org.app.mydukan.emailSending.SendEmail;
 import org.app.mydukan.utils.AppContants;
+
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -66,55 +71,107 @@ public class SupplierAdapter extends
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, final int position) {
-        currentSupplier = mSupplierData.get(position);
+        try {
+            currentSupplier = mSupplierData.get(position);
 
-        String name = mApp.getUtils().toCamelCase(currentSupplier.getCompanyinfo().getName());
-        holder.mSupplierName.setText(name);
-        if(mSupplierData.get(position).getId().equalsIgnoreCase("WDSLSgxI10eiWVey4RVWY5niElE3")){
-            holder.mSupplierName.setTextColor(Color.parseColor("#400000"));
-            holder.mSupplierName.setTypeface(Typeface.DEFAULT_BOLD);
-            holder.mSupplierName.setText("MOBILE DP PRIME");
-        }
+            String name = mApp.getUtils().toCamelCase(currentSupplier.getCompanyinfo().getName());
+            holder.mSupplierName.setText(name);
+            if (mSupplierData.get(position).getId().equalsIgnoreCase("WDSLSgxI10eiWVey4RVWY5niElE3")) {
+                holder.mSupplierName.setTextColor(Color.parseColor("#400000"));
+                holder.mSupplierName.setTypeface(Typeface.DEFAULT_BOLD);
+                holder.mSupplierName.setText("MOBILE DP PRIME");
+            }
 
-        if(mSupplierData.get(position).getId().equalsIgnoreCase("RcJ1L4mWaZeIe2wRO3ejHOmcSxf2")){
+            if (mSupplierData.get(position).getId().equalsIgnoreCase("RcJ1L4mWaZeIe2wRO3ejHOmcSxf2")) {
 
-            holder.mSupplierName.setText("MOBILE DP FREE");
-        }
+                holder.mSupplierName.setText("MOBILE DP FREE");
+            }
 
-        if(mSupplierData.get(position).getId().equalsIgnoreCase("WDSLSgxI10eiWVey4RVWY5niElE3")){
-            holder.mSupplierimg.setImageResource(R.drawable.ic_mobiledp_prime);
-          //  holder.mSupplierName.setTypeface(Typeface.DEFAULT_BOLD);
-        }
-        else  if(mSupplierData.get(position).getId().equalsIgnoreCase("RcJ1L4mWaZeIe2wRO3ejHOmcSxf2")) {
-            holder.mSupplierimg.setImageResource(R.drawable.ic_mobiledp);
-            //  holder.mSupplierName.setTypeface(Typeface.DEFAULT_BOLD);
-        }
-        else if (currentSupplier.getUserinfo().getName().contains(AppContants.AIRTEL)) {
-            holder.mSupplierimg.setImageResource(R.drawable.ic_airtel);
-        } else if (currentSupplier.getUserinfo().getName().contains(AppContants.ASUS)) {
-            holder.mSupplierimg.setImageResource(R.drawable.ic_ic_store_black_24dp);
-        } else {
-            holder.mSupplierimg.setImageResource(R.drawable.ic_ic_store_black_24dp);
-        }
+            if (mSupplierData.get(position).getId().equalsIgnoreCase("WDSLSgxI10eiWVey4RVWY5niElE3")) {
+                holder.mSupplierimg.setImageResource(R.drawable.ic_mobiledp_prime);
+                //  holder.mSupplierName.setTypeface(Typeface.DEFAULT_BOLD);
+            } else if (mSupplierData.get(position).getId().equalsIgnoreCase("RcJ1L4mWaZeIe2wRO3ejHOmcSxf2")) {
+                holder.mSupplierimg.setImageResource(R.drawable.ic_mobiledp);
+                //  holder.mSupplierName.setTypeface(Typeface.DEFAULT_BOLD);
+            } else if (currentSupplier.getUserinfo().getName().contains(AppContants.AIRTEL)) {
+                holder.mSupplierimg.setImageResource(R.drawable.ic_airtel);
+            } else if (currentSupplier.getUserinfo().getName().contains(AppContants.ASUS)) {
+                holder.mSupplierimg.setImageResource(R.drawable.ic_ic_store_black_24dp);
+            } else {
+                holder.mSupplierimg.setImageResource(R.drawable.ic_ic_store_black_24dp);
+            }
 
-        if (supplierViewType == 1) {
-            holder.mAddSupplierbtn.setVisibility(View.GONE);
-            holder.mOpenbtn.setVisibility(View.VISIBLE);
-            if(currentSupplier.getRetailerStatus().equals("pending")) {
-                holder.mOpenbtn.setVisibility(View.VISIBLE);
-                holder.mAddSupplierbtn.setVisibility(View.GONE);
-                holder.mOpenbtn.setText("PENDING");
-                holder.mOpenbtn.setBackgroundColor(android.graphics.Color.rgb(128,128,128));
-            }else if(currentSupplier.getRetailerStatus().equals("accepted")){
+            if (supplierViewType == 1) {
                 holder.mAddSupplierbtn.setVisibility(View.GONE);
                 holder.mOpenbtn.setVisibility(View.VISIBLE);
-                holder.mOpenbtn.setText("OPEN");
-                holder.mOpenbtn.setBackgroundColor(mApp.getResources().getColor(R.color.green_500));
+                if (currentSupplier.getRetailerStatus().equals("pending")) {
+                    holder.mOpenbtn.setVisibility(View.VISIBLE);
+                    holder.mAddSupplierbtn.setVisibility(View.GONE);
+                    holder.mOpenbtn.setText("PENDING");
+                    holder.mOpenbtn.setBackgroundColor(android.graphics.Color.rgb(128, 128, 128));
+                } else if (currentSupplier.getRetailerStatus().equals("accepted")) {
+                    holder.mAddSupplierbtn.setVisibility(View.GONE);
+                    holder.mOpenbtn.setVisibility(View.VISIBLE);
+                    holder.mOpenbtn.setText("OPEN");
+                    holder.mOpenbtn.setBackgroundColor(mApp.getResources().getColor(R.color.green_500));
+                    holder.mSupplierLayout.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            if (mListener != null) {
+                                mListener.OnSupplierOpenClick(position);
+                            }
+                        }
+                    });
+                    holder.mSupplierName.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            if (mListener != null) {
+                                mListener.OnSupplierOpenClick(position);
+                            }
+                        }
+                    });
+                    holder.mOpenbtn.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            if (mListener != null) {
+                                mListener.OnSupplierOpenClick(position);
+                            }
+                        }
+                    });
+                    holder.mSupplierimg.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            if (mListener != null) {
+                                mListener.OnSupplierOpenClick(position);
+                            }
+                        }
+                    });
+                } else if (currentSupplier.getRetailerStatus().equals("add")) {
+                    holder.mOpenbtn.setVisibility(View.GONE);
+                    holder.mAddSupplierbtn.setVisibility(View.VISIBLE);
+                    holder.mAddSupplierbtn.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            if (mListener != null) {
+                                mListener.OnSupplierAddClick(position);
+                            }
+                        }
+                    });
+                } else if (currentSupplier.getRetailerStatus().equals("rejected")) {
+                    holder.mOpenbtn.setVisibility(View.VISIBLE);
+                    holder.mAddSupplierbtn.setVisibility(View.GONE);
+                    holder.mOpenbtn.setText("REJECTED");
+                    holder.mOpenbtn.setBackgroundColor(android.graphics.Color.rgb(128, 128, 128));
+                }
+            } else if (supplierViewType == 2) {
+                holder.mAddSupplierbtn.setVisibility(View.VISIBLE);
+                holder.mOpenbtn.setVisibility(View.GONE);
+
                 holder.mSupplierLayout.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
                         if (mListener != null) {
-                            mListener.OnSupplierOpenClick(position);
+                            mListener.OnSupplierAddClick(position);
                         }
                     }
                 });
@@ -122,15 +179,15 @@ public class SupplierAdapter extends
                     @Override
                     public void onClick(View view) {
                         if (mListener != null) {
-                            mListener.OnSupplierOpenClick(position);
+                            mListener.OnSupplierAddClick(position);
                         }
                     }
                 });
-                holder.mOpenbtn.setOnClickListener(new View.OnClickListener() {
+                holder.mAddSupplierbtn.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
                         if (mListener != null) {
-                            mListener.OnSupplierOpenClick(position);
+                            mListener.OnSupplierAddClick(position);
                         }
                     }
                 });
@@ -138,63 +195,19 @@ public class SupplierAdapter extends
                     @Override
                     public void onClick(View view) {
                         if (mListener != null) {
-                            mListener.OnSupplierOpenClick(position);
+                            mListener.OnSupplierAddClick(position);
                         }
                     }
                 });
-            } else if(currentSupplier.getRetailerStatus().equals("add")){
-                holder.mOpenbtn.setVisibility(View.GONE);
-                holder.mAddSupplierbtn.setVisibility(View.VISIBLE);
-                holder.mAddSupplierbtn.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                    if (mListener != null) {
-                        mListener.OnSupplierAddClick(position);
-                    }
-                    }
-                });
-            }else if(currentSupplier.getRetailerStatus().equals("rejected")){
-                holder.mOpenbtn.setVisibility(View.VISIBLE);
-                holder.mAddSupplierbtn.setVisibility(View.GONE);
-                holder.mOpenbtn.setText("REJECTED");
-                holder.mOpenbtn.setBackgroundColor(android.graphics.Color.rgb(128,128,128));
             }
-        } else if (supplierViewType == 2) {
-            holder.mAddSupplierbtn.setVisibility(View.VISIBLE);
-            holder.mOpenbtn.setVisibility(View.GONE);
-
-            holder.mSupplierLayout.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    if (mListener != null) {
-                        mListener.OnSupplierAddClick(position);
-                    }
-                }
-            });
-            holder.mSupplierName.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    if (mListener != null) {
-                        mListener.OnSupplierAddClick(position);
-                    }
-                }
-            });
-            holder.mAddSupplierbtn.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    if (mListener != null) {
-                        mListener.OnSupplierAddClick(position);
-                    }
-                }
-            });
-            holder.mSupplierimg.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    if (mListener != null) {
-                        mListener.OnSupplierAddClick(position);
-                    }
-                }
-            });
+        }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - onBindViewHolder : ",e.toString());
+            Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() + " - onBindViewHolder : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - onBindViewHolder : ",ex.toString());
+            Crashlytics.log(0,this.getClass().getSimpleName() + " - onBindViewHolder : ",ex.toString());
         }
     }
 
