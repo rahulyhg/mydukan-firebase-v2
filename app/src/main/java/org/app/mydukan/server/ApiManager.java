@@ -1273,6 +1273,7 @@ public class ApiManager {
             public void onCancelled(DatabaseError databaseError) {
                 result.onSuccess(subCategoryList);
             }
+
         });*/
 
         /*Change in logic for Product keys list*/
