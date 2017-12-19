@@ -24,7 +24,6 @@ import com.google.firebase.database.ValueEventListener;
 
 import org.app.mydukan.R;
 import org.app.mydukan.activities.WebViewActivity;
-import org.app.mydukan.activities.Webview2Activity;
 import org.app.mydukan.application.MyDukan;
 import org.app.mydukan.data.ChattUser;
 import org.app.mydukan.data.PlatForm_Info;

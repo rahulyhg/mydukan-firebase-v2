@@ -19,7 +19,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import org.app.mydukan.R;
-import org.app.mydukan.activities.Webview2Activity;
+
 import org.app.mydukan.adapters.CategoryAdapter;
 import org.app.mydukan.adapters.KeySpecificationAdapter;
 import org.app.mydukan.adapters.PricePlatformAdapter;
