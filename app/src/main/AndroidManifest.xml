@@ -408,8 +408,13 @@
         <activity
             android:name=".activities.UsersLocationAddress"
             android:screenOrientation="portrait" />
-        <activity android:name=".activities.UserProfile" />
-        <activity android:name=".activities.CompanyDetails" />
+
+        <activity android:name=".activities.UserProfile"
+            android:screenOrientation="portrait"/>
+
+        <activity android:name=".activities.CompanyDetails"
+            android:screenOrientation="portrait"/>
+
         <activity
             android:name=".activities.IntentForwardingActivity"
             android:launchMode="singleTask">
@@ -429,12 +434,29 @@
             android:name=".services.SyncContacts"
             android:exported="false" />
 
-        <activity android:name=".activities.PriceDropActivity" />
-        android:exported="false" />
-        <activity android:name=".activities.MyRecordsActivity" />
-        <activity android:name=".activities.RecordPriceDropActivity" />
-        <activity android:name=".activities.PriceDropModels" />
-        <activity android:name=".activities.RecordClaimActivity"></activity>
+        <activity android:name=".activities.BroadcastActivity"
+            android:screenOrientation="portrait"/>
+
+        <activity android:name=".fragments.YouTubeFragmentActivity"
+            android:screenOrientation="portrait"/>
+
+        <activity android:name=".activities.PriceDropActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"/>
+
+        <activity android:name=".activities.MyRecordsActivity"
+            android:screenOrientation="portrait"/>
+
+        <activity android:name=".activities.RecordPriceDropActivity"
+            android:screenOrientation="portrait"/>
+
+        <activity android:name=".activities.PriceDropModels"
+            android:screenOrientation="portrait"/>
+
+        <activity android:name=".activities.RecordClaimActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".content.YouTubeContent" />
+
     </application>
 
 </manifest>

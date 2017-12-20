@@ -13,6 +13,7 @@ import com.google.android.youtube.player.YouTubeThumbnailLoader;
 import com.google.android.youtube.player.YouTubeThumbnailView;
 
 import org.app.mydukan.R;
+import org.app.mydukan.application.MyDukan;
 import org.app.mydukan.content.YouTubeContent;
 import org.app.mydukan.data.Videos;
 
@@ -27,6 +28,7 @@ import java.util.Map;
 
 public class VideoListAdapter extends BaseAdapter implements YouTubeThumbnailView.OnInitializedListener {
 
+    public MyDukan mApp;
     private Context mContext;
     private Map<View, YouTubeThumbnailLoader> mLoaders;
     public List<String> ITEMS = new ArrayList<String>();
@@ -37,10 +39,12 @@ public class VideoListAdapter extends BaseAdapter implements YouTubeThumbnailVie
 
     ArrayList<Videos> videosList = new ArrayList<>();
 
+
     public VideoListAdapter(final Context context, ArrayList<Videos> mITEM_MAP) {
         mContext = context;
         mLoaders = new HashMap<>();
         videosList = mITEM_MAP;
+        mApp = (MyDukan) context.getApplicationContext();
     }
 
     @Override
@@ -76,7 +80,7 @@ public class VideoListAdapter extends BaseAdapter implements YouTubeThumbnailVie
 
             //Set the title
             holder.title = (TextView) convertView.findViewById(R.id.textView_title);
-            holder.title.setText(item.getVideoINFO());
+            holder.title.setText(mApp.getUtils().toCamelCase(item.getVideoINFO()));
 
             //Initialise the thumbnail
             holder.thumb = (YouTubeThumbnailView) convertView.findViewById(R.id.imageView_thumbnail);

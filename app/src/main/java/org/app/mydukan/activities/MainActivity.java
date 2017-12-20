@@ -73,6 +73,8 @@ import org.app.mydukan.data.ImageModel;
 import org.app.mydukan.data.Supplier;
 import org.app.mydukan.data.SupplierBindData;
 import org.app.mydukan.data.User;
+import org.app.mydukan.fragments.YouTubeActivity;
+import org.app.mydukan.fragments.YouTubeFragmentActivity;
 import org.app.mydukan.fragments.myschemes.fragmetns.MySelectedSchemesHelper;
 import org.app.mydukan.server.ApiManager;
 import org.app.mydukan.server.ApiResult;
@@ -1062,10 +1064,12 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 profile.putExtra(AppContants.VIEW_TYPE, AppContants.MY_PROFILE);
 //                i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 startActivity(profile);
-
-
                 break;
 
+            case R.id.nav_myBroadCast:
+                Intent youtube = new Intent(MainActivity.this,BroadcastActivity.class);
+                startActivity(youtube);
+                break;
 
             case R.id.nav_help:
                 Intent intent = new Intent(MainActivity.this, HelpActivity.class);
