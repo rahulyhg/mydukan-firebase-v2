@@ -192,9 +192,10 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:background="@drawable/ic_action_addtocart"
-                        android:visibility="visible" />
+                        android:visibility="gone" />
 
                     <TextView
+                        android:id="@+id/addProduct"
                         android:layout_width="50dp"
                         android:layout_height="wrap_content"
                         android:background="@color/green_500"

@@ -33,21 +33,21 @@ public class ProductsAdapter extends RecyclerView.Adapter<ProductsAdapter.ViewHo
     private ProductAdapterListener mListener;
     private Boolean isCartEnabled;
     private String mSupplierID="";
+    private int page = 0;
 
-    public ProductsAdapter(Context context, ProductAdapterListener productListener,String supplierID) {
+    public ProductsAdapter(Context context, ProductAdapterListener productListener,String supplierID, int page) {
         mContext = context;
         mProductData = new ArrayList<Product>();
         mApp = (MyDukan) mContext.getApplicationContext();
         mListener = productListener;
         mSupplierID=supplierID;
-
+        this.page = page;
     }
     public ProductsAdapter(Context context, ProductAdapterListener productListener) {
         mContext = context;
         mProductData = new ArrayList<Product>();
         mApp = (MyDukan) mContext.getApplicationContext();
         mListener = productListener;
-
     }
     private ArrayList<Product> getPriceDropProducts(){
         ArrayList<Product> result = new ArrayList<Product>();
@@ -113,6 +113,10 @@ public class ProductsAdapter extends RecyclerView.Adapter<ProductsAdapter.ViewHo
                 mListener.OnProductOpenClick(position,ADD_CART);
             }
         });
+
+        if(page == 1){
+            holder.mClaimBtn.setText("Add");
+        }
 
         holder.mClaimBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -337,6 +341,7 @@ public class ProductsAdapter extends RecyclerView.Adapter<ProductsAdapter.ViewHo
         private LinearLayout mCartoptionLayout;//optionLayout
         private ImageButton mInfobtn;
         private Button mClaimBtn;
+        private TextView add;
 
         public ViewHolder(final View itemView) {
             super(itemView);
@@ -358,6 +363,7 @@ public class ProductsAdapter extends RecyclerView.Adapter<ProductsAdapter.ViewHo
             mProductMOPPrice = (TextView) itemView.findViewById(R.id.mop_price);
             mProductMRPPrice = (TextView) itemView.findViewById(R.id.mrp_price);
             mpricePlatform = (TextView) itemView.findViewById(R.id.pricePlatform);
+            add = (TextView) itemView.findViewById(R.id.addProduct);
 
         }
     }

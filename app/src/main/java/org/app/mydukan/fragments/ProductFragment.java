@@ -61,6 +61,7 @@ public class ProductFragment extends android.support.v4.app.Fragment implements 
     private boolean  isPriceDropON=false;
     ArrayList<Product> sortedlist_PrivceDrop;
     ArrayList<Product> sortedlist_MRPMONTH;
+    String page = "";
 
     LinearLayout addLayout; //cmplnt_lst_add_id
     ScrollView scrollViewList;
@@ -128,13 +129,21 @@ public class ProductFragment extends android.support.v4.app.Fragment implements 
         if (mBundle.containsKey(AppContants.POSITION)) {
             tabposition = mBundle.getInt(AppContants.POSITION);
         }
+        if(mBundle.containsKey("page")){
+            page = mBundle.getString("page");
+        }
     }
 
     private void setupProductCard(View v) {
         View supplierView = v.findViewById(R.id.supplierlayout);
         if(mSupplier!=null) {
             String supplierID = mSupplier.getId();
-            mProductAdapter = new ProductsAdapter(getActivity(), this,supplierID);
+            if(page.equalsIgnoreCase("allPriceDrop")) {
+                mProductAdapter = new ProductsAdapter(getActivity(), this, supplierID, 1);
+            }
+            else{
+                mProductAdapter = new ProductsAdapter(getActivity(), this, supplierID, 2);
+            }
         }else{
             mProductAdapter = new ProductsAdapter(getActivity(), this);
         }

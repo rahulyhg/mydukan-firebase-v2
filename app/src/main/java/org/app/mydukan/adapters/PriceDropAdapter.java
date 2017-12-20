@@ -36,13 +36,15 @@ public class PriceDropAdapter extends RecyclerView.Adapter<PriceDropAdapter.View
     private HashMap<String, Integer> map;
     private List<String> categoryList = new ArrayList<>();
     SupplierBindData mSupplier;
+    String page = "";
 
-    public PriceDropAdapter(HashMap<String, ArrayList<Product>> productArrayList, Context context, HashMap<String, Integer> map, List<String> categoryList, SupplierBindData mSupplier) {
+    public PriceDropAdapter(HashMap<String, ArrayList<Product>> productArrayList, Context context, HashMap<String, Integer> map, List<String> categoryList, SupplierBindData mSupplier, String page) {
         this.productArrayList = productArrayList;
         this.mContext = context;
         this.map = map;
         this.categoryList = categoryList;
         this.mSupplier = mSupplier;
+        this.page = page;
     }
 
     @Override
@@ -67,6 +69,7 @@ public class PriceDropAdapter extends RecyclerView.Adapter<PriceDropAdapter.View
                 intent.putExtra(AppContants.SUPPLIER, mSupplier);
                 intent.putExtra(AppContants.PRODUCT, productArrayList.get(categoryList.get(position)));
                 intent.putExtra(AppContants.BRAND_NAME, categoryList.get(position));
+                intent.putExtra("page", page);
                 mContext.startActivity(intent);
             }
         });

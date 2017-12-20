@@ -4,6 +4,7 @@ import android.content.Context;
 import android.location.Address;
 import android.location.Geocoder;
 import android.net.Uri;
+import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
@@ -1323,6 +1324,83 @@ public class ApiManager {
         /*End of logic in change in productkeys list*/
     }
 
+    private void getProductKeysForPriceDrop(String userId, final ApiResult result) {
+        final ArrayList<SubCategory> subCategoryList = new ArrayList<>();
+
+        DatabaseReference categoryRef = FirebaseDatabase.getInstance().getReference("myPriceDrop/" + userId);
+        // categoryRef.keepSynced(true);
+       /* categoryRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    for (DataSnapshot subCatSnapshot : dataSnapshot.getChildren()) {
+                        SubCategory subCategory = subCatSnapshot.getValue(SubCategory.class);
+                        subCategory.setId(subCatSnapshot.getKey());
+                        if(!subCategory.getProductlist().isEmpty()){
+                            subCategory.setProductIds(new ArrayList<String>(subCategory.getProductlist().keySet()));
+                            subCategory.getProductlist().clear();
+                        }
+                        subCategoryList.add(subCategory);
+                    }
+                }
+
+                result.onSuccess(subCategoryList);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                result.onSuccess(subCategoryList);
+            }
+
+        });*/
+
+        /*Change in logic for Product keys list*/
+
+        categoryRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    try {
+                        for (DataSnapshot subCatSnapshot : dataSnapshot.getChildren()) {
+                            SubCategory subCategory = subCatSnapshot.getValue(SubCategory.class);
+                            subCategory.setId(subCatSnapshot.getKey());
+                            if (!subCategory.getProductlist().isEmpty()) {
+                                subCategory.setProductIds(new ArrayList<String>(subCategory.getProductlist().keySet()));
+                                subCategory.getProductlist().clear();
+                            }
+
+                            subCategoryList.add(subCategory);
+                        }
+                        Collections.sort(subCategoryList, new SubCat_OrderComparator());
+                        // Collections.reverse(subCategoryList);
+                        result.onSuccess(subCategoryList);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        for (DataSnapshot subCatSnapshot : dataSnapshot.getChildren()) {
+                            SubCategory subCategory = subCatSnapshot.getValue(SubCategory.class);
+                            subCategory.setId(subCatSnapshot.getKey());
+                            if (!subCategory.getProductlist().isEmpty()) {
+                                subCategory.setProductIds(new ArrayList<String>(subCategory.getProductlist().keySet()));
+                                subCategory.getProductlist().clear();
+                            }
+
+                            subCategoryList.add(subCategory);
+                        }
+                        result.onSuccess(subCategoryList);
+                    }
+
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                result.onSuccess(subCategoryList);
+            }
+        });
+
+        /*End of logic in change in productkeys list*/
+    }
+
     public class SubCat_OrderComparator implements Comparator<SubCategory> {
 
         public int compare(SubCategory p1, SubCategory p2) {
@@ -1638,6 +1716,221 @@ public class ApiManager {
             result.onSuccess(mProductMap);
         }
 
+
+    }
+
+    public void getMyPriceDrop(final SupplierBindData mSupplier, String userId, final ApiResult result){
+
+        getPriceDropKey(userId, new ApiResult() {
+            @Override
+            public void onSuccess(Object data) {
+                final ArrayList<SubCategory> categories = (ArrayList<SubCategory>) data;
+                getProducts(mSupplier.getId(), mSupplier.getGroupIds(), new ApiResult() {
+                    @Override
+                    public void onSuccess(Object data) {
+                        HashMap<String, Product> groupProductsList = (HashMap<String, Product>) data;
+
+                        getProductStockDetails(mSupplier.getId(), groupProductsList, new ApiResult() {
+                            @Override
+                            public void onSuccess(Object data) {
+                                HashMap<String, Product> stockProductsList = (HashMap<String, Product>) data;
+
+                                getProductList(stockProductsList, categories, new ApiResult() {
+                                    @Override
+                                    public void onSuccess(Object data) {
+                                        LinkedHashMap<String, ArrayList<Product>> productMap = (LinkedHashMap<String, ArrayList<Product>>) data;
+                                        result.onSuccess(productMap);
+                                    }
+
+                                    @Override
+                                    public void onFailure(String response) {
+
+                                    }
+                                });
+                            }
+
+                            @Override
+                            public void onFailure(String response) {
+
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void onFailure(String response) {
+
+                    }
+                });
+            }
+
+            @Override
+            public void onFailure(String response) {
+
+            }
+        });
+
+    }
+
+    public void getPriceDropKey(String userId, final ApiResult result){
+
+        final ArrayList<SubCategory> subCategoryList = new ArrayList<>();
+
+        DatabaseReference categoryRef = FirebaseDatabase.getInstance().getReference("priceDrop/" + userId);
+
+        categoryRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    try {
+                        for (DataSnapshot subCatSnapshot : dataSnapshot.getChildren()) {
+                            SubCategory subCategory = subCatSnapshot.getValue(SubCategory.class);
+                            subCategory.setName(subCatSnapshot.getKey());
+//                            if (subCatSnapshot.getChildren()) {
+                                ArrayList<String> productId = new ArrayList<>();
+                                for(DataSnapshot snapshot : subCatSnapshot.getChildren()){
+                                    productId.add(snapshot.getKey());
+                                }
+                                subCategory.setProductIds(productId);
+                                subCategory.getProductlist().clear();
+//                            }
+
+                            subCategoryList.add(subCategory);
+                        }
+                        Collections.sort(subCategoryList, new SubCat_OrderComparator());
+                        // Collections.reverse(subCategoryList);
+                        result.onSuccess(subCategoryList);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        for (DataSnapshot subCatSnapshot : dataSnapshot.getChildren()) {
+                            SubCategory subCategory = subCatSnapshot.getValue(SubCategory.class);
+                            subCategory.setId(subCatSnapshot.getKey());
+                            if (!subCategory.getProductlist().isEmpty()) {
+                                subCategory.setProductIds(new ArrayList<String>(subCategory.getProductlist().keySet()));
+                                subCategory.getProductlist().clear();
+                            }
+
+                            subCategoryList.add(subCategory);
+                        }
+                        result.onSuccess(subCategoryList);
+                    }
+
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                result.onSuccess(subCategoryList);
+            }
+        });
+
+    }
+
+    public void getProducts(String suppliersId, ArrayList<String> groupIds, final ApiResult result){
+
+        grpProductCount = groupIds.size();
+        Log.d(" **** 01 **** ", String.valueOf(groupIds));
+        final HashMap<String, Product> productsList = new HashMap<>();
+
+        for (String groupId : groupIds) {
+            DatabaseReference groupRef = FirebaseDatabase.getInstance().getReference("groupprice/" + suppliersId + "/" + groupId);
+            groupRef.keepSynced(true);
+            groupRef.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+
+                    if (dataSnapshot.exists()) {
+                        for (DataSnapshot productSnapshot : dataSnapshot.getChildren()) {
+                            Product product = new Product();
+                            if (productSnapshot.hasChild("productinfo")) {
+                                product.setName(productSnapshot.child("productinfo").child("name").getValue(String.class));
+                                if (dataSnapshot.child("productinfo").hasChild("isnew")) {
+                                    product.setIsnew(dataSnapshot.child("productinfo")
+                                            .child("isnew").getValue(Boolean.class));
+                                }
+                            }
+
+
+                            /*if (searchStr != null) {
+                                if (!(product.getName().contains(searchStr.toLowerCase()))) {
+                                    product = null;
+                                }
+                            }*/
+
+                            if (product != null) {
+                                product.setProductId(productSnapshot.getKey());
+                                //Get the price ie dp instead of mrp
+                                product.setPrice(productSnapshot.child("price").child("dp").getValue(String.class)); // // TODO: 18-02-2017  getMOP MRP model
+                                product.setDp(productSnapshot.child("price").child("dp").getValue(String.class));
+                                product.setMop(productSnapshot.child("price").child("mop").getValue(String.class));
+                                product.setMrp(productSnapshot.child("price").child("mrp").getValue(String.class));
+
+                                if (productSnapshot.hasChild("platforms")) {
+                                    try {
+                                        HashMap<String, String> cPlatforms = new HashMap<String, String>();
+                                        HashMap<String, HashMap<String, String>> mPlatforms = new HashMap<>();
+
+                                        for (DataSnapshot recipe : productSnapshot.child("platforms").getChildren()) {
+
+                                            if (recipe != null) {
+                                                cPlatforms = new HashMap<String, String>();
+                                                for (DataSnapshot platform : recipe.getChildren()) {
+                                                    cPlatforms.put(platform.getKey(), platform.getValue(String.class));
+                                                }
+                                                mPlatforms.put(recipe.getKey(), cPlatforms);
+                                            }
+                                            // mPlatforms.put(recipe.getKey(),recipe.getValue(PlatForm_Info.class));
+                                        }
+                                        product.setmPlatforms(mPlatforms);
+                                    } catch (Exception e) {
+
+                                    }
+                                }
+                                //Get the pricedrop json
+                                if (productSnapshot.hasChild("pricedrop")) {
+                                    try {
+                                        PriceDrop priceDrop = new PriceDrop();
+                                        priceDrop.setDropamount(productSnapshot.child("pricedrop").child("dropamount").getValue(String.class));
+                                        priceDrop.setStartdate(productSnapshot.child("pricedrop").child("startdate").getValue(Long.class));
+                                        product.setPriceDrop(priceDrop);
+                                    } catch (Exception e) {
+
+                                    }
+                                }
+                                //Get the offer json
+                                if (productSnapshot.hasChild("offer")) {
+                                    try {
+                                        Offer offer = new Offer();
+                                        offer.setOfferamount(productSnapshot.child("offer").child("offeramount").getValue(String.class));
+                                        offer.setStartdate(productSnapshot.child("offer").child("startdate").getValue(Long.class));
+                                        offer.setEnddate(productSnapshot.child("offer").child("enddate").getValue(Long.class));
+                                        product.setOffer(offer);
+                                    } catch (Exception e) {
+                                    }
+                                }
+                                productsList.put(product.getProductId(), product);
+                            }
+                        }
+                    }
+                    if (grpProductCount > 0) {
+                        grpProductCount--;
+                    }
+                    if (grpProductCount == 0) {
+                        result.onSuccess(productsList);
+                    }
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                    if (grpProductCount > 0) {
+                        grpProductCount--;
+                    }
+
+                    if (grpProductCount == 0) {
+                        result.onSuccess(productsList);
+                    }
+                }
+            });
+        }
 
     }
 
