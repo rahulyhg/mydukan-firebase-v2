@@ -136,6 +136,7 @@ public class PriceDropActivity extends BaseActivity {
                 intent.putExtra(AppContants.USER_DETAILS, userdetails);
                 intent.putExtra("page", "allPriceDrop");
                 startActivity(intent);
+                finish();
             }
         });
 
@@ -148,6 +149,7 @@ public class PriceDropActivity extends BaseActivity {
                 intent.putExtra(AppContants.USER_DETAILS, userdetails);
                 intent.putExtra("page", "myPriceDrop");
                 startActivity(intent);
+                finish();
             }
         });
 

@@ -13,8 +13,10 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.app.mydukan.R;
+import org.app.mydukan.activities.CustomToast;
 import org.app.mydukan.application.MyDukan;
 import org.app.mydukan.data.Product;
 
@@ -85,7 +87,7 @@ public class ProductsAdapter extends RecyclerView.Adapter<ProductsAdapter.ViewHo
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, final int position) {
+    public void onBindViewHolder(final ViewHolder holder, final int position) {
         //clear the holder.
         holder.mProductName.setText("");
         holder.mProductPrice.setText("");
@@ -121,6 +123,10 @@ public class ProductsAdapter extends RecyclerView.Adapter<ProductsAdapter.ViewHo
         holder.mClaimBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
+                if(page == 1){
+                    Toast.makeText(mContext, "Product is Added into your My Price Drops page.", Toast.LENGTH_SHORT).show();
+                }
                 mListener.OnProductClaimClick(position);
             }
         });
