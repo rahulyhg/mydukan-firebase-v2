@@ -1403,7 +1403,7 @@ public class ApiManager {
 
     public class SubCat_OrderComparator implements Comparator<SubCategory> {
 
-        public int compare(SubCategory p1, SubCategory p2) {
+        public int compare(SubCategory p2, SubCategory p1) {
 
             if (p1.getOrder() == null || p1.getOrder().isEmpty()) {
                 p1.setOrder("0");
