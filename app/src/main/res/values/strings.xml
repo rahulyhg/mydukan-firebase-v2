@@ -25,6 +25,10 @@
     <string name="hint_date">Date</string>
     <string name="hint_settledby">Settled By</string>
     <string name="hint_voucherno">Voucher No</string>
+    <string name="hint_model">Model Name</string>
+    <string name="hint_quantity">Quantity Purchased</string>
+    <string name="hint_scheme_ph">Scheme (PER HANDSET in %)</string>
+    <string name="hint_scheme_amt">DP (With or Without GST - 12%)</string>
 
 
     <!-- Strings related to EditText errors -->

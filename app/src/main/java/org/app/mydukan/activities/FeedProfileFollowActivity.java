@@ -1,6 +1,7 @@
 package org.app.mydukan.activities;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.View;
@@ -27,6 +28,7 @@ import org.app.mydukan.data.ChattUser;
 import org.app.mydukan.data.Feed;
 import org.app.mydukan.utils.AppContants;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -60,11 +62,11 @@ public class FeedProfileFollowActivity extends Activity implements
             }
             if (mybundle.containsKey(AppContants.PROFILE_ID_FOLLOWERS)) {
                 //PROFILE_FOLLOWING
-               // PROFILE_FOLLOWERS
-                    title_tv.setText("Profile Followers..");
-                 id_Profile=mybundle.getString(AppContants.PROFILE_ID_FOLLOWERS);
-                 if((id_Profile != null)&&(!id_Profile.isEmpty())) {
-                   getProfileFollowers(id_Profile);
+                // PROFILE_FOLLOWERS
+                title_tv.setText("Profile Followers..");
+                id_Profile=mybundle.getString(AppContants.PROFILE_ID_FOLLOWERS);
+                if((id_Profile != null)&&(!id_Profile.isEmpty())) {
+                    getProfileFollowers(id_Profile);
                 } else {
                     Toast.makeText(this, "Unable to Get Profile Followers", Toast.LENGTH_SHORT).show();
                 }
@@ -98,7 +100,7 @@ public class FeedProfileFollowActivity extends Activity implements
     private void getFollowingProfiles(final String id_profile) {
         final FirebaseUser auth = FirebaseAuth.getInstance().getCurrentUser();
         final DatabaseReference referenceFollow = FirebaseDatabase.getInstance().getReference().child(FOLLOW_ROOT+"/"+id_profile);
-       referenceFollow.addValueEventListener(new ValueEventListener() {
+        referenceFollow.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 long totalFollowers = 0;
@@ -140,7 +142,7 @@ public class FeedProfileFollowActivity extends Activity implements
                     });
                 }
 
-              //  Toast.makeText(FeedProfileFollowActivity.this, "FOLLOWing"+followersKey.size(), Toast.LENGTH_LONG).show();
+                //  Toast.makeText(FeedProfileFollowActivity.this, "FOLLOWing"+followersKey.size(), Toast.LENGTH_LONG).show();
 
             }
 
@@ -156,7 +158,7 @@ public class FeedProfileFollowActivity extends Activity implements
 
         final FirebaseUser auth = FirebaseAuth.getInstance().getCurrentUser();
         final DatabaseReference referenceFollow = FirebaseDatabase.getInstance().getReference().child(MYFOLLOW_ROOT+"/"+id_profile);
-       referenceFollow.addValueEventListener(new ValueEventListener() {
+        referenceFollow.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 long totalFollowers = 0;
@@ -172,10 +174,10 @@ public class FeedProfileFollowActivity extends Activity implements
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     followersKey.add(snapshot.getKey());
                     followerKey=dataSnapshot.getKey();
-                if((followerKey.isEmpty()) && (followerKey==null))  {
+                    if((followerKey.isEmpty()) && (followerKey==null))  {
                         totalFollowers = snapshot.getChildrenCount();
                         //  mFollowersList = (HashMap<String, String>)
-                       return;
+                        return;
                     }
 
                     DatabaseReference feedReference = FirebaseDatabase.getInstance().getReference("chat_USER/" + snapshot.getKey());
@@ -199,13 +201,13 @@ public class FeedProfileFollowActivity extends Activity implements
                     });
                 }
 
-            //    Toast.makeText(FeedProfileFollowActivity.this, "FOLLOWERS"+followersKey.size(), Toast.LENGTH_LONG).show();
+                //    Toast.makeText(FeedProfileFollowActivity.this, "FOLLOWERS"+followersKey.size(), Toast.LENGTH_LONG).show();
 
             }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-              //  showProgress(false);
+                //  showProgress(false);
             }
         });
 
@@ -214,6 +216,10 @@ public class FeedProfileFollowActivity extends Activity implements
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position,
                             long id) {
+        ChattUser mchattuser=(ChattUser)listView.getItemAtPosition(position);
+        Intent intent = new Intent(FeedProfileFollowActivity.this, MyProfileActivity.class);
+        intent.putExtra(AppContants.CHAT_USER_PROFILE, (Serializable) mchattuser);
+        startActivity(intent);
       /*  Toast toast = Toast.makeText(getApplicationContext(),
                 "Item " + (position + 1) + ": " + mList.get(position).getName(),
                 Toast.LENGTH_SHORT);
@@ -243,7 +249,7 @@ public class FeedProfileFollowActivity extends Activity implements
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.child(auth.getUid()).hasChild(feed.getIdUser())) {
                     referenceFollow.child(auth.getUid()).child(feed.getIdUser()).removeValue();//removing userid to following list  .
-                    referenceIFollow.child(feed.getIdUser()).child(auth.getUid()).removeValue();//removing the user mCatId to distributor following list.
+                    referenceIFollow.child(feed.getIdUser()).child(auth.getUid()).removeValue();//removing the user id to distributor following list.
                 }
             }
             @Override
