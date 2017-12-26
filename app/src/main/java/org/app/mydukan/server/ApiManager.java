@@ -1725,47 +1725,49 @@ public class ApiManager {
             @Override
             public void onSuccess(Object data) {
                 final ArrayList<SubCategory> categories = (ArrayList<SubCategory>) data;
-                getProducts(mSupplier.getId(), mSupplier.getGroupIds(), new ApiResult() {
-                    @Override
-                    public void onSuccess(Object data) {
-                        HashMap<String, Product> groupProductsList = (HashMap<String, Product>) data;
+                    getProducts(mSupplier.getId(), mSupplier.getGroupIds(), new ApiResult() {
+                        @Override
+                        public void onSuccess(Object data) {
+                            HashMap<String, Product> groupProductsList = (HashMap<String, Product>) data;
 
-                        getProductStockDetails(mSupplier.getId(), groupProductsList, new ApiResult() {
-                            @Override
-                            public void onSuccess(Object data) {
-                                HashMap<String, Product> stockProductsList = (HashMap<String, Product>) data;
+                            getProductStockDetails(mSupplier.getId(), groupProductsList, new ApiResult() {
+                                @Override
+                                public void onSuccess(Object data) {
+                                    HashMap<String, Product> stockProductsList = (HashMap<String, Product>) data;
 
-                                getProductList(stockProductsList, categories, new ApiResult() {
-                                    @Override
-                                    public void onSuccess(Object data) {
-                                        LinkedHashMap<String, ArrayList<Product>> productMap = (LinkedHashMap<String, ArrayList<Product>>) data;
-                                        result.onSuccess(productMap);
-                                    }
+                                    getProductList(stockProductsList, categories, new ApiResult() {
+                                        @Override
+                                        public void onSuccess(Object data) {
+                                            LinkedHashMap<String, ArrayList<Product>> productMap = (LinkedHashMap<String, ArrayList<Product>>) data;
+                                            result.onSuccess(productMap);
+                                        }
 
-                                    @Override
-                                    public void onFailure(String response) {
+                                        @Override
+                                        public void onFailure(String response) {
 
-                                    }
-                                });
-                            }
+                                        }
+                                    });
+                                }
 
-                            @Override
-                            public void onFailure(String response) {
+                                @Override
+                                public void onFailure(String response) {
 
-                            }
-                        });
-                    }
+                                }
+                            });
+                        }
 
-                    @Override
-                    public void onFailure(String response) {
+                        @Override
+                        public void onFailure(String response) {
 
-                    }
-                });
+                        }
+                    });
             }
 
             @Override
             public void onFailure(String response) {
-
+                if(response.equalsIgnoreCase("empty")){
+                    result.onFailure("empty");
+                }
             }
         });
 
@@ -1814,6 +1816,9 @@ public class ApiManager {
                         result.onSuccess(subCategoryList);
                     }
 
+                }
+                else{
+                    result.onFailure("empty");
                 }
             }
 

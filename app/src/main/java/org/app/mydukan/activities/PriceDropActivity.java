@@ -300,7 +300,7 @@ public class PriceDropActivity extends BaseActivity {
 
                                     }
 */                                } else {
-                                    mNoDataView.setText("There is no model in this Price Range, Swipe to check other categories");
+                                    mNoDataView.setText("There is no model in this Price Range.");
                                     mNoDataView.setVisibility(View.VISIBLE);
                                 }
                                 dismissProgress();
@@ -326,7 +326,6 @@ public class PriceDropActivity extends BaseActivity {
             ApiManager.getInstance(getApplicationContext()).getMyPriceDrop(mSupplier, uid, new ApiResult() {
                         @Override
                         public void onSuccess(Object data) {
-                            if (!isProductFetched) {
                                 mProductList = (HashMap<String, ArrayList<Product>>) data;
 
                                 for(Map.Entry<String, ArrayList<Product>> entry : mProductList.entrySet()){
@@ -418,21 +417,18 @@ public class PriceDropActivity extends BaseActivity {
 
                                     }
 */                                } else {
-                                    mNoDataView.setText("There is no model in this Price Range, Swipe to check other categories");
+                                    mNoDataView.setText("There is no model in My Price Drop.");
                                     mNoDataView.setVisibility(View.VISIBLE);
                                 }
                                 dismissProgress();
                                 isProductFetched = true;
-                            }
-                            else{
-                                mNoDataView.setText("There is no model in this Price Range, Swipe to check other categories");
-                                mNoDataView.setVisibility(View.VISIBLE);
-                            }
                         }
 
                         @Override
                         public void onFailure(String response) {
                             dismissProgress();
+                            mNoDataView.setText("There is no model in My Price Drop.");
+                            mNoDataView.setVisibility(View.VISIBLE);
                         }
                     });
         } catch (Exception e) {
