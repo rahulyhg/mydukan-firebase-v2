@@ -40,7 +40,7 @@
             android:layout_centerVertical="true"
             android:gravity="center"
             android:padding="10dp"
-            android:text="My Price Drops"
+            android:text="My Records"
             android:textColor="@color/colorPrimary"
             android:textSize="24sp" />
 

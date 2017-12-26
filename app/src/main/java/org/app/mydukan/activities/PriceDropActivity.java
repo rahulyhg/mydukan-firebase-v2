@@ -22,7 +22,12 @@ import org.app.mydukan.server.ApiManager;
 import org.app.mydukan.server.ApiResult;
 import org.app.mydukan.utils.AppContants;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -190,6 +195,40 @@ public class PriceDropActivity extends BaseActivity {
                                             }
                                         }
                                     }
+                                }
+
+                                try{
+                                    for (Map.Entry<String, ArrayList<Product>> entry : mProductList.entrySet()) {
+
+                                        Collections.sort(entry.getValue(), new DateComparator());
+                                        Collections.reverse(entry.getValue());
+                                        Log.i("error", "error at: " + entry.getKey());
+                                        //mList.put(entry.getKey(), entry.getValue());
+                                        //Adding the tabs using addTab() method
+//                                                tabLayout.addTab(tabLayout.newTab().setText(entry.getKey()));
+                                    }
+
+                                    /*//Creating our pager adapter
+                                    ProductPagerFragment adapter = new ProductPagerFragment(getSupportFragmentManager(),
+                                            new ArrayList<>(filteredList.values()), mSupplier.isCartEnabled(),mSupplier);
+                                    //Adding adapter to pager
+                                    viewPager.setAdapter(adapter);*/
+
+
+                                }catch (Exception e){
+                                    e.printStackTrace();
+                                    for (Map.Entry<String, ArrayList<Product>> entry : mProductList.entrySet()) {
+                                        //Adding the tabs using addTab() method
+                                        if(entry.getValue().size() == 0){
+                                            continue;
+                                        }
+//                                        tabLayout.addTab(tabLayout.newTab().setText(entry.getKey()));
+                                    }
+                                   /* //Creating our pager adapter
+                                    ProductPagerFragment adapter = new ProductPagerFragment(getSupportFragmentManager(),
+                                            new ArrayList<>(filteredList.values()), mSupplier.isCartEnabled(),mSupplier);
+                                    //Adding adapter to pager
+                                    viewPager.setAdapter(adapter);*/
                                 }
 
                                 if (!mProductList.isEmpty()) {
@@ -385,6 +424,10 @@ public class PriceDropActivity extends BaseActivity {
                                 dismissProgress();
                                 isProductFetched = true;
                             }
+                            else{
+                                mNoDataView.setText("There is no model in this Price Range, Swipe to check other categories");
+                                mNoDataView.setVisibility(View.VISIBLE);
+                            }
                         }
 
                         @Override
@@ -420,5 +463,61 @@ public class PriceDropActivity extends BaseActivity {
     @Override
     public void dismissProgress() {
         super.dismissProgress();
+    }
+
+    private class DateComparator implements Comparator<Product> {
+        DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+     /*   SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy hh:mm:ss a");*/
+
+        public int compare(Product p1, Product p2) {
+            //descending getPriceDrop().getStartdate();
+            int result = 0;
+            try {
+                if ((p1.getPriceDrop() != null) && (p1.getPriceDrop() != null)) {
+                    long mdate1 = p1.getPriceDrop().getStartdate();
+                    long mdate2 = p2.getPriceDrop().getStartdate();
+                    Date d1 = null;
+                    Date d2 = null;
+                    d1 = new Date(p1.getPriceDrop().getStartdate());
+                    d2 = new Date(p2.getPriceDrop().getStartdate());
+
+                    if (d1 == null || d2 == null)
+                        return result;
+                    result = d1.compareTo(d2);
+                    //result = d1 < d2 ? -1 : d1 > d2 ? 1 : 0;
+                }
+                return result;
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                return 0;
+            }
+             /*
+            public String convertTime(long time){
+            Date date = new Date(time);
+            Format format = new SimpleDateFormat("yyyy MM dd HH:mm:ss");
+            return format.format(date);
+        }
+               d1 = new Date(mdate1);
+               d2 = new Date(mdate2);
+               if ( d1 == null) {
+                   result=-1;
+                   return result ;
+               }
+               if (d2 == null) {
+                   result=1;
+                   return result ;
+               }
+               result= d1.compareTo(d2) * -1;
+               return  compare(mdate1, mdate2);
+               if (result != 0) {
+                   return result;
+               }else{
+                   return 0;
+               }
+
+// if nothing is returned from the method this is returned by default
+            return 0;*/
+        }
     }
 }
