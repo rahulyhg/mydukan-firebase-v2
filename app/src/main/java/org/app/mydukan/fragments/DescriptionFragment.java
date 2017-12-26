@@ -421,7 +421,7 @@ public class DescriptionFragment extends Fragment {
         @Override
         public void onPageStarted(WebView view, String url, Bitmap favicon) {
             super.onPageStarted(view, url, favicon);
-            mProgress = new ProgressDialog(context);
+            mProgress = new ProgressDialog(getActivity());
             //  mProgress.setTitle(getString(R.string.Please_wait));
             mProgress.setMessage(getString(R.string.Page_is_loading));
             mProgress.setCancelable(true);
