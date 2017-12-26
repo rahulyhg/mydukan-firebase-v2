@@ -314,6 +314,9 @@ public class ProductListActivity extends BaseActivity implements TabLayout.OnTab
                                     } else {
                                         for (Map.Entry<String, ArrayList<Product>> entry : filteredList.entrySet()) {
                                             //Adding the tabs using addTab() method
+                                            Collections.sort(entry.getValue(), new DateComparator());
+                                            Collections.reverse(entry.getValue());
+                                            Log.i("error", "error at: " + entry.getKey());
                                             if(entry.getValue().size() == 0){
                                                 continue;
                                             }
