@@ -417,7 +417,7 @@ public class PriceDropActivity extends BaseActivity {
 
                                     }
 */                                } else {
-                                    mNoDataView.setText("There is no model in My Price Drop.");
+                                    mNoDataView.setText("Please Add From All Price Drops");
                                     mNoDataView.setVisibility(View.VISIBLE);
                                 }
                                 dismissProgress();
@@ -427,7 +427,7 @@ public class PriceDropActivity extends BaseActivity {
                         @Override
                         public void onFailure(String response) {
                             dismissProgress();
-                            mNoDataView.setText("There is no model in My Price Drop.");
+                            mNoDataView.setText("Please Add From All Price Drops");
                             mNoDataView.setVisibility(View.VISIBLE);
                         }
                     });
