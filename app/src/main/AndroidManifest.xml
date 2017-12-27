@@ -456,6 +456,7 @@
         <activity android:name=".activities.RecordClaimActivity"
             android:screenOrientation="portrait"/>
         <activity android:name=".content.YouTubeContent" />
+        <activity android:name=".activities.BaseActivity" />
 
     </application>
 

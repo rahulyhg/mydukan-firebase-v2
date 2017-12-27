@@ -12,6 +12,7 @@ import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.view.GravityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -325,6 +326,12 @@ public class ChatActivity extends AppCompatActivity implements AIListener{
         chat_ref.child(uid).push().setValue(chatMessage);
 
 
+    }
+
+    @Override
+    public void onBackPressed() {
+            finish();
+            super.onBackPressed();
     }
 
     @Override

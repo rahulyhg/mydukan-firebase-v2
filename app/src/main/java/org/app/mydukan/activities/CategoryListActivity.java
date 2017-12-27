@@ -710,7 +710,7 @@ public class CategoryListActivity extends BaseActivity implements CategoryAdapte
             public void onClick(DialogInterface dialog, int which) {
 
                 if (index >= 0 && mCategoryList != null) {
-                    if (networkUtil.isConnectingToInternet(CategoryListActivity.this)) {
+                  /*  if (networkUtil.isConnectingToInternet(CategoryListActivity.this)) {*/
                         //checkPrimeCategory();
                         open_PageName = "category_filter"; // this will tell us which page has to open
                         if (mCategoryList.size() > index) {
@@ -1381,12 +1381,12 @@ public class CategoryListActivity extends BaseActivity implements CategoryAdapte
                             startActivity(intent);
                         }
 */
-                        } else {
+                        } /*else {
                             Toast.makeText(CategoryListActivity.this, "Please check Internet Connection.", Toast.LENGTH_LONG).show();
-                        }
+                        }*/
                     }
                 }
-            }
+//            }
 //                Toast.makeText(getBaseContext(), "Username: " + user + " Password: " + pass, Toast.LENGTH_SHORT).show();
         });
         dialog = alert.create();
@@ -1619,7 +1619,7 @@ public class CategoryListActivity extends BaseActivity implements CategoryAdapte
             open_PageName = "category"; // this will tell us which page has to open
             if(mCategoryList.size() > position) {
                 mCatId = mCategoryList.get(position).getId();
-                if (networkUtil.isConnectingToInternet(CategoryListActivity.this)) {
+//                if (networkUtil.isConnectingToInternet(CategoryListActivity.this)) {
                     switch (mCatId) {
                         case "-KX41ilBK4hjaSDIV419":
                             //PRICE DROP
@@ -1849,9 +1849,9 @@ public class CategoryListActivity extends BaseActivity implements CategoryAdapte
                     intent.putExtra(AppContants.USER_DETAILS, userdetails);
                     startActivity(intent);
                 }*/
-                } else {
-                    Toast.makeText(CategoryListActivity.this, "Please check Internet Connection.", Toast.LENGTH_LONG).show();
-                }
+//                } else {
+//                    Toast.makeText(CategoryListActivity.this, "Please check Internet Connection.", Toast.LENGTH_LONG).show();
+//                }
             }
         }
     }

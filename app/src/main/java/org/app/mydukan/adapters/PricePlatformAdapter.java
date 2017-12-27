@@ -114,7 +114,7 @@ public class PricePlatformAdapter extends BaseAdapter {
         }
         if(item!=null) {
 
-            holder.platformName.setText(mApp.getUtils().toCamelCase(item));
+            holder.platformName.setText(mApp.getUtils().toCamelCase(item).replace("Lockthedeal","LockTheDeal"));
             if (mItem.size() > 0) {
                 String mprice = mItem.get(item).get("price");
                 String mInfo = mItem.get(item).get("info");
