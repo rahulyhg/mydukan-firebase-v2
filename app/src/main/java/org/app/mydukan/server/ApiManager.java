@@ -1506,7 +1506,7 @@ public class ApiManager {
 
 
             /*Logic for product keys group*/
-            groupRef.keepSynced(true);
+            //groupRef.keepSynced(true);
             groupRef.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
@@ -1833,7 +1833,7 @@ public class ApiManager {
 
         for (String groupId : groupIds) {
             DatabaseReference groupRef = FirebaseDatabase.getInstance().getReference("groupprice/" + suppliersId + "/" + groupId);
-            groupRef.keepSynced(true);
+            //groupRef.keepSynced(true);
             groupRef.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
@@ -2172,7 +2172,7 @@ public class ApiManager {
     public void getCategoryList(final String supplierId, final ApiResult result) {
         final ArrayList<Category> mCategoryList = new ArrayList<>();
         DatabaseReference categoryRef = FirebaseDatabase.getInstance().getReference("category/" + supplierId);
-        categoryRef.keepSynced(true);
+        //categoryRef.keepSynced(true);
 
         categoryRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -2199,7 +2199,7 @@ public class ApiManager {
         final ArrayList<Videos> videosList = new ArrayList<>();
 
         DatabaseReference categoryRef = FirebaseDatabase.getInstance().getReference("MyDukan_BroadCast/videos");
-        categoryRef.keepSynced(true);
+        //categoryRef.keepSynced(true);
         categoryRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -2251,7 +2251,7 @@ public class ApiManager {
         grpProductCount = 0;
         final HashMap<String, ArrayList<Scheme>> mCategoryToSchemesMap = new HashMap<>();
         DatabaseReference schemeRef = FirebaseDatabase.getInstance().getReference("subscriptions/" + uid + "/" + supplierId + "/groups");
-        schemeRef.keepSynced(true);
+        //schemeRef.keepSynced(true);
         schemeRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -2324,7 +2324,7 @@ public class ApiManager {
         grpProductCount = 0;
         final HashMap<String, ArrayList<Notification>> mCategoryToNotificationMap = new HashMap<>();
         DatabaseReference notificationRef = FirebaseDatabase.getInstance().getReference("subscriptions/" + uid + "/" + supplierId + "/groups");
-        notificationRef.keepSynced(true);
+        //notificationRef.keepSynced(true);
         notificationRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {

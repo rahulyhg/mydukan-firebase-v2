@@ -100,10 +100,10 @@ public class ChatActivity extends AppCompatActivity implements AIListener{
             recyclerView.setLayoutManager(linearLayoutManager);
 
             ref = FirebaseDatabase.getInstance().getReference();
-            ref.keepSynced(true);
+            //ref.keepSynced(true);
             chat_ref = ref.child("chat");
             count_ref = ref.child("chatCount");
-            chat_ref.keepSynced(true);
+            //chat_ref.keepSynced(true);
             uid = mApp.getFirebaseAuth().getCurrentUser().getUid();
             Calendar c = Calendar.getInstance();
             SimpleDateFormat df = new SimpleDateFormat("dd-MMM-yyyy");
