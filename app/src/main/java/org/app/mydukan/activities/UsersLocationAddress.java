@@ -28,6 +28,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.crashlytics.android.Crashlytics;
 import com.crashlytics.android.answers.Answers;
 import com.crashlytics.android.answers.CustomEvent;
 import com.google.android.gms.common.ConnectionResult;
@@ -52,10 +53,13 @@ import org.app.mydukan.R;
 import org.app.mydukan.application.MyDukan;
 import org.app.mydukan.data.AppStateContants;
 import org.app.mydukan.data.ProfileContants;
+//import org.app.mydukan.emailSending.SendEmail;
 import org.app.mydukan.utils.AppContants;
 import org.app.mydukan.utils.Utils;
 
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -111,100 +115,101 @@ public class UsersLocationAddress extends BaseActivity implements View.OnClickLi
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_users_location_address);
 
-        Bundle bundle = getIntent().getExtras();
-        if (bundle != null && bundle.containsKey(AppContants.VIEW_TYPE)) {
-            viewType = bundle.getString(AppContants.VIEW_TYPE);
-        }
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            checkLocationPermission();
-        }
-        mApp = (MyDukan) getApplicationContext();
-        myLocation = new MyLocation();
-
-
-        fullAddress = (EditText) findViewById(R.id.fullAddress);
-        userArea = (EditText) findViewById(R.id.userArea);
-        userCity = (EditText) findViewById(R.id.userCity);
-        userPincode = (EditText) findViewById(R.id.userPincode);
-        userState = (EditText) findViewById(R.id.userState);
-
-        privacyPolicyView = (TextView) findViewById(R.id.privacyPolicyView);
-        termsandconditionView = (TextView) findViewById(R.id.termsandconditionView);
-
-        privacyPolicyView = (TextView) findViewById(R.id.privacyPolicyView);
-        privacyPolicyView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent privacypolicy = new Intent(UsersLocationAddress.this, PrivacyPolicyActivity.class);
-                startActivity(privacypolicy);
+        try {
+            Bundle bundle = getIntent().getExtras();
+            if (bundle != null && bundle.containsKey(AppContants.VIEW_TYPE)) {
+                viewType = bundle.getString(AppContants.VIEW_TYPE);
             }
-        });
 
-        termsandconditionView = (TextView) findViewById(R.id.termsandconditionView);
-        termsandconditionView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent termsandcondition = new Intent(UsersLocationAddress.this, PrivacyPolicyActivity.class);
-                startActivity(termsandcondition);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                checkLocationPermission();
             }
-        });
+            mApp = (MyDukan) getApplicationContext();
+            myLocation = new MyLocation();
 
-        signUpBtn = (Button) findViewById(R.id.signUpBtn);
-        BtnChangeLocation = (Button) findViewById(R.id.BtnChangeLocation);
 
-        terms_conditions = (CheckBox) findViewById(R.id.terms_conditions);
+            fullAddress = (EditText) findViewById(R.id.fullAddress);
+            userArea = (EditText) findViewById(R.id.userArea);
+            userCity = (EditText) findViewById(R.id.userCity);
+            userPincode = (EditText) findViewById(R.id.userPincode);
+            userState = (EditText) findViewById(R.id.userState);
 
-        userName = (TextView) findViewById(R.id.userName);
+            privacyPolicyView = (TextView) findViewById(R.id.privacyPolicyView);
+            termsandconditionView = (TextView) findViewById(R.id.termsandconditionView);
 
-        signUpBtn.setOnClickListener(this);
-        BtnChangeLocation.setOnClickListener(this);
+            privacyPolicyView = (TextView) findViewById(R.id.privacyPolicyView);
+            privacyPolicyView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent privacypolicy = new Intent(UsersLocationAddress.this, PrivacyPolicyActivity.class);
+                    startActivity(privacypolicy);
+                }
+            });
+
+            termsandconditionView = (TextView) findViewById(R.id.termsandconditionView);
+            termsandconditionView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent termsandcondition = new Intent(UsersLocationAddress.this, PrivacyPolicyActivity.class);
+                    startActivity(termsandcondition);
+                }
+            });
+
+            signUpBtn = (Button) findViewById(R.id.signUpBtn);
+            BtnChangeLocation = (Button) findViewById(R.id.BtnChangeLocation);
+
+            terms_conditions = (CheckBox) findViewById(R.id.terms_conditions);
+
+            userName = (TextView) findViewById(R.id.userName);
+
+            signUpBtn.setOnClickListener(this);
+            BtnChangeLocation.setOnClickListener(this);
 
 
 //        requestPermissions(INITIAL_PERMS, INITIAL_REQUEST);
-        //        this.setFinishOnTouchOutside(true);
-        // Todo Location Already on  ... start
-        LocationManager manager = (LocationManager) UsersLocationAddress.this.getSystemService(Context.LOCATION_SERVICE);
+            //        this.setFinishOnTouchOutside(true);
+            // Todo Location Already on  ... start
+            LocationManager manager = (LocationManager) UsersLocationAddress.this.getSystemService(Context.LOCATION_SERVICE);
 
-        if (manager != null && manager.isProviderEnabled(LocationManager.GPS_PROVIDER) && hasGPSDevice(UsersLocationAddress.this)) {
-            boolean networkPresent = myLocation.getLocation(UsersLocationAddress.this, UsersLocationAddress.this);
-            if (!networkPresent) {
-                // ActivityCompat.requestPermissions(INITIAL_PERMS, INITIAL_REQUEST);
-                checkLocationPermission();
-            }
+            if (manager != null && manager.isProviderEnabled(LocationManager.GPS_PROVIDER) && hasGPSDevice(UsersLocationAddress.this)) {
+                boolean networkPresent = myLocation.getLocation(UsersLocationAddress.this, UsersLocationAddress.this);
+                if (!networkPresent) {
+                    // ActivityCompat.requestPermissions(INITIAL_PERMS, INITIAL_REQUEST);
+                    checkLocationPermission();
+                }
 
-            if (!canAccessLocation() || !canAccessCoreLocation()) {
-                checkLocationPermission();
+                if (!canAccessLocation() || !canAccessCoreLocation()) {
+                    checkLocationPermission();
 
-            }
-            mClient = new GoogleApiClient
-                    .Builder(this)
-                    .addApi(Places.GEO_DATA_API)
-                    .addApi(Places.PLACE_DETECTION_API)
-                    .build();
+                }
+                mClient = new GoogleApiClient
+                        .Builder(this)
+                        .addApi(Places.GEO_DATA_API)
+                        .addApi(Places.PLACE_DETECTION_API)
+                        .build();
 //            Toast.makeText(UsersLocationAddress.this, "Gps already enabled", Toast.LENGTH_SHORT).show();
-        }
-        // Todo Location Already on  ... end
-
-        if (!hasGPSDevice(UsersLocationAddress.this)) {
-            Toast.makeText(UsersLocationAddress.this, "Gps not Supported", Toast.LENGTH_SHORT).show();
-        }
-
-        if (manager != null) {
-            if (!manager.isProviderEnabled(LocationManager.GPS_PROVIDER) && hasGPSDevice(UsersLocationAddress.this)) {
-                Toast.makeText(UsersLocationAddress.this, "Gps not enabled", Toast.LENGTH_SHORT).show();
-                dismissProgress();
-                enableLoc();
-            } else {
-                showProgress();
-//                Toast.makeText(UsersLocationAddress.this,"Gps already enabled",Toast.LENGTH_SHORT).show();
-                //requestPermissions(INITIAL_PERMS, INITIAL_REQUEST);
             }
-        }
+            // Todo Location Already on  ... end
 
-        SharedPreferences sharedPreferences2 = getSharedPreferences("firstname", Context.MODE_PRIVATE);
-        firstname = sharedPreferences2.getString("firstname", DEFAULT);
-        userName.setText(firstname);
+            if (!hasGPSDevice(UsersLocationAddress.this)) {
+                Toast.makeText(UsersLocationAddress.this, "Gps not Supported", Toast.LENGTH_SHORT).show();
+            }
+
+            if (manager != null) {
+                if (!manager.isProviderEnabled(LocationManager.GPS_PROVIDER) && hasGPSDevice(UsersLocationAddress.this)) {
+                    Toast.makeText(UsersLocationAddress.this, "Gps not enabled", Toast.LENGTH_SHORT).show();
+                    dismissProgress();
+                    enableLoc();
+                } else {
+                    showProgress();
+//                Toast.makeText(UsersLocationAddress.this,"Gps already enabled",Toast.LENGTH_SHORT).show();
+                    //requestPermissions(INITIAL_PERMS, INITIAL_REQUEST);
+                }
+            }
+
+            SharedPreferences sharedPreferences2 = getSharedPreferences("firstname", Context.MODE_PRIVATE);
+            firstname = sharedPreferences2.getString("firstname", DEFAULT);
+            userName.setText(firstname);
 
        /* if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
                 && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -253,28 +258,46 @@ public class UsersLocationAddress extends BaseActivity implements View.OnClickLi
 
             }
         });*/
+        }catch (Exception e){
+//            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - onCreate : ",e.toString());
+            Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() + " - onCreate : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+//            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - onCreate : ",ex.toString());
+            Crashlytics.log(0,this.getClass().getSimpleName() + " - onCreate : ",ex.toString());
+        }
     }
 
     public void checkLocationPermission() {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION)) {
-                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_LOCATION_CODE);
-            } else {
-                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_LOCATION_CODE);
-            }
+        try {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION)) {
+                    ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_LOCATION_CODE);
+                } else {
+                    ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_LOCATION_CODE);
+                }
 
+            }
+        }catch (Exception e){
+            e.printStackTrace();
         }
     }
 
     private boolean hasGPSDevice(Context context) {
-        final LocationManager mgr = (LocationManager) context
-                .getSystemService(Context.LOCATION_SERVICE);
-        if (mgr == null)
-            return false;
-        final List<String> providers = mgr.getAllProviders();
-        if (providers == null)
-            return false;
-        return providers.contains(LocationManager.GPS_PROVIDER);
+        try {
+            final LocationManager mgr = (LocationManager) context
+                    .getSystemService(Context.LOCATION_SERVICE);
+            if (mgr == null)
+                return false;
+            final List<String> providers = mgr.getAllProviders();
+            if (providers == null)
+                return false;
+            return providers.contains(LocationManager.GPS_PROVIDER);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return false;
     }
 
     private void enableLoc() {
@@ -359,59 +382,63 @@ public class UsersLocationAddress extends BaseActivity implements View.OnClickLi
     @Override
     public void onClick(View v) {
 
-        switch (v.getId()) {
-            case R.id.signUpBtn:
+        try{
+            switch (v.getId()) {
+                case R.id.signUpBtn:
 
-                // Call checkValidation method
-                checkValidation();
-                break;
+                    // Call checkValidation method
+                    checkValidation();
+                    break;
 
-            case R.id.BtnChangeLocation:
+                case R.id.BtnChangeLocation:
 
                 /*
                 Added Amit
                 Before opening Google maps must check GPS permission
                  */
-                if(ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED){
-                    //Toast.makeText(this, "Please allow MyDukan to access your location", Toast.LENGTH_SHORT).show();
-                    checkLocationPermission();
-                    return;
-                }
+                    if(ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED){
+                        //Toast.makeText(this, "Please allow MyDukan to access your location", Toast.LENGTH_SHORT).show();
+                        checkLocationPermission();
+                        return;
+                    }
 
-                boolean networkPresent = myLocation.getLocation(UsersLocationAddress.this, UsersLocationAddress.this);
-                if (!networkPresent) {
-                    Toast.makeText(this, "Please turn on the GPS and try again.", Toast.LENGTH_SHORT).show();
-                    showSettingsAlert();
-                } else if (!canAccessLocation() || !canAccessCoreLocation()) {
-                    // TODO: 27-10-2017 add progress bar
+                    boolean networkPresent = myLocation.getLocation(UsersLocationAddress.this, UsersLocationAddress.this);
+                    if (!networkPresent) {
+                        Toast.makeText(this, "Please turn on the GPS and try again.", Toast.LENGTH_SHORT).show();
+                        showSettingsAlert();
+                    } else if (!canAccessLocation() || !canAccessCoreLocation()) {
+                        // TODO: 27-10-2017 add progress bar
 //                    requestPermissions(INITIAL_PERMS, INITIAL_REQUEST);
 
-                    PlacePicker.IntentBuilder builder = new PlacePicker.IntentBuilder();
-                    try {
-                        startActivityForResult(builder.build(UsersLocationAddress.this), PLACE_PICKER_REQUEST);
-                        Answers.getInstance().logCustom(new CustomEvent("UserLocation_Page")
-                                .putCustomAttribute("Button_location_clicked", "true"));
-                    } catch (GooglePlayServicesRepairableException e) {
-                        e.printStackTrace();
-                    } catch (GooglePlayServicesNotAvailableException e) {
-                        e.printStackTrace();
+                        PlacePicker.IntentBuilder builder = new PlacePicker.IntentBuilder();
+                        try {
+                            startActivityForResult(builder.build(UsersLocationAddress.this), PLACE_PICKER_REQUEST);
+                            Answers.getInstance().logCustom(new CustomEvent("UserLocation_Page")
+                                    .putCustomAttribute("Button_location_clicked", "true"));
+                        } catch (GooglePlayServicesRepairableException e) {
+                            e.printStackTrace();
+                        } catch (GooglePlayServicesNotAvailableException e) {
+                            e.printStackTrace();
+                        }
+                    } else {
+                        PlacePicker.IntentBuilder builder = new PlacePicker.IntentBuilder();
+                        try {
+                            startActivityForResult(builder.build(UsersLocationAddress.this), PLACE_PICKER_REQUEST);
+                            Answers.getInstance().logCustom(new CustomEvent("UserLocation_Page")
+                                    .putCustomAttribute("Button_location_clicked", "true"));
+                        } catch (GooglePlayServicesRepairableException e) {
+                            e.printStackTrace();
+                        } catch (GooglePlayServicesNotAvailableException e) {
+                            e.printStackTrace();
+                        }
                     }
-                } else {
-                    PlacePicker.IntentBuilder builder = new PlacePicker.IntentBuilder();
-                    try {
-                        startActivityForResult(builder.build(UsersLocationAddress.this), PLACE_PICKER_REQUEST);
-                        Answers.getInstance().logCustom(new CustomEvent("UserLocation_Page")
-                                .putCustomAttribute("Button_location_clicked", "true"));
-                    } catch (GooglePlayServicesRepairableException e) {
-                        e.printStackTrace();
-                    } catch (GooglePlayServicesNotAvailableException e) {
-                        e.printStackTrace();
-                    }
-                }
 
                 /*write your code Here*/
 
-                break;
+                    break;
+            }
+        }catch (Exception e){
+            e.printStackTrace();
         }
 
     }
@@ -431,8 +458,8 @@ public class UsersLocationAddress extends BaseActivity implements View.OnClickLi
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == PLACE_PICKER_REQUEST) {
-
-            if (resultCode == RESULT_OK) {
+            try {
+                if (resultCode == RESULT_OK) {
                 /*if (addressInfo==null) {
                     Toast.makeText(this, "Wait your GPS is turning On.", Toast.LENGTH_SHORT).show();
                     return;
@@ -446,77 +473,78 @@ public class UsersLocationAddress extends BaseActivity implements View.OnClickLi
                 It will check if GPS Permission is granted or not if not then request to grant again
                 */
 
-                if(ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED){
-                    Toast.makeText(this, "Please allow MyDukan to access your location", Toast.LENGTH_SHORT).show();
-                    checkLocationPermission();
-                    return;
-                }
-                addressInfo.clear();
-                Place place = PlacePicker.getPlace(data, this);
-                double latitude = place.getLatLng().latitude;
-                double longitude = place.getLatLng().longitude;
-
-                Latitude = String.valueOf(latitude);
-                Longitude = String.valueOf(longitude);
-
-                Geocoder geocoder = new Geocoder(this, Locale.getDefault());
-                String result = null;
-                try {
-                    List<Address> addressList = geocoder.getFromLocation(
-                            latitude, longitude, 1);
-                    if (addressList.size() == 0) {
-                        Toast.makeText(this, "Please turn on the GPS and try again.", Toast.LENGTH_SHORT).show();
-                        showSettingsAlert();
+                    if (addressInfo==null && ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                        Toast.makeText(this, "Please allow MyDukan to access your location", Toast.LENGTH_SHORT).show();
+                        checkLocationPermission();
                         return;
                     }
+                    addressInfo.clear();
+                    addressInfo = new HashMap<>();
+                    Place place = PlacePicker.getPlace(data, this);
+                    double latitude = place.getLatLng().latitude;
+                    double longitude = place.getLatLng().longitude;
+
+                    Latitude = String.valueOf(latitude);
+                    Longitude = String.valueOf(longitude);
+
+                    Geocoder geocoder = new Geocoder(this, Locale.getDefault());
+                    String result = null;
+                    try {
+                        List<Address> addressList = geocoder.getFromLocation(
+                                latitude, longitude, 1);
+                        if (addressList.size() == 0) {
+                            Toast.makeText(this, "Please turn on the GPS and try again.", Toast.LENGTH_SHORT).show();
+                            showSettingsAlert();
+                            return;
+                        }
 
 //                    addressInfo.clear();
-                    Full_Address = addressList.get(0).getAddressLine(0);
-                    // If any additional address line present than only, check with max available address lines by getMaxAddressLineIndex()
-                    House_No = addressList.get(0).getFeatureName();
-                    Area_Name = addressList.get(0).getSubLocality();
-                    City_Name = addressList.get(0).getLocality();
-                    PostalCode = addressList.get(0).getPostalCode();
-                    State_Name = addressList.get(0).getAdminArea();
-                    Country_Name = addressList.get(0).getCountryName();
+                        Full_Address = addressList.get(0).getAddressLine(0);
+                        // If any additional address line present than only, check with max available address lines by getMaxAddressLineIndex()
+                        House_No = addressList.get(0).getFeatureName();
+                        Area_Name = addressList.get(0).getSubLocality();
+                        City_Name = addressList.get(0).getLocality();
+                        PostalCode = addressList.get(0).getPostalCode();
+                        State_Name = addressList.get(0).getAdminArea();
+                        Country_Name = addressList.get(0).getCountryName();
 
-                    fullAddress.setText(Full_Address);
-                    userArea.setText(Area_Name);
-                    userCity.setText(City_Name);
-                    userPincode.setText(PostalCode);
+                        fullAddress.setText(Full_Address);
+                        userArea.setText(Area_Name);
+                        userCity.setText(City_Name);
+                        userPincode.setText(PostalCode);
 //                    userState.setText(State_Name);
-                    if (State_Name != null && !State_Name.isEmpty()) {
-                        State_Name = State_Name.toLowerCase();
+                        if (State_Name != null && !State_Name.isEmpty()) {
+                            State_Name = State_Name.toLowerCase();
+                        }
+                        userState.setText(State_Name);
+
+                        ProfileContants contants = new ProfileContants();
+
+
+                        //AddressInfo Info
+                        addressInfo.put(contants.STREET, Full_Address);
+                        addressInfo.put(contants.CITY, City_Name);
+                        addressInfo.put(contants.STATE, State_Name);
+                        addressInfo.put(contants.COUNTRY, "india");
+                        addressInfo.put(contants.PIN_CODE, PostalCode);
+
+
+                        if (!(LatLng == null)) {
+                            addressInfo.put(contants.LOCATION_VERIFIED, false);
+                            addressInfo.put(contants.LAT_LNG, LatLng);
+                            addressInfo.put(contants.LATITUDE, Latitude);
+                            addressInfo.put(contants.LONGITUDE, Longitude);
+                        } else {
+                            addressInfo.put(contants.LOCATION_VERIFIED, false);
+                            addressInfo.put(contants.LAT_LNG, "");
+                            addressInfo.put(contants.LATITUDE, "");
+                            addressInfo.put(contants.LONGITUDE, "");
+                        }
+                        result = latitude + "\n" + longitude + "\n" + Full_Address + "\n" + House_No + "\n" + Area_Name + "\n" + City_Name + "\n" + PostalCode + "\n" + State_Name + "\n" + Country_Name;
+
+                    } catch (IOException e) {
+                        Log.e(TAG, "Unable connect to Geocoder", e);
                     }
-                    userState.setText(State_Name);
-
-                    ProfileContants contants = new ProfileContants();
-
-
-                    //AddressInfo Info
-                    addressInfo.put(contants.STREET, Full_Address);
-                    addressInfo.put(contants.CITY, City_Name);
-                    addressInfo.put(contants.STATE, State_Name);
-                    addressInfo.put(contants.COUNTRY, "india");
-                    addressInfo.put(contants.PIN_CODE, PostalCode);
-
-
-                    if (!(LatLng == null)) {
-                        addressInfo.put(contants.LOCATION_VERIFIED, false);
-                        addressInfo.put(contants.LAT_LNG, LatLng);
-                        addressInfo.put(contants.LATITUDE, Latitude);
-                        addressInfo.put(contants.LONGITUDE, Longitude);
-                    } else {
-                        addressInfo.put(contants.LOCATION_VERIFIED, false);
-                        addressInfo.put(contants.LAT_LNG, "");
-                        addressInfo.put(contants.LATITUDE, "");
-                        addressInfo.put(contants.LONGITUDE, "");
-                    }
-                    result = latitude + "\n" + longitude + "\n" + Full_Address + "\n" + House_No + "\n" + Area_Name + "\n" + City_Name + "\n" + PostalCode + "\n" + State_Name + "\n" + Country_Name;
-
-                } catch (IOException e) {
-                    Log.e(TAG, "Unable connect to Geocoder", e);
-                }
                /* Place place = PlacePicker.getPlace(data, this);
                 StringBuilder stBuilder = new StringBuilder();
                 String placename = String.format("%s", place.getName());
@@ -535,6 +563,15 @@ public class UsersLocationAddress extends BaseActivity implements View.OnClickLi
                 stBuilder.append("Address: ");
                 stBuilder.append(address);
                 placeDescription.setText(stBuilder.toString());*/
+                }
+            }catch (Exception e){
+//                new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - onActivityResult : ",e.toString());
+                Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() + " - onActivityResult : ",e.toString());
+            }catch (VirtualMachineError ex){
+                StringWriter errors = new StringWriter();
+                ex.printStackTrace(new PrintWriter(errors));
+//                new SendEmail().sendEmail(this.getClass().getSimpleName() + " - onActivityResult : ",ex.toString());
+                Crashlytics.log(0,this.getClass().getSimpleName() + " - onActivityResult : ",ex.toString());
             }
         }
     }
@@ -543,76 +580,80 @@ public class UsersLocationAddress extends BaseActivity implements View.OnClickLi
     // Check Validation Method
     private void checkValidation() {
 
-        // Get all edittext texts
-        String getfullAddress = fullAddress.getText().toString();
-        String getuserArea = userArea.getText().toString();
-        String getuserCity = userCity.getText().toString();
-        String getuserPincode = userPincode.getText().toString();
-        String getuserState = userState.getText().toString();
+        try {
+            // Get all edittext texts
+            String getfullAddress = fullAddress.getText().toString();
+            String getuserArea = userArea.getText().toString();
+            String getuserCity = userCity.getText().toString();
+            String getuserPincode = userPincode.getText().toString();
+            String getuserState = userState.getText().toString();
 
-        // Pattern match for email id
-        Pattern p = Pattern.compile(Utils.regEx);
-        Matcher m = p.matcher(getfullAddress);
+            // Pattern match for email id
+            Pattern p = Pattern.compile(Utils.regEx);
+            Matcher m = p.matcher(getfullAddress);
 
-        // Check if all strings are null or not
-        if (getfullAddress.equals("") || getfullAddress.length() == 0
+            // Check if all strings are null or not
+            if (getfullAddress.equals("") || getfullAddress.length() == 0
                 /*|| getuserArea.equals("") || getuserArea.length() == 0*/
-                || getuserCity.equals("") || getuserCity.length() == 0
-                || getuserPincode.equals("") || getuserPincode.length() == 0
-                || getuserState.equals("") || getuserState.length() == 0) {
+                    || getuserCity.equals("") || getuserCity.length() == 0
+                    || getuserPincode.equals("") || getuserPincode.length() == 0
+                    || getuserState.equals("") || getuserState.length() == 0) {
 
-            new CustomToast().Show_Toast(this, fullAddress, "Fields are Empty, Click Edit Location Button and choose your Location.");
-        }
-
-        // Make sure user should check Terms and Conditions checkbox
-        else if (!terms_conditions.isChecked()) {
-            new CustomToast().Show_Toast(this, terms_conditions,
-                    "Please select Terms and Conditions.");
-        }
-
-        // Else do signup or do your stuff
-
-        // Else do signup or do your stuff
-        else {
-            if (mViewType == AppContants.SIGN_UP) {
-                mApp.getPreference().setAppState(UsersLocationAddress.this, new AppStateContants().HOME_SCREEN);
+                new CustomToast().Show_Toast(this, fullAddress, "Fields are Empty, Click Edit Location Button and choose your Location.");
             }
 
-            String UserId = mApp.getFirebaseAuth().getCurrentUser().getUid();
+            // Make sure user should check Terms and Conditions checkbox
+            else if (!terms_conditions.isChecked()) {
+                new CustomToast().Show_Toast(this, terms_conditions,
+                        "Please select Terms and Conditions.");
+            }
 
-            DatabaseReference feedReference = FirebaseDatabase.getInstance().getReference("users/" + UserId + "/userinfo/addressinfo");
-            feedReference.setValue(addressInfo);
-            DatabaseReference flagVerify_location = FirebaseDatabase.getInstance().getReference("users/" + UserId + "/verified_location");
-            flagVerify_location.setValue("true");
-            Toast.makeText(this, "Done.", Toast.LENGTH_SHORT).show();
+            // Else do signup or do your stuff
+
+            // Else do signup or do your stuff
+            else {
+                if (mViewType == AppContants.SIGN_UP) {
+                    mApp.getPreference().setAppState(UsersLocationAddress.this, new AppStateContants().HOME_SCREEN);
+                }
+
+                String UserId = mApp.getFirebaseAuth().getCurrentUser().getUid();
+
+                DatabaseReference feedReference = FirebaseDatabase.getInstance().getReference("users/" + UserId + "/userinfo/addressinfo");
+                feedReference.setValue(addressInfo);
+                DatabaseReference flagVerify_location = FirebaseDatabase.getInstance().getReference("users/" + UserId + "/verified_location");
+                flagVerify_location.setValue("true");
+                Toast.makeText(this, "Done.", Toast.LENGTH_SHORT).show();
 //            Intent i = new Intent(UsersLocationAddress.this, SignupActivity.class);
-            if (viewType != null) {
-                if (viewType.equalsIgnoreCase("user_profile")) {
+                if (viewType != null) {
+                    if (viewType.equalsIgnoreCase("user_profile")) {
                                        /* Intent i = new Intent(getContext(), UserProfile.class);
                                         i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                                         startActivity(i);*/
-                    onBackPressed();
-                }
-            } else {
-                Intent i = new Intent(UsersLocationAddress.this, MainActivity.class);
-                i.putExtra(AppContants.VIEW_TYPE, AppContants.SIGN_UP);
+                        onBackPressed();
+                    }
+                } else {
+                    Intent i = new Intent(UsersLocationAddress.this, MainActivity.class);
+                    i.putExtra(AppContants.VIEW_TYPE, AppContants.SIGN_UP);
 //            i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                startActivity(i);
+                    startActivity(i);
 
-                Answers.getInstance().logCustom(new CustomEvent("UserLocation_Page")
-                        .putCustomAttribute("User_location_verified", UserId));
+                    Answers.getInstance().logCustom(new CustomEvent("UserLocation_Page")
+                            .putCustomAttribute("User_location_verified", UserId));
+                }
+
             }
-
+        }catch (Exception e){
+            e.printStackTrace();
         }
 
     }
 
     @Override
     public void onBackPressed() {
-
-           Intent i = new Intent(getApplicationContext(), UserProfile.class);
-                                        i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                                        startActivity(i);
+        try{
+            Intent i = new Intent(getApplicationContext(), UserProfile.class);
+            i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(i);
 
      /*   // Find the tag of signup and forgot password fragment
         Fragment DemoPage_Fragment = fragmentManager.findFragmentByTag(Utils.DemoPage_Fragment);
@@ -627,47 +668,51 @@ public class UsersLocationAddress extends BaseActivity implements View.OnClickLi
         else if (DemoPage_Fragment != null)
             replaceMobileVerificationFragment();
         else*/
-        super.onBackPressed();
+            super.onBackPressed();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
 
-        switch (requestCode) {
-            case INITIAL_REQUEST:
-                if (canAccessLocation() && canAccessCoreLocation()) {
-                    boolean networkPresent = myLocation.getLocation(UsersLocationAddress.this, this);
-                    if (!networkPresent) {
-                        showSettingsAlert();
+        try{
+            switch (requestCode) {
+                case INITIAL_REQUEST:
+                    if (canAccessLocation() && canAccessCoreLocation()) {
+                        boolean networkPresent = myLocation.getLocation(UsersLocationAddress.this, this);
+                        if (!networkPresent) {
+                            showSettingsAlert();
+                        }
                     }
-                }
 
-                break;
-            case REQUEST_LOCATION_CODE:
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    //permissin granted
-                    if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-                        if (mClient != null) {
-                            mClient = new GoogleApiClient
-                                    .Builder(this)
-                                    .addApi(Places.GEO_DATA_API)
-                                    .addApi(Places.PLACE_DETECTION_API)
-                                    .build();
-                            if (canAccessLocation() && canAccessCoreLocation()) {
-                                boolean networkPresent = myLocation.getLocation(UsersLocationAddress.this, this);
-                                if (!networkPresent) {
-                                    showSettingsAlert();
+                    break;
+                case REQUEST_LOCATION_CODE:
+                    if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                        //permissin granted
+                        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                            if (mClient != null) {
+                                mClient = new GoogleApiClient
+                                        .Builder(this)
+                                        .addApi(Places.GEO_DATA_API)
+                                        .addApi(Places.PLACE_DETECTION_API)
+                                        .build();
+                                if (canAccessLocation() && canAccessCoreLocation()) {
+                                    boolean networkPresent = myLocation.getLocation(UsersLocationAddress.this, this);
+                                    if (!networkPresent) {
+                                        showSettingsAlert();
+                                    }
                                 }
                             }
-                        }
 
-                    }
-                } else { //Permission is denaided
+                        }
+                    } else { //Permission is denaided
                     /*
                     Code added by amit
                     Ask user to must allow for location permission
                      */
-                    dismissProgress();
+                        dismissProgress();
                     /*if(permissions != null && permissions.length > 0 && permissions[0].equals("android.permission.ACCESS_FINE_LOCATION") || permissions[0].equals("android.permission.ACCESS_COARSE_LOCATION")) {
                         new android.support.v7.app.AlertDialog.Builder(this)
                                 .setTitle("Info")
@@ -684,11 +729,14 @@ public class UsersLocationAddress extends BaseActivity implements View.OnClickLi
                     }else {
                         Toast.makeText(this, "Permission Denied !", Toast.LENGTH_SHORT).show();
                     }*/
-                    Toast.makeText(this, "Permission Denied !", Toast.LENGTH_SHORT).show();
-                }
-                return;
+                        Toast.makeText(this, "Permission Denied !", Toast.LENGTH_SHORT).show();
+                    }
+                    return;
 
 
+            }
+        }catch (Exception e){
+            e.printStackTrace();
         }
     }
 
@@ -707,114 +755,125 @@ public class UsersLocationAddress extends BaseActivity implements View.OnClickLi
 
 
     public void showSettingsAlert() {
-        AlertDialog.Builder alertDialog = new AlertDialog.Builder(
-                UsersLocationAddress.this);
-        alertDialog.setTitle("SETTINGS");
-        alertDialog.setMessage("Please Enable your GPS, your GPS is NOT Enabled");
-        alertDialog.setPositiveButton("OK",
-                new DialogInterface.OnClickListener() {
-                    @RequiresApi(api = Build.VERSION_CODES.M)
-                    public void onClick(DialogInterface dialog, int which) {
-                        Intent intent = new Intent(
-                                Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-                        Intent i = new Intent(UsersLocationAddress.this, UsersLocationAddress.class);
-                        i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                        startActivity(i);
-                        dialog.dismiss();
+        try {
+            AlertDialog.Builder alertDialog = new AlertDialog.Builder(
+                    UsersLocationAddress.this);
+            alertDialog.setTitle("SETTINGS");
+            alertDialog.setMessage("Please Enable your GPS, your GPS is NOT Enabled");
+            alertDialog.setPositiveButton("OK",
+                    new DialogInterface.OnClickListener() {
+                        @RequiresApi(api = Build.VERSION_CODES.M)
+                        public void onClick(DialogInterface dialog, int which) {
+                            Intent intent = new Intent(
+                                    Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                            Intent i = new Intent(UsersLocationAddress.this, UsersLocationAddress.class);
+                            i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                            startActivity(i);
+                            dialog.dismiss();
 
 //                        requestPermissions(INITIAL_PERMS, INITIAL_REQUEST);
 //                        showProgress();
-                    }
-                });
-        alertDialog.setCancelable(true);
-        alertDialog.show();
+                        }
+                    });
+            alertDialog.setCancelable(true);
+            alertDialog.show();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     @Override
     public void gotLocation(Location location) {
 
-        if (location != null) {
-            final double latitude = location.getLatitude();
-            final double longitude = location.getLongitude();
-            final String result = "Latitude: " + location.getLatitude() +
-                    " Longitude: " + location.getLongitude();
+        try {
+            if (location != null) {
+                final double latitude = location.getLatitude();
+                final double longitude = location.getLongitude();
+                final String result = "Latitude: " + location.getLatitude() +
+                        " Longitude: " + location.getLongitude();
 
-            UsersLocationAddress.this.runOnUiThread(new Runnable() {
-                public void run() {
+                UsersLocationAddress.this.runOnUiThread(new Runnable() {
+                    public void run() {
 //                tvAddress.setText(result);
-                    LocationAddress locationAddress = new LocationAddress();
-                    LocationAddress.getAddressFromLocation(latitude, longitude,
-                            UsersLocationAddress.this, new GeocoderHandler());
-                }
-            });
-        } else {
-            runOnUiThread(new Runnable()
-            {
-                public void run()
-                {
-                    Toast.makeText(UsersLocationAddress.this, "Please turn on the GPS and Try again.", Toast.LENGTH_SHORT).show();
-                }
-            });
+                        LocationAddress locationAddress = new LocationAddress();
+                        LocationAddress.getAddressFromLocation(latitude, longitude,
+                                UsersLocationAddress.this, new GeocoderHandler());
+                    }
+                });
+            } else {
+                runOnUiThread(new Runnable() {
+                    public void run() {
+                        Toast.makeText(UsersLocationAddress.this, "Please turn on the GPS and Try again.", Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+        }catch (Exception e){
+            e.printStackTrace();
         }
     }
 
     private class GeocoderHandler extends Handler {
         @Override
         public void handleMessage(Message message) {
-            dismissProgress();
-            // TODO: 27-10-2017 add progress bar stop
-            switch (message.what) {
-                case 1:
-                    Bundle bundle = message.getData();
-                    Latitude = bundle.getString("latitude");
-                    Longitude = bundle.getString("longitude");
-                    Full_Address = bundle.getString("fulladdress");
-                    Area_Name = bundle.getString("area");
-                    City_Name = bundle.getString("city");
-                    PostalCode = bundle.getString("pincode");
-                    State_Name = bundle.getString("state");
 
-                    if (State_Name != null && !State_Name.isEmpty()) {
-                        State_Name = State_Name.toLowerCase();
-                    }
+            try {
+                dismissProgress();
+                // TODO: 27-10-2017 add progress bar stop
+                switch (message.what) {
+                    case 1:
+                        Bundle bundle = message.getData();
+                        Latitude = bundle.getString("latitude");
+                        Longitude = bundle.getString("longitude");
+                        Full_Address = bundle.getString("fulladdress");
+                        Area_Name = bundle.getString("area");
+                        City_Name = bundle.getString("city");
+                        PostalCode = bundle.getString("pincode");
+                        State_Name = bundle.getString("state");
 
-                    LatLng = "lat/lng:(" + Latitude + "," + Longitude + ")";
+                        if (State_Name != null && !State_Name.isEmpty()) {
+                            State_Name = State_Name.toLowerCase();
+                        }
 
-
-                    ProfileContants contants = new ProfileContants();
-
-                    //AddressInfo Info
-                    addressInfo = new HashMap<>();
-                    addressInfo.put(contants.STREET, Full_Address);
-                    addressInfo.put(contants.CITY, City_Name);
-                    addressInfo.put(contants.STATE, State_Name);
-                    addressInfo.put(contants.COUNTRY, "india");
-                    addressInfo.put(contants.PIN_CODE, PostalCode);
+                        LatLng = "lat/lng:(" + Latitude + "," + Longitude + ")";
 
 
-                    if (!(LatLng == null)) {
-                        addressInfo.put(contants.LOCATION_VERIFIED, false);
-                        addressInfo.put(contants.LAT_LNG, LatLng);
-                        addressInfo.put(contants.LATITUDE, Latitude);
-                        addressInfo.put(contants.LONGITUDE, Longitude);
-                    } else {
-                        addressInfo.put(contants.LOCATION_VERIFIED, false);
-                        addressInfo.put(contants.LAT_LNG, "");
-                        addressInfo.put(contants.LATITUDE, "");
-                        addressInfo.put(contants.LONGITUDE, "");
-                    }
-                    break;
-                default:
-                    fullAddress = null;
+                        ProfileContants contants = new ProfileContants();
+
+                        //AddressInfo Info
+                        addressInfo = new HashMap<>();
+                        addressInfo.put(contants.STREET, Full_Address);
+                        addressInfo.put(contants.CITY, City_Name);
+                        addressInfo.put(contants.STATE, State_Name);
+                        addressInfo.put(contants.COUNTRY, "india");
+                        addressInfo.put(contants.PIN_CODE, PostalCode);
+
+
+                        if (!(LatLng == null)) {
+                            addressInfo.put(contants.LOCATION_VERIFIED, false);
+                            addressInfo.put(contants.LAT_LNG, LatLng);
+                            addressInfo.put(contants.LATITUDE, Latitude);
+                            addressInfo.put(contants.LONGITUDE, Longitude);
+                        } else {
+                            addressInfo.put(contants.LOCATION_VERIFIED, false);
+                            addressInfo.put(contants.LAT_LNG, "");
+                            addressInfo.put(contants.LATITUDE, "");
+                            addressInfo.put(contants.LONGITUDE, "");
+                        }
+                        break;
+                    default:
+                        fullAddress = null;
+                }
+                fullAddress.setText(Full_Address);
+                userArea.setText(Area_Name);
+                userCity.setText(City_Name);
+                userPincode.setText(PostalCode);
+                if (State_Name != null && !State_Name.isEmpty()) {
+                    State_Name = State_Name.toLowerCase();
+                }
+                userState.setText(State_Name);
+            }catch (Exception e){
+                e.printStackTrace();
             }
-            fullAddress.setText(Full_Address);
-            userArea.setText(Area_Name);
-            userCity.setText(City_Name);
-            userPincode.setText(PostalCode);
-            if (State_Name != null && !State_Name.isEmpty()) {
-                State_Name = State_Name.toLowerCase();
-            }
-            userState.setText(State_Name);
         }
     }
 }
