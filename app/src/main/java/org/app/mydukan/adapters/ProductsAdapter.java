@@ -220,7 +220,7 @@ public class ProductsAdapter extends RecyclerView.Adapter<ProductsAdapter.ViewHo
 
        if (currentProduct.getmPlatforms()!=null && currentProduct.getmPlatforms().size()>0){
             holder.mpricePlatform.setVisibility(View.VISIBLE);
-            String comparePrice="ComparePrices:-";
+            String comparePrice="Discover Prices:- ";
             Set<String> platformName=currentProduct.getmPlatforms().keySet();
             for (String mplatform:currentProduct.getmPlatforms().keySet()) {
                // currentProduct.getmPlatforms().get(mplatform).getPrice()
