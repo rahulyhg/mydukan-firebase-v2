@@ -12,6 +12,7 @@ import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.view.GravityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -99,10 +100,10 @@ public class ChatActivity extends AppCompatActivity implements AIListener{
             recyclerView.setLayoutManager(linearLayoutManager);
 
             ref = FirebaseDatabase.getInstance().getReference();
-            ref.keepSynced(true);
+//            ref.keepSynced(true);
             chat_ref = ref.child("chat");
             count_ref = ref.child("chatCount");
-            chat_ref.keepSynced(true);
+//            chat_ref.keepSynced(true);
             uid = mApp.getFirebaseAuth().getCurrentUser().getUid();
             Calendar c = Calendar.getInstance();
             SimpleDateFormat df = new SimpleDateFormat("dd-MMM-yyyy");
@@ -325,6 +326,12 @@ public class ChatActivity extends AppCompatActivity implements AIListener{
         chat_ref.child(uid).push().setValue(chatMessage);
 
 
+    }
+
+    @Override
+    public void onBackPressed() {
+            finish();
+            super.onBackPressed();
     }
 
     @Override

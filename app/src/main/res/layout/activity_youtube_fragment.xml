@@ -17,10 +17,13 @@
         android:id="@+id/video_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
+        android:layout_below="@id/fragment_youtube"
+        android:textColor="@color/black"
+        android:fontFamily="serif"
+        android:layout_marginTop="8dp"
         android:gravity="center"
         android:padding="8dp"
         android:text="@string/youtube_activity_fragment_placeholder"
-        android:textSize="18sp" />
+        android:textSize="@dimen/largetextSize" />
 
 </RelativeLayout>

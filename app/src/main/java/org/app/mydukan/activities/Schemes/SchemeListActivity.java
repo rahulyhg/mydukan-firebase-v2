@@ -226,13 +226,22 @@ public class SchemeListActivity extends BaseActivity implements TabLayout.OnTabS
         ApiManager.getInstance(this).getSchemeRecordList(new ApiResult() {
             @Override
             public void onSuccess(Object data) {
-                MySelectedSchemesHelper.getInstance().setRecordList((ArrayList<SchemeRecord>) data);
-                MySelectedSchemesHelper.getInstance().updateMySelectedList((ArrayList<SchemeRecord>) data);
-                // Notify Data set
-                if(adapter != null && adapter.getCount() >0){
-                    ((SchemesPagerFragment) mViewPager.getAdapter()).notifyDataSetChanged();
+                try{
+                    if (data!=null) {
+                        MySelectedSchemesHelper.getInstance().setRecordList((ArrayList<SchemeRecord>) data);
+                        MySelectedSchemesHelper.getInstance().updateMySelectedList((ArrayList<SchemeRecord>) data);
+                        // Notify Data set
+                        if (adapter != null && adapter.getCount() > 0) {
+                            ((SchemesPagerFragment) mViewPager.getAdapter()).notifyDataSetChanged();
+                        }
+                    }
+                    dismissProgress();
+                }catch (Exception e){
+                    e.printStackTrace();
+                    dismissProgress();
+                    mNoDataView.setVisibility(View.VISIBLE);
+                    mViewPager.setVisibility(View.GONE);
                 }
-                dismissProgress();
             }
 
             @Override

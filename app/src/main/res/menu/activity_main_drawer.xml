@@ -35,11 +35,11 @@
             android:title="MyNetwork"
             tools:ignore="HardcodedText" />
 
-<!--        <item
+        <item
             android:id="@+id/nav_myBroadCast"
             android:icon="@drawable/ic_action_broadcast"
-            android:title="MyDukan Broadcast"
-            tools:ignore="HardcodedText"/>-->
+            android:title="MyDukan Live"
+            tools:ignore="HardcodedText"/>
 
         <item
             android:id="@+id/nav_help"

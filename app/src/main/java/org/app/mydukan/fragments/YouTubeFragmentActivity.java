@@ -5,6 +5,7 @@ import android.support.v7.app.ActionBarActivity;
 import android.widget.TextView;
 
 import org.app.mydukan.R;
+import org.app.mydukan.application.MyDukan;
 import org.app.mydukan.data.Videos;
 
 
@@ -17,6 +18,7 @@ import org.app.mydukan.data.Videos;
  */
 public class YouTubeFragmentActivity extends ActionBarActivity {
 
+    private MyDukan mApp;
     public static final String KEY_VIDEO_ID = "KEY_VIDEO_ID";
     public static final String KEY_VIDEO = "KEY_VIDEO";
     Videos mVideo=new Videos();
@@ -24,7 +26,7 @@ public class YouTubeFragmentActivity extends ActionBarActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        mApp = (MyDukan) getApplicationContext();
         setContentView(R.layout.activity_youtube_fragment);
 
         final Bundle bundle = getIntent().getExtras();
@@ -37,7 +39,7 @@ public class YouTubeFragmentActivity extends ActionBarActivity {
         }
         if (bundle != null && bundle.containsKey(KEY_VIDEO)) {
               mVideo = (Videos) bundle.get(KEY_VIDEO);
-            videoTitle.setText(mVideo.getVideoINFO());
+            videoTitle.setText(mApp.getUtils().toCamelCase(mVideo.getVideoINFO()));
 
         }
     }

@@ -44,7 +44,7 @@ public class RecordPriceDropActivity extends BaseActivity {
         heading = (TextView) findViewById(R.id.heading);
         mNoDataView = (TextView) findViewById(R.id.nodata_view);
 
-        heading.setText("My Price Drop");
+        heading.setText("Price Drop Records");
 
         back.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -111,6 +111,7 @@ public class RecordPriceDropActivity extends BaseActivity {
 
                 if(mRecordList != null && mRecordList.isEmpty()){
                     mNoDataView.setVisibility(View.VISIBLE);
+                    mNoDataView.setText("Please Add From My Price Drops");
                     myPriceDropList.setVisibility(View.GONE);
                 } else {
                     mNoDataView.setVisibility(View.GONE);

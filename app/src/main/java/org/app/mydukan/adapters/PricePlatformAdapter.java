@@ -52,8 +52,9 @@ public class PricePlatformAdapter extends BaseAdapter {
     private MyDukan mApp;
     String mUrl="";
     HashMap<String, HashMap<String, String>> mItem;
+    private PricePlatformAdapterListener mListener;
 
-    public PricePlatformAdapter(Context context, HashMap<String, HashMap<String, String>> map) {
+    public PricePlatformAdapter(Context context, HashMap<String, HashMap<String, String>> map,PricePlatformAdapterListener listener) {
         this. mContext = context;
         inflater = LayoutInflater.from(mContext);
         mData = new ArrayList();
@@ -62,7 +63,7 @@ public class PricePlatformAdapter extends BaseAdapter {
 
         mData.addAll(map.keySet());
         mItem=map;
-
+        mListener=listener;
 
         }
 
@@ -113,12 +114,12 @@ public class PricePlatformAdapter extends BaseAdapter {
         }
         if(item!=null) {
 
-            holder.platformName.setText(mApp.getUtils().toCamelCase(item));
+            holder.platformName.setText(mApp.getUtils().toCamelCase(item).replace("Lockthedeal","LockTheDeal"));
             if (mItem.size() > 0) {
                 String mprice = mItem.get(item).get("price");
                 String mInfo = mItem.get(item).get("info");
                  mUrl = mItem.get(item).get("url");
-
+//
                 if (mprice != null) {
 
                     holder.platformPrice.setText("₹ " + mItem.get(item).get("price"));
@@ -247,21 +248,47 @@ public class PricePlatformAdapter extends BaseAdapter {
 
             }*/
         }
+/*
 
          holder.platformToStores.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(mContext, WebViewActivity.class);
+
+                mListener.OnClick(position, getBrandName(position));
+                Intent intent = new Intent(mContext, Webview2Activity.class);
                 intent.putExtra(AppContants.VIEW_PLATFORM,mUrl );
                 mContext.startActivity(intent);
-              //  Toast.makeText(mContext, "You Clicked : " + ("₹ "+mItem.get(item).get("price")), Toast.LENGTH_SHORT).show();
+              // Toast.makeText(mContext, "You Clicked : " + ("₹ "+mItem.get(item).get("price")), Toast.LENGTH_SHORT).show();
             }
         });
+*/
+
+
+        holder.platformToStores.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                mListener.OnClick(position, getBrandName(position));
+            }
+        });
+
            /* // TODO replace findViewById by ViewHolder
             ((TextView) result.findViewById(android.R.id.text1)).setText(mApp.getUtils().toCamelCase(item.getKey())+": ");
             ((TextView) result.findViewById(android.R.id.text2)).setText(item.getValue());*/
 
         return view;
     }
+    private String getBrandName(int position){
+        String xyz = (String) mData.get(position);
+        mUrl = mItem.get(xyz).get("url");
 
-}
+        return mUrl;
+    }
+
+           /* // TODO replace findViewById by ViewHolder
+            ((TextView) result.findViewById(android.R.id.text1)).setText(mApp.getUtils().toCamelCase(item.getKey())+": ");
+            ((TextView) result.findViewById(android.R.id.text2)).setText(item.getValue());*/
+
+
+    }
+

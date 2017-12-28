@@ -270,8 +270,17 @@ public class SchemeDetailsActivity extends BaseActivity {
         mEndDateView.setText(String.valueOf(mApp.getUtils().dateFormatter(mScheme.getEnddate(), "dd-MM-yy")));
         setupDescriptionView();
 
-        //Supplier details
-        mSupplierNameView.setText(mSupplierName.toUpperCase());
+        if(mSupplierName == null)
+        {
+            Toast.makeText(SchemeDetailsActivity.this, "Supplier Name not Available. ", Toast.LENGTH_LONG).show();
+
+        }
+        else
+        {
+            //Supplier details
+            mSupplierNameView.setText(mSupplierName.toUpperCase());
+        }
+
 
         getSchemeRecordInfo();
     }

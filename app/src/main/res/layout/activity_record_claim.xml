@@ -41,19 +41,27 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:padding="15dp">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Total: "
-            android:textSize="18sp"
+            android:text="Total Claims"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            android:visibility="gone"
+            android:layout_gravity="center"
             android:textColor="@color/black"/>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text=""
+            android:text="No Claims"
+            android:textSize="30sp"
+            android:layout_gravity="center"
+            android:fontFamily="serif"
+            android:layout_marginTop="10dp"
             android:textColor="@color/black"
             android:textStyle="bold"
             android:id="@+id/total"/>

@@ -13,8 +13,10 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.app.mydukan.R;
+import org.app.mydukan.activities.CustomToast;
 import org.app.mydukan.application.MyDukan;
 import org.app.mydukan.data.Product;
 
@@ -33,21 +35,21 @@ public class ProductsAdapter extends RecyclerView.Adapter<ProductsAdapter.ViewHo
     private ProductAdapterListener mListener;
     private Boolean isCartEnabled;
     private String mSupplierID="";
+    private int page = 0;
 
-    public ProductsAdapter(Context context, ProductAdapterListener productListener,String supplierID) {
+    public ProductsAdapter(Context context, ProductAdapterListener productListener,String supplierID, int page) {
         mContext = context;
         mProductData = new ArrayList<Product>();
         mApp = (MyDukan) mContext.getApplicationContext();
         mListener = productListener;
         mSupplierID=supplierID;
-
+        this.page = page;
     }
     public ProductsAdapter(Context context, ProductAdapterListener productListener) {
         mContext = context;
         mProductData = new ArrayList<Product>();
         mApp = (MyDukan) mContext.getApplicationContext();
         mListener = productListener;
-
     }
     private ArrayList<Product> getPriceDropProducts(){
         ArrayList<Product> result = new ArrayList<Product>();
@@ -85,7 +87,7 @@ public class ProductsAdapter extends RecyclerView.Adapter<ProductsAdapter.ViewHo
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, final int position) {
+    public void onBindViewHolder(final ViewHolder holder, final int position) {
         //clear the holder.
         holder.mProductName.setText("");
         holder.mProductPrice.setText("");
@@ -114,9 +116,17 @@ public class ProductsAdapter extends RecyclerView.Adapter<ProductsAdapter.ViewHo
             }
         });
 
+        if(page == 1){
+            holder.mClaimBtn.setText("Add");
+        }
+
         holder.mClaimBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
+                if(page == 1){
+                    Toast.makeText(mContext, "Product is Added into your My Price Drops page.", Toast.LENGTH_SHORT).show();
+                }
                 mListener.OnProductClaimClick(position);
             }
         });
@@ -210,7 +220,7 @@ public class ProductsAdapter extends RecyclerView.Adapter<ProductsAdapter.ViewHo
 
        if (currentProduct.getmPlatforms()!=null && currentProduct.getmPlatforms().size()>0){
             holder.mpricePlatform.setVisibility(View.VISIBLE);
-            String comparePrice="ComparePrices:-";
+            String comparePrice="Discover Prices:- ";
             Set<String> platformName=currentProduct.getmPlatforms().keySet();
             for (String mplatform:currentProduct.getmPlatforms().keySet()) {
                // currentProduct.getmPlatforms().get(mplatform).getPrice()
@@ -337,12 +347,11 @@ public class ProductsAdapter extends RecyclerView.Adapter<ProductsAdapter.ViewHo
         private LinearLayout mCartoptionLayout;//optionLayout
         private ImageButton mInfobtn;
         private Button mClaimBtn;
+        private TextView add;
 
         public ViewHolder(final View itemView) {
             super(itemView);
             mProductLayout = (CardView) itemView.findViewById(R.id.product_table);
-
-            mProductLayout.setBackgroundResource(R.drawable.btn_shadow);
 
             mProductName = (TextView) itemView.findViewById(R.id.modelName);
             mStatusPrice = (TextView) itemView.findViewById(R.id.discountPrice);
@@ -360,6 +369,7 @@ public class ProductsAdapter extends RecyclerView.Adapter<ProductsAdapter.ViewHo
             mProductMOPPrice = (TextView) itemView.findViewById(R.id.mop_price);
             mProductMRPPrice = (TextView) itemView.findViewById(R.id.mrp_price);
             mpricePlatform = (TextView) itemView.findViewById(R.id.pricePlatform);
+            add = (TextView) itemView.findViewById(R.id.addProduct);
 
         }
     }

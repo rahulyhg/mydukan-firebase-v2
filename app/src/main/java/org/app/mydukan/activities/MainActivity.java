@@ -73,6 +73,8 @@ import org.app.mydukan.data.ImageModel;
 import org.app.mydukan.data.Supplier;
 import org.app.mydukan.data.SupplierBindData;
 import org.app.mydukan.data.User;
+import org.app.mydukan.fragments.YouTubeActivity;
+import org.app.mydukan.fragments.YouTubeFragmentActivity;
 import org.app.mydukan.fragments.myschemes.fragmetns.MySelectedSchemesHelper;
 import org.app.mydukan.server.ApiManager;
 import org.app.mydukan.server.ApiResult;
@@ -150,6 +152,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     private DrawerLayout drawer;
     private FloatingActionButton addsupplierbtn;
     private FloatingActionButton mWhatsAppBtn;
+    private FloatingActionButton mydukan_live;
     //Ui reference
     private RecyclerView mSupplierRecyclerView;
     private TextView mSupplierEmptyView;
@@ -206,6 +209,8 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 }
             }
         }
+
+        mydukan_live = (FloatingActionButton) findViewById(R.id.mydukan_live);
         addsupplierbtn = (FloatingActionButton) findViewById(R.id.add_supplier_button);
         subscribeAleartLayout = (LinearLayout) findViewById(R.id.layout_subscribe);
         btn_Subscribe = (Button) findViewById(R.id.btn_subscription);
@@ -261,6 +266,16 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             mFlipping = 1;
         }
        */
+
+
+        mydukan_live.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent youtube = new Intent(MainActivity.this,BroadcastActivity.class);
+                startActivity(youtube);
+            }
+        });
+
         relative_flipper_layout = (LinearLayout) findViewById(R.id.banner);
         relative_flipper_layout.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -277,6 +292,8 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
             }
         });
+
+
 
         whatsapp_layout = (LinearLayout) findViewById(R.id.whatsapp_layout);
         whatsapp_layout.setOnClickListener(new View.OnClickListener() {
@@ -1062,10 +1079,12 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 profile.putExtra(AppContants.VIEW_TYPE, AppContants.MY_PROFILE);
 //                i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 startActivity(profile);
-
-
                 break;
 
+            case R.id.nav_myBroadCast:
+                Intent youtube = new Intent(MainActivity.this,BroadcastActivity.class);
+                startActivity(youtube);
+                break;
 
             case R.id.nav_help:
                 Intent intent = new Intent(MainActivity.this, HelpActivity.class);
