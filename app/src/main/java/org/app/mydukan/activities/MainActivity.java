@@ -152,6 +152,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     private DrawerLayout drawer;
     private FloatingActionButton addsupplierbtn;
     private FloatingActionButton mWhatsAppBtn;
+    private FloatingActionButton mydukan_live;
     //Ui reference
     private RecyclerView mSupplierRecyclerView;
     private TextView mSupplierEmptyView;
@@ -208,6 +209,8 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 }
             }
         }
+
+        mydukan_live = (FloatingActionButton) findViewById(R.id.mydukan_live);
         addsupplierbtn = (FloatingActionButton) findViewById(R.id.add_supplier_button);
         subscribeAleartLayout = (LinearLayout) findViewById(R.id.layout_subscribe);
         btn_Subscribe = (Button) findViewById(R.id.btn_subscription);
@@ -263,6 +266,16 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             mFlipping = 1;
         }
        */
+
+
+        mydukan_live.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent youtube = new Intent(MainActivity.this,BroadcastActivity.class);
+                startActivity(youtube);
+            }
+        });
+
         relative_flipper_layout = (LinearLayout) findViewById(R.id.banner);
         relative_flipper_layout.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -279,6 +292,8 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
             }
         });
+
+
 
         whatsapp_layout = (LinearLayout) findViewById(R.id.whatsapp_layout);
         whatsapp_layout.setOnClickListener(new View.OnClickListener() {

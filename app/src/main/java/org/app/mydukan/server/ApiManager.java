@@ -1517,8 +1517,7 @@ public class ApiManager {
                             if (productSnapshot.hasChild("productinfo")) {
                                 product.setName(productSnapshot.child("productinfo").child("name").getValue(String.class));
                                 if (dataSnapshot.child("productinfo").hasChild("isnew")) {
-                                    product.setIsnew(dataSnapshot.child("productinfo")
-                                            .child("isnew").getValue(Boolean.class));
+                                    product.setIsnew(dataSnapshot.child("productinfo").child("isnew").getValue(Boolean.class));
                                 }
                             }
 
@@ -2177,7 +2176,7 @@ public class ApiManager {
     public void getCategoryList(final String supplierId, final ApiResult result) {
         final ArrayList<Category> mCategoryList = new ArrayList<>();
         DatabaseReference categoryRef = FirebaseDatabase.getInstance().getReference("category/" + supplierId);
-        categoryRef.keepSynced(true);
+//        categoryRef.keepSynced(true);
 
         categoryRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -2204,7 +2203,7 @@ public class ApiManager {
         final ArrayList<Videos> videosList = new ArrayList<>();
 
         DatabaseReference categoryRef = FirebaseDatabase.getInstance().getReference("MyDukan_BroadCast/videos");
-        categoryRef.keepSynced(true);
+//        categoryRef.keepSynced(true);
         categoryRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {

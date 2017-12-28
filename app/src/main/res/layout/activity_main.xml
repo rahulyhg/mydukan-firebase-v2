@@ -32,6 +32,20 @@
             tools:ignore="RtlHardcoded" />
 
         <android.support.design.widget.FloatingActionButton
+            android:id="@+id/mydukan_live"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_gravity="bottom|right|end"
+            android:layout_marginBottom="50dp"
+            android:layout_marginLeft="10dp"
+            android:src="@drawable/ic_mydukan_live"
+            app:backgroundTint="@color/green_500"
+            app:borderWidth="0dp"
+            android:visibility="visible"
+            tools:ignore="RelativeOverlap,RtlHardcoded" />
+
+        <android.support.design.widget.FloatingActionButton
             android:id="@+id/add_supplier_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
