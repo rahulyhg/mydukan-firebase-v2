@@ -1,0 +1,486 @@
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#f0f0f0"
+    tools:ignore="RtlHardcoded">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:nextFocusDown="@id/register"
+        android:id="@+id/scrolldown">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="10dp"
+        android:background="#f0f0f0"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/header"
+            style="@style/lightBoldTextStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:text="@string/companydetails"
+            android:textAllCaps="true"
+            android:layout_marginBottom="6dp"
+            android:textColor="@color/date_time_color"
+            android:textSize="@dimen/mediumtextSize" />
+
+        <!-- Company Name -->
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/nameLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/header"
+            android:layout_marginBottom="6dp">
+
+            <EditText
+                android:id="@+id/companyname"
+                style="@style/normalTextStyle"
+                android:layout_width="match_parent"
+                android:layout_height="35sp"
+                android:padding="5dp"
+                android:background="@drawable/rounded_edittext"
+                android:hint="@string/hint_company_name"
+                android:imeOptions="actionNext"
+                android:inputType="text"
+                android:maxLines="1"
+                android:textSize="@dimen/mediumtextSize" />
+
+        </android.support.design.widget.TextInputLayout>
+
+        <TextView
+            android:id="@+id/professionheader"
+            style="@style/normalTextStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/yourprofession"
+            android:textColor="@color/colorTextSecondary"
+            android:layout_marginLeft="4dp"
+            android:textSize="@dimen/smalltextSize"
+            android:layout_below="@+id/nameLayout"
+            android:layout_marginTop="@dimen/listrow_topmargin"/>
+
+        <LinearLayout
+            android:id="@+id/radioBtnLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="5dp"
+            android:background="@drawable/rounded_edittext"
+            android:layout_below="@+id/professionheader">
+            <RadioGroup
+                android:id="@+id/radioGroup_1"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+                <RadioButton
+                    android:id="@+id/retailerRadio"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Retailer"
+                    />
+                <RadioButton
+                    android:id="@+id/distributorRadio"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Distributor"
+                />
+
+                <RadioButton
+                    android:id="@+id/brandPromotersRadio"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Brand Promoters"
+                    />
+                <RadioButton
+                    android:id="@+id/cmpnyprofessionalRadio"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Company Professionals"
+                    />
+                <RadioButton
+                    android:id="@+id/shopExecutiveRadio"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Shop Executive"
+                    />
+            </RadioGroup>
+
+            <RadioGroup
+                android:id="@+id/radioGroup_2"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:visibility="visible"
+                android:orientation="vertical">
+
+                <RadioButton
+                    android:id="@+id/serviceCenterRadio"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Service Centres"
+                    />
+                <RadioButton
+                    android:id="@+id/wholesalerradio"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Wholesaler"
+                    />
+
+                <RadioButton
+                    android:id="@+id/manufacturerRadio"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Manufacturers / Brands"
+                   />
+                <RadioButton
+                    android:id="@+id/distributorSalesExecutiveRadio"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Distributor Sales Executive"
+                    />
+
+            </RadioGroup>
+
+            <!--   <Spinner
+               android:id="@+id/professionTypeSpinner"
+               android:layout_width="match_parent"
+               android:layout_height="wrap_content"
+               android:visibility="gone"/>-->
+
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:id="@+id/vatemailLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:orientation="vertical"
+            android:layout_below="@+id/radioBtnLayout">
+
+
+            <!-- Vat no -->
+            <android.support.design.widget.TextInputLayout
+                android:id="@+id/vatnoLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                android:layout_marginBottom="@dimen/listrow_topmargin">
+
+                <EditText
+                    android:id="@+id/vatnoID"
+                    style="@style/normalTextStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="35sp"
+                    android:background="@drawable/rounded_edittext"
+                    android:hint="@string/hint_vattin_number"
+                    android:imeOptions="actionNext"
+                    android:inputType="text"
+                    android:maxLines="1"
+                    android:padding="5dp"
+                    android:textColorHint="@color/colorTextSecondary"
+                    android:textSize="@dimen/mediumtextSize" />
+
+            </android.support.design.widget.TextInputLayout>
+
+            <!-- Official email id -->
+            <android.support.design.widget.TextInputLayout
+                android:id="@+id/officialemailLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                android:layout_marginBottom="@dimen/listrow_topmargin">
+
+                <EditText
+                    android:id="@+id/officialemailID"
+                    style="@style/normalTextStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="35sp"
+                    android:background="@drawable/rounded_edittext"
+                    android:hint="@string/hint_official_emailid"
+                    android:imeOptions="actionNext"
+                    android:inputType="textEmailAddress"
+                    android:padding="5dp"
+                    android:maxLines="1"
+                    android:textColorHint="@color/colorTextSecondary"
+                    android:textSize="@dimen/mediumtextSize" />
+
+            </android.support.design.widget.TextInputLayout>
+
+            <!-- MultiSelectedValues -->
+            <android.support.design.widget.TextInputLayout
+                android:id="@+id/multiSelectionValuesLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                android:layout_marginBottom="@dimen/listrow_topmargin">
+
+                <EditText
+                    android:id="@+id/multiSelectionValues"
+                    style="@style/normalTextStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/rounded_edittext"
+                    android:hint="Your Selected Brand"
+                    android:imeOptions="actionNext"
+                    android:inputType="none"
+                    android:enabled="false"
+                    android:padding="5dp"
+                    android:textColor="@color/dgts__text_dark"
+                    android:textColorHint="@color/colorTextSecondary"
+                    android:textSize="@dimen/mediumtextSize" />
+
+            </android.support.design.widget.TextInputLayout>
+
+            <!-- MultiSelectedValues -->
+            <android.support.design.widget.TextInputLayout
+                android:id="@+id/shopnumberValuesLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                android:layout_marginBottom="@dimen/listrow_topmargin">
+
+                <EditText
+                    android:id="@+id/shopnumberValues"
+                    style="@style/normalTextStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/rounded_edittext"
+                    android:hint="Your Shop Number"
+                    android:imeOptions="actionNext"
+                    android:inputType="number"
+                    android:padding="5dp"
+                    android:maxLines="1"
+                    android:textColor="@color/dgts__text_dark"
+                    android:textColorHint="@color/colorTextSecondary"
+                    android:textSize="@dimen/mediumtextSize" />
+
+            </android.support.design.widget.TextInputLayout>
+
+            <!-- MultiSelectedValues -->
+            <android.support.design.widget.TextInputLayout
+                android:id="@+id/distributorsnumberValuesLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                android:layout_marginBottom="@dimen/listrow_topmargin">
+
+                <EditText
+                    android:id="@+id/distributorsnumberValues"
+                    style="@style/normalTextStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/rounded_edittext"
+                    android:hint="Distributors Number"
+                    android:imeOptions="actionNext"
+                    android:inputType="number"
+                    android:padding="5dp"
+                    android:maxLines="1"
+                    android:textColor="@color/dgts__text_dark"
+                    android:textColorHint="@color/colorTextSecondary"
+                    android:textSize="@dimen/mediumtextSize" />
+
+            </android.support.design.widget.TextInputLayout>
+
+        </LinearLayout>
+
+        <!--<TextView
+            android:id="@+id/industryHeader"
+            style="@style/lightBoldTextStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/industy"
+            android:textColor="@color/colorTextPrimary"
+            android:textSize="@dimen/mediumtextSize"
+            android:layout_below="@+id/vatemailLayout"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true" />
+
+        <Spinner
+            android:id="@+id/industryTypeSpinner"
+            android:layout_below="@+id/industryHeader"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:textColor="#000000"
+            android:background="@drawable/rounded_edittext"
+            android:layout_marginTop="@dimen/listrow_topmargin"
+            android:padding="5dp"
+            android:layout_marginBottom="@dimen/listrow_topmargin"/>-->
+
+        <RelativeLayout
+            android:id="@+id/cardview1"
+            android:layout_width="match_parent"
+            android:layout_height="80dp"
+            android:padding="5dp"
+            android:layout_marginTop="6dp"
+            android:layout_marginBottom="6dp"
+            android:gravity="center_vertical"
+            android:background="@drawable/rounded_edittext"
+            android:layout_below="@+id/vatemailLayout">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                >
+
+                <TextView
+                    android:id="@+id/textView7"
+                    style="@style/condensedBoldTextStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="2"
+                    android:text="@string/businesscard"
+                    android:textColor="@color/errorColor"
+                    android:textSize="@dimen/mediumtextSize"
+                    android:layout_centerVertical="true"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true"
+                    android:layout_toLeftOf="@+id/actionBtn"
+                    android:layout_toStartOf="@+id/actionBtn" />
+
+
+                <Button
+                    android:id="@+id/actionBtn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:clickable="true"
+                    android:scaleType="fitXY"
+                    android:background="@android:color/transparent"
+                    android:drawableRight="@drawable/ic_camera_alt_black_24dp"
+                    android:textAllCaps="false"
+                    android:text="@string/upload"
+                    android:textColor="@color/buttonColor"
+                    android:ellipsize="middle"
+                    android:lines="1"
+                    android:textSize="14sp"
+                    android:layout_alignParentTop="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignParentEnd="true" />
+            </RelativeLayout>
+
+        </RelativeLayout>
+
+            <CheckBox
+                android:id="@+id/termsandconditionChecbox"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:textColor="#FFFFFF"
+                android:layout_below="@id/cardview1"
+                android:buttonTint="#d82a2b"
+                />
+
+        <RelativeLayout
+            android:id="@+id/termsandconditionLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:layout_toRightOf="@id/termsandconditionChecbox"
+            android:layout_below="@id/cardview1"
+
+            >
+            <TextView
+                android:id="@+id/termsandcondition_text1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#000000"
+                android:textSize="14sp"
+                android:layout_marginTop="4dp"
+                android:text="I am Accepting the "
+                />
+
+            <TextView
+                android:id="@+id/privacyPolicyView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@id/termsandcondition_text1"
+                android:textColor="@android:color/holo_blue_dark"
+                android:textSize="14sp"
+                android:layout_marginTop="4dp"
+                android:text="Privacy Policy"
+                />
+
+            <TextView
+                android:id="@+id/termsandcondition_text2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@id/privacyPolicyView"
+                android:textColor="#000000"
+                android:textSize="14sp"
+                android:layout_marginTop="4dp"
+                android:text=" and the "
+                />
+
+            <TextView
+                android:id="@+id/termsandconditionView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/termsandcondition_text1"
+                android:textColor="@android:color/holo_blue_dark"
+                android:textSize="14sp"
+                android:layout_marginTop="4dp"
+                android:text="Terms and Conditions"
+                />
+
+            <TextView
+                android:id="@+id/termsandcondition_text3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/termsandcondition_text1"
+                android:layout_toRightOf="@id/termsandconditionView"
+                android:textColor="#000000"
+                android:textSize="14sp"
+                android:layout_marginTop="4dp"
+                android:text=" of MyDukan."
+                />
+
+        </RelativeLayout>
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:weightSum="2"
+    android:gravity="center_vertical"
+    android:layout_below="@id/termsandconditionLayout">
+
+
+        <Button
+            android:id="@+id/back_user_details"
+            android:layout_width="match_parent"
+            android:layout_height="35dp"
+            android:background="@color/com_facebook_button_background_color"
+            android:textAllCaps="true"
+            android:layout_margin="3dp"
+            android:textColor="@color/white"
+            android:layout_weight="1"
+            android:text="Back"
+            />
+
+        <Button
+            android:id="@+id/register"
+            android:layout_width="match_parent"
+            android:layout_height="35dp"
+            android:layout_gravity="center_vertical"
+            android:background="#2196F3"
+            android:textAllCaps="true"
+            android:layout_weight="1"
+            android:layout_margin="2dp"
+            android:textColor="@color/white"
+            android:text="@string/submit"
+            />
+</LinearLayout>
+    </RelativeLayout>
+    </ScrollView>
+</android.support.v7.widget.CardView>
+
+
+

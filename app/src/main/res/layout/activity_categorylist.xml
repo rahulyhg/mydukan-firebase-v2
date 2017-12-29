@@ -1,0 +1,291 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    >
+    <com.moengage.widgets.NudgeView
+        android:id="@+id/nudge"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+    </com.moengage.widgets.NudgeView>
+
+    <RelativeLayout
+        android:id="@+id/mlayout_enable"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone">
+
+        <android.support.design.widget.AppBarLayout
+            android:id="@+id/appbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:theme="@style/AppTheme.AppBarOverlay">
+
+            <android.support.v7.widget.Toolbar
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                android:background="?attr/colorPrimary"
+                app:popupTheme="@style/AppTheme.PopupOverlay">
+
+            </android.support.v7.widget.Toolbar>
+
+        </android.support.design.widget.AppBarLayout>
+
+        <!--setup supplier layout-->
+        <include
+            layout="@layout/serachform"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@id/appbar"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/bottomToolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:layout_alignParentBottom="true"
+            android:background="?attr/colorPrimary"
+            android:minHeight="?attr/actionBarSize"
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+            app:theme="@style/ThemeOverlay.AppCompat.Dark">
+
+            <include layout="@layout/toolbar_productlist" />
+
+        </android.support.v7.widget.Toolbar>
+    </RelativeLayout>
+
+    <LinearLayout
+        android:id="@+id/layout_subscribe"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/white"
+        android:orientation="vertical"
+        android:padding="10dp"
+        android:visibility="visible">
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+        <RelativeLayout
+            android:id="@+id/layout_paynow"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            tools:ignore="UselessParent">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:weightSum="10">
+
+
+                <LinearLayout
+                    android:id="@+id/linearLayout6"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1.6"
+                    android:gravity="center_horizontal"
+                    android:orientation="vertical">
+
+                    <ImageView
+                        android:id="@+id/imageDialog"
+                        android:layout_width="60dp"
+                        android:layout_height="60dp"
+                        android:layout_alignEnd="@+id/textView4"
+                        android:layout_alignParentTop="true"
+                        android:layout_alignRight="@+id/textView4"
+                        android:layout_gravity="center"
+                        android:padding="@dimen/card_padding"
+                        android:src="@mipmap/ic_launcher"
+                        tools:ignore="ContentDescription,RtlHardcoded" />
+
+                    <TextView
+                        android:id="@+id/textView4"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/imageDialog"
+                        android:layout_centerHorizontal="true"
+                        android:gravity="center"
+                        android:text="MyDukan"
+                        android:textColor="@color/bodyTextColor"
+                        android:textSize="16sp"
+                        android:textStyle="normal|bold"
+                        tools:ignore="HardcodedText" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1.5"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/textView1"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentLeft="true"
+                        android:layout_alignParentStart="true"
+                        android:layout_below="@+id/textView4"
+                        android:gravity="center"
+                        android:text="@string/subscription_aleart_message"
+                        android:textAlignment="center"
+                        android:textColor="@color/bodyTextColor"
+                        android:textSize="14dp"
+                        android:textStyle="normal|bold"
+                        tools:ignore="SpUsage" />
+
+                    <TextView
+                        android:id="@+id/textView"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentLeft="true"
+                        android:layout_alignParentStart="true"
+                        android:gravity="center"
+                        android:text="@string/subscription_aleart_SUBmessage"
+                        android:textAlignment="center"
+                        android:textColor="@color/bodyTextColor"
+                        android:textSize="12dp"
+                        android:textStyle="normal|bold"
+                        tools:ignore="SpUsage" />
+
+                    <TextView
+                        android:id="@+id/textView2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/textView"
+                        android:layout_marginTop="2dp"
+                        android:gravity="center"
+                        android:text="@string/subscription_note_message"
+                        android:textAlignment="center"
+                        android:textColor="@color/com_facebook_button_background_color_pressed"
+                        android:textSize="12sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="3.8"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <Button
+                        android:id="@+id/btn_subscription"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/textView2"
+                        android:layout_centerHorizontal="true"
+                        android:background="@color/cardview_green"
+                        android:fontFamily="sans-serif"
+                        android:maxLines="1"
+                        android:paddingLeft="40dp"
+                        android:paddingRight="40dp"
+                        android:text="Enroll Now"
+                        android:textColor="@color/white"
+                        android:textStyle="normal|bold"
+                        tools:ignore="HardcodedText,TextViewEdits" />
+
+                    <TextView
+                        android:id="@+id/tv_message_trialUser"
+                        android:layout_width="wrap_content"
+                        android:layout_height="30dp"
+                        android:layout_below="@+id/btn_subscription"
+                        android:layout_centerHorizontal="true"
+                        android:layout_marginTop="10dp"
+                        android:textColor="@color/app_colorAccent"
+                        android:textStyle="normal"
+                        android:visibility="gone" />
+
+                    <Button
+                        android:id="@+id/btn_trial"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/tv_message_trialUser"
+                        android:layout_centerHorizontal="true"
+                        android:background="@color/tw__transparent"
+                        android:text="Try for 7 days"
+                        android:textColor="@color/app_colorAccent"
+                        android:textStyle="normal|bold"
+                        android:visibility="visible"
+                        tools:ignore="HardcodedText" />
+
+                    <Button
+                        android:id="@+id/btn_remaingDays"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerHorizontal="true"
+                        android:text="Click here for free"
+                        android:textColor="@color/colorBtnBackground"
+                        android:textStyle="normal|bold"
+                        android:visibility="gone"
+                        tools:ignore="HardcodedText" />
+
+                    <android.support.design.widget.FloatingActionButton
+                        android:id="@+id/whatsAppBtn_payment"
+                        android:layout_width="60dp"
+                        android:layout_height="60dp"
+                        android:layout_margin="10dp"
+                        android:layout_alignParentRight="true"
+                        android:layout_marginLeft="@dimen/activity_horizontal_margin"
+                        android:layout_marginStart="@dimen/activity_horizontal_margin"
+                        android:src="@drawable/ic_action_whatsapp"
+                        app:backgroundTint="@color/green_500"
+                        app:borderWidth="0dp"
+                        tools:ignore="RtlHardcoded" />
+
+                    <TextView
+                        android:id="@+id/tv_message_whatsapp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/app_colorAccent"
+                        android:textStyle="normal"
+                        android:text="Payment Issue? Whatsapp Us on 9036770772"
+                       />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="3"
+                    android:layout_marginTop="10dp"
+                    android:orientation="vertical"
+                    >
+
+                    <TextView
+                        android:id="@+id/textView8"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="KeyFeatures:"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+                        android:textColor="@color/com_facebook_button_background_color_pressed"
+                        android:textStyle="bold"
+                        tools:ignore="HardcodedText" />
+
+                    <TextView
+                        android:id="@+id/tv_Keyfeatures"
+                        style="@android:style/Widget.DeviceDefault.TextView"
+                        android:layout_width="match_parent"
+                        android:layout_height="220dp"
+                        android:text="@string/subscription_keyfeatures"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Notification.Time"
+                        android:textColor="@color/bodyTextColor"
+                        android:textSize="13sp" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+        </RelativeLayout>
+        </ScrollView>
+    </LinearLayout>
+
+</RelativeLayout>
