@@ -211,7 +211,7 @@ public class OneFragment extends Fragment implements AdapterListFeed.OnClickItem
         switch (view.getId()) {
             case R.id.iv_like:  // Like_BTN
 //                addLike(feed);
-                FeedUtils.addLike(feed, jsonRequest);
+                FeedUtils.addLike(feed);
                 break;
             case R.id.btn_follow:  // follow_BTN
                 addFollow(feed);

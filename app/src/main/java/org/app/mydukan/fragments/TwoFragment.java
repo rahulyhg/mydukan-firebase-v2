@@ -121,7 +121,7 @@ public class TwoFragment extends Fragment implements AdapterListFeed.OnClickItem
         final Feed feed = mList.get(position);
         switch (view.getId()) {
             case R.id.like:  // Like_BTN
-                FeedUtils.addLike(feed, jsonRequest);
+                FeedUtils.addLike(feed);
                 break;
             case R.id.btn_follow:  // follow_BTN
                 // addFollow(feed);

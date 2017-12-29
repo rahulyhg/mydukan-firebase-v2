@@ -218,7 +218,7 @@ public class Post_Activity extends BaseActivity{
                     dispatchTakePictureIntent();
                 } else if (options[item].equals("Choose from Gallery")) {
                     Intent intent = new Intent();
-                    intent.setType("image*//*");
+                    intent.setType("image/*");
                     intent.setAction(Intent.ACTION_GET_CONTENT);
                     startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE_REQUEST);
 

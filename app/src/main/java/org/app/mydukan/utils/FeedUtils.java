@@ -180,13 +180,12 @@ public class FeedUtils {
     public static void share(Feed feed, Context context) {
         String userId = feed.getIdUser();
         String feedId = feed.getIdFeed();
-//todo add share text
         String dynamicLink = "https://wy4d6.app.goo.gl/?link=https://mydukaan.com/feed_link/"
                 + userId + "/" + feedId + "&apn=org.app.mydukan&amv=105";
 
         Intent sendIntent = new Intent();
         sendIntent.setAction(Intent.ACTION_SEND);
-        sendIntent.putExtra(Intent.EXTRA_TEXT, dynamicLink);
+        sendIntent.putExtra(Intent.EXTRA_TEXT, "Check out this post in MyDukan app.\n"+dynamicLink );
         sendIntent.setType("text/plain");
 
         try {

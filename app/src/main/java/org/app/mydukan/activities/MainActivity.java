@@ -578,7 +578,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     }
 
     private void handleDeepLink() {
-        String deepLink = getIntent().getParcelableExtra(DEEP_LINK);
+        String deepLink = getIntent().getStringExtra(DEEP_LINK);
         Uri deepLink2= getIntent().getData();
 
 
