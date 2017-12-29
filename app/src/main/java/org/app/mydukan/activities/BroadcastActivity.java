@@ -51,7 +51,6 @@ public class BroadcastActivity extends AppCompatActivity {
         if (result != YouTubeInitializationResult.SUCCESS) {
             //If there are any issues we can show an error dialog.
             result.getErrorDialog(this, 0).show();
-        }else{
             emptyVideoList.setVisibility(View.VISIBLE);
         }
         img_BackBtn.setOnClickListener(new View.OnClickListener() {

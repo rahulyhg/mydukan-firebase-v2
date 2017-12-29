@@ -19,7 +19,7 @@
         <fragment xmlns:android="http://schemas.android.com/apk/res/android"
             xmlns:tools="http://schemas.android.com/tools"
             android:id="@+id/video_list"
-            android:name="org.app.mydukan.fragments.VideoListFragment"
+            android:name="org.app.mydukan.youtube.VideoListFragment"
             android:layout_width="match_parent"
             android:layout_height="509dp"
             android:layout_margin="@dimen/activity_horizontal_margin"

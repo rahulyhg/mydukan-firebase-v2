@@ -437,7 +437,7 @@
         <activity android:name=".activities.BroadcastActivity"
             android:screenOrientation="portrait"/>
 
-        <activity android:name=".fragments.YouTubeFragmentActivity"
+        <activity android:name=".youtube.YouTubeFragmentActivity"
             android:screenOrientation="portrait"/>
 
         <activity android:name=".activities.PriceDropActivity"
