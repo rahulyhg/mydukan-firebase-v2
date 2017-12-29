@@ -365,6 +365,9 @@
             android:name=".activities.MyProfileActivity"
             android:screenOrientation="portrait" />
         <activity
+            android:name=".activities.Post_Activity"
+            android:screenOrientation="portrait" />
+        <activity
             android:name=".activities.ChatActivity"
             android:screenOrientation="portrait" />
         <activity
@@ -456,7 +459,10 @@
         <activity android:name=".activities.RecordClaimActivity"
             android:screenOrientation="portrait"/>
         <activity android:name=".content.YouTubeContent" />
-        <activity android:name=".activities.BaseActivity" />
+        <activity
+            android:name=".activities.YourAccountActivity"
+            android:label="Your Account"
+            android:theme="@style/AppTheme" />
 
     </application>
 

@@ -64,6 +64,33 @@ public class FeedUtils {
         });
     }
 
+    public static void addLike(final Feed feed) {
+        final DatabaseReference referenceLike = FirebaseDatabase.getInstance().getReference().child(LIKE_ROOT+"/"+feed.getIdFeed());
+        final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if(user==null){
+            return;
+        }
+        referenceLike.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot == null) {
+                    referenceLike.child(user.getUid()).setValue(true);
+                    return;
+                }
+                if (dataSnapshot.hasChild(user.getUid())) {
+                    referenceLike.child(user.getUid()).removeValue();
+                } else {
+                    referenceLike.child(user.getUid()).setValue(true);
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+    }
 
     public static void addLike(final Feed feed, final VolleyNetworkRequest jsonRequest) {
         final DatabaseReference referenceLike = FirebaseDatabase.getInstance().getReference().child(LIKE_ROOT+"/"+feed.getIdFeed());
