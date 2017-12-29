@@ -1,0 +1,320 @@
+<android.support.v7.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#f0f0f0"
+   >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:background="#f0f0f0"
+        android:orientation="vertical">
+
+        <TextView
+            style="@style/lightBoldTextStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/personaldetails"
+            android:textAllCaps="false"
+            android:layout_marginBottom="16dp"
+            android:textColor="@color/date_time_color"
+            android:textSize="@dimen/mediumtextSize" />
+
+        <!-- Name -->
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp">
+
+            <EditText
+                android:id="@+id/nameID"
+                style="@style/normalTextStyle"
+                android:layout_width="match_parent"
+                android:layout_height="35sp"
+                android:padding="5dp"
+                android:background="@drawable/rounded_edittext"
+                android:hint="@string/hint_name"
+                android:imeOptions="actionNext"
+                android:inputType="text"
+                android:maxLines="1"
+                android:nextFocusForward="@+id/phoneNumberID"
+                android:textColorHint="@color/colorTextSecondary"
+                android:textSize="@dimen/mediumtextSize" />
+
+        </android.support.design.widget.TextInputLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="6dp">
+
+            <!-- Phone Number -->
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp">
+
+                <EditText
+                    android:id="@+id/phoneNumberID"
+                    style="@style/normalTextStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="35sp"
+                    android:padding="5dp"
+                    android:background="@drawable/rounded_edittext"
+                    android:hint="@string/hint_number"
+                    android:imeOptions="actionNext"
+                    android:inputType="phone"
+                    android:maxLines="1"
+                    android:nextFocusForward="@+id/pincode"
+                    android:textColorHint="@color/colorTextSecondary"
+                    android:textSize="@dimen/mediumtextSize" />
+
+            </android.support.design.widget.TextInputLayout>
+
+            <!--Digit authentication button
+            <com.digits.sdk.android.DigitsAuthButton
+                android:id="@+id/auth_button"
+                android:layout_width="fill_parent"
+                android:layout_height="@dimen/layoutheight"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:layout_gravity="center"
+                android:elevation="0dp"
+                android:background="@android:color/transparent"
+                android:backgroundTint="@android:color/transparent"
+                android:textAllCaps="true" />
+
+
+            <Button
+                android:id="@+id/validatedbtn"
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/layoutheight"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:background="@color/colorBtnBackground"
+                android:gravity="center"
+                android:padding="@dimen/layoutmarginsmall"
+                android:text="@string/verify"
+                android:textColor="@color/white"
+                android:visibility="visible" />
+                   -->
+        </RelativeLayout>
+
+
+        <!-- Email -->
+        <!--<android.support.design.widget.TextInputLayout-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="wrap_content">-->
+
+            <!--<EditText-->
+                <!--android:id="@+id/emailID"-->
+                <!--style="@style/normalTextStyle"-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:hint="@string/hint_emailid"-->
+                <!--android:imeOptions="actionNext"-->
+                <!--android:inputType="textEmailAddress"-->
+                <!--android:maxLines="1"-->
+                <!--android:nextFocusForward="@+id/pincode"-->
+                <!--android:singleLine="true"-->
+                <!--android:textColorHint="@color/colorTextSecondary"-->
+                <!--android:textSize="@dimen/mediumtextSize" />-->
+
+        <!--</android.support.design.widget.TextInputLayout>-->
+<RelativeLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="12dp"
+    android:layout_marginLeft="10dp"
+    android:layout_marginRight="10dp">
+    <Button
+        android:id="@+id/setLocationBtn"
+        android:text="@string/set_your_location"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:gravity="center"
+        android:background="@drawable/cling_button_bg"
+        android:textAllCaps="true"
+        android:textStyle="bold"
+        android:textSize="16sp"
+        android:textColor="@color/black_overlay"
+        android:visibility="visible"
+        android:drawableRight="@drawable/google_map_icon"
+        android:drawablePadding="-5dp"
+        />
+    <LinearLayout
+        android:id="@+id/layout_LocationVerify"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:orientation="vertical">
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Location is Verified"
+        style="@style/lightBoldTextStyle"
+        android:textSize="@dimen/mediumtextSize"
+        android:textColor="@color/green_500"
+        tools:ignore="HardcodedText" />
+        <TextView
+            android:id="@+id/verified_Location"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"/>
+
+    </LinearLayout>
+</RelativeLayout>
+        <!-- AddressInfo -->
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp">
+
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/pintitle">
+
+                <EditText
+                    android:id="@+id/pincode"
+                    style="@style/normalTextStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="35sp"
+                    android:padding="5dp"
+                    android:background="@drawable/rounded_edittext"
+                    android:hint="@string/hint_pincode"
+                    android:imeOptions="actionDone"
+                    android:inputType="number"
+                    android:maxLength="6"
+                    android:maxLines="1"
+                    android:textColorHint="@color/colorTextSecondary"
+                    android:textSize="@dimen/mediumtextSize" />
+
+            </android.support.design.widget.TextInputLayout>
+
+            <Button
+                android:id="@+id/fetchaddressbtn"
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/layoutheight"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_below="@id/pintitle"
+                android:background="@color/colorBtnBackground"
+                android:padding="@dimen/layoutmarginsmall"
+                android:text="@string/fetchaddress"
+                android:textColor="@color/white" />
+        </RelativeLayout>
+
+        <!-- AddressInfo -->
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp">
+
+            <EditText
+                android:id="@+id/street"
+                style="@style/normalTextStyle"
+                android:layout_width="match_parent"
+                android:layout_height="35sp"
+                android:padding="5dp"
+                android:background="@drawable/rounded_edittext"
+                android:hint="@string/hint_street"
+                android:imeOptions="actionNext"
+                android:inputType="text"
+                android:maxLines="1"
+                android:nextFocusForward="@+id/city"
+                android:textColorHint="@color/colorTextSecondary"
+                android:textSize="@dimen/mediumtextSize" />
+        </android.support.design.widget.TextInputLayout>
+
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp">
+
+            <EditText
+                android:id="@+id/city"
+                style="@style/normalTextStyle"
+                android:layout_width="match_parent"
+                android:layout_height="35sp"
+                android:padding="5dp"
+                android:background="@drawable/rounded_edittext"
+                android:hint="@string/hint_city"
+                android:inputType="text"
+                android:maxLines="1"
+                android:textColorHint="@color/colorTextSecondary"
+                android:textSize="@dimen/mediumtextSize" />
+        </android.support.design.widget.TextInputLayout>
+
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp">
+
+            <EditText
+                android:id="@+id/state"
+                style="@style/normalTextStyle"
+                android:layout_width="match_parent"
+                android:layout_height="35sp"
+                android:padding="5dp"
+                android:background="@drawable/rounded_edittext"
+                android:hint="@string/hint_state"
+                android:inputType="text"
+                android:maxLines="1"
+                android:textColorHint="@color/colorTextSecondary"
+                android:textSize="@dimen/mediumtextSize" />
+        </android.support.design.widget.TextInputLayout>
+
+        <Spinner
+            android:id="@+id/stateSpinner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/listrow_topmargin"
+            android:layout_marginBottom="@dimen/listrow_topmargin"
+            android:visibility="gone"/>
+
+        <!--<android.support.design.widget.TextInputLayout-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="wrap_content">-->
+
+            <!--<EditText-->
+                <!--android:id="@+id/country"-->
+                <!--style="@style/normalTextStyle"-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:hint="@string/hint_country"-->
+                <!--android:imeOptions="actionDone"-->
+                <!--android:inputType="text"-->
+                <!--android:maxLines="1"-->
+                <!--android:singleLine="true"-->
+                <!--android:textColorHint="@color/colorTextSecondary"-->
+                <!--android:textSize="@dimen/mediumtextSize" />-->
+
+        <!--</android.support.design.widget.TextInputLayout>-->
+
+        <Button
+            android:id="@+id/next_user_details"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_centerInParent="true"
+            android:layout_marginBottom="20dp"
+            android:layout_marginTop="10dp"
+            android:background="#2196F3"
+            android:textAllCaps="true"
+            android:textColor="@color/white"
+            android:layout_below="@id/cardview1"
+            android:text="Next"
+            />
+
+
+    </LinearLayout>
+
+</android.support.v7.widget.CardView>
+
+
+
