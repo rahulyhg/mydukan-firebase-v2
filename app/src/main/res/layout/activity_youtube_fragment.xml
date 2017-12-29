@@ -7,7 +7,7 @@
     <!-- YouTube Fragment -->
     <fragment
         android:id="@+id/fragment_youtube"
-        android:name="org.app.mydukan.fragments.YouTubeFragment"
+        android:name="org.app.mydukan.youtube.YouTubeFragment"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true" />

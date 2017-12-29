@@ -1,4 +1,4 @@
-package org.app.mydukan.fragments;
+package org.app.mydukan.youtube;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -44,7 +44,7 @@ public class VideoListAdapter extends BaseAdapter implements YouTubeThumbnailVie
         mContext = context;
         mLoaders = new HashMap<>();
         videosList = mITEM_MAP;
-        mApp = (MyDukan) context.getApplicationContext();
+        mApp = (MyDukan) mContext.getApplicationContext();
     }
 
     @Override

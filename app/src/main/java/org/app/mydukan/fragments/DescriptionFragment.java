@@ -172,7 +172,7 @@ public class DescriptionFragment extends Fragment {
     }
 
     private void requestStoragePermission() {
-        if (ContextCompat.checkSelfPermission(getActivity(), android.Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED)
+        if (ContextCompat.checkSelfPermission(context, android.Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED)
             return;
 
         if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(), android.Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
@@ -413,6 +413,8 @@ public class DescriptionFragment extends Fragment {
 
     class MyWebViewClient extends WebViewClient {
 
+
+
         @Override
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
             return false;
@@ -421,11 +423,17 @@ public class DescriptionFragment extends Fragment {
         @Override
         public void onPageStarted(WebView view, String url, Bitmap favicon) {
             super.onPageStarted(view, url, favicon);
-            mProgress = new ProgressDialog(getActivity());
-            //  mProgress.setTitle(getString(R.string.Please_wait));
-            mProgress.setMessage(getString(R.string.Page_is_loading));
-            mProgress.setCancelable(true);
-            mProgress.show();
+            try {
+                mProgress = new ProgressDialog(getActivity());
+                //  mProgress.setTitle(getString(R.string.Please_wait));
+                mProgress.setMessage(getString(R.string.Page_is_loading));
+                mProgress.setCancelable(true);
+                mProgress.show();
+            }
+            catch (Exception e)
+            {
+                e.printStackTrace();
+            }
         }
 
         @Override

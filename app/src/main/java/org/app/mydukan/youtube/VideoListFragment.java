@@ -1,26 +1,18 @@
-package org.app.mydukan.fragments;
+package org.app.mydukan.youtube;
 
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.support.v4.app.ListFragment;
 import android.view.View;
 import android.widget.ListView;
 
-import com.google.android.youtube.player.YouTubeIntents;
-import com.google.android.youtube.player.YouTubeStandalonePlayer;
-
 import org.app.mydukan.R;
-import org.app.mydukan.content.YouTubeContent;
 import org.app.mydukan.data.Videos;
 import org.app.mydukan.server.ApiManager;
 import org.app.mydukan.server.ApiResult;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /***********************************************************************************
 
