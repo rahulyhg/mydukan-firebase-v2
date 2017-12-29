@@ -173,6 +173,7 @@ public class LaunchActivity extends BaseActivity {
                                             .putCustomAttribute("UserId", mUid));
                                     Intent intent = new Intent(LaunchActivity.this, MainActivity.class);
                                     intent.putExtra(AppContants.NOTIFICATION, notificationInfo);
+                                    intent.putExtra(DEEP_LINK, getIntent().getStringExtra(DEEP_LINK));
                                     startActivity(intent);
                                     finish();
                                 }else{
@@ -271,11 +272,11 @@ public class LaunchActivity extends BaseActivity {
 
                     Answers.getInstance().logCustom(new CustomEvent("Launcher_Page")
                             .putCustomAttribute("UserId", mUid));
-                    Intent intent = new Intent(LaunchActivity.this, MainActivity.class);
+                   /* Intent intent = new Intent(LaunchActivity.this, MainActivity.class);
 //                  intent.putExtra(AppContants.NOTIFICATION,notificationInfo);
                     intent.putExtra(DEEP_LINK, getIntent().getStringExtra(DEEP_LINK));
                     startActivity(intent);
-                    finish();
+                    finish();*/
 
                 } else if (mAppState == stateContants.PROFILE_SCREEN) {
                     Intent intent = new Intent(LaunchActivity.this, UserProfile.class);
@@ -293,11 +294,11 @@ public class LaunchActivity extends BaseActivity {
 
                     Answers.getInstance().logCustom(new CustomEvent("Launcher_Page")
                             .putCustomAttribute("UserId", mUid));
-                    Intent intent = new Intent(LaunchActivity.this, MainActivity.class);
+//                    Intent intent = new Intent(LaunchActivity.this, MainActivity.class);
 //                    intent.putExtra(AppContants.NOTIFICATION,notificationInfo);
-                    intent.putExtra(DEEP_LINK, getIntent().getStringExtra(DEEP_LINK));
-                    startActivity(intent);
-                    finish();
+
+//                    startActivity(intent);
+//                    finish();
                 }
             }
         }

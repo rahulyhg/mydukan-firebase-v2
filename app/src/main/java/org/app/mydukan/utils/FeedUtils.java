@@ -92,6 +92,7 @@ public class FeedUtils {
 
     }
 
+    //the function is not working properly. Will shift the notification code to my addLike function - Harshit
     public static void addLike(final Feed feed, final VolleyNetworkRequest jsonRequest) {
         final DatabaseReference referenceLike = FirebaseDatabase.getInstance().getReference().child(LIKE_ROOT+"/"+feed.getIdFeed());
         final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
