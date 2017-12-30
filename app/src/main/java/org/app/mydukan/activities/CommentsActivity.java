@@ -304,11 +304,24 @@ public class CommentsActivity extends AppCompatActivity {
         comment.setText(commentText);
         comment.setTime(MyProfileActivity.getCurrentTimeStamp());
         comment.setId(key);
-        getUserToken(feed.getIdUser(), comment.getUserInfo().getName(), "comment");
         databaseReference.child(feed.getIdFeed()).child(key).setValue(comment);
-
+        sendCommentNotif(feed,comment);
         commentET.setText("");
 
+    }
+
+    private void sendCommentNotif(final Feed feed, final Comment comment) {
+        FeedUtils.getUserToken(feed.getIdUser(), new FeedUtils.OnDataRetrieved() {
+            @Override
+            public void onSuccess(Object object) {
+                jsonRequest.JsonObjectRequest((String) object, comment.getUserInfo().getName(), "comment", feed.getIdFeed());
+            }
+
+            @Override
+            public void onFailure() {
+
+            }
+        });
     }
 
     private void getComments() {
@@ -336,7 +349,7 @@ public class CommentsActivity extends AppCompatActivity {
 
     }
 
-    public void getUserToken(final String auth, final String name, final String type){
+    /*public void getUserToken(final String auth, final String name, final String type){
         final DatabaseReference referenceFcm = FirebaseDatabase.getInstance().getReference().child("fcmregistration");
 //        final String auth = FirebaseAuth.getInstance().getCurrentUser().getUid();
         referenceFcm.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -355,7 +368,7 @@ public class CommentsActivity extends AppCompatActivity {
 
             }
         });
-    }
+    }*/
 
     private void toggleLoading() {
         progressBar.setVisibility(View.GONE);
@@ -532,8 +545,8 @@ public class CommentsActivity extends AppCompatActivity {
 
                                 Comment comment = commentList.get(pos);
                                 comment.setText(newComment);
-                                getUserToken(feed.getIdUser(), comment.getUserInfo().getName(), "comment");
                                 databaseReference.setValue(comment);
+                                sendCommentNotif(feed,comment);
                             }
                         })
                         .setNegativeButton("Cancel", null).show();

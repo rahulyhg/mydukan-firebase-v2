@@ -71,10 +71,10 @@ public class VolleyNetworkRequest {
                         try {
                             if(response.getInt("success") == 1){
                                 if(type.equalsIgnoreCase("like")) {
-                                    Toast.makeText(context, "Liked " + message + " post.", Toast.LENGTH_SHORT).show();
+//                                    Toast.makeText(context, "Liked " + message + " post.", Toast.LENGTH_SHORT).show();
                                 }
                                 else if(type.equalsIgnoreCase("comment")){
-                                    Toast.makeText(context, "Commented on "+message+" post.", Toast.LENGTH_SHORT).show();
+//                                    Toast.makeText(context, "Commented on "+message+" post.", Toast.LENGTH_SHORT).show();
                                 }
                                 else if(type.equalsIgnoreCase("follow")){
                                     Toast.makeText(context, "Following the user", Toast.LENGTH_SHORT).show();
