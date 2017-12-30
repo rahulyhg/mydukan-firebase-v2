@@ -156,7 +156,7 @@ public class CommentsActivity extends AppCompatActivity {
                         imm.showSoftInput(commentET, InputMethodManager.SHOW_IMPLICIT);
                         break;
                     case R.id.like:
-                        FeedUtils.addLike(feed);
+                        FeedUtils.addLike(feed,jsonRequest);
                         break;
                     case R.id.delete:
                         final ProgressDialog progressDialog = new ProgressDialog(CommentsActivity.this);

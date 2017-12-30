@@ -42,6 +42,7 @@ import org.app.mydukan.data.Feed;
 import org.app.mydukan.data.User;
 import org.app.mydukan.server.ApiManager;
 import org.app.mydukan.server.ApiResult;
+import org.app.mydukan.services.VolleyNetworkRequest;
 import org.app.mydukan.utils.AppContants;
 import org.app.mydukan.utils.FeedUtils;
 
@@ -91,13 +92,14 @@ public class MyProfileActivity extends BaseActivity implements AdapterListFeed.O
     SwipeRefreshLayout mSwipeRefereshLayout;
     NestedScrollView nestedScrollView;
     CardView postcard;
-
+    VolleyNetworkRequest jsonRequest;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my_profile);
         mApp = (MyDukan) getApplicationContext();
+        jsonRequest = new VolleyNetworkRequest(this);
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -449,7 +451,7 @@ public class MyProfileActivity extends BaseActivity implements AdapterListFeed.O
         final Feed feed = mList.get(position);
         switch (view.getId()) {
             case R.id.like:  // Like_BTN
-                FeedUtils.addLike(feed);
+                FeedUtils.addLike(feed,jsonRequest);
                 break;
             case R.id.btn_follow:  // follow_BTN
                 // addFollow(feed);

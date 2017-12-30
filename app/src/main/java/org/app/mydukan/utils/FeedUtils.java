@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -53,7 +54,6 @@ public class FeedUtils {
                 }
 
 
-
             }
 
             @Override
@@ -64,10 +64,13 @@ public class FeedUtils {
         });
     }
 
+    /**Deprecated. Use {@link FeedUtils#addLike(Feed, VolleyNetworkRequest)}
+     * @param feed
+     */
     public static void addLike(final Feed feed) {
-        final DatabaseReference referenceLike = FirebaseDatabase.getInstance().getReference().child(LIKE_ROOT+"/"+feed.getIdFeed());
+        final DatabaseReference referenceLike = FirebaseDatabase.getInstance().getReference().child(LIKE_ROOT + "/" + feed.getIdFeed());
         final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        if(user==null){
+        if (user == null) {
             return;
         }
         referenceLike.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -81,6 +84,7 @@ public class FeedUtils {
                     referenceLike.child(user.getUid()).removeValue();
                 } else {
                     referenceLike.child(user.getUid()).setValue(true);
+
                 }
             }
 
@@ -92,11 +96,14 @@ public class FeedUtils {
 
     }
 
-    //the function is not working properly. Will shift the notification code to my addLike function - Harshit
+    /** Toggles like on feed and generates a notification when a user likes a post.
+     * @param feed
+     * @param jsonRequest
+     */
     public static void addLike(final Feed feed, final VolleyNetworkRequest jsonRequest) {
-        final DatabaseReference referenceLike = FirebaseDatabase.getInstance().getReference().child(LIKE_ROOT+"/"+feed.getIdFeed());
+        final DatabaseReference referenceLike = FirebaseDatabase.getInstance().getReference().child(LIKE_ROOT + "/" + feed.getIdFeed());
         final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        if(user==null){
+        if (user == null) {
             return;
         }
         referenceLike.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -110,29 +117,18 @@ public class FeedUtils {
                     referenceLike.child(user.getUid()).removeValue();
                 } else {
                     referenceLike.child(user.getUid()).setValue(true);
-                    getUserToken(feed.getIdUser(), user.getDisplayName(), "like");
-                }
-            }
-
-            public void getUserToken(final String auth, final String name, final String type){
-                final DatabaseReference referenceFcm = FirebaseDatabase.getInstance().getReference().child("fcmregistration");
-//        final String auth = FirebaseAuth.getInstance().getCurrentUser().getUid();
-                referenceFcm.addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        HashMap<String, Object> map = new HashMap<>();
-                        map = (HashMap<String, Object>) dataSnapshot.getValue();
-                        if(map.containsKey(auth)) {
-                            System.out.println("User Token Comment: " + map.get(auth));
-                            jsonRequest.JsonObjectRequest((String)map.get(auth), name, type, feed.getIdFeed());
+                    FeedUtils.getUserToken(feed.getIdUser(), new OnDataRetrieved() {
+                        @Override
+                        public void onSuccess(Object object) {
+                            jsonRequest.JsonObjectRequest((String) object, user.getDisplayName(), "like", feed.getIdFeed());
                         }
-                    }
 
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
+                        @Override
+                        public void onFailure() {
 
-                    }
-                });
+                        }
+                    });
+                }
             }
 
             @Override
@@ -141,6 +137,21 @@ public class FeedUtils {
             }
         });
 
+    }
+
+    public static void getUserToken(String userId, @NonNull final OnDataRetrieved onDataRetrieved) {
+        final DatabaseReference referenceFcm = FirebaseDatabase.getInstance().getReference().child("fcmregistration/" + userId);
+        referenceFcm.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                onDataRetrieved.onSuccess(dataSnapshot.getValue());
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                onDataRetrieved.onFailure();
+            }
+        });
     }
 
     public static void delete(Feed feed, @Nullable final OnCompletion onCompletion) {
@@ -187,7 +198,7 @@ public class FeedUtils {
         Intent sendIntent = new Intent();
         sendIntent.setAction(Intent.ACTION_SEND);
         sendIntent.putExtra(Intent.EXTRA_TEXT, "Check out this post in MyDukan app.\n\n"
-                +getShareText(feed.getText()) +"...\n"+dynamicLink );
+                + getShareText(feed.getText()) + "...\n" + dynamicLink);
         sendIntent.setType("text/plain");
 
         try {
@@ -199,10 +210,10 @@ public class FeedUtils {
     }
 
     private static String getShareText(String text) {
-        int i=0,j=8;
-        for(;i<text.length() && j>0;i++)
-            j-=text.charAt(i)==' '?1:0;
-        return text.substring(0,i).trim();
+        int i = 0, j = 8;
+        for (; i < text.length() && j > 0; i++)
+            j -= text.charAt(i) == ' ' ? 1 : 0;
+        return text.substring(0, i).trim();
     }
 
     public static void handleHyperLink(Feed feed, Context context) {
@@ -224,21 +235,21 @@ public class FeedUtils {
     }
 
     public static int removeFromList(List<Feed> mList, Feed feed, int position) {
-        if(mList.get(position).getIdFeed().equalsIgnoreCase(feed.getIdFeed())){
+        if (mList.get(position).getIdFeed().equalsIgnoreCase(feed.getIdFeed())) {
             mList.remove(position);
             return position;
         }
-        int i=0;
-        position=-1;
-        for(Feed rFeed:mList){
-            if(rFeed.getIdFeed().equalsIgnoreCase(feed.getIdFeed())){
-                position=i;
+        int i = 0;
+        position = -1;
+        for (Feed rFeed : mList) {
+            if (rFeed.getIdFeed().equalsIgnoreCase(feed.getIdFeed())) {
+                position = i;
                 break;
             }
             i++;
         }
 
-        if(position!=-1){
+        if (position != -1) {
             mList.remove(position);
         }
         return position;

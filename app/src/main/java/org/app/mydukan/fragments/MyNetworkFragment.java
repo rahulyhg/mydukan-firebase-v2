@@ -157,6 +157,7 @@ public class MyNetworkFragment extends Fragment implements AdapterListFeed.OnCli
 
         feedRetriever.getFeeds(10, false);
         mSwipeRefereshLayout.setRefreshing(true);
+
     }
 
 
@@ -166,7 +167,7 @@ public class MyNetworkFragment extends Fragment implements AdapterListFeed.OnCli
         final Feed feed = mList.get(position);
         switch (view.getId()) {
             case R.id.like:  // Like_BTN
-                FeedUtils.addLike(feed);
+                FeedUtils.addLike(feed,jsonRequest);
                 break;
             case R.id.btn_follow:  // follow_BTN
                 // addFollow(feed);
