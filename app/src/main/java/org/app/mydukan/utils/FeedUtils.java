@@ -186,7 +186,8 @@ public class FeedUtils {
 
         Intent sendIntent = new Intent();
         sendIntent.setAction(Intent.ACTION_SEND);
-        sendIntent.putExtra(Intent.EXTRA_TEXT, "Check out this post in MyDukan app.\n"+dynamicLink );
+        sendIntent.putExtra(Intent.EXTRA_TEXT, "Check out this post in MyDukan app.\n\n"
+                +getShareText(feed.getText()) +"...\n"+dynamicLink );
         sendIntent.setType("text/plain");
 
         try {
@@ -195,6 +196,13 @@ public class FeedUtils {
             //probability=0
         }
 
+    }
+
+    private static String getShareText(String text) {
+        int i=0,j=8;
+        for(;i<text.length() && j>0;i++)
+            j-=text.charAt(i)==' '?1:0;
+        return text.substring(0,i).trim();
     }
 
     public static void handleHyperLink(Feed feed, Context context) {

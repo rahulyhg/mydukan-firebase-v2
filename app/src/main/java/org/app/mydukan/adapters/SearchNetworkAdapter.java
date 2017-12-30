@@ -96,9 +96,14 @@ public class SearchNetworkAdapter extends RecyclerView.Adapter {
     }
 
     private void sendMessageInvite(String number) {
-        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("sms:" + number));
         String url = "https://play.google.com/store/apps/details?id=org.app.mydukan";
-        intent.putExtra("sms_body", context.getResources().getString(R.string.share_msg_text)+ "\n " + url);
+        Intent intent= new Intent(Intent.ACTION_VIEW,
+                Uri.parse(
+                        "https://api.whatsapp.com/send?phone="
+                                +number+
+                                "&text="
+                                +context.getResources().getString(R.string.share_msg_text)+ "\n " + url
+                ));
         context.startActivity(intent);
 
     }
