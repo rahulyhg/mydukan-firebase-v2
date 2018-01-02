@@ -38,6 +38,7 @@ import com.google.firebase.database.ValueEventListener;
 import org.app.mydukan.R;
 import org.app.mydukan.adapters.AdapterListFeed;
 import org.app.mydukan.adapters.CircleTransform;
+import org.app.mydukan.data.ChattUser;
 import org.app.mydukan.data.Comment;
 import org.app.mydukan.data.Feed;
 import org.app.mydukan.services.VolleyNetworkRequest;
@@ -71,10 +72,12 @@ public class CommentsActivity extends AppCompatActivity {
     List<Comment> commentList;
     CommentsAdapter mAdapter;
     TextView emptyText;
+    TextView company;
     Feed feed;
     ImageView ivAvatar;
     FirebaseUser user;
     VolleyNetworkRequest jsonRequest;
+    ImageView overflowMenu;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -96,6 +99,8 @@ public class CommentsActivity extends AppCompatActivity {
         emptyText = (TextView) findViewById(R.id.emptyText);
         ivAvatar = (ImageView) findViewById(R.id.et_avatar);
         feed = (Feed) getIntent().getSerializableExtra(AppContants.FEED);
+        company = (TextView) findViewById(R.id.post_company);
+        overflowMenu = (ImageView) findViewById(R.id.overflowMenu);
 
         if (feed == null) {
             findViewById(R.id.cardView).setVisibility(View.INVISIBLE);
@@ -127,9 +132,8 @@ public class CommentsActivity extends AppCompatActivity {
             });
         } else {
             initializeFeed();
+            getCurrentUserData(feed.getIdUser());
         }
-
-
     }
 
     @Override
@@ -207,8 +211,9 @@ public class CommentsActivity extends AppCompatActivity {
         if(feed != null)
             holder.getLikes(feed);
 
-        holder.commentTV.setText("Comment");
+//        holder.commentTV.setText("Comment");
         holder.setDeletable(feed.getIdUser().equalsIgnoreCase(user.getUid()));
+        holder.setMoreHide(feed.getIdUser().equalsIgnoreCase(user.getUid()));
 
         initializeComment();
     }
@@ -601,6 +606,25 @@ public class CommentsActivity extends AppCompatActivity {
                 }
             }
         }
+    }
+
+    public void getCurrentUserData(final String userId) {
+        //showProgress(true);
+        DatabaseReference feedReference = FirebaseDatabase.getInstance().getReference("chat_USER/" + userId);
+        feedReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if(dataSnapshot!=null){
+                    ChattUser chattUser = dataSnapshot.getValue(ChattUser.class);
+                    company.setText(chattUser != null ? chattUser.getUserType() : "");
+                }
+                // showProgress(false);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+            }
+        });
     }
 }
 

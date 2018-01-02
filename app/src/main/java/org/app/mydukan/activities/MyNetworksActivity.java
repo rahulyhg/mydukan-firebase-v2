@@ -42,6 +42,7 @@ public class MyNetworksActivity extends AppCompatActivity {
 
     public static final String FEED_ROOT = "feed";
     public static final String LIKE_ROOT = "like";
+    public static final String COMMENT_ROOT = "comments";
     public static final String FOLLOW_ROOT = "following";
     public static final int GET_PHOTO = 11;
     private String userType="Retailer";

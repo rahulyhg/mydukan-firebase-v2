@@ -9,10 +9,12 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.google.common.io.LineReader;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -28,10 +30,12 @@ import org.app.mydukan.R;
 import org.app.mydukan.activities.MyNetworksActivity;
 import org.app.mydukan.adapters.AdapterListFeed;
 import org.app.mydukan.adapters.CircleTransform;
+import org.app.mydukan.data.ChattUser;
 import org.app.mydukan.data.Feed;
 import org.app.mydukan.utils.Utils;
 
 import java.text.ParseException;
+import java.util.ArrayList;
 
 /**
  * Created by Harshit Agarwal on 16-10-2017.
@@ -48,9 +52,13 @@ public class FeedViewHolder extends RecyclerView.ViewHolder implements View.OnCl
     private TextView tvTime;
     private TextView tvContent;
     private TextView tvLink;
+    private TextView tvCompany;
     private Button followBTN;
-    private RelativeLayout viewProfile;
-    private View like, comment;
+    private LinearLayout commentTv;
+    private LinearLayout shareTv;
+//    private RelativeLayout viewProfile;
+    private LinearLayout like;
+    private TextView comment;
     private View overflowImage;
     private boolean deletable;
 
@@ -62,21 +70,27 @@ public class FeedViewHolder extends RecyclerView.ViewHolder implements View.OnCl
         ivAvatar = (ImageView) itemView.findViewById(R.id.iv_avatar);
         tvName = (TextView) itemView.findViewById(R.id.tv_name);
         tvTime = (TextView) itemView.findViewById(R.id.tv_time);
-        tvLike = (TextView) itemView.findViewById(R.id.tv_like);
+//        tvLike = (TextView) itemView.findViewById(R.id.tv_like);
+        tvLike = (TextView) itemView.findViewById(R.id.post_like_count);
         tvContent = (TextView) itemView.findViewById(R.id.tv_content);
         tvLink = (TextView) itemView.findViewById(R.id.tv_contentLink);
         ivContent = (ImageView) itemView.findViewById(R.id.iv_feed);
         ivLike = (ImageView) itemView.findViewById(R.id.iv_like);
         followBTN = (Button) itemView.findViewById(R.id.btn_follow);
-        viewProfile = (RelativeLayout) itemView.findViewById(R.id.layout_vProfile);
+//        viewProfile = (RelativeLayout) itemView.findViewById(R.id.layout_vProfile);
         commentTV = (TextView) itemView.findViewById(R.id.commentTV);
         overflowImage = itemView.findViewById(R.id.overflowMenu);
-        like = itemView.findViewById(R.id.like);
-        comment = itemView.findViewById(R.id.comment);
+        like = (LinearLayout) itemView.findViewById(R.id.like);
+        commentTv = (LinearLayout) itemView.findViewById(R.id.comment);
+        comment = (TextView) itemView.findViewById(R.id.post_comment_count);
+        tvCompany = (TextView) itemView.findViewById(R.id.post_company);
+        shareTv = (LinearLayout) itemView.findViewById(R.id.share);
         like.setOnClickListener(this);
-        comment.setOnClickListener(this);
+        shareTv.setOnClickListener(this);
+//        comment.setOnClickListener(this);
         followBTN.setOnClickListener(this);
-        viewProfile.setOnClickListener(this);
+        commentTv.setOnClickListener(this);
+//        viewProfile.setOnClickListener(this);
         tvLink.setOnClickListener(this);
         this.onClickItemFeed = onClickItemFeed;
 
@@ -90,6 +104,9 @@ public class FeedViewHolder extends RecyclerView.ViewHolder implements View.OnCl
                     Menu m = popupMenu.getMenu();
                     m.removeItem(R.id.delete);
                 }
+
+                Menu menu = popupMenu.getMenu();
+                menu.removeItem(R.id.share);
 
                 popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                     @Override
@@ -177,6 +194,37 @@ public class FeedViewHolder extends RecyclerView.ViewHolder implements View.OnCl
         tvContent.setText(text);
     }
 
+    public void getComments(final Feed feed) {
+        changeLikeUI(feed);
+        final DatabaseReference referenceLike = FirebaseDatabase.getInstance().getReference().child(MyNetworksActivity.COMMENT_ROOT + "/" + feed.getIdFeed());
+
+        referenceLike.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                if (dataSnapshot == null) {
+                    return;
+                }
+                feed.setCommentCount((int) dataSnapshot.getChildrenCount());
+                /*if (dataSnapshot.child(auth.getUid()).exists()) {
+                    feed.setLiked(true);
+                } else {
+                    feed.setLiked(false);
+                }*/
+
+                if (!feed.getIdFeed().equalsIgnoreCase(currFeed.getIdFeed())) {
+                    return;
+                }
+                comment.setText(feed.getCommentCount() + " comments");
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
     public void getLikes(final Feed feed) {
         changeLikeUI(feed);
         final DatabaseReference referenceLike = FirebaseDatabase.getInstance().getReference().child(MyNetworksActivity.LIKE_ROOT + "/" + feed.getIdFeed());
@@ -261,5 +309,37 @@ public class FeedViewHolder extends RecyclerView.ViewHolder implements View.OnCl
 
     public void setDeletable(boolean b) {
         deletable = b;
+    }
+
+    public void setMoreHide(boolean b){
+        if(b) {
+            overflowImage.setVisibility(View.VISIBLE);
+        }
+        else{
+            overflowImage.setVisibility(View.GONE);
+        }
+    }
+
+    public void setTvCompany(String company){
+        tvCompany.setText(company);
+    }
+
+    public void getCurrentUserData(final String userId) {
+        //showProgress(true);
+        DatabaseReference feedReference = FirebaseDatabase.getInstance().getReference("chat_USER/" + userId);
+        feedReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if(dataSnapshot!=null){
+                    ChattUser chattUser = dataSnapshot.getValue(ChattUser.class);
+                    setTvCompany(chattUser != null ? chattUser.getUserType() : "");
+                }
+                // showProgress(false);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+            }
+        });
     }
 }
