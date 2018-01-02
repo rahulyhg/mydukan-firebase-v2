@@ -349,27 +349,6 @@ public class CommentsActivity extends AppCompatActivity {
 
     }
 
-    /*public void getUserToken(final String auth, final String name, final String type){
-        final DatabaseReference referenceFcm = FirebaseDatabase.getInstance().getReference().child("fcmregistration");
-//        final String auth = FirebaseAuth.getInstance().getCurrentUser().getUid();
-        referenceFcm.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                HashMap<String, Object> map = new HashMap<>();
-                map = (HashMap<String, Object>) dataSnapshot.getValue();
-                if(map.containsKey(auth)) {
-                    System.out.println("User Token Comment: " + map.get(auth));
-                    jsonRequest.JsonObjectRequest((String)map.get(auth), name, type, feed.getIdFeed());
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-    }*/
-
     private void toggleLoading() {
         progressBar.setVisibility(View.GONE);
         emptyText.setVisibility(commentList.isEmpty() ? View.VISIBLE : View.GONE);

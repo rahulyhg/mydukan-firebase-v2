@@ -390,7 +390,7 @@ public class FeedPrifileActivity extends AppCompatActivity implements View.OnCli
         final FirebaseUser auth = FirebaseAuth.getInstance().getCurrentUser();
        final DatabaseReference referenceFollow = FirebaseDatabase.getInstance().getReference().child(MYFOLLOW_ROOT);
         // final FirebaseUser auth = FirebaseAuth.getInstance().getCurrentUser();
-        // final DatabaseReference referenceFollow = FirebaseDatabase.getInstance().getReference(FOLLOW_ROOT+"/"+auth.getUid());
+        // final DatabaseReference referenceFollow = FirebaseDatabase.getInstance().getReference(FOLLOWING_ROOT+"/"+auth.getUid());
 //DataSnapshot { key = followers, value = {lw7sgr8jgWPOFiPiioecvcofSFk1={NC8By7oxjjeYVQxSfjiY3nYWoGq1=true}, kVihGQVdNPgwUoHkaLiw6X1czN43={kVihGQVdNPgwUoHkaLiw6X1czN43=true, jaXVRe8e9Wg6tlZDpnfz5iVIE1d2=true, NC8By7oxjjeYVQxSfjiY3nYWoGq1=true}, jaXVRe8e9Wg6tlZDpnfz5iVIE1d2={lw7sgr8jgWPOFiPiioecvcofSFk1=true, kVihGQVdNPgwUoHkaLiw6X1czN43=true, jaXVRe8e9Wg6tlZDpnfz5iVIE1d2=true, NC8By7oxjjeYVQxSfjiY3nYWoGq1=true}, NC8By7oxjjeYVQxSfjiY3nYWoGq1={kVihGQVdNPgwUoHkaLiw6X1czN43=true, jaXVRe8e9Wg6tlZDpnfz5iVIE1d2=true}} }
         referenceFollow.addValueEventListener(new ValueEventListener() {
             @Override
@@ -540,7 +540,7 @@ public class FeedPrifileActivity extends AppCompatActivity implements View.OnCli
         flagFollow = true;
         final DatabaseReference referenceFollow = FirebaseDatabase.getInstance().getReference().child(FOLLOW_ROOT);
         final DatabaseReference referenceIFollow = FirebaseDatabase.getInstance().getReference().child(MYFOLLOW_ROOT);
-        //  final DatabaseReference referenceLike = FirebaseDatabase.getInstance().getReference(MyNetworkActivity.FOLLOW_ROOT+"/"+auth.getUid()+"/"+feed.getIdUser());
+        //  final DatabaseReference referenceLike = FirebaseDatabase.getInstance().getReference(MyNetworkActivity.FOLLOWING_ROOT+"/"+auth.getUid()+"/"+feed.getIdUser());
         final FirebaseUser auth = FirebaseAuth.getInstance().getCurrentUser();
         referenceFollow.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override

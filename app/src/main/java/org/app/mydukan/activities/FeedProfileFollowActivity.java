@@ -242,7 +242,7 @@ public class FeedProfileFollowActivity extends Activity implements
         //  showProgress(true);
         final DatabaseReference referenceFollow = FirebaseDatabase.getInstance().getReference().child(FOLLOW_ROOT);
         final DatabaseReference referenceIFollow = FirebaseDatabase.getInstance().getReference().child(MYFOLLOW_ROOT);
-        //  final DatabaseReference referenceLike = FirebaseDatabase.getInstance().getReference(MyNetworkActivity.FOLLOW_ROOT+"/"+auth.getUid()+"/"+feed.getIdUser());
+        //  final DatabaseReference referenceLike = FirebaseDatabase.getInstance().getReference(MyNetworkActivity.FOLLOWING_ROOT+"/"+auth.getUid()+"/"+feed.getIdUser());
         final FirebaseUser auth = FirebaseAuth.getInstance().getCurrentUser();
         referenceFollow.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override

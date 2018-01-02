@@ -220,7 +220,7 @@ public class FeedViewHolder extends RecyclerView.ViewHolder implements View.OnCl
         final FirebaseUser auth = FirebaseAuth.getInstance().getCurrentUser();
         final DatabaseReference referenceLike = FirebaseDatabase.getInstance().getReference().child(MyNetworksActivity.FOLLOW_ROOT);
         // final FirebaseUser auth = FirebaseAuth.getInstance().getCurrentUser();
-        //  final DatabaseReference referenceLike = FirebaseDatabase.getInstance().getReference(MyNetworkActivity.FOLLOW_ROOT+"/"+auth.getUid());
+        //  final DatabaseReference referenceLike = FirebaseDatabase.getInstance().getReference(MyNetworkActivity.FOLLOWING_ROOT+"/"+auth.getUid());
 
         referenceLike.equalTo(followKey).addValueEventListener(new ValueEventListener() {
             @Override

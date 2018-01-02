@@ -82,12 +82,12 @@ public class MyProfileActivity extends BaseActivity implements AdapterListFeed.O
     AdapterListFeed mAdapter;
     public static final String FEED_ROOT = "feed";
     public static final String LIKE_ROOT = "like";
-    public static final String FOLLOW_ROOT = "following";
-    public static final String MYFOLLOW_ROOT = "followers";
+    public static final String FOLLOWING_ROOT = "following";
+    public static final String FOLLOWERS_ROOT = "followers";
     private boolean flagFollow=false;
     LinearLayout btn_Following,btn_Followers,details_layout,post_layout;
     AdView mAdView;
-    boolean mMyProfile=false,intial_follow=true;
+    boolean mMyProfile=false;
     FirebaseUser auth = FirebaseAuth.getInstance().getCurrentUser();
     SwipeRefreshLayout mSwipeRefereshLayout;
     NestedScrollView nestedScrollView;
@@ -295,18 +295,20 @@ public class MyProfileActivity extends BaseActivity implements AdapterListFeed.O
     // Change the following button Text(Follow - UnFollow).
     public void changeFollowing(final String followKey) {// followkey is user_id
         final FirebaseUser auth = FirebaseAuth.getInstance().getCurrentUser();
-        final DatabaseReference referenceFollow = FirebaseDatabase.getInstance().getReference().child(MYFOLLOW_ROOT);
+        final DatabaseReference referenceFollow = FirebaseDatabase.getInstance().getReference().child(FOLLOWERS_ROOT +"/"+followKey);
         referenceFollow.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 long totalFollowers = 0;
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    if (snapshot.getKey().equals(followKey)) {
-                        totalFollowers = snapshot.getChildrenCount();
-                        break;
-                    }
+                if(dataSnapshot!=null){
+                    totalFollowers = dataSnapshot.getChildrenCount();
                 }
                 tvFollowers.setText(totalFollowers+"");
+                if (dataSnapshot!=null && dataSnapshot.hasChild(auth.getUid())) {
+                    btn_Follow.setText("Unfollow");
+                } else {
+                    btn_Follow.setText("Follow");
+                }
             }
 
             @Override
@@ -319,27 +321,19 @@ public class MyProfileActivity extends BaseActivity implements AdapterListFeed.O
     public void getListFollowing(final String followingKey) {
 
         final FirebaseUser auth = FirebaseAuth.getInstance().getCurrentUser();
-        final DatabaseReference referenceFollow = FirebaseDatabase.getInstance().getReference().child(FOLLOW_ROOT);
+        final DatabaseReference referenceFollow = FirebaseDatabase.getInstance().getReference().child(FOLLOWING_ROOT +"/"+followingKey);
         referenceFollow.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 //showProgress(false);
                 long totalFollowing = 0;
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    if (snapshot.getKey().equals(followingKey)) {
-                        totalFollowing = snapshot.getChildrenCount();
-                        //  mFollowersList = (HashMap<String, String>)
-                        break;
-                    }
+                if(dataSnapshot!=null){
+                    totalFollowing=dataSnapshot.getChildrenCount();
                 }
-                if(intial_follow) {
-                    if (dataSnapshot.child(followingKey).hasChild(mApp.getFirebaseAuth().getCurrentUser().getUid())) {
-                        btn_Follow.setText("Unfollow");
-                    } else {
-                        btn_Follow.setText("Follow");
-                    }
-                    intial_follow=false;
-                }
+               // if(intial_follow) {
+
+//                    intial_follow=false;
+                //}
                 tvFollowing.setText(totalFollowing + "");
             }
 
@@ -351,34 +345,33 @@ public class MyProfileActivity extends BaseActivity implements AdapterListFeed.O
         });
     }
     private void addFollow(final String id) {
-
-        flagFollow = true;
-        final DatabaseReference referenceFollow = FirebaseDatabase.getInstance().getReference().child(FOLLOW_ROOT);
-        final DatabaseReference referenceIFollow = FirebaseDatabase.getInstance().getReference().child(MYFOLLOW_ROOT);
-        //  final DatabaseReference referenceLike = FirebaseDatabase.getInstance().getReference(MyNetworkActivity.FOLLOW_ROOT+"/"+auth.getUid()+"/"+feed.getIdUser());
         final FirebaseUser auth = FirebaseAuth.getInstance().getCurrentUser();
-        referenceFollow.addListenerForSingleValueEvent(new ValueEventListener() {
+        flagFollow = true;
+        final DatabaseReference referenceFollowing = FirebaseDatabase.getInstance().getReference().child(FOLLOWING_ROOT +"/"+auth.getUid());
+        final DatabaseReference referenceFollowers = FirebaseDatabase.getInstance().getReference().child(FOLLOWERS_ROOT +"/"+id);
+
+        referenceFollowing.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                if (flagFollow) {
-                    if (dataSnapshot.child(auth.getUid()).hasChild(id)) {
-                        referenceFollow.child(auth.getUid()).child(id).removeValue();//removing userid to following list  .
-                        referenceIFollow.child(id).child(auth.getUid()).removeValue();//removing the user id to distributor following list.
-                        btn_Follow.setText("Follow");
-                        flagFollow = false;
+//                if (flagFollow) {
+                    if (dataSnapshot!=null&& dataSnapshot.hasChild(id)) {
+                        referenceFollowing.child(id).removeValue();//removing userid to following list  .
+                        referenceFollowers.child(auth.getUid()).removeValue();//removing the user id to distributor following list.
+//                        btn_Follow.setText("Follow");
+//                        flagFollow = false;
                         Answers.getInstance().logCustom(new CustomEvent("Mynetwork FeedPage")
                                 .putCustomAttribute(id, "unFollow Clicked"));
 
                     } else {
-                        referenceFollow.child(auth.getUid()).child(id).setValue(true);//adding userid to following list  .
-                        referenceIFollow.child(id).child(auth.getUid()).setValue(true);//adding the user id to distributor following list.
-                        btn_Follow.setText("UnFollow");
-                        flagFollow = false;
+                        referenceFollowing.child(id).setValue(true);//adding userid to following list  .
+                        referenceFollowers.child(auth.getUid()).setValue(true);//adding the user id to distributor following list.
+//                        btn_Follow.setText("UnFollow");
+//                        flagFollow = false;
                         Answers.getInstance().logCustom(new CustomEvent("Mynetwork FeedPage")
                                 .putCustomAttribute(id, "Follow Clicked"));
 
                     }
-                }
+//                }
             }
 
             @Override
@@ -390,12 +383,9 @@ public class MyProfileActivity extends BaseActivity implements AdapterListFeed.O
 
     private void initProfileView(User profileDetails, ChattUser mChattUser) {
         details_layout.setVisibility(View.VISIBLE);
-        String cNAME=profileDetails.getCompanyinfo().getName();
-        if(cNAME!=null){
-            tv_profile.setText(profileDetails.getCompanyinfo().getName());
-        }else{
-            tv_profile.setText(profileDetails.getUserinfo().getName());
-        }
+        String cNAME= (profileDetails.getCompanyinfo()!=null && profileDetails.getCompanyinfo().getName()!=null )?
+                profileDetails.getCompanyinfo().getName() : profileDetails.getUserinfo().getName();
+        tv_profile.setText(cNAME);
         String profileRole=profileDetails.getOtherinfo().getRole();
         if(profileRole.isEmpty()&&profileRole!=null){
             //tv_ProfileType.setVisibility(View.VISIBLE);
