@@ -142,6 +142,7 @@ public class MyProfileActivity extends BaseActivity implements AdapterListFeed.O
             public void onClick(View v) {
                 Intent intent = new Intent(MyProfileActivity.this, YourAccountActivity.class);
                 intent.putExtra(AppContants.CHAT_USER_PROFILE, (Serializable) chattUser);
+                intent.putExtra(AppContants.IS_MY_PROFILE,(Serializable)mMyProfile);
                 startActivity(intent);
             }
         });

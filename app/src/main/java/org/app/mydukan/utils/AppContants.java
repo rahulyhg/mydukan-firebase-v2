@@ -17,6 +17,7 @@ public class AppContants {
     public final static int ALL_SUPPLIER = 2;
 
     public final static String USER_PROFILE = "user_profile";
+    public final static String IS_MY_PROFILE="is_my_profile";
 
     public final static String SCREEN_TITLE = "screen_title";
     public final static String SUPPLIER = "supplier";
