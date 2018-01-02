@@ -49,6 +49,7 @@ public class YourAccountActivity extends AppCompatActivity {
     private MyDukan mApp;
     ProgressBar progressBar;
     LinearLayout linearLayout;
+    Boolean mMyProfile=false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -85,6 +86,14 @@ public class YourAccountActivity extends AppCompatActivity {
                     Toast.makeText(YourAccountActivity.this, "Unable to Get the User Profile", Toast.LENGTH_SHORT).show();
                 }
             }
+            if ((mybundle.containsKey(AppContants.IS_MY_PROFILE))){
+                mMyProfile=(Boolean)mybundle.getSerializable(AppContants.IS_MY_PROFILE);
+                if(mMyProfile==false){
+                    Phone.setVisibility(View.GONE);
+                    email.setVisibility(View.GONE);
+                    Gst.setVisibility(View.GONE);
+                }
+            }
         }
         //getProfileData(mApp.getFirebaseAuth().getCurrentUser().getUid());
     }
@@ -108,10 +117,16 @@ public class YourAccountActivity extends AppCompatActivity {
                         email.setText(Html.fromHtml("Email : " + "<b>" + profileDetails.getUserinfo().getEmailid() + "</b>"));
                     }
                     if (profileDetails.getUserinfo().getAddressinfo().getStreet()!=NULL) {
-                        String addr = profileDetails.getUserinfo().getAddressinfo().getStreet() + "<br>" + profileDetails.getUserinfo().getAddressinfo().getCity() +
-                                ", " + profileDetails.getUserinfo().getAddressinfo().getState() + "<br>" + profileDetails.getUserinfo().getAddressinfo().getPincode() + "<br>" +
-                                profileDetails.getUserinfo().getAddressinfo().getCountry();
-                        Address.setText(Html.fromHtml("<b>" + addr + "</b>"));
+                        if (mMyProfile==true) {
+                            String addr = profileDetails.getUserinfo().getAddressinfo().getStreet() + "<br>" + profileDetails.getUserinfo().getAddressinfo().getCity() +
+                                    ", " + profileDetails.getUserinfo().getAddressinfo().getState() + "<br>" + profileDetails.getUserinfo().getAddressinfo().getPincode() + "<br>" +
+                                    profileDetails.getUserinfo().getAddressinfo().getCountry();
+                            Address.setText(Html.fromHtml("<b>" + addr + "</b>"));
+                        }else {
+                            String addr = profileDetails.getUserinfo().getAddressinfo().getCity() +
+                                    ", " + profileDetails.getUserinfo().getAddressinfo().getState() + "<br>" + profileDetails.getUserinfo().getAddressinfo().getPincode() + "<br>";
+                            Address.setText(Html.fromHtml("<b>" + addr + "</b>"));
+                        }
                     }
                     if (profileDetails.getCompanyinfo().getName() != NULL) {
                         CompanyName.setText(Html.fromHtml("Name : " + "<b>" + profileDetails.getCompanyinfo().getName() + "</b>"));

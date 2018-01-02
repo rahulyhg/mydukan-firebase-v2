@@ -41,13 +41,14 @@ android {
         versionCode 118
         versionName "18.12"
 
+*/
         versionCode 112
         versionName "14.12"
 
-        */
 
-        versionCode 137
-        versionName "14.37"
+
+        /*versionCode 137
+        versionName "14.37"*/
         /* versionCode 120
         versionName "14.20"*/
         multiDexEnabled true

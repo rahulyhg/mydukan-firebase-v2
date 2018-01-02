@@ -19,12 +19,14 @@ import org.app.mydukan.activities.CommentsActivity;
 import org.app.mydukan.activities.WebViewActivity;
 import org.app.mydukan.data.Feed;
 import org.app.mydukan.services.VolleyNetworkRequest;
+import org.app.mydukan.viewholder.FeedViewHolder;
 
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static android.content.Context.APP_OPS_SERVICE;
 import static org.app.mydukan.activities.CommentsActivity.COMMENT_ROOT;
 import static org.app.mydukan.fragments.MyNetworkFragment.FEED_LOCATION;
 import static org.app.mydukan.fragments.TwoFragment.FEED_ROOT;

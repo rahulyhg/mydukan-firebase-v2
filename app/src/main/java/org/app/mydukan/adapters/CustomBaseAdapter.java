@@ -91,15 +91,17 @@ public class CustomBaseAdapter extends BaseAdapter {
                     .override(50,50)
                     .into(holder.imageView);
         }
-        if(profileType.equals( AppContants.MYPROFILE_FOLLOW)){
-            holder.txtRemove.setVisibility(View.VISIBLE);
-        }
-        holder.txtRemove.setOnClickListener(new View.OnClickListener() {
+        //if(profileType.equals( AppContants.MYPROFILE_FOLLOW)){
+          //  holder.txtRemove.setVisibility(View.VISIBLE);
+//        }else{
+            holder.txtRemove.setVisibility(View.GONE);
+//        }
+       /* holder.txtRemove.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 removeFollowing(myProfileId, rowItem.getuId());
             }
-        });
+        });*/
         return convertView;
     }
 
@@ -122,7 +124,7 @@ public class CustomBaseAdapter extends BaseAdapter {
         //  showProgress(true);
         final DatabaseReference referenceFollow = FirebaseDatabase.getInstance().getReference().child(FOLLOW_ROOT);
         final DatabaseReference referenceIFollow = FirebaseDatabase.getInstance().getReference().child(MYFOLLOW_ROOT);
-        //  final DatabaseReference referenceLike = FirebaseDatabase.getInstance().getReference(MyNetworkActivity.FOLLOW_ROOT+"/"+auth.getUid()+"/"+feed.getIdUser());
+        //  final DatabaseReference referenceLike = FirebaseDatabase.getInstance().getReference(MyNetworkActivity.FOLLOWING_ROOT+"/"+auth.getUid()+"/"+feed.getIdUser());
         final FirebaseUser auth = FirebaseAuth.getInstance().getCurrentUser();
         referenceIFollow.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override

@@ -28,7 +28,6 @@ public class AdapterListFeed extends RecyclerView.Adapter<FeedViewHolder> {
     DatabaseReference databaseReference;
     private OnClickItemFeed onClickItemFeed;
 
-
     public AdapterListFeed(final List<Feed> mList, OnClickItemFeed onClickItemFeed) {
         this.mList = mList;
         auth = FirebaseAuth.getInstance().getCurrentUser();
@@ -43,7 +42,7 @@ public class AdapterListFeed extends RecyclerView.Adapter<FeedViewHolder> {
 
     @Override
     public FeedViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_list_feed2, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.post_item_list_feed2, parent, false);
         return new FeedViewHolder(view,onClickItemFeed);
     }
 
@@ -62,7 +61,10 @@ public class AdapterListFeed extends RecyclerView.Adapter<FeedViewHolder> {
             holder.setTvLink(feed.getLink());
         }
         holder.getLikes(feed);
+        holder.getComments(feed);
         holder.setDeletable(feed.getIdUser().equalsIgnoreCase(auth.getUid()));
+        holder.setMoreHide(feed.getIdUser().equalsIgnoreCase(auth.getUid()));
+        holder.getCurrentUserData(feed.getIdUser());
 //        holder.changeFollowing(feed.getIdUser());
 
     }

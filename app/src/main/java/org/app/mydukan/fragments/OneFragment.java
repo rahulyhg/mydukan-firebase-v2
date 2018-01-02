@@ -276,7 +276,7 @@ public class OneFragment extends Fragment implements AdapterListFeed.OnClickItem
     private void addFollow(final Feed feed) {
         flagFollow = true;
         final DatabaseReference referenceLike = FirebaseDatabase.getInstance().getReference().child(FOLLOW_ROOT);
-        //  final DatabaseReference referenceLike = FirebaseDatabase.getInstance().getReference(MyNetworkActivity.FOLLOW_ROOT+"/"+auth.getUid()+"/"+feed.getIdUser());
+        //  final DatabaseReference referenceLike = FirebaseDatabase.getInstance().getReference(MyNetworkActivity.FOLLOWING_ROOT+"/"+auth.getUid()+"/"+feed.getIdUser());
         final FirebaseUser auth = FirebaseAuth.getInstance().getCurrentUser();
         referenceLike.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override

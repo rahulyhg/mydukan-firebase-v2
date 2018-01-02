@@ -18,6 +18,15 @@ public class Feed implements Serializable {
     String idUser;
     String idFeed;
     String link;
+    int commentCount;
+
+    public int getCommentCount() {
+        return commentCount;
+    }
+
+    public void setCommentCount(int commentCount) {
+        this.commentCount = commentCount;
+    }
 
     public void setLiked(boolean liked) {
         this.liked = liked;

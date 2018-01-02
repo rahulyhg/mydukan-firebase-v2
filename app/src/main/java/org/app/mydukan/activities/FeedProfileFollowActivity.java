@@ -3,7 +3,6 @@ package org.app.mydukan.activities;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.Gravity;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -35,8 +34,8 @@ import java.util.List;
 public class FeedProfileFollowActivity extends Activity implements
         OnItemClickListener {
 
-    public static final String FOLLOW_ROOT = "following";
-    public static final String MYFOLLOW_ROOT = "followers";
+    public static final String FOLLOWING_ROOT = "following";
+    public static final String FOLLOWERS_ROOT = "followers";
     ListView listView;
 
     List<ChattUser> mList ;
@@ -99,7 +98,7 @@ public class FeedProfileFollowActivity extends Activity implements
 
     private void getFollowingProfiles(final String id_profile) {
         final FirebaseUser auth = FirebaseAuth.getInstance().getCurrentUser();
-        final DatabaseReference referenceFollow = FirebaseDatabase.getInstance().getReference().child(FOLLOW_ROOT+"/"+id_profile);
+        final DatabaseReference referenceFollow = FirebaseDatabase.getInstance().getReference().child(FOLLOWING_ROOT +"/"+id_profile);
         referenceFollow.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -157,7 +156,7 @@ public class FeedProfileFollowActivity extends Activity implements
     private void getProfileFollowers(final String id_profile) {
 
         final FirebaseUser auth = FirebaseAuth.getInstance().getCurrentUser();
-        final DatabaseReference referenceFollow = FirebaseDatabase.getInstance().getReference().child(MYFOLLOW_ROOT+"/"+id_profile);
+        final DatabaseReference referenceFollow = FirebaseDatabase.getInstance().getReference().child(FOLLOWERS_ROOT +"/"+id_profile);
         referenceFollow.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -240,9 +239,9 @@ public class FeedProfileFollowActivity extends Activity implements
 
     private static void removeFollowing(final Feed feed) {
         //  showProgress(true);
-        final DatabaseReference referenceFollow = FirebaseDatabase.getInstance().getReference().child(FOLLOW_ROOT);
-        final DatabaseReference referenceIFollow = FirebaseDatabase.getInstance().getReference().child(MYFOLLOW_ROOT);
-        //  final DatabaseReference referenceLike = FirebaseDatabase.getInstance().getReference(MyNetworkActivity.FOLLOW_ROOT+"/"+auth.getUid()+"/"+feed.getIdUser());
+        final DatabaseReference referenceFollow = FirebaseDatabase.getInstance().getReference().child(FOLLOWING_ROOT);
+        final DatabaseReference referenceIFollow = FirebaseDatabase.getInstance().getReference().child(FOLLOWERS_ROOT);
+        //  final DatabaseReference referenceLike = FirebaseDatabase.getInstance().getReference(MyNetworkActivity.FOLLOWING_ROOT+"/"+auth.getUid()+"/"+feed.getIdUser());
         final FirebaseUser auth = FirebaseAuth.getInstance().getCurrentUser();
         referenceFollow.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override

@@ -16,6 +16,7 @@ public class ChattUser implements Serializable{
     private String uId;
     private String photoUrl;
     private String phoneNumber;
+    private String userType;
 
     public String getPhoneNumber() {
         return phoneNumber;
@@ -34,8 +35,6 @@ public class ChattUser implements Serializable{
     public void setUserType(String userType) {
         this.userType = userType;
     }
-
-    private String userType;
 
     public ChattUser() {
     }

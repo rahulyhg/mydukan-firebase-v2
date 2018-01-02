@@ -31,7 +31,7 @@
                 android:descendantFocusability="blocksDescendants"
                 android:orientation="vertical">
 
-                <include layout="@layout/item_list_feed2" />
+                <include layout="@layout/post_item_list_feed2" />
 
                 <android.support.v7.widget.RecyclerView
                     android:id="@+id/recyclerView"
