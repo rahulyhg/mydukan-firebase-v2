@@ -480,7 +480,7 @@ public class SchemeDetailsActivity extends BaseActivity {
                     DownloadManager.Request request = new DownloadManager.Request(uri);
                     Random rand = new Random();
                     int randomNum = rand.nextInt(50) + 1;
-                    request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, "MyDukan_"+ mScheme.getName()+"_"+randomNum+".csv");
+                    request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, "MyDukan_"+ mScheme.getName()+"_"+randomNum+".jpeg");
                     request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED); // to notify when download is complete
                     request.allowScanningByMediaScanner();// if you want to be available from media players
                     DownloadManager manager = (DownloadManager)  SchemeDetailsActivity.this.getSystemService(DOWNLOAD_SERVICE);
