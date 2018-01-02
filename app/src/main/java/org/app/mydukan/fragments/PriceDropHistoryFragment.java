@@ -10,10 +10,15 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import org.app.mydukan.R;
+import org.app.mydukan.data.PriceDropHistory;
 import org.app.mydukan.data.Product;
 import org.app.mydukan.data.SupplierBindData;
+import org.app.mydukan.server.ApiManager;
+import org.app.mydukan.server.ApiResult;
 import org.app.mydukan.utils.AppContants;
 import org.app.mydukan.utils.NetworkUtil;
+
+import java.util.ArrayList;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -28,6 +33,8 @@ public class PriceDropHistoryFragment extends Fragment {
     private ProgressDialog mProgress;
     Product product;
     private SupplierBindData mSupplier;
+
+    ArrayList<PriceDropHistory> priceDropHistories;
 
     public PriceDropHistoryFragment() {
         // Required empty public constructor
@@ -49,7 +56,7 @@ public class PriceDropHistoryFragment extends Fragment {
             try {
                 mProduct = (Product) extras.getSerializable(AppContants.PRODUCT);
                 mSupplier = (SupplierBindData) extras.getSerializable(AppContants.SUPPLIER);
-
+                fetchPrice_HistryPage();
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
@@ -59,6 +66,41 @@ public class PriceDropHistoryFragment extends Fragment {
 
 
     }
+//=============== Get the Pr1ce drop History from The data Base. ===============
+
+    private void fetchPrice_HistryPage() {
+        showProgress();
+        priceDropHistories = new ArrayList<>();
+        ApiManager.getInstance(context).getPriceHistryDetails(mProduct.getProductId(),
+                new ApiResult() {
+                    @Override
+                    public void onSuccess(Object data) {
+                        try{
+                            dismissProgress();
+                            if (data!=null){
+                                priceDropHistories= (ArrayList<PriceDropHistory>) data;
+
+                            }
+
+                        }catch (Exception e){
+                            dismissProgress();
+                            e.printStackTrace();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(String response) {
+                        try {
+                            dismissProgress();
+
+                        }catch (Exception e){
+                            e.printStackTrace();
+                        }
+                    }
+                });
+    }
+
+    //===========================================
 
     public void showProgress() {
 

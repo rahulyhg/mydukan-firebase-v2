@@ -1403,9 +1403,10 @@ public class ApiManager {
     }
 
     public void getPriceHistryDetails(String productId, final ApiResult result) {
-        Log.d("PriceDropHistry ", "getPriceHistryDetails");  //-Kum9BL07zBHDzDY20AH   productId
+        Log.d("PriceDropHistry ", "getPriceHistryDetails");
+       /*  Example: productId = -Kum9BL07zBHDzDY20AH   */
         final ArrayList<PriceDropHistory> priceDropHistories = new ArrayList<>();
-        DatabaseReference Ref_PriceDropHistry = FirebaseDatabase.getInstance().getReference("pricedrophistory/" + "-Kum9BL07zBHDzDY20AH");
+        DatabaseReference Ref_PriceDropHistry = FirebaseDatabase.getInstance().getReference("pricedrophistory/" + productId);
         Ref_PriceDropHistry.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
