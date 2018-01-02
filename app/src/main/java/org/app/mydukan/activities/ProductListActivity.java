@@ -103,18 +103,18 @@ public class ProductListActivity extends BaseActivity implements TabLayout.OnTab
                 }
                 if (bundle.containsKey(AppContants.CATEGORY_ID)) {
                     mCategoryId = bundle.getString(AppContants.CATEGORY_ID);
-                    Log.e("Category", mCategoryId);
+                    //Log.e("Category", mCategoryId);
                 }
                 if (bundle.containsKey(AppContants.USER_DETAILS)) {
                     userdetails = (User) bundle.getSerializable(AppContants.USER_DETAILS);
                 }
                 if (bundle.containsKey(AppContants.PRICE_TYPE)) {
                     ptype = bundle.getString(AppContants.PRICE_TYPE);
-                    Log.e("Ptype", ptype);
+                    //Log.e("Ptype", ptype);
 
                 }
                 if (bundle.containsKey(AppContants.PRICE_RANGE)) {
-                    Log.d("PRICERANGE", "Found");
+                    //Log.d("PRICERANGE", "Found");
                     priceRange = (HashMap<String, Integer>) bundle.getSerializable(AppContants.PRICE_RANGE);
                     pmin = priceRange.get("Min");
                     pmax = priceRange.get("Max");

@@ -194,8 +194,10 @@ public class GenerateQRCodeActivity extends BaseActivity implements OnClickListe
         showProgress();
         String myDhukhan_UserAddress="";
         if(userdetails != null && userdetails.getUserinfo() != null && userdetails.getUserinfo().getAddressinfo() != null) {
-            if(userdetails.getUserinfo().getAddressinfo().getStreet() != null && !userdetails.getUserinfo().getAddressinfo().getStreet().isEmpty())
+            if(userdetails.getUserinfo().getAddressinfo().getStreet() != null && !userdetails.getUserinfo().getAddressinfo().getStreet().isEmpty()) {
                 myDhukhan_UserAddress = userdetails.getUserinfo().getAddressinfo().getStreet().toString().trim() + ",";
+                printAddress.setText("Address: "+mApp.getUtils().toSameCase(userdetails.getUserinfo().getAddressinfo().getStreet().trim().toString()));
+            }
 
             if(userdetails.getUserinfo().getAddressinfo().getCity() != null && !userdetails.getUserinfo().getAddressinfo().getCity().isEmpty())
                 myDhukhan_UserAddress = myDhukhan_UserAddress + userdetails.getUserinfo().getAddressinfo().getCity().toString().trim() + ",";
@@ -218,10 +220,14 @@ public class GenerateQRCodeActivity extends BaseActivity implements OnClickListe
         String qrInputText =userdetails.getUserinfo().getName().toString()+" ||| "+ myDukhan_UserId +" ||| "+myDhukhan_UserAddress + " ||| " + userdetails.getUserinfo().getNumber().toString();
         Log.v(LOG_TAG, qrInputText);
 
+        if(userdetails != null && userdetails.getUserinfo() != null && userdetails.getUserinfo().getName() != null && !userdetails.getUserinfo().getName().isEmpty())
+            printName.setText( mApp.getUtils().toSameCase(userdetails.getUserinfo().getName().trim().toString()));
 
-        printName.setText( mApp.getUtils().toSameCase(userdetails.getUserinfo().getName().trim().toString()));
-        printPhoneNumber.setText("PhoneNumber: "+userdetails.getUserinfo().getNumber().toString());
-        printAddress.setText("Address: "+mApp.getUtils().toSameCase(userdetails.getUserinfo().getAddressinfo().getStreet().trim().toString()));
+        if(userdetails != null && userdetails.getUserinfo() != null && userdetails.getUserinfo().getNumber() != null && !userdetails.getUserinfo().getNumber().isEmpty())
+            printPhoneNumber.setText("PhoneNumber: "+userdetails.getUserinfo().getNumber().toString());
+
+
+
         //draw the QR code for passed value(QR code is Text_Type)
         dwawQRCode(context, qrInputText);
 

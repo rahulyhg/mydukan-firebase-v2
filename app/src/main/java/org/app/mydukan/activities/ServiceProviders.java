@@ -301,7 +301,7 @@ public class ServiceProviders extends BaseActivity {
                 public void onSuccess(Object data) {
                     serviceCenterInfos = (ArrayList<ServiceCenterInfo>) data;
 
-                    if (serviceCenterInfos.isEmpty()) {
+                    if (serviceCenterInfos != null && serviceCenterInfos.isEmpty()) {
                         editsearch.setVisibility(View.GONE);
                         emptyData.setVisibility(View.VISIBLE);
                         dismissProgress();

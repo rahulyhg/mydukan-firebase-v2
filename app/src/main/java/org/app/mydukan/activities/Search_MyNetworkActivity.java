@@ -74,8 +74,10 @@ public class Search_MyNetworkActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search_mynetwork);
         try {
-            getSupportActionBar().setDisplayShowHomeEnabled(true);
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            if(getSupportActionBar() != null) {
+                getSupportActionBar().setDisplayShowHomeEnabled(true);
+                getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            }
             jsonRequest = new VolleyNetworkRequest(this);
 
             emptyText = (TextView) findViewById(R.id.emptyText);

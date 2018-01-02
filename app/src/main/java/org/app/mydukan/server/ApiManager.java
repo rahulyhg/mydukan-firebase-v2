@@ -91,7 +91,10 @@ public class ApiManager {
     private ApiManager(Context context) {
         mctx = context;
         mApp = (MyDukan) mctx.getApplicationContext();
-        FirebaseDatabase.getInstance().setPersistenceEnabled(true);
+        //code added by amit
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        database.setPersistenceEnabled(true);
+        //FirebaseDatabase.getInstance().setPersistenceEnabled(true);
         // firebase storage URL to be mentioned below
         mStorage = FirebaseStorage.getInstance().getReferenceFromUrl("gs://mydukan-1024.appspot.com");
     }
@@ -1121,129 +1124,135 @@ public class ApiManager {
         supplierRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                if (dataSnapshot.exists()) {
+                try {
+                    if (dataSnapshot.exists()) {
 
-                    final User supplierUser = dataSnapshot.getValue(User.class);
-                    if (dataSnapshot.child("otherinfo").hasChild("ispublic")) {
-                        if (supplierUser != null && supplierUser.getOtherinfo() != null) {
-                            supplierUser.getOtherinfo().setIsUserPublic(dataSnapshot.child("otherinfo")
-                                    .child("ispublic").getValue(Boolean.class));
+                        final User supplierUser = dataSnapshot.getValue(User.class);
+                        if (dataSnapshot.child("otherinfo").hasChild("ispublic")) {
+                            if (supplierUser != null && supplierUser.getOtherinfo() != null) {
+                                supplierUser.getOtherinfo().setIsUserPublic(dataSnapshot.child("otherinfo")
+                                        .child("ispublic").getValue(Boolean.class));
+                            }
                         }
-                    }
-                    DatabaseReference groupRef = FirebaseDatabase.getInstance().getReference("groups/" + supplierId);
-                    groupRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(DataSnapshot dataSnapshot) {
-                            ArrayList<String> groupIds = new ArrayList<String>();
-                            User userDetails = mApp.getPreference().getUser(mctx);
+                        DatabaseReference groupRef = FirebaseDatabase.getInstance().getReference("groups/" + supplierId);
+                        groupRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                ArrayList<String> groupIds = new ArrayList<String>();
+                                User userDetails = mApp.getPreference().getUser(mctx);
 
-                            if (userDetails != null && userDetails.getUserinfo() != null && userDetails.getUserinfo().getAddressinfo() == null) {
-                                result.onFailure(mctx.getString(R.string.error_addsupplierfailed));
-                                return;
-                            } else if (userDetails == null) {
-                                result.onFailure(mctx.getString(R.string.error_addsupplierfailed));
-                                return;
-                            }
+                                if (userDetails != null && userDetails.getUserinfo() != null && userDetails.getUserinfo().getAddressinfo() == null) {
+                                    result.onFailure(mctx.getString(R.string.error_addsupplierfailed));
+                                    return;
+                                } else if (userDetails == null) {
+                                    result.onFailure(mctx.getString(R.string.error_addsupplierfailed));
+                                    return;
+                                }
 
-                            User user = mApp.getPreference().getUser(mctx);
-                            String userState = "";
-                            String userPin = "";
-                            if (user.getUserinfo().getAddressinfo() != null && user.getUserinfo().getAddressinfo().getState() != null){
-                                userState = user.getUserinfo().getAddressinfo().getState();
-                                if(user.getUserinfo().getAddressinfo().getPincode() != null)
-                                    userPin = user.getUserinfo().getAddressinfo().getPincode();
-                            }
+                                User user = mApp.getPreference().getUser(mctx);
+                                String userState = "";
+                                String userPin = "";
+                                if (user != null && user.getUserinfo() != null && user.getUserinfo().getAddressinfo() != null && user.getUserinfo().getAddressinfo().getState() != null) {
+                                    userState = user.getUserinfo().getAddressinfo().getState();
+                                    if (user.getUserinfo().getAddressinfo().getPincode() != null)
+                                        userPin = user.getUserinfo().getAddressinfo().getPincode();
+                                }
 
-                            if (dataSnapshot.exists()) {
-                                for (DataSnapshot criteriaSnapshot : dataSnapshot.getChildren()) {
-                                    DataSnapshot criteria = criteriaSnapshot.child("criteria");
-                                    if (criteria.hasChild("usertype")) {
-                                        if (criteria.child("usertype").getValue(String.class).equals("retailer")) {
-                                            groupIds.add(criteriaSnapshot.getKey());
+                                if (dataSnapshot.exists()) {
+                                    for (DataSnapshot criteriaSnapshot : dataSnapshot.getChildren()) {
+                                        DataSnapshot criteria = criteriaSnapshot.child("criteria");
+                                        if (criteria.hasChild("usertype")) {
+                                            if (criteria.child("usertype").getValue(String.class).equals("retailer")) {
+                                                groupIds.add(criteriaSnapshot.getKey());
+                                            }
                                         }
-                                    }
 
-                                    if (criteria.hasChild("state")) {
-                                        for (DataSnapshot stateSnapshot : criteria.child("state").getChildren()) {
-                                            if (stateSnapshot.getKey().toLowerCase().equals(userState)) {
-                                                if (!groupIds.contains(criteriaSnapshot.getKey())) {
-                                                    groupIds.add(criteriaSnapshot.getKey());
+                                        if (criteria.hasChild("state")) {
+                                            for (DataSnapshot stateSnapshot : criteria.child("state").getChildren()) {
+                                                if (stateSnapshot.getKey().toLowerCase().equals(userState)) {
+                                                    if (!groupIds.contains(criteriaSnapshot.getKey())) {
+                                                        groupIds.add(criteriaSnapshot.getKey());
+                                                    }
                                                 }
                                             }
                                         }
-                                    }
 
-                                    if (criteria.hasChild("pincode")) {
-                                        for (DataSnapshot stateSnapshot : criteria.child("pincode").getChildren()) {
-                                            if (stateSnapshot.getKey().equals(userPin)) {
-                                                if (!groupIds.contains(criteriaSnapshot.getKey())) {
-                                                    groupIds.add(criteriaSnapshot.getKey());
+                                        if (criteria.hasChild("pincode")) {
+                                            for (DataSnapshot stateSnapshot : criteria.child("pincode").getChildren()) {
+                                                if (stateSnapshot.getKey().equals(userPin)) {
+                                                    if (!groupIds.contains(criteriaSnapshot.getKey())) {
+                                                        groupIds.add(criteriaSnapshot.getKey());
+                                                    }
                                                 }
                                             }
                                         }
                                     }
                                 }
-                            }
-                            //Add the supplier to the user.
-                            //Data to be updated to Supplier table ie members.
-                            Map<String, Object> supplierData = new HashMap<>();
-                            supplierData.put("timestamp", System.currentTimeMillis());
-                            if (supplierUser.getOtherinfo() != null && supplierUser.getOtherinfo().isUserPublic()
-                                    && supplierUser.getOtherinfo().getStatus().equalsIgnoreCase("enabled")
-                                    && !groupIds.isEmpty()) {
-                                supplierData.put("status", "accepted");
-                            } else {
-                                supplierData.put("status", "pending");
-                            }
+                                //Add the supplier to the user.
+                                //Data to be updated to Supplier table ie members.
+                                Map<String, Object> supplierData = new HashMap<>();
+                                supplierData.put("timestamp", System.currentTimeMillis());
+                                if (supplierUser != null && supplierUser.getOtherinfo() != null && supplierUser.getOtherinfo().isUserPublic()
+                                        && supplierUser.getOtherinfo().getStatus().equalsIgnoreCase("enabled")
+                                        && !groupIds.isEmpty()) {
+                                    supplierData.put("status", "accepted");
+                                } else {
+                                    supplierData.put("status", "pending");
+                                }
 
-                            Map<String, Object> groupData = new HashMap<>();
-                            for (String groupId : groupIds) {
-                                groupData.put(groupId, true);
-                            }
+                                Map<String, Object> groupData = new HashMap<>();
+                                for (String groupId : groupIds) {
+                                    groupData.put(groupId, true);
+                                }
 
-                            //Register for topics
-                            registerForTopics(groupIds);
+                                //Register for topics
+                                registerForTopics(groupIds);
 
-                            //Data to be updated to Retailer table ie subscriptions.
-                            Map<String, Object> retailerData = new HashMap<>();
-                            retailerData.put("groups", groupData);
-                            retailerData.put("timestamp", System.currentTimeMillis());
-                            if (supplierUser.getOtherinfo() != null && supplierUser.getOtherinfo().isUserPublic()
-                                    && supplierUser.getOtherinfo().getStatus().equalsIgnoreCase("enabled")
-                                    && !groupIds.isEmpty()) {
-                                retailerData.put("status", "accepted");
-                            } else {
-                                retailerData.put("status", "pending");
-                            }
+                                //Data to be updated to Retailer table ie subscriptions.
+                                Map<String, Object> retailerData = new HashMap<>();
+                                retailerData.put("groups", groupData);
+                                retailerData.put("timestamp", System.currentTimeMillis());
+                                if (supplierUser.getOtherinfo() != null && supplierUser.getOtherinfo().isUserPublic()
+                                        && supplierUser.getOtherinfo().getStatus().equalsIgnoreCase("enabled")
+                                        && !groupIds.isEmpty()) {
+                                    retailerData.put("status", "accepted");
+                                } else {
+                                    retailerData.put("status", "pending");
+                                }
 
-                            Map<String, Object> childUpdates = new HashMap<>();
-                            if (supplierData != null && retailerData != null) {
-                                childUpdates.put("/members/" + supplierId + "/" + userId + "/", supplierData);
-                                childUpdates.put("/subscriptions/" + userId + "/" + supplierId + "/", retailerData);
+                                Map<String, Object> childUpdates = new HashMap<>();
+                                if (supplierData != null && retailerData != null) {
+                                    childUpdates.put("/members/" + supplierId + "/" + userId + "/", supplierData);
+                                    childUpdates.put("/subscriptions/" + userId + "/" + supplierId + "/", retailerData);
 
-                                FirebaseDatabase.getInstance().getReference().updateChildren(childUpdates,
-                                        new DatabaseReference.CompletionListener() {
-                                            @Override
-                                            public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
-                                                if (databaseError == null) {
-                                                    result.onSuccess(mctx.getString(R.string.status_success));
-                                                } else {
-                                                    result.onFailure(mctx.getString(R.string.error_updatefailed));
+                                    FirebaseDatabase.getInstance().getReference().updateChildren(childUpdates,
+                                            new DatabaseReference.CompletionListener() {
+                                                @Override
+                                                public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+                                                    if (databaseError == null) {
+                                                        result.onSuccess(mctx.getString(R.string.status_success));
+                                                    } else {
+                                                        result.onFailure(mctx.getString(R.string.error_updatefailed));
+                                                    }
                                                 }
-                                            }
-                                        });
-                            } else {
-                                result.onFailure(mctx.getString(R.string.error_updatefailed));
+                                            });
+                                } else {
+                                    result.onFailure(mctx.getString(R.string.error_updatefailed));
+                                }
                             }
-                        }
 
-                        @Override
-                        public void onCancelled(DatabaseError databaseError) {
-                            result.onFailure(mctx.getString(R.string.status_failed));
-                        }
-                    });
-                } else {
-                    result.onFailure(mctx.getString(R.string.status_failed));
+                            @Override
+                            public void onCancelled(DatabaseError databaseError) {
+                                result.onFailure(mctx.getString(R.string.status_failed));
+                            }
+                        });
+                    } else {
+                        result.onFailure(mctx.getString(R.string.status_failed));
+                    }
+                }catch (Exception e){
+                    new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - addListenerForSingleValueEvent : ",e.toString());
+                }catch (VirtualMachineError ex){
+                    new SendEmail().sendEmail(this.getClass().getSimpleName() + " - addListenerForSingleValueEvent : ",ex.toString());
                 }
             }
 
@@ -1252,6 +1261,8 @@ public class ApiManager {
                 result.onFailure(databaseError.getMessage());
             }
         });
+
+
 
           /*End of Change in logic for add supplier code*/
     }
@@ -1614,14 +1625,14 @@ public class ApiManager {
 
                                     @Override
                                     public void onFailure(String response) {
-
+                                        result.onFailure(mctx.getString(R.string.status_failed));
                                     }
                                 });
                             }
 
                             @Override
                             public void onFailure(String response) {
-
+                                result.onFailure(mctx.getString(R.string.status_failed));
                             }
                         });
 
@@ -1630,14 +1641,14 @@ public class ApiManager {
 
                     @Override
                     public void onFailure(String response) {
-
+                        result.onFailure(mctx.getString(R.string.status_failed));
                     }
                 });
             }
 
             @Override
             public void onFailure(String response) {
-
+                result.onFailure(mctx.getString(R.string.status_failed));
             }
         });
     }

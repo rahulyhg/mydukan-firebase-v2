@@ -127,8 +127,9 @@ public class SlidingImage_Adapter extends PagerAdapter {
             @Override
             public void onClick(View v) {
                 // Page is clicked!
-                Answers.getInstance().logCustom(new CustomEvent("PaytmButton click")
-                        .putCustomAttribute("USER_ID/ USER_Email:", userID + "/" + userdetails.getUserinfo().getEmailid()));
+                if(userdetails != null && userdetails.getUserinfo() != null && userdetails.getUserinfo().getEmailid() != null)
+                    Answers.getInstance().logCustom(new CustomEvent("PaytmButton click")
+                            .putCustomAttribute("USER_ID/ USER_Email:", userID + "/" + userdetails.getUserinfo().getEmailid()));
                 PriceDropSubscription priceDropSubscription=new PriceDropSubscription();
                 boolean isSubScried = priceDropSubscription.checkSubscription(context, userdetails);
                 if(!isSubScried){

@@ -126,15 +126,15 @@ public class NotificationDescriptionActivity extends Activity {
     private void setLayoutView(HashMap mNotification) {
 
         String mTitle= "";
-        if(mNotification.containsKey("notificationTitle"))
+        if(mNotification != null && mNotification.containsKey("notificationTitle"))
             mTitle= String.valueOf(mNotification.get("notificationTitle"));
 
         String mMessage="";
-        if(mNotification.containsKey("notificationMessage"))
+        if(mNotification != null && mNotification.containsKey("notificationMessage"))
             mMessage= String.valueOf(mNotification.get("notificationMessage"));
 
         String mImageURL="";
-        if(mNotification.containsKey("notificationImage"))
+        if(mNotification != null && mNotification.containsKey("notificationImage"))
             mImageURL= String.valueOf(mNotification.get("notificationImage"));
 
         mSupplierNameView.setText(mTitle );
