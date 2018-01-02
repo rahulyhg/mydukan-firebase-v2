@@ -320,7 +320,6 @@ public class MyProfileActivity extends BaseActivity implements AdapterListFeed.O
     // get the following profile count.
     public void getListFollowing(final String followingKey) {
 
-        final FirebaseUser auth = FirebaseAuth.getInstance().getCurrentUser();
         final DatabaseReference referenceFollow = FirebaseDatabase.getInstance().getReference().child(FOLLOWING_ROOT +"/"+followingKey);
         referenceFollow.addValueEventListener(new ValueEventListener() {
             @Override

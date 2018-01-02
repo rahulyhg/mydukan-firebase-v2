@@ -91,15 +91,17 @@ public class CustomBaseAdapter extends BaseAdapter {
                     .override(50,50)
                     .into(holder.imageView);
         }
-        if(profileType.equals( AppContants.MYPROFILE_FOLLOW)){
-            holder.txtRemove.setVisibility(View.VISIBLE);
-        }
-        holder.txtRemove.setOnClickListener(new View.OnClickListener() {
+        //if(profileType.equals( AppContants.MYPROFILE_FOLLOW)){
+          //  holder.txtRemove.setVisibility(View.VISIBLE);
+//        }else{
+            holder.txtRemove.setVisibility(View.GONE);
+//        }
+       /* holder.txtRemove.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 removeFollowing(myProfileId, rowItem.getuId());
             }
-        });
+        });*/
         return convertView;
     }
 
