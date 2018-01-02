@@ -398,6 +398,10 @@ public class MyProfileActivity extends BaseActivity implements AdapterListFeed.O
         tv_profilePhone.setText(profileDetails.getUserinfo().getNumber());
         Answers.getInstance().logCustom(new CustomEvent("My Profile ")
                 .putCustomAttribute("profileDetails.getUserinfo().getEmailid()", "Profile Viewed"));
+        if (mMyProfile==false){
+            tv_profilePhone.setVisibility(View.GONE);
+            tv_profileEmail.setVisibility(View.GONE);
+        }
 
     }
     private void initPhoto(ChattUser mChattUser) {
