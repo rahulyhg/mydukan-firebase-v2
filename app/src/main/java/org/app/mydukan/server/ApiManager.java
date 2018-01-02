@@ -38,6 +38,7 @@ import org.app.mydukan.data.Offer;
 import org.app.mydukan.data.Order;
 import org.app.mydukan.data.OrderProduct;
 import org.app.mydukan.data.PriceDrop;
+import org.app.mydukan.data.PriceDropHistory;
 import org.app.mydukan.data.Product;
 import org.app.mydukan.data.ProfileContants;
 import org.app.mydukan.data.Record;
@@ -1401,6 +1402,38 @@ public class ApiManager {
         /*End of logic in change in productkeys list*/
     }
 
+    public void getPriceHistryDetails(String productId, final ApiResult result) {
+        Log.d("PriceDropHistry ", "getPriceHistryDetails");  //-Kum9BL07zBHDzDY20AH   productId
+        final ArrayList<PriceDropHistory> priceDropHistories = new ArrayList<>();
+        DatabaseReference Ref_PriceDropHistry = FirebaseDatabase.getInstance().getReference("pricedrophistory/" + "-Kum9BL07zBHDzDY20AH");
+        Ref_PriceDropHistry.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                try{
+                    if (dataSnapshot.exists()){
+                        dataSnapshot.getChildren();
+                        for (DataSnapshot mPDSnapshot : dataSnapshot.getChildren()) {
+                            PriceDropHistory priceDropHistory = mPDSnapshot.getValue(PriceDropHistory.class);
+                            priceDropHistories.add(priceDropHistory);
+                        }
+                        result.onSuccess(priceDropHistories);
+                    }else{
+                        result.onFailure("empty");
+                    }
+                }catch (Exception e){
+                    e.printStackTrace();
+                    result.onFailure("empty");
+                }
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                result.onFailure("empty");
+            }
+        });
+    }
+
     public class SubCat_OrderComparator implements Comparator<SubCategory> {
 
         public int compare(SubCategory p2, SubCategory p1) {
@@ -1937,7 +1970,6 @@ public class ApiManager {
         }
 
     }
-
 
     public void getSupplierProductList(final SupplierBindData supplierData, final String categoryId,
                                        final String searchStr, final ApiResult result) {
