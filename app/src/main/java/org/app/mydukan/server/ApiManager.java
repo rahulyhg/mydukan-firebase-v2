@@ -2863,7 +2863,7 @@ public class ApiManager {
         });
     }
 
-    
+
     public void addProductToClaim(final String supplierId, final String supplierName, final Product product, final String imei, final String brandName,
                                   final ApiResult result) {
         getProductClaimKey(supplierId, product.getProductId(), product.getName(), new ApiResult() {
