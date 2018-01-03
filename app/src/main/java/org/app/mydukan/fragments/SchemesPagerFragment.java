@@ -17,7 +17,6 @@ import java.util.HashMap;
  */
 public class SchemesPagerFragment extends FragmentStatePagerAdapter {
 
-
     //integer to count number of tabs
     int tabCount;
     String supplierName;

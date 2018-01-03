@@ -19,8 +19,7 @@ import java.util.ArrayList;
  ***********************************************************************************/
 
 public class VideoListFragment extends ListFragment {
-
-
+    
     /**
      * Empty constructor
      */
