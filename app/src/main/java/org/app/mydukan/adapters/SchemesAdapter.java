@@ -77,7 +77,7 @@ public class SchemesAdapter extends RecyclerView.Adapter<SchemesAdapter.ViewHold
             }
         });
     }
-    
+
 
     @Override
     public int getItemCount() {

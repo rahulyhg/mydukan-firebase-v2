@@ -125,6 +125,7 @@ public class RecordsActivity extends BaseActivity implements RecordsAdapter.Reco
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
     }
+    
 
     private void setupRecordsView() {
         mAdapter = new RecordsAdapter(RecordsActivity.this, RecordsActivity.this, recordArrayList);
