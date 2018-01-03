@@ -6,16 +6,19 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context=".activities.ProductListActivity">
+
     <com.moengage.widgets.NudgeView
         android:id="@+id/nudge"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" >
     </com.moengage.widgets.NudgeView>
+
     <RelativeLayout
         android:id="@+id/layout_enable"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:visibility="visible">
+
         <!-- our toolbar -->
         <android.support.v7.widget.Toolbar
             android:id="@+id/toolbar"

@@ -136,8 +136,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     private static boolean REMOTECONFIG_SCHEMES_SUBSCRIPTION=false;
     android.support.v7.app.AlertDialog dialog;
 
-
-
     private ArrayList<ImageModel> imageModelArrayList;
     private int[] myImageList = new int[]{R.drawable.slide1, R.drawable.slide2,
             R.drawable.slide3, R.drawable.slide4

@@ -12,6 +12,7 @@ import org.app.mydukan.R;
 
 public class ViewPagerAdapter extends PagerAdapter {
 
+
     private Context mContext;
     private int[] mResources;
 

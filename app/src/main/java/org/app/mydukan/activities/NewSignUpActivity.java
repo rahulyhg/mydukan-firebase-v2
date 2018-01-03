@@ -28,7 +28,6 @@ public class NewSignUpActivity extends AppCompatActivity {
             viewType = bundle.getString(AppContants.VIEW_TYPE);
         }
 
-
         fragmentManager = getSupportFragmentManager();
 
         // If savedinstnacestate is null then replace login fragment

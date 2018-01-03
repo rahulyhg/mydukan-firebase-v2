@@ -36,6 +36,7 @@ import java.util.Comparator;
  */
 public class SchemeFragment extends BaseFragment implements SchemesAdapter.SchemesAdapterListener {
 
+
     //Ui reference
     private RecyclerView mRecyclerView;
     private TextView mEmptyView;

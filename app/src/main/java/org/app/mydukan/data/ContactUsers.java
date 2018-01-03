@@ -10,6 +10,7 @@ import io.realm.annotations.Required;
  */
 @RealmClass
 public class ContactUsers  implements RealmModel {
+
     private String name;
     private String email;
     @PrimaryKey @Required

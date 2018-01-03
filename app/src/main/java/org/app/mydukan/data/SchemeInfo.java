@@ -9,6 +9,7 @@ import java.io.Serializable;
 @SuppressWarnings("serial")
 public class SchemeInfo extends Object implements Serializable {
 
+
     private String id = "";
     private String name = "";
 

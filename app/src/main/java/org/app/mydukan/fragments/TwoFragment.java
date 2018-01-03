@@ -38,6 +38,7 @@ import static org.app.mydukan.activities.CommentsActivity.RESULT_DELETED;
 import static org.app.mydukan.fragments.MyNetworkFragment.FEED_LOCATION;
 
 public class TwoFragment extends Fragment implements AdapterListFeed.OnClickItemFeed, View.OnClickListener {
+
     public static final String FEED_ROOT = "feed";
     public static final String LIKE_ROOT = "like";
     public static final String FOLLOW_ROOT = "following";

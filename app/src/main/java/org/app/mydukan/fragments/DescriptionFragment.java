@@ -75,7 +75,6 @@ public class DescriptionFragment extends Fragment {
     Context context;
     private Product mProduct;
 
-
     private String mProductDesc;
     private static String fileExtension = "";
     private SupplierBindData mSupplier;

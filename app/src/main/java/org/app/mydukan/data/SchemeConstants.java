@@ -9,7 +9,6 @@ public class SchemeConstants {
     //Scheme record fields
     public final String SCHEMERECORDS = "schemerecords";
 
-
     //record info
     public final String EARNINGS = "earnings";
     public final String DATE = "date";

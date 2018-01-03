@@ -71,6 +71,7 @@ public class FeedPrifileActivity extends AppCompatActivity implements View.OnCli
     Button btn_Follow,btn_Following,btn_Followers;
     LinearLayout feedPost_view;
 
+
 //=========================================
     private ListView mCompleteListView;
     private Button mAddItemToList;

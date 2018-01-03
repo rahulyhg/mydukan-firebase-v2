@@ -5,6 +5,7 @@
    <certificates src="system" />
   </trust-anchors>
  </base-config>
+
  <debug-overrides>
   <trust-anchors>
    <certificates src="user" />

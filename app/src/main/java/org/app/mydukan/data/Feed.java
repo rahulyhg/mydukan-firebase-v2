@@ -10,6 +10,7 @@ import java.io.Serializable;
 
 public class Feed implements Serializable {
 
+
     String photoAvatar;
     String name;
     String time;

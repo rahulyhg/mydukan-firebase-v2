@@ -6,6 +6,7 @@
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
+
     <!-- Strings related to EditText hints -->
     <string name="hint_number">Phone Number</string>
     <string name="hint_official_emailid">Official Email id</string>

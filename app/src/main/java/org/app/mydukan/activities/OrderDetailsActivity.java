@@ -28,6 +28,7 @@ import java.util.HashMap;
 
 public class OrderDetailsActivity extends BaseActivity {
 
+
     //UI reference
     private TextView mOrderId;
     private TextView mTotalAmt;

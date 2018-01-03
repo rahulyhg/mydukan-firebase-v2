@@ -19,6 +19,7 @@ public class IntentForwardingActivity extends Activity {
 
     public static final String DEEP_LINK = "deep_link";
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

@@ -43,6 +43,7 @@ import java.util.List;
 public class MySchemesListingFragment extends Fragment
         implements AdapterView.OnItemClickListener, View.OnClickListener,SchemesAdapter.SchemesAdapterListener {
 
+
     private RecyclerView mBrandsRecycleView;
     private MySchemesActivity mActivity;
     private MySchemesAdapter mAdapter;

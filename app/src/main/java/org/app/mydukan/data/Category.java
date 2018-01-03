@@ -7,6 +7,7 @@ import java.io.Serializable;
  */
 
 public class Category extends Object implements Serializable {
+
     String name;
     String id;
     String order = "-1";

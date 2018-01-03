@@ -8,6 +8,7 @@ import java.io.Serializable;
 @SuppressWarnings("serial")
 public class Complaint extends Object implements Serializable {
 
+
     private String complaintId = "";
     private String subject = "";
     private String message = "";

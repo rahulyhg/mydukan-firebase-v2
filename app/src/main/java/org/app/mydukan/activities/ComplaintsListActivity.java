@@ -41,6 +41,7 @@ public class ComplaintsListActivity extends BaseActivity implements ComplaintsAd
     private TextView mNoDataView;
     private FloatingActionButton mAddComplaintBtn;
 
+
     //Variables
     private MyDukan mApp;
     private String mSupplierId;

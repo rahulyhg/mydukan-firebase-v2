@@ -30,6 +30,7 @@ import java.util.List;
 
 public class PriceDropAdapter extends RecyclerView.Adapter<PriceDropAdapter.ViewHolder>{
 
+
 //    private ArrayList<Product> productArrayList;
     private HashMap<String, ArrayList<Product>> productArrayList;
     private Context mContext;

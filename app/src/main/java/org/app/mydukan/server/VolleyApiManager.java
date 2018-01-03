@@ -28,6 +28,7 @@ import static android.R.attr.tag;
 
 public class VolleyApiManager {
 
+
     private static String TAG;
     private static RequestQueue rq;
      private static String url;// = "https://pguat.paytm.com/oltp/HANDLER_INTERNAL/TXNSTATUS?JsonData={%22MID%22:%22klbGlV59135347348753%22,%22ORDERID%22:%22ORDER48886809916%22}";

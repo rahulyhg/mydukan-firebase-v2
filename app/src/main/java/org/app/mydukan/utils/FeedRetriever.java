@@ -24,6 +24,7 @@ import java.util.PriorityQueue;
 
 public class FeedRetriever {
 
+
     public static final String FOLLOW_ROOT = "following";
     public static final String FEED_ROOT = "feed";
 

@@ -9,6 +9,7 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     tools:context="org.app.mydukan.activities.PostCommentsActivity">
 
+
 <LinearLayout
     android:layout_width="match_parent"
     android:layout_height="match_parent"

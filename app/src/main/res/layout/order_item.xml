@@ -13,8 +13,6 @@
         android:layout_marginTop="@dimen/listrow_topmargin"
         android:layout_marginBottom="@dimen/listrow_bottommargin">
 
-
-
             <LinearLayout
                 android:id="@+id/nameLayout"
                 android:layout_width="match_parent"

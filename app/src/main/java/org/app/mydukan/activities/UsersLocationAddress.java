@@ -68,6 +68,7 @@ import java.util.regex.Pattern;
 
 public class UsersLocationAddress extends BaseActivity implements View.OnClickListener, LocationResult {
 
+
     private static final String DEFAULT = "User";
     final static int REQUEST_LOCATION = 199;
     public static final int REQUEST_LOCATION_CODE = 99;

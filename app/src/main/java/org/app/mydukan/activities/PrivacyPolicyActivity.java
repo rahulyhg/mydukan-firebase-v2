@@ -11,6 +11,7 @@ import android.widget.Button;
 import org.app.mydukan.R;
 
 public class PrivacyPolicyActivity extends AppCompatActivity {
+
     private WebView wv1;
     Button btn_Terms_AND_COND,btn_Purchase_Returns,btn_PravacyPolicy;
     @Override

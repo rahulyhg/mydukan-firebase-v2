@@ -42,6 +42,7 @@ import java.util.HashMap;
 
 public class FirebaseDataReceiver extends WakefulBroadcastReceiver {
 
+
     private final String TAG = "FirebaseDataReceiver";
     HashMap<String, Object> notificationInfo;
 

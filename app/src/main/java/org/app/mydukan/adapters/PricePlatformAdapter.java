@@ -46,6 +46,7 @@ import static org.app.mydukan.activities.ProductDescriptionActivity.mApp;
 
 
 public class PricePlatformAdapter extends BaseAdapter {
+
     private final ArrayList mData;
     private Context mContext;
     private LayoutInflater inflater;

@@ -19,6 +19,7 @@ public class MyRecordsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my_records);
 
+
         setupActionBar();
 
         btn_records_my_pricedrops = (RelativeLayout) findViewById(R.id.btn_records_my_pricedrops);

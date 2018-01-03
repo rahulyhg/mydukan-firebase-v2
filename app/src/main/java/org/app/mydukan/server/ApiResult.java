@@ -5,6 +5,7 @@ package org.app.mydukan.server;
  */
 public interface ApiResult {
 
+
     void onSuccess(Object data);
 
     void onFailure(String response);

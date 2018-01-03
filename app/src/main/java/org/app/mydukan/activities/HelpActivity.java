@@ -26,6 +26,7 @@ import org.app.mydukan.R;
  */
 public class HelpActivity extends BaseActivity {
 
+
     TextView mVersionTextView;
     TextView mHelpLineTextView;
     Button button_PrivacyPolicy, youtubeVideo;

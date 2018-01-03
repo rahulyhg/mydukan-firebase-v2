@@ -55,6 +55,7 @@ import java.util.Random;
  */
 public class SchemeDetailsActivity extends BaseActivity {
 
+
     //UI reference
     private TextView mSchemeNameView;
     private TextView mSupplierNameView;

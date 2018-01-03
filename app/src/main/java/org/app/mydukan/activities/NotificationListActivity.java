@@ -28,6 +28,7 @@ import java.util.Map;
 
 public class NotificationListActivity extends BaseActivity implements TabLayout.OnTabSelectedListener {
 
+
     //This is our tablayout
     private TabLayout mTabLayout;
     //This is our viewPager

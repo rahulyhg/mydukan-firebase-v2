@@ -6,6 +6,7 @@
     android:layout_height="match_parent"
     tools:context="org.app.mydukan.activities.MyAccountActivity">
 
+
     <LinearLayout
         android:id="@+id/linearLayout11"
         android:layout_width="match_parent"

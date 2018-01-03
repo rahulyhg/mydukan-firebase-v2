@@ -52,6 +52,7 @@ import java.util.HashMap;
 
 public class CompanyDetails extends BaseActivity implements View.OnClickListener{
 
+
     private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 224;
     private static final int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 123;
     private int REQUEST_CAMERA = 0, SELECT_FILE = 1;

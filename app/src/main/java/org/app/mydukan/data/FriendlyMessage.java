@@ -17,6 +17,7 @@ package org.app.mydukan.data;
 
 public class FriendlyMessage {
 
+
     private String text;
     private String name;
     private String photoUrl;

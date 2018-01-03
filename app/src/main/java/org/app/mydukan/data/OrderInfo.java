@@ -9,6 +9,7 @@ import java.io.Serializable;
 @SuppressWarnings("serial")
 public class OrderInfo extends Object implements Serializable {
 
+
     private String comment = "";
     private String executionstatus = "";
     private String status = "";

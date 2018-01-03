@@ -14,11 +14,13 @@
         android:layout_weight="0"
         android:textAppearance="?android:attr/textAppearanceSmall"
         tools:text="Name" />
+
     <ImageView
         android:id="@+id/photoImageView"
         android:layout_width="250dp"
         android:layout_height="200dp"
         android:adjustViewBounds="true" />
+
     <TextView
         android:id="@+id/messageTextView"
         android:layout_width="wrap_content"

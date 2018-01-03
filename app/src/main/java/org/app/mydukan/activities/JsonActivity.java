@@ -39,6 +39,7 @@ import java.util.Collection;
 import java.util.List;
 
 public class JsonActivity extends AppCompatActivity {
+
     private MyDukan mApp;
     ServiceCenterInfo serviceCenterInfo = null;
     ArrayList<ServiceCenterInfo> serviceCenterInfos;

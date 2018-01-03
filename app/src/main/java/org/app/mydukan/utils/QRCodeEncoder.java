@@ -23,6 +23,7 @@ import com.google.zxing.common.BitMatrix;
 import org.app.mydukan.activities.Contents;
 
 public final class QRCodeEncoder {
+
     private static final int WHITE = 0xFFFFFFFF;
     private static final int BLACK = 0xFF000000;
 

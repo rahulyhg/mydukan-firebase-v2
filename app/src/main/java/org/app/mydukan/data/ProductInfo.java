@@ -7,6 +7,7 @@ import java.io.Serializable;
  */
 @SuppressWarnings("serial")
 public class ProductInfo extends Object implements Serializable {
+
     private String id = "";
     private String name = "";
     private String category = "";

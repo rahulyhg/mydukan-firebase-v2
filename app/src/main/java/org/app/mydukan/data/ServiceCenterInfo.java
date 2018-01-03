@@ -3,6 +3,7 @@ package org.app.mydukan.data;
 import java.io.Serializable;
 
 public class ServiceCenterInfo implements Serializable {
+
     private String servicecenter_NAME = "";
     private String servicecenter_BRAND = "";
     private String servicecenter_CITY = "";

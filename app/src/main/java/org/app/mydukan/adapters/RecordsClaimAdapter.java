@@ -22,6 +22,7 @@ import java.util.ArrayList;
 
 public class RecordsClaimAdapter extends RecyclerView.Adapter<RecordsClaimAdapter.ViewHolder> {
 
+
     private Context mContext;
     private ArrayList<Record> mRecordList = new ArrayList<>();
     private ArrayList<String> brandName = new ArrayList<>();

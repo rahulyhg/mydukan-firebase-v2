@@ -7,6 +7,7 @@
     android:layout_margin="10dp"
     android:padding="10dp">
 
+
     <!--<ImageView
         android:id="@+id/img2"
         android:layout_width="6dp"

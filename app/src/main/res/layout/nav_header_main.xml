@@ -6,6 +6,7 @@
     android:orientation="vertical"
     android:weightSum="4">
 
+
     <TextView
         android:id="@+id/appName"
         android:layout_width="wrap_content"

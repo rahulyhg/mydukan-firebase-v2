@@ -38,7 +38,6 @@ public class RecordClaimActivity extends BaseActivity {
     ArrayList<String> brandName = new ArrayList<>();
     String brand = "";
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

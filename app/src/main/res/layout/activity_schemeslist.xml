@@ -6,7 +6,6 @@
     android:orientation="vertical"
     tools:context=".activities.Schemes.SchemeListActivity">
 
-
     <!-- our toolbar -->
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar"

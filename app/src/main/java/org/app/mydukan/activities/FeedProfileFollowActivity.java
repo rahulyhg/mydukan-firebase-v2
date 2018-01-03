@@ -34,6 +34,7 @@ import java.util.List;
 public class FeedProfileFollowActivity extends Activity implements
         OnItemClickListener {
 
+
     public static final String FOLLOWING_ROOT = "following";
     public static final String FOLLOWERS_ROOT = "followers";
     ListView listView;

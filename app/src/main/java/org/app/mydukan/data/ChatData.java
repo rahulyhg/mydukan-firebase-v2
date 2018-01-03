@@ -7,6 +7,7 @@ package org.app.mydukan.data;
 
 public class ChatData {
 
+
     //private variables
     String _date;
 

@@ -8,6 +8,7 @@
     android:layout_alignParentTop="true"
     app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
     app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+
     <ImageView
         android:id="@+id/back_button"
         android:layout_width="wrap_content"

@@ -9,6 +9,7 @@ import java.io.Serializable;
 @SuppressWarnings("serial")
 public class RecordInfo extends Object implements Serializable {
 
+
     String id = "";
     String imei = "";
     String price = "";

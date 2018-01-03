@@ -34,7 +34,6 @@ public class PlaceOrderActivity extends BaseActivity implements OrderAdapter.Ord
 
     private String mSupplierId;
 
-
     //Ui reference
     private RecyclerView mOrderRecyclerView;
     private TextView mOrderEmptyView;

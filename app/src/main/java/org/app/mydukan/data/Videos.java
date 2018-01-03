@@ -12,8 +12,6 @@ public class Videos extends Object implements Serializable {
     String videoID;
     String videoINFO;
 
-
-
     public String getVideoID() {
         return videoID;
     }

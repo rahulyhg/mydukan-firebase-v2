@@ -6,4 +6,5 @@
     android:layout_height="match_parent"
     tools:context="org.app.mydukan.activities.AddFeed">
 
+
 </android.support.constraint.ConstraintLayout>

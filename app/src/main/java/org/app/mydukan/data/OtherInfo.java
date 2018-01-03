@@ -10,6 +10,7 @@ import java.io.Serializable;
 @IgnoreExtraProperties
 public class OtherInfo implements Serializable {
 
+
     private String status = "disabled";
     private String role = "";
     private long createddate = 0l;

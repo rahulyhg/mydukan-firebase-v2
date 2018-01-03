@@ -46,6 +46,7 @@ import static android.content.ContentValues.TAG;
 public class VidPlayer extends YouTubeBaseActivity implements
         YouTubePlayer.OnInitializedListener, GoogleApiClient.OnConnectionFailedListener {
 
+
     private static final int RECOVERY_DIALOG_REQUEST = 1;
     GoogleApiClient mGoogleApiClient;
     // YouTube player view

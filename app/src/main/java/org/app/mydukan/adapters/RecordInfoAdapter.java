@@ -26,6 +26,7 @@ import java.util.List;
  */
 
 public class RecordInfoAdapter extends RecyclerView.Adapter<RecordInfoAdapter.ViewHolder> {
+
     private List<RecordInfo> mRecordsList;
     private Context mContext;
     private MyDukan mApp;

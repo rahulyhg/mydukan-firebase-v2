@@ -12,6 +12,7 @@ import java.util.HashMap;
 @IgnoreExtraProperties
 
 public class Supplier extends Object implements Serializable {
+
     String id = "";
     String retailerStatus = "add";
     UserInfo userinfo;

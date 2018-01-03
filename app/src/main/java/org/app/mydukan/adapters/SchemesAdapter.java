@@ -21,6 +21,7 @@ import java.util.List;
  * Created by arpithadudi on 9/10/16.
  */
 public class SchemesAdapter extends RecyclerView.Adapter<SchemesAdapter.ViewHolder> {
+
     public List<Scheme> mSchemesList;
     private Context mContext;
     public MyDukan mApp;

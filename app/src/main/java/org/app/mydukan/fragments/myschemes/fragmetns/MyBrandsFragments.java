@@ -34,6 +34,7 @@ import java.util.List;
 
 public class MyBrandsFragments extends BaseFragment implements BrandsAdapter.IBrandsItemHolderClick {
 
+
     DatabaseReference mySchemsRef;
     // List<Brands> mySelectedList;
     private MySchemesActivity mActivity;

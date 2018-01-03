@@ -13,6 +13,7 @@ public class BaseFragment extends Fragment {
 
     ProgressDialog progressDialog;
 
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

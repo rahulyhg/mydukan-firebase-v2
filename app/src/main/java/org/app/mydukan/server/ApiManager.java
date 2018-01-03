@@ -76,6 +76,7 @@ import static org.app.mydukan.fragments.MyNetworkFragment.FEED_ROOT;
  */
 public class ApiManager {
 
+
     private static ApiManager mApiManger;
     private static Context mctx;
     public final String RETAILER_TYPE = "RETAILER_TYPE";

@@ -74,6 +74,7 @@ import static org.app.mydukan.fragments.MyNetworkFragment.FEED_LOCATION;
  */
 
 public class Post_Activity extends BaseActivity{
+
     private static final String TAG = "MY_PROFILE";
     private Bitmap bitmap;
     private Uri filePath;

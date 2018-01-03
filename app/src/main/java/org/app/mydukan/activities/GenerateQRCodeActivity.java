@@ -45,6 +45,7 @@ import java.util.Locale;
 
 public class GenerateQRCodeActivity extends BaseActivity implements OnClickListener {
 
+
     private String LOG_TAG = "GenerateQRCode";
     private MyDukan mApp;
     private String myDukhan_UserId;

@@ -64,6 +64,7 @@ import java.util.Iterator;
 
 public class ProductListActivity extends BaseActivity implements TabLayout.OnTabSelectedListener, ProductFragment.ProductFragmentListener {
 
+
     public LinkedHashMap<String, ArrayList<Product>> mProductList;
     LayerDrawable icon;
     boolean isProductFetched = false;

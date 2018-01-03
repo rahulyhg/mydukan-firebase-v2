@@ -6,6 +6,7 @@ import java.io.Serializable;
 @SuppressWarnings("serial")
 public class Notification extends Object implements Serializable {
 
+
     private String notificationid = "";
     private String category = "";
     private String notificationtext = "";

@@ -32,6 +32,7 @@ import static org.app.mydukan.activities.IntentForwardingActivity.DEEP_LINK;
 
 public class LaunchActivity extends BaseActivity {
 
+
     SharedPreferences sharedPreferences;
     HashMap<String, Object> notificationInfo;
     private String mUid;

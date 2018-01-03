@@ -21,6 +21,7 @@ import org.app.mydukan.R;
 
 public class CustomYouTubeControlsActivity extends YouTubeBaseActivity implements YouTubePlayer.OnInitializedListener, View.OnClickListener, CompoundButton.OnCheckedChangeListener {
 
+
     private static final int RECOVERY_DIALOG_REQUEST = 1;
 
     public static final String KEY_VIDEO_ID = "KEY_VIDEO_ID";

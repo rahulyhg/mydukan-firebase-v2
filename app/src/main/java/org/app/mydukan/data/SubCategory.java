@@ -9,6 +9,7 @@ import java.util.HashMap;
  */
 
 public class SubCategory extends Object implements Serializable {
+
     String name;
     String id;
     String order = "-1";

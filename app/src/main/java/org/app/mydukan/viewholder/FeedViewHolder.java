@@ -41,6 +41,7 @@ import java.util.ArrayList;
  * Created by Harshit Agarwal on 16-10-2017.
  */
 public class FeedViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+
     public Feed currFeed;
     public ImageView ivAvatar, ivLike;
     public TextView tvLike;

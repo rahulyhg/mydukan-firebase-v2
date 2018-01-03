@@ -7,6 +7,7 @@ import java.util.Map;
  */
 
 public class Comment {
+
     UserInfo userInfo;
     String text;
     String time;

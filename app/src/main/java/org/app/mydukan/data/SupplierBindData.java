@@ -9,6 +9,7 @@ import java.util.ArrayList;
 
 public class SupplierBindData extends Object implements Serializable {
 
+
     String id = "";
     String name = "";
     Boolean iscart = false;

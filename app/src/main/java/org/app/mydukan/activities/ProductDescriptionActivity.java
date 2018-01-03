@@ -42,6 +42,7 @@ import java.util.List;
  */
 public class ProductDescriptionActivity extends BaseActivity {
 
+
     private Product mProduct;
     public static MyDukan mApp;
     private String mProductDesc;

@@ -9,6 +9,7 @@ import java.io.Serializable;
 @SuppressWarnings("serial")
 public class Chat_Author implements Serializable {
 
+
     private String auther_Name="";
     private String auther_ID="";
     private String  auther_photoUrl="";

@@ -6,6 +6,7 @@
     android:orientation="vertical"
     tools:context="org.app.mydukan.youtube.YouTubeActivity">
 
+
     <com.google.android.youtube.player.YouTubePlayerView
         android:id="@+id/youTubePlayerView"
         android:layout_width="match_parent"

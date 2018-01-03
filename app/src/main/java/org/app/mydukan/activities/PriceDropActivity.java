@@ -35,6 +35,7 @@ import java.util.Map;
 
 public class PriceDropActivity extends BaseActivity {
 
+
     RecyclerView priceDropList;
     private TextView mNoDataView;
     private TextView heading;

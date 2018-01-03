@@ -5,6 +5,7 @@ import java.util.HashMap;
 
 @SuppressWarnings("serial")
 public class User extends Object implements Serializable {
+
     String id;
     String emailid;
     UserInfo userinfo;

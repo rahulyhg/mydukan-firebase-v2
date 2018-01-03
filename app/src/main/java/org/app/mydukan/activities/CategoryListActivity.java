@@ -74,7 +74,6 @@ import java.util.List;
 
 public class CategoryListActivity extends BaseActivity implements CategoryAdapter.ComplaintsAdapterListener, AdapterView.OnItemSelectedListener {
 
-
     private MyDukan mApp;
 
     private User userdetails;

@@ -5,12 +5,13 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="org.app.mydukan.activities.PrivacyPolicyActivity">
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/linearLayout9"
-        android:orientation="vertical"
-         >
+        android:orientation="vertical">
+
         <Button
             android:id="@+id/btn_privacy"
             android:layout_width="match_parent"

@@ -4,6 +4,7 @@ package org.app.mydukan.utils;
  * Created by ksamudra on 10/9/2016.
  */
 public class Order {
+
     private int qty = 0;
     private double unitprice = 0;
     private String productkey = null;

@@ -44,6 +44,7 @@ import java.util.Date;
  * Created by shivayogi hiremath on 11-08-2016.
  */
 public class ProductFragment extends android.support.v4.app.Fragment implements ProductsAdapter.ProductAdapterListener {
+
     //Ui reference
     private RecyclerView mProductRecyclerView;
     private TextView mProductEmptyView;

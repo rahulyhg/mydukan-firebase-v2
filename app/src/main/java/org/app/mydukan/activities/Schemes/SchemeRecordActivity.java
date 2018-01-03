@@ -26,6 +26,7 @@ import java.util.ArrayList;
 
 public class SchemeRecordActivity extends BaseActivity {
 
+
     //UI reference
     private RecyclerView mRecyclerView;
     private TextView mNoDataView;

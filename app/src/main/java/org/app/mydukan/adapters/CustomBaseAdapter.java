@@ -30,6 +30,7 @@ import java.util.List;
  */
 
 public class CustomBaseAdapter extends BaseAdapter {
+
     Context context;
     List<ChattUser> rowItems;
     String profileType;

@@ -4,6 +4,7 @@
     android:layout_height="match_parent"
     android:orientation="horizontal">
 
+
     <com.google.android.youtube.player.YouTubePlayerView
         android:id="@+id/youTubePlayerView"
         android:layout_width="0dp"

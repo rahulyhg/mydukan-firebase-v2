@@ -69,6 +69,7 @@ public class DistributorProvider extends BaseActivity {
 
     Spinner state_spinner, city_spinner;
 
+
     // Declare Variables
     ListView list;
     ServiceCenterAdapter adapter;

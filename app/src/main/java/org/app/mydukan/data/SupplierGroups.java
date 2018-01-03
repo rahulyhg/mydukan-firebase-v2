@@ -9,6 +9,7 @@ import java.util.HashMap;
 
 public class SupplierGroups {
 
+
     HashMap<String,Boolean> groups = new HashMap<>();
     ArrayList<String> groupIds = new ArrayList<>();
 

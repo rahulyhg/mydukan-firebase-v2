@@ -33,6 +33,7 @@ import java.util.ArrayList;
 
 public class RecordsActivity extends BaseActivity implements RecordsAdapter.RecordsAdapterListener{
 
+
     //UI reference
     private RecyclerView mRecyclerView;
     private Toolbar mBottomToolBar;

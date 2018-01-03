@@ -8,6 +8,7 @@ import io.realm.annotations.Required;
  * Created by Harshit Agarwal on 12-11-2017.
  */
 public class Contact extends RealmObject {
+
     @Required
     @PrimaryKey
     String number;

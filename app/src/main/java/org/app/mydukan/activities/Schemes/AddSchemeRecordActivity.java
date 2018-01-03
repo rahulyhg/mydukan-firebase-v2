@@ -37,6 +37,7 @@ public class AddSchemeRecordActivity extends BaseActivity {
 
     private static final String DATE_FORMAT = "dd/MM/yyyy";
 
+
     // UI references.
     private EditText mEarningsView;
     private EditText mDateView;

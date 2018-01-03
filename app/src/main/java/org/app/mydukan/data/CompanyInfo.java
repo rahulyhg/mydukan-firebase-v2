@@ -9,6 +9,7 @@ import java.io.Serializable;
 @SuppressWarnings("serial")
 public class CompanyInfo implements Serializable {
 
+
     String name = "";
     String industry = "";
     String vatno = "";

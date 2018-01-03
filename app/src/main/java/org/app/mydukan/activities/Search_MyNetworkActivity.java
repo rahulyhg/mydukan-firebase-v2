@@ -49,6 +49,7 @@ import io.realm.RealmConfiguration;
 
 public class Search_MyNetworkActivity extends AppCompatActivity {
 
+
     private RecyclerView recyclerView;
     SwipeRefreshLayout swipeRefreshLayout;
     SearchNetworkAdapter mAdapter;

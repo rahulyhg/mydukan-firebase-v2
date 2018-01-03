@@ -13,8 +13,6 @@ import org.app.mydukan.R;
 
 public class chat_rec extends RecyclerView.ViewHolder  {
 
-
-
     TextView leftText,rightText,welcomeText;
 
     public chat_rec(View itemView){

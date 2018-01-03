@@ -9,6 +9,7 @@ import java.util.ArrayList;
 
 @SuppressWarnings("serial")
 public class Record extends Object implements Serializable {
+
     private String recordId = "";
     private String productid = "";
     private String productname = "";

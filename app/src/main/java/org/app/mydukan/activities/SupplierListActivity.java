@@ -29,6 +29,7 @@ import java.util.ArrayList;
  * Created by arpithadudi on 7/27/16.
  */
 public class SupplierListActivity extends BaseActivity implements SupplierAdapter.supplierAdapterListener {
+
     private static final String INTRO_CARD = "fab_intro";
     private static final String INTRO_SWITCH = "switch_intro";
     private static final String INTRO_RESET = "reset_intro";

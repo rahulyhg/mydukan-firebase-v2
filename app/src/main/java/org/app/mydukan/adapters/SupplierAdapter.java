@@ -26,6 +26,7 @@ import java.util.List;
  */
 public class SupplierAdapter extends
         RecyclerView.Adapter<SupplierAdapter.ViewHolder> {
+
     //Variables
     public List<Supplier> mSupplierData;
     private Context mContext;

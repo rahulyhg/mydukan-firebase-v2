@@ -8,6 +8,7 @@ import java.io.Serializable;
 @SuppressWarnings("serial")
 public class Scheme extends Object implements Serializable {
 
+
     private String schemeId = "";
     private String category = "";
     private String name = "";

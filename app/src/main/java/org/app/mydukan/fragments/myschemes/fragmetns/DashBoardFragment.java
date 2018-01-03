@@ -27,6 +27,7 @@ import org.app.mydukan.fragments.myschemes.calculator.CalculatorForm;
 
 public class DashBoardFragment extends Fragment implements View.OnClickListener {
 
+
     RelativeLayout btnCalculator, btnMySchemes, btnEarnings;
     private MySchemesActivity mActivity;
     private Fragment fragment;

@@ -27,6 +27,7 @@ import java.util.Comparator;
  */
 public class NotificationFragment extends android.support.v4.app.Fragment implements NotificationAdapter.NotificationAdapterListener {
 
+
     //Ui reference
     private RecyclerView mRecyclerView;
     private TextView mEmptyView;

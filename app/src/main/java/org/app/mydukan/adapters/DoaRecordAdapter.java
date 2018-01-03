@@ -21,6 +21,7 @@ import java.util.List;
  */
 
 public class DoaRecordAdapter extends RecyclerView.Adapter<DoaRecordAdapter.ViewHolder> {
+
     private List<DoaRecord> mRecordsList;
     private Context mContext;
     private MyDukan mApp;

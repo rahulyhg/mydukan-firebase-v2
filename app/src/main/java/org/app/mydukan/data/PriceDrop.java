@@ -8,6 +8,7 @@ import java.io.Serializable;
 @SuppressWarnings("serial")
 public class PriceDrop implements Serializable {
 
+
     private long startdate = 0l;
     private String dropamount = "";
 

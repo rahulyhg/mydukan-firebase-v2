@@ -22,6 +22,7 @@ import java.util.List;
  */
 
 public class SchemeRecordAdapter extends RecyclerView.Adapter<SchemeRecordAdapter.ViewHolder> {
+
     private List<SchemeRecord> mRecordsList;
     private Context mContext;
     private MyDukan mApp;

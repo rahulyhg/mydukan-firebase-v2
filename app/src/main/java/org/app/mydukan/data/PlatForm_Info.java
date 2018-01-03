@@ -8,6 +8,7 @@ import java.io.Serializable;
 @SuppressWarnings("serial")
 public class PlatForm_Info extends Object implements Serializable {
 
+
     private String info = "";
     private String price= "";
     private String url = "";

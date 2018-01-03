@@ -6,6 +6,7 @@
     android:layout_height="match_parent"
     tools:context="org.app.mydukan.activities.DistributorProvider">
 
+
     <LinearLayout
         android:id="@+id/layoutTitle"
         android:layout_width="match_parent"

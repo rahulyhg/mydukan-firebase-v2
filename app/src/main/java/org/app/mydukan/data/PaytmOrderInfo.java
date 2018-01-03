@@ -6,6 +6,7 @@ package org.app.mydukan.data;
 
 public class PaytmOrderInfo {
 
+
     String paytm_TXNID;
     String paytm_BANKTXNID;
     String paytm_ORDERID;

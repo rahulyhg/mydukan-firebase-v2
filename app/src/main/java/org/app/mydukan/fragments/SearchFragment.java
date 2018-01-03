@@ -14,11 +14,9 @@ import org.app.mydukan.R;
  */
 public class SearchFragment extends Fragment {
 
-
     public SearchFragment() {
         // Required empty public constructor
     }
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,

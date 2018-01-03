@@ -7,6 +7,7 @@ import java.io.Serializable;
  */
 
 public class NewNotification implements Serializable {
+
     private boolean newNotification=false;
     private String nSupplierId="";
     private String nMessageBody="";

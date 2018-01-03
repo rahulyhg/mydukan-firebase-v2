@@ -20,6 +20,7 @@ public class AskRajuActivity extends AppCompatActivity {
     private ImageView backBTN;
     ProgressBar spinner;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

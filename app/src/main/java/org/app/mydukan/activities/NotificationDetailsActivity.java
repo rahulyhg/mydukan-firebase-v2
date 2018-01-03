@@ -21,6 +21,7 @@ import org.app.mydukan.utils.AppContants;
  */
 public class NotificationDetailsActivity extends BaseActivity {
 
+
     //UI reference
     private TextView mNotificationTextView;
     private TextView mSupplierNameView;

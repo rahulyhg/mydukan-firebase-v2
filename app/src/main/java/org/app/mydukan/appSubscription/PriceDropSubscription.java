@@ -20,6 +20,7 @@ import java.util.concurrent.TimeUnit;
 
 public class PriceDropSubscription {
 
+
     private boolean isSubscribed = false;
     private Context mContext;
     private String mUserId;

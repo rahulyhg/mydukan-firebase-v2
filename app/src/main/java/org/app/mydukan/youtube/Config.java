@@ -5,6 +5,7 @@ package org.app.mydukan.youtube;
  */
 
 public class Config {
+
     public static final String DEVELOPER_KEY = "AIzaSyCZjcIxNyQyONEeanxuvbay-yGkyxgsiko";
     public static final String YOUTUBE_VIDEO_CODE = "CT3aWbdadOk";
 }

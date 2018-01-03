@@ -9,6 +9,7 @@
     android:layout_marginRight="@dimen/listrow_rightmargin"
     android:layout_marginLeft="@dimen/listrow_leftmargin">
 
+
     <TextView
         android:id="@+id/complaintNo"
         android:layout_width="fill_parent"

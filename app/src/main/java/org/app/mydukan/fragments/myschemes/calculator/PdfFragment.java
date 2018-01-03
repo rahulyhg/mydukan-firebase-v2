@@ -51,6 +51,7 @@ import java.util.List;
 
 public class PdfFragment extends Fragment implements View.OnClickListener {
 
+
     private static final String TAG = PdfFragment.class.getSimpleName();
     final private int REQUEST_CODE_ASK_PERMISSIONS = 111;
     private File pdfFile;

@@ -64,6 +64,7 @@ import java.util.Date;
  */
 public class LoginActivity extends BaseActivity implements GoogleApiClient.OnConnectionFailedListener, ViewPager.OnPageChangeListener ,View.OnClickListener {
 
+
     private static final int INITIAL_REQUEST = 13;
 
     private ImageButton btnNext, btnFinish;

@@ -145,7 +145,6 @@ public class MyNetworksActivity extends AppCompatActivity {
         });
 
     }
-
     private void getCurrentUserData(FirebaseUser auth) {
         //showProgress(true);
         mList = new ArrayList<>();

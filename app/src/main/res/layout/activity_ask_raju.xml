@@ -8,7 +8,6 @@
     android:orientation="vertical"
     tools:context="org.app.mydukan.activities.AskRajuActivity">
 
-
     <RelativeLayout
         android:id="@+id/textViewTitle"
         android:layout_width="match_parent"

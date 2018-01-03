@@ -58,6 +58,7 @@ import ai.api.model.Result;
 
 public class ChatActivity extends AppCompatActivity implements AIListener{
 
+
     RecyclerView recyclerView;
     EditText editText;
     RelativeLayout addBtn;

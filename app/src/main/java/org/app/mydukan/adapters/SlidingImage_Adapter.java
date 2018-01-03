@@ -29,7 +29,6 @@ import java.util.ArrayList;
 
 public class SlidingImage_Adapter extends PagerAdapter {
 
-
     private ArrayList<ImageModel> imageModelArrayList;
     private LayoutInflater inflater;
     private Context context;

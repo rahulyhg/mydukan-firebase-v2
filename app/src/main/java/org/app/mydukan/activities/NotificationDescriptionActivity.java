@@ -24,6 +24,7 @@ import java.util.HashMap;
 
 public class NotificationDescriptionActivity extends Activity {
 
+
     //Variables
     private MyDukan mApp;
     private HashMap mNotification;

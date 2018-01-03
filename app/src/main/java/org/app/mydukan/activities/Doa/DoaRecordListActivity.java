@@ -53,6 +53,7 @@ public class DoaRecordListActivity extends BaseActivity {
         fetchTheRecords();
     }
 
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_doarecordlist, menu);

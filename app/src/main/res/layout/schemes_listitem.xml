@@ -9,6 +9,7 @@
     android:padding="@dimen/card_padding"
     tools:ignore="RtlHardcoded">
 
+
     <TextView
         android:id="@+id/name"
         android:layout_width="fill_parent"

@@ -9,6 +9,7 @@
             android:title="My Profile"
             tools:ignore="HardcodedText" />
 
+
         <item
             android:id="@+id/nav_record"
             android:icon="@drawable/ic_action_record_64"

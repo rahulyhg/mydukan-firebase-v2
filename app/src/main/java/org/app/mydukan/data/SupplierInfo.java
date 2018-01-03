@@ -9,6 +9,7 @@ import java.io.Serializable;
 @SuppressWarnings("serial")
 public class SupplierInfo extends Object implements Serializable {
 
+
     private String id = "";
     private String name = "";
 

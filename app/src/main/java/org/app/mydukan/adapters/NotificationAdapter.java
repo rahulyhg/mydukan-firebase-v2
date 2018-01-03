@@ -19,6 +19,7 @@ import java.util.List;
  * Created by arpithadudi on 9/10/16.
  */
 public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapter.ViewHolder> {
+
     public List<Notification> mNotificationList;
     private Context mContext;
     public MyDukan mApp;

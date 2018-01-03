@@ -52,6 +52,7 @@ import static com.facebook.FacebookSdk.getApplicationContext;
 public class AddSchemeFragment extends BaseFragment implements View.OnClickListener, DatePickerDialog.OnDateSetListener,
         AdapterView.OnItemSelectedListener {
 
+
     private MySchemesActivity mActivity;
     private String title;
     private AutoCompleteTextView mCategory, mTxtSchemeTitle, mTxtSchemeDescription;

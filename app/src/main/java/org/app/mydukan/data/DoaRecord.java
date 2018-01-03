@@ -8,6 +8,7 @@ import java.io.Serializable;
 @SuppressWarnings("serial")
 public class DoaRecord extends Object implements Serializable {
 
+
     private long date = 0;
     private String settledby = "";
     private String voucherno = "";

@@ -20,6 +20,7 @@ import java.util.List;
  * Created by Shivayogi Hiremath on 9/13/16.
  */
 public class ComplaintsAdapter extends RecyclerView.Adapter<ComplaintsAdapter.ViewHolder> {
+
     private List<Complaint> mSchemesList;
     private String mSupplierName;
     private Context mContext;

@@ -10,16 +10,19 @@
         android:visible="false"
         myDukan:actionViewClass="android.support.v7.widget.SearchView"
         myDukan:showAsAction="collapseActionView|ifRoom" />
+
     <item
         android:id="@+id/menu_cart"
         android:icon="@drawable/ic_cart_badge"
         android:title="Cart"
         android:visible="false"
         myDukan:showAsAction="collapseActionView|ifRoom" />
+
     <item
         android:id="@+id/product_notification"
         android:icon="@drawable/ic_notification_badge"
         android:title="Notification"
         android:visible="true"
         myDukan:showAsAction="collapseActionView|ifRoom" />
+
 </menu>

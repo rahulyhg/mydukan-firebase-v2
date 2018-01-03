@@ -28,6 +28,7 @@ import io.fabric.sdk.android.Fabric;
 import io.realm.Realm;
 
 public class MyDukan extends Application {
+
     public static final String LOGTAG = "MyDukan";
 
     private Context mContext;

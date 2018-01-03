@@ -33,11 +33,9 @@ import static org.app.mydukan.activities.ProductDescriptionActivity.mApp;
  */
 public class KeySpecification extends Fragment {
 
-
     View mView;
     Context context;
     private Product mProduct;
-
 
     private String mProductDesc;
     private SupplierBindData mSupplier;

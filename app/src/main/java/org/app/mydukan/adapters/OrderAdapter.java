@@ -21,6 +21,7 @@ import java.util.List;
  * Created by arpithadudi on 9/10/16.
  */
 public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.ViewHolder> {
+
     private List<OrderProduct> mOrderList;
     private Context mContext;
     private MyDukan mApp;

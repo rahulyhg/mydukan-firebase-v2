@@ -41,6 +41,7 @@ import java.util.ArrayList;
 import static com.google.android.gms.internal.zzben.NULL;
 
 public class YourAccountActivity extends AppCompatActivity {
+
     TextView UserName, CompanyName, Address, Phone, Gst, profession, email;
     User profileDetails = new User();
     ChattUser chattUser;

@@ -4,4 +4,5 @@
         android:id="@+id/comment_edit"/>
     <item android:title="Delete"
         android:id="@+id/comment_delete"/>
+
 </menu>

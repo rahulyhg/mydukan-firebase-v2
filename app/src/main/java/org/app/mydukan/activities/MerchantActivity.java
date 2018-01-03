@@ -64,10 +64,6 @@ public class MerchantActivity extends Activity {
 
     private List<String> mList;
 
-
-
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

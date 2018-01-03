@@ -6,6 +6,7 @@
     android:background="#ffffff"
     android:padding="5dp" >
 
+
     <TextView
         android:id="@+id/toast_error"
         android:layout_width="wrap_content"

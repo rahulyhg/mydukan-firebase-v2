@@ -5,6 +5,7 @@ package org.app.mydukan.fragments.myschemes.model;
  */
 
 public class Device {
+
     String category;
     String model;
     String target;

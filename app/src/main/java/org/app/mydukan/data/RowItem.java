@@ -5,6 +5,7 @@ package org.app.mydukan.data;
  */
 
 public class RowItem {
+
     private int imageId;
     private String title;
     private String desc;

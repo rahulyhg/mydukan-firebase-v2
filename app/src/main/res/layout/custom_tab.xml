@@ -8,3 +8,4 @@
     android:gravity="center_vertical"
     android:textSize="@dimen/smalltextSize"
     android:textStyle="bold" />
+

@@ -87,6 +87,7 @@ public class AddDoaRecordListActivity extends BaseActivity {
             }
         }
 
+
         mImeiView = (EditText) findViewById(R.id.imeiID);
         mDateView = (EditText) findViewById(R.id.dateID);
         mSettledByView = (EditText) findViewById(R.id.settledbyID);

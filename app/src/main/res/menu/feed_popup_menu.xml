@@ -3,6 +3,7 @@
 
     <item android:title="Share"
         android:id="@+id/share"/>
+    
     <item android:title="Delete"
         android:id="@+id/delete"/>
 </menu>

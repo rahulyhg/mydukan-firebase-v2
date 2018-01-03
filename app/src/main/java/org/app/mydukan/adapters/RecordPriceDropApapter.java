@@ -28,6 +28,7 @@ import java.util.List;
 
 public class RecordPriceDropApapter extends RecyclerView.Adapter<RecordPriceDropApapter.ViewHolder>{
 
+
     private HashMap<String, Integer> map;
     private Context mContext;
     private Activity activity;

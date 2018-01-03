@@ -6,6 +6,7 @@ package org.app.mydukan.data;
 
 public class DoaConstants {
 
+
     //Scheme record fields
     public final String DOARECORDS = "doarecords";
 

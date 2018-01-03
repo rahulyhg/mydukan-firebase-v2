@@ -58,6 +58,7 @@ import static org.app.mydukan.R.id.view;
 
 
 public class OneFragment extends Fragment implements AdapterListFeed.OnClickItemFeed, View.OnClickListener {
+
     View mView;
     private RecyclerView recyclerView;
     private ProgressBar mProgressBar;

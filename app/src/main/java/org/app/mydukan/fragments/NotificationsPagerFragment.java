@@ -16,6 +16,7 @@ import java.util.ArrayList;
  */
 public class NotificationsPagerFragment extends FragmentStatePagerAdapter {
 
+
     //integer to count number of tabs
     int tabCount;
     String supplierName;

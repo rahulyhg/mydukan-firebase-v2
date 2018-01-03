@@ -1,6 +1,7 @@
 package org.app.mydukan.utils;
 
 public class AppContants {
+
     //twitter key for digits auth
     public final static String TWITTER_KEY = "sDMZi3oH0vbvdyoZwakmb1iX2";
     public final static String TWITTER_SECRET= "fIXVx8IMap2ScpX7LbW8JimeBA5jMr0Xg6kbnVK09wEwhbv1OO";

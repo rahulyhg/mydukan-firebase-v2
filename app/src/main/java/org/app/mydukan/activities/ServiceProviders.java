@@ -36,6 +36,7 @@ import java.util.Set;
 
 public class ServiceProviders extends BaseActivity {
 
+
     private String selectedBrand = null;
     private String selectedState = null;
 

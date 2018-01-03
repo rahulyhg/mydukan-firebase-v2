@@ -21,6 +21,7 @@ import java.util.List;
  */
 
 public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.ViewHolder> {
+
     private List<Category> mDataList;
     private Context mContext;
     private MyDukan mApp;

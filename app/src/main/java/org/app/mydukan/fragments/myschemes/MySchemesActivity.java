@@ -22,7 +22,6 @@ public class MySchemesActivity extends BaseActivity {
     FragmentTransaction fragmentTransaction;
     private RadioButton mMySchemesTab, mSchemesTab;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

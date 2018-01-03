@@ -11,6 +11,7 @@ import java.util.List;
  */
 
 public class DeviceHelper {
+
     private List<Device> deviceList;
     private int size = 0;
 

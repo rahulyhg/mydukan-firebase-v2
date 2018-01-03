@@ -20,6 +20,7 @@ import java.util.List;
 
 public class DevicesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
+
     List<Device> deviceList;
 
     public DevicesAdapter() {

@@ -9,6 +9,7 @@ import java.io.Serializable;
 @SuppressWarnings("serial")
 public class PriceDropHistory extends Object implements Serializable {
 
+
     String date;
     String dp;
     String drop;

@@ -9,6 +9,7 @@
        <color name="colorPrimary">#ac4747</color>
        <color name="colorAccent">#ffc929</color>
         <color name="colorAccent">#FF4081</color>//pink
+
    -->
     <color name="app_colorPrimaryDark">#400000</color>
     <color name="app_colorAccent">#ffc929</color>

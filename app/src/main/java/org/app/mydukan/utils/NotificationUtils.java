@@ -13,6 +13,7 @@ import org.app.mydukan.server.ApiResult;
 
 public class NotificationUtils {
 
+
     public final String COMMAND = "COMMAND";
     public final String MESSAGE = "MESSAGE";
     public final String SUPPLIERID = "SUPPLIERID";

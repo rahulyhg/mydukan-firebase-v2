@@ -33,6 +33,7 @@ public class VideoListAdapter extends BaseAdapter implements YouTubeThumbnailVie
     private Map<View, YouTubeThumbnailLoader> mLoaders;
     public List<String> ITEMS = new ArrayList<String>();
 
+
     /**
      * A map of YouTube videos, by ID.
      */

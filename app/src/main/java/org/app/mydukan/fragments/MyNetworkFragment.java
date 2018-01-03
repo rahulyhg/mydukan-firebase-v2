@@ -44,6 +44,7 @@ import static org.app.mydukan.activities.CommentsActivity.RESULT_DELETED;
 
 
 public class MyNetworkFragment extends Fragment implements AdapterListFeed.OnClickItemFeed, View.OnClickListener {
+
     public static final String FEED_ROOT = "feed";
     public static final String LIKE_ROOT = "like";
     public static final String FOLLOW_ROOT = "following";

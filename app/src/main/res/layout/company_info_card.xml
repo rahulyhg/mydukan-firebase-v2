@@ -5,6 +5,7 @@
     android:background="#f0f0f0"
     tools:ignore="RtlHardcoded">
 
+
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"

@@ -23,6 +23,7 @@ import java.util.List;
 
 public class RecordPriceDropActivity extends BaseActivity {
 
+
     RecyclerView myPriceDropList;
     ImageView back;
     TextView heading;

@@ -5,6 +5,7 @@ package org.app.mydukan.data;
  */
 public class ProfileContants {
 
+
     //credential fields
     public final String USERNAME = "username";
 

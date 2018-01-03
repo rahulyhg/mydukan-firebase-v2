@@ -7,4 +7,5 @@
         android:icon="@drawable/ic_action_add"
         android:title="Add"
         myDukan:showAsAction="always" />
+
 </menu>

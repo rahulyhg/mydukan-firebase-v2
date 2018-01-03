@@ -10,6 +10,7 @@ import java.io.Serializable;
 @SuppressWarnings("serial")
 public class AddressInfo implements Serializable {
 
+
     String street = "";
     String city = "";
     String state = "";

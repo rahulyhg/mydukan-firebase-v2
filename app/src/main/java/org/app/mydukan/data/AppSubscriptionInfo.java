@@ -8,7 +8,6 @@ import java.io.Serializable;
 
 public class AppSubscriptionInfo implements Serializable {
 
-
     String subscription_DATE = "";
     String subscription_ISVALID = "";
     String subscription_AMOUNT = "";

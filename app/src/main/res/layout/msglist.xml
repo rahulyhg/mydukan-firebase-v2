@@ -4,6 +4,7 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
+
     <TextView
         android:id="@+id/wellComeText"
         android:layout_width="wrap_content"
@@ -18,6 +19,7 @@
         android:elevation="2dp"
         tools:ignore="HardcodedText,UnusedAttribute"
         android:layout_alignParentLeft="true" />
+
     <TextView
         android:id="@+id/leftText"
         android:layout_width="wrap_content"

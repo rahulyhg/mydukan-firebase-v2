@@ -48,6 +48,7 @@ import static org.app.mydukan.adapters.SearchNetworkAdapter.SearchViewType.NOT_S
  */
 public class SearchNetworkAdapter extends RecyclerView.Adapter {
 
+
     Context context;
     LayoutInflater inflater;
     @Nullable

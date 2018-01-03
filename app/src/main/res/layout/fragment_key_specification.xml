@@ -5,6 +5,7 @@
     android:orientation="vertical"
     tools:context="org.app.mydukan.fragments.KeySpecification">
 
+
     <TextView
         android:id="@+id/othersHeader"
         android:layout_width="wrap_content"

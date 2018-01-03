@@ -9,6 +9,7 @@ import java.io.Serializable;
 @SuppressWarnings("serial")
 public class OrderProduct_test extends Object implements Serializable {
 
+
     private String productid = "";
     private String productname = "";
     private String  price = "0";

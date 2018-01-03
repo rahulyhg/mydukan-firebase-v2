@@ -188,6 +188,7 @@ public class MyProfileActivity extends BaseActivity implements AdapterListFeed.O
                 startActivity(intent);
             }
         });
+
         //initialize ads for the app  - ca-app-pub-1640690939729824/2174590993
         MobileAds.initialize(getApplicationContext(), "ca-app-pub-1640690939729824/2174590993");
         mAdView = (AdView) findViewById(R.id.adView_myProfile);

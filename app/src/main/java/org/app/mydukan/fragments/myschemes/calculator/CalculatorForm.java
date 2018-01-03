@@ -47,6 +47,7 @@ import io.fabric.sdk.android.services.network.NetworkUtils;
 public class CalculatorForm extends BaseFragment
         implements AdapterView.OnItemSelectedListener, View.OnClickListener, DatePickerDialog.OnDateSetListener {
 
+
     private MySchemesActivity mActivity;
     AppCompatSpinner spnrBrands, spnrSchemes, sprnMonth;
     private String TAG = CalculatorForm.class.getSimpleName();

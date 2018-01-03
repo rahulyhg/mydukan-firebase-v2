@@ -34,6 +34,7 @@ import org.app.mydukan.utils.AppContants;
 
 public class UserProfile extends BaseActivity implements View.OnClickListener {
 
+
     private int mViewType = 1; //1 - Sign up , 2 - My Profile.
     private static final String DEFAULT = "User";
 

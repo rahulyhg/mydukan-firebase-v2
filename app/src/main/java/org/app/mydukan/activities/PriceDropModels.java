@@ -33,6 +33,7 @@ import static org.app.mydukan.activities.Search_MyNetworkActivity.FOLLOWING_ROOT
 
 public class PriceDropModels extends BaseActivity implements ProductFragment.ProductFragmentListener {
 
+
     ImageView back;
     TextView heading;
     LinearLayout container;

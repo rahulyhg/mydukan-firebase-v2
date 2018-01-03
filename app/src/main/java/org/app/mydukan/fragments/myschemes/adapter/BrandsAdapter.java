@@ -22,6 +22,7 @@ import java.util.List;
 
 public class BrandsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
+
     private List<List<Scheme>> brandsList;
     private IBrandsItemHolderClick onClick;
 

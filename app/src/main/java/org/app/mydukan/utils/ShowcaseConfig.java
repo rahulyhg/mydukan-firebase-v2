@@ -14,6 +14,7 @@ import uk.co.deanwild.materialshowcaseview.shape.Shape;
 
 public class ShowcaseConfig {
 
+
     public static final String DEFAULT_MASK_COLOUR = "#dd335075";
     public static final long DEFAULT_FADE_TIME = 300;
     public static final long DEFAULT_DELAY = 0;

@@ -36,6 +36,7 @@ public class DeeplinkActivity extends AppCompatActivity implements GoogleApiClie
      */
     private static final boolean AUTO_HIDE = true;
 
+
     /**
      * If {@link #AUTO_HIDE} is set, the number of milliseconds to wait after
      * user interaction before hiding the system UI.

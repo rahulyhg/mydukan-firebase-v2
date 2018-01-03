@@ -42,6 +42,7 @@ import static android.app.Activity.RESULT_OK;
 
 public class SyncContacts extends IntentService {
 
+
     private static final String TAG = "SYNC_CONTACTS";
     private static final String CONTACT_COLLECTION = "contacts";
     private static final String RECEIVER = "mreceiver";

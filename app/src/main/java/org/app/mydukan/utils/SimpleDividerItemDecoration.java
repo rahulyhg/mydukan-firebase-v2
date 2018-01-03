@@ -9,6 +9,7 @@ import android.view.View;
 import org.app.mydukan.R;
 
 public class SimpleDividerItemDecoration extends RecyclerView.ItemDecoration {
+
     private Drawable mDivider;
     private boolean hasSpace = true;
 

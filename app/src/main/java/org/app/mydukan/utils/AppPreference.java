@@ -12,6 +12,7 @@ import org.app.mydukan.data.User;
  * Created by Codespeak on 05-07-2016.
  */
 public class AppPreference {
+    
     private final String PREF_USER = "user";
     private final String PREF_APP_STATE = "appstate";
     private final String PREF_TOPICS = "notifytopic";

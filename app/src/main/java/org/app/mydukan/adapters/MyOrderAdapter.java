@@ -21,6 +21,7 @@ import java.util.List;
  */
 
 public class MyOrderAdapter extends RecyclerView.Adapter<MyOrderAdapter.ViewHolder> {
+
     private List<Order> mDataList;
     private Context mContext;
     private MyDukan mApp;

@@ -45,6 +45,7 @@ import java.net.URL;
 import static org.app.mydukan.application.MyDukan.LOGTAG;
 
 public class VideoActivity extends YouTubeBaseActivity implements YouTubePlayer.OnInitializedListener {
+
     private static final int RECOVERY_REQUEST = 1;
     private YouTubePlayerView youTubeView;
     String path = "";

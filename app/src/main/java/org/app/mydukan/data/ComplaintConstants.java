@@ -4,6 +4,7 @@ package org.app.mydukan.data;
  * Created by arpithadudi on 9/14/16.
  */
 public class ComplaintConstants {
+
     //root name
     public final String COMPLAINTS = "complaints";
 

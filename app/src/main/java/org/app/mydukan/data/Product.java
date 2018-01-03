@@ -9,6 +9,7 @@ import java.util.HashMap;
  */
 @SuppressWarnings("serial")
 public class Product extends Object implements Serializable {
+
     private PriceDrop priceDrop;
     private Offer offer;
     private String productId = "";

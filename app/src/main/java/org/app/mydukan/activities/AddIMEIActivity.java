@@ -53,6 +53,7 @@ public class AddIMEIActivity extends BaseActivity {
     private SpotlightView spotLight;
     private String brandName = "";
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

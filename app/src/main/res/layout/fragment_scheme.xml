@@ -6,5 +6,6 @@
 
     <include
         android:id="@+id/schemelayout"
-        layout="@layout/recycler_listview"></include>
+        layout="@layout/recycler_listview"/>
+
 </LinearLayout>

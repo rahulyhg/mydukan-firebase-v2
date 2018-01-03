@@ -8,6 +8,7 @@ import java.util.HashMap;
 @SuppressWarnings("serial")
 public class Order extends Object implements Serializable {
 
+
     private String orderId = "";
     private OrderInfo orderinfo = null;
     private HashMap<String,OrderProduct> productlist = new HashMap<>();

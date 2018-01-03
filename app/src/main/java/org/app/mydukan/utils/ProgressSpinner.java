@@ -12,6 +12,7 @@ import org.app.mydukan.R;
  */
 public class ProgressSpinner extends Dialog {
 
+
     public static ProgressSpinner show(Context context, CharSequence title,
                                        CharSequence message) {
         return show(context, title, message, false);

@@ -11,6 +11,7 @@ import io.realm.annotations.Required;
 @SuppressWarnings("serial")
 public class ChattUser implements Serializable{
 
+
     private String name;
     private String email;
     private String uId;

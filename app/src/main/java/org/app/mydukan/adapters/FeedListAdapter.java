@@ -35,6 +35,7 @@ import java.util.List;
  */
 public class FeedListAdapter extends
         RecyclerView.Adapter<FeedListAdapter.ViewHolder> {
+
     //Variables
     public static List<Feed> feeds;
     public Context mContext;

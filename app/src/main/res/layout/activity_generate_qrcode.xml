@@ -7,6 +7,7 @@
     android:orientation="vertical"
     tools:context="org.app.mydukan.activities.GenerateQRCodeActivity">
 
+
     <FrameLayout
         android:id="@+id/linearLayout_view"
         android:layout_width="match_parent"

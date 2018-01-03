@@ -8,6 +8,7 @@ import java.io.Serializable;
 @SuppressWarnings("serial")
 public class SchemeRecord extends Object implements Serializable {
 
+
     private String earnings = "";
     private long date = 0;
     private String settledby = "";

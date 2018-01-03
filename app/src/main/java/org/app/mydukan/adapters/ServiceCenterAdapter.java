@@ -19,6 +19,7 @@ import java.util.Locale;
 
 public class ServiceCenterAdapter extends BaseAdapter {
 
+
     // Declare Variables
     private Context mContext;
     private LayoutInflater inflater;

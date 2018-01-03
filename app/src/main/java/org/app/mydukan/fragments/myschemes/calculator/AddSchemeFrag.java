@@ -47,7 +47,6 @@ import java.util.HashMap;
 public class AddSchemeFrag extends BaseFragment implements RadioGroup.OnCheckedChangeListener,
         AdapterView.OnItemSelectedListener, View.OnClickListener {
 
-
     String[] models = {"- Select Model -"};
     private AutoCompleteTextView mTxtDelarPrice, mEdtQuantity, mEdtTarget, mEdtValue, mCalulatedScheme, mSelectedScheme;
     private RadioGroup mRg, mRgScheme;

@@ -7,7 +7,6 @@
     android:orientation="vertical"
     tools:context="org.app.mydukan.activities.UserProfile">
 
-
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="50dp"

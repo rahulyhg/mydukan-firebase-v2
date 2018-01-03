@@ -67,6 +67,7 @@ import swarajsaaj.smscodereader.receivers.OtpReader;
  */
 public class MobileVerificationFragment extends Fragment implements View.OnClickListener, OTPListener {
 
+
     private View view;
     private MyDukan mApp;
     private int REQUEST_CODE = 1;

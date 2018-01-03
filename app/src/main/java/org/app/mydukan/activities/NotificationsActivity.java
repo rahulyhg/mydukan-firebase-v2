@@ -26,6 +26,7 @@ import org.app.mydukan.utils.SimpleDividerItemDecoration;
 
 public class NotificationsActivity extends BaseActivity {
 
+
     //UI reference
     private RecyclerView mRecyclerView;
     private TextView mNoDataView;

@@ -19,6 +19,7 @@ import java.util.HashMap;
 //Extending FragmentStatePagerAdapter
 public class ProductPagerFragment extends FragmentStatePagerAdapter {
 
+
     //integer to count number of tabs
     int tabCount;
     boolean isCartEnabled;

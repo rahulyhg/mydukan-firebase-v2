@@ -28,6 +28,7 @@ import java.util.ArrayList;
 
 public class RecordDetailsActivity extends BaseActivity implements RecordInfoAdapter.RecordsInfoAdapterListener {
 
+
     //UI reference
     private RecyclerView mRecyclerView;
     private TextView mNoDataView;

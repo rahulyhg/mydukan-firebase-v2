@@ -14,6 +14,7 @@ import com.segment.analytics.android.integrations.moengage.MoEngageIntegration;
  *
  */
 public class SegmentDemoApplication extends Application {
+
     @Override
     public void onCreate() {
         super.onCreate();

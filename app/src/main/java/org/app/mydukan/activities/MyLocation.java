@@ -31,6 +31,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 class MyLocation {
+
     Timer timer1;
     LocationManager lm;
     LocationResult locationResult;

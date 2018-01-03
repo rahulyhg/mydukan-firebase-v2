@@ -32,6 +32,7 @@ import java.util.Comparator;
 
 public class OrderListActivity extends BaseActivity implements MyOrderAdapter.OrderAdapterListener {
 
+
     //UI reference
     private RecyclerView mRecyclerView;
     private TextView mNoDataView;

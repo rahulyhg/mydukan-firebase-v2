@@ -6,7 +6,6 @@
     tools:context="org.app.mydukan.activities.Search_MyNetworkActivity"
     android:orientation="vertical">
 
-
     <android.support.v4.widget.SwipeRefreshLayout
         android:layout_width="match_parent"
         android:id="@+id/swipeToRefresh"

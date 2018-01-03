@@ -18,6 +18,7 @@ import java.util.List;
 
 public class AddedModelsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
+
     List<String> modelsList;
 
     public AddedModelsAdapter() {

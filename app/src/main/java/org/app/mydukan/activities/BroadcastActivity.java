@@ -25,7 +25,6 @@ import java.util.ArrayList;
 
 public class BroadcastActivity extends AppCompatActivity {
 
-
     private MyDukan mApp;
     TextView emptyVideoList;
     ImageView img_BackBtn;

@@ -7,6 +7,7 @@ import java.io.Serializable;
  */
 public class Offer implements Serializable {
 
+
     private long startdate = 0l;
     private long enddate = 0l;
     private String offeramount = "";

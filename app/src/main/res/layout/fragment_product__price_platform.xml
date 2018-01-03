@@ -6,7 +6,6 @@
     tools:context="org.app.mydukan.fragments.Product_PricePlatformFragment">
 
     <TextView
-
         android:id="@+id/title_header"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

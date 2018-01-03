@@ -25,6 +25,7 @@ public class BadgeDrawable extends Drawable {
     private Paint mTextPaint;
     private Rect mTxtRect = new Rect();
 
+
     private String mCount = "";
     private boolean mWillDraw;
 

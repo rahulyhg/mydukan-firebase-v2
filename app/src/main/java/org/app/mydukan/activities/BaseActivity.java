@@ -16,6 +16,7 @@ import org.app.mydukan.R;
  * Created by arpithadudi on 7/27/16.
  */
 public class BaseActivity extends AppCompatActivity {
+
     private ProgressSpinner mProgress;
     private MoEHelper mHelper;
     public void showProgress() {

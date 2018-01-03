@@ -28,8 +28,6 @@ public class MySchemesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         schemeList = mSchemesList;
     }
 
-
-
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).

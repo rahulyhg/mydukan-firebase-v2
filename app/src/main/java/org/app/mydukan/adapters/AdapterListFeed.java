@@ -23,6 +23,7 @@ import java.util.List;
 
 public class AdapterListFeed extends RecyclerView.Adapter<FeedViewHolder> {
 
+
     final FirebaseUser auth;
     public List<Feed> mList = new ArrayList<>();
     DatabaseReference databaseReference;

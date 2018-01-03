@@ -28,7 +28,6 @@ public class FeedRetriever2 {
     public static final String FOLLOW_ROOT = "following";
     public static final String FEED_ROOT = "feed";
 
-
     FirebaseUser user;
     PriorityQueue<Feed> queue;
     OnFeedRetrievedListener onFeedRetrievedListener;

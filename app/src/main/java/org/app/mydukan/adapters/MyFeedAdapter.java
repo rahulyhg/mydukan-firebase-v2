@@ -34,6 +34,7 @@ import java.util.List;
 
 public class MyFeedAdapter extends RecyclerView.Adapter<MyFeedAdapter.MyViewHolder>{
 
+
     private List<Feed> mList;
     private OnClickItemFeed onClickItemFeed;
 

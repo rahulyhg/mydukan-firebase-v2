@@ -48,11 +48,9 @@ import static org.app.mydukan.activities.ProductDescriptionActivity.mApp;
  */
 public class Product_PricePlatformFragment extends Fragment implements  AdapterView.OnItemSelectedListener, PricePlatformAdapterListener {
 
-
     View mView;
     Context context;
     private Product mProduct;
-
 
     private String mProductDesc;
     private SupplierBindData mSupplier;

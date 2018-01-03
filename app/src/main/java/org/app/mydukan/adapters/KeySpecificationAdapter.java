@@ -39,6 +39,7 @@ import static org.app.mydukan.activities.ProductDescriptionActivity.mApp;
 
 
 public class KeySpecificationAdapter extends BaseAdapter {
+
     private final ArrayList mData;
     private Context mContext;
     private MyDukan mApp;

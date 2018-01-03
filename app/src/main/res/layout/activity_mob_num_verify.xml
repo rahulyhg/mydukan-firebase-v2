@@ -6,6 +6,7 @@
     android:layout_height="match_parent"
     tools:context="org.app.mydukan.activities.MobNumVerifyActivity">
 
+
     <include layout="@layout/content_mob_num_verify" />
 
 </android.support.design.widget.CoordinatorLayout>
