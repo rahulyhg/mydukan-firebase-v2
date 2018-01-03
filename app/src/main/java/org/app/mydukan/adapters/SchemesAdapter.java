@@ -101,6 +101,7 @@ public class SchemesAdapter extends RecyclerView.Adapter<SchemesAdapter.ViewHold
         }
     }
 
+    
     public interface SchemesAdapterListener {
         void OnClick(int position);
         void OnEnrolled(Scheme scheme, int pos, boolean isChecked);

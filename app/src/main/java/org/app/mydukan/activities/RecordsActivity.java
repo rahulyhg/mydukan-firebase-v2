@@ -44,7 +44,7 @@ public class RecordsActivity extends BaseActivity implements RecordsAdapter.Reco
     private ArrayList<Record> mRecordList;
     private String brandName = "";
     private ArrayList<Record> recordArrayList;
-    
+
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
