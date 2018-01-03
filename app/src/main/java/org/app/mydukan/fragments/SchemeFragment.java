@@ -119,7 +119,7 @@ public class SchemeFragment extends BaseFragment implements SchemesAdapter.Schem
         startActivity(intent);
     }
 
-    
+
 
     @Override
     public void OnEnrolled(Scheme scheme, final int pos, boolean isChecked) {

@@ -34,9 +34,11 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
@@ -50,6 +52,7 @@ import org.app.mydukan.adapters.CircleTransform;
 import org.app.mydukan.application.MyDukan;
 import org.app.mydukan.data.Feed;
 import org.app.mydukan.data.User;
+import org.app.mydukan.services.VolleyNetworkRequest;
 import org.app.mydukan.utils.AppContants;
 import org.app.mydukan.utils.FeedUtils;
 
@@ -62,6 +65,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -92,8 +96,10 @@ public class Post_Activity extends BaseActivity{
     AdView mAdView;
     int linkClickCount=0;
     public static final String FEED_ROOT = "feed";
+    public static final String FOLLOW_ROOT = "followers";
     public static final int GET_PHOTO = 13;
     RelativeLayout addImageLayout;
+    VolleyNetworkRequest jsonRequest;
 
     FirebaseUser auth = FirebaseAuth.getInstance().getCurrentUser();
 
@@ -101,6 +107,9 @@ public class Post_Activity extends BaseActivity{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_post_activity);
+
+        jsonRequest = new VolleyNetworkRequest(this);
+
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -263,6 +272,7 @@ public class Post_Activity extends BaseActivity{
             feed.setPhotoFeed("");
             feed.setTime(getCurrentTimeStamp());
             feed.setIdFeed(key);
+            retrieveData(key);
             databaseReference.child(key).setValue(feed, new DatabaseReference.CompletionListener() {
                 @Override
                 public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
@@ -307,6 +317,7 @@ public class Post_Activity extends BaseActivity{
                     feed.setPhotoFeed(taskSnapshot.getDownloadUrl().toString());
                     feed.setTime(getCurrentTimeStamp());
                     feed.setIdFeed(key);
+                    retrieveData(key);
                     databaseReference.child(key).setValue(feed);
                 }
                 et_feedtext.setText("");
@@ -467,4 +478,47 @@ public class Post_Activity extends BaseActivity{
                     .into(profileIMG);
         }
     }
+
+    private void retrieveData(final String key) {
+        showProgress();
+//        final List<String> followUserId = new ArrayList<>();
+        final FirebaseUser auth = FirebaseAuth.getInstance().getCurrentUser();
+        final DatabaseReference referenceFollow = FirebaseDatabase.getInstance().getReference().child(FOLLOW_ROOT + "/" + auth.getUid());
+        referenceFollow.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot != null) {
+                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+//                        followUserId.add(snapshot.getKey());
+                        getUserToken(snapshot.getKey(), auth.getDisplayName(), "post", key);
+                    }
+                }
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+            }
+        });
+    }
+
+    public void getUserToken(final String auth, final String name, final String type, final String feedId){
+        final DatabaseReference referenceFcm = FirebaseDatabase.getInstance().getReference().child("fcmregistration");
+//        final String auth = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        referenceFcm.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                System.out.println("Inside DataSnapShot");
+                HashMap<String, Object> map = new HashMap<>();
+                map = (HashMap<String, Object>) dataSnapshot.getValue();
+                if(map.containsKey(auth)) {
+                    System.out.println("User Token Comment: " + map.get(auth));
+                    jsonRequest.JsonObjectRequest((String)map.get(auth), name, type, feedId);
+                }
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
 }

@@ -79,6 +79,7 @@ public class CommentsActivity extends AppCompatActivity {
     FirebaseUser user;
     VolleyNetworkRequest jsonRequest;
     ImageView overflowMenu;
+    TextView commentCount;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -102,6 +103,7 @@ public class CommentsActivity extends AppCompatActivity {
         feed = (Feed) getIntent().getSerializableExtra(AppContants.FEED);
         company = (TextView) findViewById(R.id.post_company);
         overflowMenu = (ImageView) findViewById(R.id.overflowMenu);
+        commentCount = (TextView) findViewById(R.id.post_comment_count);
 
         if (feed == null) {
             findViewById(R.id.cardView).setVisibility(View.INVISIBLE);
@@ -209,14 +211,39 @@ public class CommentsActivity extends AppCompatActivity {
         if (feed.getLink() != null) {
             holder.setTvLink(feed.getLink());
         }
+
         if(feed != null)
             holder.getLikes(feed);
+
+        final DatabaseReference referenceLike = FirebaseDatabase.getInstance().getReference().child(MyNetworksActivity.COMMENT_ROOT + "/" + feed.getIdFeed());
+
+        referenceLike.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                if (dataSnapshot == null) {
+                    return;
+                }
+                feed.setCommentCount((int) dataSnapshot.getChildrenCount());
+                commentCount.setText(feed.getCommentCount() + " comments");
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
 
 //        holder.commentTV.setText("Comment");
         holder.setDeletable(feed.getIdUser().equalsIgnoreCase(user.getUid()));
         holder.setMoreHide(feed.getIdUser().equalsIgnoreCase(user.getUid()));
 
         initializeComment();
+    }
+
+    public void getComments(final Feed feed) {
+
     }
 
     private void initializeComment() {
