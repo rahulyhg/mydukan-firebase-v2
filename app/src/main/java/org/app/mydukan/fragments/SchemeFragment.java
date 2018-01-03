@@ -118,6 +118,7 @@ public class SchemeFragment extends BaseFragment implements SchemesAdapter.Schem
         intent.putExtra(AppContants.SUPPLIER_ID, mSupplierId);
         startActivity(intent);
     }
+    
 
     @Override
     public void OnEnrolled(Scheme scheme, final int pos, boolean isChecked) {

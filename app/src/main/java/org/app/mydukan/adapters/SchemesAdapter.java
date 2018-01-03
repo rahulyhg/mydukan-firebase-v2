@@ -52,7 +52,7 @@ public class SchemesAdapter extends RecyclerView.Adapter<SchemesAdapter.ViewHold
 
     @Override
     public void onBindViewHolder(ViewHolder holder, final int position) {
-        
+
         Scheme scheme = mSchemesList.get(position);
 
         holder.mNameView.setText(scheme.getName().toUpperCase());
