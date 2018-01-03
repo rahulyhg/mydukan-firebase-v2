@@ -44,6 +44,7 @@ public class RecordsActivity extends BaseActivity implements RecordsAdapter.Reco
     private ArrayList<Record> mRecordList;
     private String brandName = "";
     private ArrayList<Record> recordArrayList;
+    
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -125,7 +126,7 @@ public class RecordsActivity extends BaseActivity implements RecordsAdapter.Reco
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
     }
-    
+
 
     private void setupRecordsView() {
         mAdapter = new RecordsAdapter(RecordsActivity.this, RecordsActivity.this, recordArrayList);
