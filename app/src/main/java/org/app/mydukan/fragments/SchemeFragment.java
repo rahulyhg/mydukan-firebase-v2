@@ -52,7 +52,7 @@ public class SchemeFragment extends BaseFragment implements SchemesAdapter.Schem
     private SchemeListActivity mActivity;
     private int brandPos;
 
-    
+
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);

@@ -8,8 +8,12 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
+import android.widget.ListView;
+import android.widget.TextView;
 
 import org.app.mydukan.R;
+import org.app.mydukan.adapters.PriceDropHistoryAdapter;
 import org.app.mydukan.data.PriceDropHistory;
 import org.app.mydukan.data.Product;
 import org.app.mydukan.data.SupplierBindData;
@@ -35,6 +39,10 @@ public class PriceDropHistoryFragment extends Fragment {
     private SupplierBindData mSupplier;
 
     ArrayList<PriceDropHistory> priceDropHistories;
+
+    ListView list_pricedrophistory;
+    private TextView mOthersTextView;
+    LinearLayout pricedrophistoryLabels;
 
     public PriceDropHistoryFragment() {
         // Required empty public constructor
@@ -62,6 +70,11 @@ public class PriceDropHistoryFragment extends Fragment {
             }
         }
 
+        list_pricedrophistory = (ListView)  mView.findViewById(R.id.list_pricedrophistory);
+        mOthersTextView = (TextView) mView.findViewById(R.id.othersTextView);
+
+        pricedrophistoryLabels = (LinearLayout) mView.findViewById(R.id.pricedrophistoryLabels);
+
         return mView;
 
 
@@ -76,11 +89,14 @@ public class PriceDropHistoryFragment extends Fragment {
                     @Override
                     public void onSuccess(Object data) {
                         try{
+
                             dismissProgress();
                             if (data!=null){
-                                priceDropHistories= (ArrayList<PriceDropHistory>) data;
+                                priceDropHistories = (ArrayList<PriceDropHistory>) data;
+//                                mOthersTextView.setText(priceDropHistories.get(0).getDp());
 
                             }
+                            setupOthers();
 
                         }catch (Exception e){
                             dismissProgress();
@@ -91,6 +107,7 @@ public class PriceDropHistoryFragment extends Fragment {
                     @Override
                     public void onFailure(String response) {
                         try {
+                            setupOthers();
                             dismissProgress();
 
                         }catch (Exception e){
@@ -124,6 +141,33 @@ public class PriceDropHistoryFragment extends Fragment {
         } catch (Exception e) {
 
         }
+    }
+
+    private void setupOthers(){
+        String othersStr = "";
+
+
+        if (priceDropHistories!=null && !priceDropHistories.isEmpty()){
+            try{
+
+                PriceDropHistoryAdapter adapter = new PriceDropHistoryAdapter(context,priceDropHistories);
+
+                list_pricedrophistory.setAdapter(adapter);
+
+            }catch (Exception e){
+                e.printStackTrace();
+
+                PriceDropHistoryAdapter adapter = new PriceDropHistoryAdapter(context,priceDropHistories);
+                list_pricedrophistory.setAdapter(adapter);
+            }
+
+
+        }else{
+            mOthersTextView.setVisibility(View.VISIBLE);
+            mOthersTextView.setText("Not available");
+            pricedrophistoryLabels.setVisibility(View.GONE);
+        }
+
     }
 
 }

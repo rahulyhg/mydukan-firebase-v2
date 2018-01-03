@@ -1,13 +1,93 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context="org.app.mydukan.fragments.PriceDropHistoryFragment">
 
-    <!-- TODO: Update blank fragment layout -->
     <TextView
+
+        android:id="@+id/title_header"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/listrow_topmargin_multiline"
+        android:text="Price Drop History : "
+        android:layout_marginLeft="10dp"
+        android:textColor="#CC0033"
+        android:textSize="@dimen/mediumtextSize"
+        android:textStyle="normal|bold"
+        android:visibility="visible"
+        tools:ignore="HardcodedText,RtlHardcoded" />
+
+    <TextView
+        android:id="@+id/othersTextView"
+        android:layout_width="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/listrow_topmargin_multiline"
+        android:textColor="@color/text_color"
+        android:textSize="@dimen/smalltextSize"
+        tools:ignore="RtlHardcoded" />
+
+    <LinearLayout
+        android:id="@+id/pricedrophistoryLabels"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:visibility="visible"
+        android:gravity="center"
+        android:elevation="1dp"
+        android:background="@color/white"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:fontFamily="serif"
+            android:text="Date "
+            android:gravity="center"
+            android:textColor="@color/black"
+            android:textStyle="bold"
+            android:visibility="visible"/>
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:text="DP"
+            android:gravity="center"
+            android:textColor="@color/black"
+            android:textStyle="bold"
+            android:fontFamily="serif"
+            />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:text="Drop"
+            android:gravity="center"
+            android:textColor="@color/black"
+            android:textStyle="bold"
+            android:fontFamily="serif"
+            />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:text="MOP"
+            android:gravity="center"
+            android:textColor="@color/black"
+            android:textStyle="bold"
+            android:fontFamily="serif"
+            />
+    </LinearLayout>
+
+    <ListView
+        android:id="@+id/list_pricedrophistory"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        android:layout_margin="2dp" />
 
-</FrameLayout>
+</LinearLayout>
