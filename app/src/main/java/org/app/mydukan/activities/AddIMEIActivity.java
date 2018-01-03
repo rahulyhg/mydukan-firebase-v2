@@ -185,7 +185,7 @@ public class AddIMEIActivity extends BaseActivity {
         integrator.setBarcodeImageEnabled(true);
         integrator.setCameraId(0);  // Use a specific camera of the device
         integrator.initiateScan();
-        
+
     }
 
     /**
