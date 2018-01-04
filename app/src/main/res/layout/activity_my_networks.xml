@@ -14,6 +14,7 @@
     android:id="@+id/myNetwork_Container"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
+
     <android.support.v4.view.ViewPager
         android:id="@+id/viewpager"
         android:layout_width="match_parent"
@@ -66,8 +67,7 @@
                 android:layout_marginRight="30dp"
                 android:layout_centerVertical="true"
                 android:layout_alignParentRight="true"
-                android:layout_alignParentEnd="true"
-               />
+                android:layout_alignParentEnd="true" />
 
             <RelativeLayout
                 android:id="@+id/profile_view"
@@ -75,8 +75,7 @@
                 android:layout_height="wrap_content"
                 android:layout_alignTop="@+id/back_button"
                 android:layout_toRightOf="@+id/back_button"
-                android:layout_toLeftOf="@id/btn_Search"
-                >
+                android:layout_toLeftOf="@id/btn_Search">
 
                 <ImageView
                     android:id="@+id/img_pic"
@@ -110,8 +109,8 @@
                     android:text="Profile Email"
                     android:textSize="12sp"
                     tools:ignore="HardcodedText,SmallSp" />
-            </RelativeLayout>
 
+            </RelativeLayout>
 
         </RelativeLayout>
 
@@ -121,9 +120,13 @@
             android:layout_height="wrap_content"
             app:tabGravity="fill"
             app:tabMode="fixed" />
+
     </android.support.design.widget.AppBarLayout>
+
     </RelativeLayout>
+
     </LinearLayout>
+
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab_addPosts"
         android:layout_width="wrap_content"
@@ -135,6 +138,5 @@
         app:backgroundTint="@color/buttonColorPressed"
         app:borderWidth="0dp"
         tools:ignore="RelativeOverlap,RtlHardcoded" />
-
 
 </android.support.design.widget.CoordinatorLayout>

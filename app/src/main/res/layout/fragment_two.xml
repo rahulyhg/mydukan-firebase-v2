@@ -6,6 +6,13 @@
     android:layout_height="match_parent"
     tools:context="fragments.TwoFragment">
 
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/contacts_rv"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="5dp"/>
+
 
     <com.google.android.gms.ads.AdView
         android:id="@+id/adView_myNetwork_two"
@@ -17,6 +24,7 @@
         ads:adUnitId="@string/banner_myNetwork_ad_unit_id" />
 
     <LinearLayout
+        android:layout_below="@+id/contacts_rv"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_above="@id/adView_myNetwork_two"
