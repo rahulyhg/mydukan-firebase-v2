@@ -79,7 +79,8 @@ public class SupplierAdapter extends
 
         if(mSupplierData.get(position).getId().equalsIgnoreCase("RcJ1L4mWaZeIe2wRO3ejHOmcSxf2")){
 
-            holder.mSupplierName.setText("MOBILE DP FREE");
+           // holder.mSupplierName.setText("MOBILE DP FREE");
+            holder.mSupplierName.setText("PRICE LIST & PRICE DROP"+"\n"+"प्राइस लिस्ट & प्राइस ड्रॉप" );  // प्राइस लिस्ट
         }
 
         if(mSupplierData.get(position).getId().equalsIgnoreCase("WDSLSgxI10eiWVey4RVWY5niElE3")){
