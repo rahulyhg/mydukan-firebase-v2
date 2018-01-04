@@ -168,7 +168,7 @@
             android:orientation="vertical"
             android:layout_margin="1dp"
             android:visibility="visible"
-            android:background="@color/new_btn_blue"
+            android:background="@color/orange_one"
             android:gravity="center_horizontal"
             android:padding="2dp">
 
@@ -181,8 +181,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="SCHEMES"
-                android:textColor="@color/orange_three"
-                android:textSize="12sp"
+                android:textColor="@color/white"
+                android:textSize="@dimen/microtextSize"
                 android:textStyle="bold"
                 android:layout_marginTop="6dp"
                 tools:ignore="HardcodedText" />
