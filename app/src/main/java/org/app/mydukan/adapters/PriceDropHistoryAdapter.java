@@ -40,8 +40,8 @@ public class PriceDropHistoryAdapter extends BaseAdapter {
     public class ViewHolder {
         TextView txtDate;
         TextView txtDp;
-        TextView txtDrop;
         TextView txtMop;
+        TextView txtDrop;
     }
 
     @Override
@@ -75,8 +75,8 @@ public class PriceDropHistoryAdapter extends BaseAdapter {
             // Locate the TextViews in listview_item.xml
             holder.txtDate = (TextView) view.findViewById(R.id.history_date);
             holder.txtDp = (TextView) view.findViewById(R.id.history_DP);
-            holder.txtDrop = (TextView) view.findViewById(R.id.history_Drop);
             holder.txtMop = (TextView) view.findViewById(R.id.history_MOP);
+            holder.txtDrop = (TextView) view.findViewById(R.id.history_Drop);
             view.setTag(holder);
         } else {
             holder = (PriceDropHistoryAdapter.ViewHolder) view.getTag();
@@ -84,8 +84,8 @@ public class PriceDropHistoryAdapter extends BaseAdapter {
         // Set the results into TextViews
         holder.txtDate.setText(priceDropHistories.get(position).getDate());
         holder.txtDp.setText(priceDropHistories.get(position).getDp());
-        holder.txtDrop.setText(priceDropHistories.get(position).getDrop());
         holder.txtMop.setText(priceDropHistories.get(position).getMop());
+        holder.txtDrop.setText(priceDropHistories.get(position).getDrop());
 
         return view;
     }
