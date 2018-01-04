@@ -216,7 +216,7 @@ public class CommentsActivity extends AppCompatActivity {
             holder.getLikes(feed);
 
 
-        
+
         final DatabaseReference referenceLike = FirebaseDatabase.getInstance().getReference().child(MyNetworksActivity.COMMENT_ROOT + "/" + feed.getIdFeed());
 
         referenceLike.addValueEventListener(new ValueEventListener() {

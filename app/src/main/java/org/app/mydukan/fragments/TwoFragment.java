@@ -3,6 +3,7 @@ package org.app.mydukan.fragments;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
@@ -22,17 +23,36 @@ import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.MobileAds;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import org.app.mydukan.R;
+import org.app.mydukan.activities.MyNetworksActivity;
+import org.app.mydukan.activities.Search_MyNetworkActivity;
 import org.app.mydukan.adapters.AdapterListFeed;
+import org.app.mydukan.adapters.NetworkContactsAdapter;
+import org.app.mydukan.data.ContactUsers;
 import org.app.mydukan.data.Feed;
+import org.app.mydukan.services.SyncContacts;
 import org.app.mydukan.services.VolleyNetworkRequest;
 import org.app.mydukan.utils.AppContants;
 import org.app.mydukan.utils.FeedRetriever2;
 import org.app.mydukan.utils.FeedUtils;
+import org.app.mydukan.utils.Utils;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
+
+import io.realm.Case;
+import io.realm.Realm;
+import io.realm.RealmConfiguration;
+import okhttp3.internal.cache.DiskLruCache;
 
 import static org.app.mydukan.activities.CommentsActivity.RESULT_DELETED;
 import static org.app.mydukan.fragments.MyNetworkFragment.FEED_LOCATION;
@@ -64,6 +84,14 @@ public class TwoFragment extends Fragment implements AdapterListFeed.OnClickItem
     private boolean flagFollow;
     private int itemThreshold = 4;
     private boolean hasMoreFeeds = true;
+    Map<String, String> contactMap;
+    List<Search_MyNetworkActivity.Contact> allContactList;
+    List<ContactUsers> networkContacts;
+    Realm realm;
+    String currentQuery="";
+    NetworkContactsAdapter networkContactsAdapter;
+    RecyclerView followContact;
+    public static final String FOLLOWING_ROOT = "following";
 
     public TwoFragment() {
         // Required empty public constructor
@@ -72,6 +100,13 @@ public class TwoFragment extends Fragment implements AdapterListFeed.OnClickItem
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        RealmConfiguration config = new RealmConfiguration.Builder()
+                .deleteRealmIfMigrationNeeded()
+                .build();
+
+        realm = Realm.getInstance(config);
+        new TwoFragment.ContactLoader().execute();
+
     }
 
     @Override
@@ -85,6 +120,7 @@ public class TwoFragment extends Fragment implements AdapterListFeed.OnClickItem
         //initialize ads for the app  - ca-app-pub-1640690939729824/2174590993
         MobileAds.initialize(context, "ca-app-pub-1640690939729824/2174590993");
         mAdView = (AdView) mView.findViewById(R.id.adView_myNetwork_two);
+        followContact = (RecyclerView) mView.findViewById(R.id.contacts_rv);
         AdRequest adRequest = new AdRequest.Builder().build();
         mAdView.loadAd(adRequest);
         return mView;
@@ -227,6 +263,122 @@ public class TwoFragment extends Fragment implements AdapterListFeed.OnClickItem
     public void onClick(View view) {
 
     }
+
+    private void loadData() {
+        if (contactMap == null)
+            return;
+        allContactList = createContactList(new ArrayList<>(contactMap.entrySet()));
+        Collections.sort(allContactList, new Comparator<Search_MyNetworkActivity.Contact>() {
+            @Override
+            public int compare(Search_MyNetworkActivity.Contact o1, Search_MyNetworkActivity.Contact o2) {
+                return o1.getName().compareTo(o2.getName());
+            }
+        });
+        filterLists(currentQuery);
+    }
+
+    private List<Search_MyNetworkActivity.Contact> createContactList(ArrayList<Map.Entry<String, String>> entries) {
+        List<Search_MyNetworkActivity.Contact> contacts = new ArrayList<>();
+        Collections.sort(entries, new Comparator<Map.Entry<String, String>>() {
+            @Override
+            public int compare(Map.Entry<String, String> o1, Map.Entry<String, String> o2) {
+                return o1.getValue().compareTo(o2.getValue());
+            }
+        });
+        for (Map.Entry<String, String> entry : entries) {
+            if (contacts.size() > 0 && contacts.get(contacts.size() - 1).getName().equals(entry.getValue())) {
+                contacts.get(contacts.size() - 1).add(entry.getKey());
+            } else {
+                contacts.add(new Search_MyNetworkActivity.Contact(entry.getValue(), entry.getKey()));
+            }
+        }
+        List<Search_MyNetworkActivity.Contact> contacts2 = new ArrayList<>();
+        for (Search_MyNetworkActivity.Contact contact : contacts) {
+            boolean inNetwork = false;
+            for (String number : contact.getNumbers()) {
+                if (!realm.where(ContactUsers.class).contains("phoneNumber", Utils.formatNumber(number)).findAll().isEmpty()) {
+                    inNetwork = true;
+                }
+            }
+            if (!inNetwork) {
+                contacts2.add(contact);
+            }
+        }
+        return contacts2;
+
+    }
+
+    private void filterLists(final String s) {
+        networkContacts = realm.copyFromRealm(realm.where(ContactUsers.class)
+                .beginsWith("name", s, Case.INSENSITIVE)
+                .or()
+                .contains("phoneNumber", Utils.formatNumber(s))
+                .or()
+                .beginsWith("contactName", s, Case.INSENSITIVE)
+                .findAllSorted("name"));
+
+        System.out.println("Inside Contacts");
+        getFollowings();
+    }
+
+    public void syncContacts(){
+        loadData();
+    }
+
+    private void getFollowings() {
+//        swipeRefreshLayout.setRefreshing(true);
+        final FirebaseUser auth = FirebaseAuth.getInstance().getCurrentUser();
+        final DatabaseReference referenceFollowing = FirebaseDatabase.getInstance().getReference().child(FOLLOWING_ROOT+"/"+auth.getUid());
+        referenceFollowing.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+//                mAdapter.setFollowing(dataSnapshot);
+//                reSyncContacts();
+                System.out.println("DataSnapshot: "+dataSnapshot);
+                List<ContactUsers> contactUsers = new ArrayList<>();
+                if(dataSnapshot != null) {
+                    for(int i=0; i<networkContacts.size(); i++){
+                        if(!dataSnapshot.hasChild(networkContacts.get(i).getuId())){
+                            contactUsers.add(networkContacts.get(i));
+                        }
+                    }
+                    if(contactUsers.size() > 0) {
+                        networkContactsAdapter = new NetworkContactsAdapter(contactUsers, context, TwoFragment.this, dataSnapshot);
+                        followContact.setAdapter(networkContactsAdapter);
+                        followContact.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
+                        networkContactsAdapter.notifyDataSetChanged();
+                    }
+                    else{
+                        followContact.setVisibility(View.GONE);
+                    }
+                }
+                else{
+                    followContact.setVisibility(View.GONE);
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                showProgress(false);
+            }
+        });
+    }
+
+    class ContactLoader extends AsyncTask<Void, Void, Map<String, String>> {
+
+        @Override
+        protected Map<String, String> doInBackground(Void... voids) {
+            return SyncContacts.getNumberMap(getContext());
+        }
+
+        @Override
+        protected void onPostExecute(Map<String, String> s) {
+            contactMap = s;
+            loadData();
+            showProgress(false);
+        }
+    }
+
 }
 
 

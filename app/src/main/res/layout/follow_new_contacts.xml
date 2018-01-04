@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="@color/white">
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:layout_width="120dp"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginLeft="10dp"
+            android:layout_marginBottom="10dp">
+
+            <ImageView
+                android:id="@+id/contact_pic"
+                android:layout_width="match_parent"
+                android:layout_height="75dp"
+                android:layout_margin="10dp"/>
+
+            <TextView
+                android:id="@+id/contact_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAlignment="center"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:layout_gravity="center"
+                android:text="Rameshkumar"/>
+
+            <TextView
+                android:id="@+id/contact_type"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAlignment="center"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:layout_gravity="center"
+                android:text="(Retailer)"/>
+
+            <TextView
+                android:id="@+id/follow_contact"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAlignment="center"
+                android:textColor="@color/white"
+                android:background="@color/authui_colorPrimary"
+                android:text="FOLLOW"
+                android:layout_gravity="center"
+                android:padding="5dp"
+                android:layout_marginTop="10dp"/>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:background="@color/grey"
+                android:layout_marginTop="10dp"
+                android:visibility="gone"/>
+
+        </LinearLayout>
+
+        <View
+            android:layout_width="2dp"
+            android:layout_height="match_parent"
+            android:background="@color/lightgrey"/>
+
+    </LinearLayout>
+
+</android.support.constraint.ConstraintLayout>

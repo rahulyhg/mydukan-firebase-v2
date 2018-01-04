@@ -9,6 +9,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
@@ -18,6 +19,9 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.crashlytics.android.answers.Answers;
 import com.crashlytics.android.answers.CustomEvent;
+import com.google.common.base.Predicate;
+import com.google.common.collect.Collections2;
+import com.google.common.collect.Lists;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -28,15 +32,27 @@ import com.google.firebase.database.ValueEventListener;
 
 import org.app.mydukan.R;
 import org.app.mydukan.adapters.CircleTransform;
+import org.app.mydukan.adapters.NetworkContactsAdapter;
 import org.app.mydukan.data.ChattUser;
+import org.app.mydukan.data.ContactUsers;
 import org.app.mydukan.data.Feed;
 import org.app.mydukan.fragments.MyNetworkFragment;
 import org.app.mydukan.fragments.TwoFragment;
 import org.app.mydukan.utils.AppContants;
+import org.app.mydukan.utils.Utils;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Nullable;
+
+import io.realm.Case;
+import io.realm.Realm;
+import io.realm.RealmConfiguration;
 
 public class MyNetworksActivity extends AppCompatActivity {
 
@@ -57,6 +73,7 @@ public class MyNetworksActivity extends AppCompatActivity {
     ChattUser chattUser;
     FirebaseUser auth = FirebaseAuth.getInstance().getCurrentUser();
     private List<Feed> mList;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -264,4 +281,5 @@ public class MyNetworksActivity extends AppCompatActivity {
             return mFragmentTitleList.get(position);
         }
     }
+
 }
