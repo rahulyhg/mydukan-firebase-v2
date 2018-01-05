@@ -7,11 +7,16 @@ import android.support.v4.app.ListFragment;
 import android.view.View;
 import android.widget.ListView;
 
+import com.crashlytics.android.Crashlytics;
+
 import org.app.mydukan.R;
 import org.app.mydukan.data.Videos;
+import org.app.mydukan.emailSending.SendEmail;
 import org.app.mydukan.server.ApiManager;
 import org.app.mydukan.server.ApiResult;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
 
 /***********************************************************************************
@@ -55,14 +60,15 @@ public class VideoListFragment extends ListFragment {
     @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
 
-        final Context context = getActivity();
-        final String DEVELOPER_KEY = getString(R.string.DEVELOPER_KEY);
-        final String videoId =  videosList.get(position).getVideoID();
-        //Opens in Custom Activity
-       final Intent fragIntent = new Intent(context, YouTubeFragmentActivity.class);
-        fragIntent.putExtra(YouTubeFragmentActivity.KEY_VIDEO_ID, videoId);
-        fragIntent.putExtra(YouTubeFragmentActivity.KEY_VIDEO, videosList.get(position));
-        startActivity(fragIntent);
+        try {
+            final Context context = getActivity();
+            final String DEVELOPER_KEY = getString(R.string.DEVELOPER_KEY);
+            final String videoId = videosList.get(position).getVideoID();
+            //Opens in Custom Activity
+            final Intent fragIntent = new Intent(context, YouTubeFragmentActivity.class);
+            fragIntent.putExtra(YouTubeFragmentActivity.KEY_VIDEO_ID, videoId);
+            fragIntent.putExtra(YouTubeFragmentActivity.KEY_VIDEO, videosList.get(position));
+            startActivity(fragIntent);
 
       /*  switch (position) {
             case 0:
@@ -126,27 +132,46 @@ public class VideoListFragment extends ListFragment {
 
 
         }*/
+        }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - onListItemClick : ",e.toString());
+            Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() + " - onListItemClick : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - onListItemClick : ",ex.toString());
+            Crashlytics.log(0,this.getClass().getSimpleName() + " - onListItemClick : ",ex.toString());
+        }
     }
     private void fetchVideos() {
-        ApiManager.getInstance(getActivity()).getVideosList(new ApiResult() {
-            @Override
-            public void onSuccess(Object data) {
-                if(data!=null){
-                   videosList = (ArrayList<Videos>) data;
+        try {
+            ApiManager.getInstance(getActivity()).getVideosList(new ApiResult() {
+                @Override
+                public void onSuccess(Object data) {
+                    if (data != null) {
+                        videosList = (ArrayList<Videos>) data;
 
                  /*   for (Videos vSnapshot : videosList ) {
                         addItem(new YouTubeVideo(vSnapshot.getVideoID(), vSnapshot.getVideoINFO()));
                     }*/
-                    setListAdapter(new VideoListAdapter(getActivity(),videosList));
+                        setListAdapter(new VideoListAdapter(getActivity(), videosList));
+                    }
                 }
-            }
 
-            @Override
-            public void onFailure(String response) {
+                @Override
+                public void onFailure(String response) {
 
 
-            }
-        });
+                }
+            });
+        }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - fetchVideos : ",e.toString());
+            Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() + " - fetchVideos : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - fetchVideos : ",ex.toString());
+            Crashlytics.log(0,this.getClass().getSimpleName() + " - fetchVideos : ",ex.toString());
+        }
 
     }
 

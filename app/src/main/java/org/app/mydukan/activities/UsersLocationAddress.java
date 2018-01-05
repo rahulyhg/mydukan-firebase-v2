@@ -53,7 +53,7 @@ import org.app.mydukan.R;
 import org.app.mydukan.application.MyDukan;
 import org.app.mydukan.data.AppStateContants;
 import org.app.mydukan.data.ProfileContants;
-//import org.app.mydukan.emailSending.SendEmail;
+import org.app.mydukan.emailSending.SendEmail;
 import org.app.mydukan.utils.AppContants;
 import org.app.mydukan.utils.Utils;
 
@@ -65,6 +65,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+//import org.app.mydukan.emailSending.SendEmail;
 
 public class UsersLocationAddress extends BaseActivity implements View.OnClickListener, LocationResult {
 
@@ -260,12 +262,12 @@ public class UsersLocationAddress extends BaseActivity implements View.OnClickLi
             }
         });*/
         }catch (Exception e){
-//            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - onCreate : ",e.toString());
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - onCreate : ",e.toString());
             Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() + " - onCreate : ",e.toString());
         }catch (VirtualMachineError ex){
             StringWriter errors = new StringWriter();
             ex.printStackTrace(new PrintWriter(errors));
-//            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - onCreate : ",ex.toString());
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - onCreate : ",ex.toString());
             Crashlytics.log(0,this.getClass().getSimpleName() + " - onCreate : ",ex.toString());
         }
     }
@@ -296,7 +298,13 @@ public class UsersLocationAddress extends BaseActivity implements View.OnClickLi
                 return false;
             return providers.contains(LocationManager.GPS_PROVIDER);
         }catch (Exception e){
-            e.printStackTrace();
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - onCreate : ",e.toString());
+            Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() + " - onCreate : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - onCreate : ",ex.toString());
+            Crashlytics.log(0,this.getClass().getSimpleName() + " - onCreate : ",ex.toString());
         }
         return false;
     }
@@ -374,7 +382,13 @@ public class UsersLocationAddress extends BaseActivity implements View.OnClickLi
 
             }
         }catch (Exception e){
-            e.printStackTrace();
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - onCreate : ",e.toString());
+            Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() + " - onCreate : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - onCreate : ",ex.toString());
+            Crashlytics.log(0,this.getClass().getSimpleName() + " - onCreate : ",ex.toString());
         }
     }
 
@@ -439,7 +453,13 @@ public class UsersLocationAddress extends BaseActivity implements View.OnClickLi
                     break;
             }
         }catch (Exception e){
-            e.printStackTrace();
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - onCreate : ",e.toString());
+            Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() + " - onCreate : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - onCreate : ",ex.toString());
+            Crashlytics.log(0,this.getClass().getSimpleName() + " - onCreate : ",ex.toString());
         }
 
     }
@@ -566,13 +586,13 @@ public class UsersLocationAddress extends BaseActivity implements View.OnClickLi
                 placeDescription.setText(stBuilder.toString());*/
                 }
             }catch (Exception e){
-//                new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - onActivityResult : ",e.toString());
-                Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() + " - onActivityResult : ",e.toString());
+                new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - onCreate : ",e.toString());
+                Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() + " - onCreate : ",e.toString());
             }catch (VirtualMachineError ex){
                 StringWriter errors = new StringWriter();
                 ex.printStackTrace(new PrintWriter(errors));
-//                new SendEmail().sendEmail(this.getClass().getSimpleName() + " - onActivityResult : ",ex.toString());
-                Crashlytics.log(0,this.getClass().getSimpleName() + " - onActivityResult : ",ex.toString());
+                new SendEmail().sendEmail(this.getClass().getSimpleName() + " - onCreate : ",ex.toString());
+                Crashlytics.log(0,this.getClass().getSimpleName() + " - onCreate : ",ex.toString());
             }
         }
     }
@@ -644,7 +664,13 @@ public class UsersLocationAddress extends BaseActivity implements View.OnClickLi
 
             }
         }catch (Exception e){
-            e.printStackTrace();
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - onCreate : ",e.toString());
+            Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() + " - onCreate : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - onCreate : ",ex.toString());
+            Crashlytics.log(0,this.getClass().getSimpleName() + " - onCreate : ",ex.toString());
         }
 
     }
@@ -671,7 +697,13 @@ public class UsersLocationAddress extends BaseActivity implements View.OnClickLi
         else*/
             super.onBackPressed();
         }catch (Exception e){
-            e.printStackTrace();
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - onCreate : ",e.toString());
+            Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() + " - onCreate : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - onCreate : ",ex.toString());
+            Crashlytics.log(0,this.getClass().getSimpleName() + " - onCreate : ",ex.toString());
         }
     }
 
@@ -737,7 +769,13 @@ public class UsersLocationAddress extends BaseActivity implements View.OnClickLi
 
             }
         }catch (Exception e){
-            e.printStackTrace();
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - onCreate : ",e.toString());
+            Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() + " - onCreate : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - onCreate : ",ex.toString());
+            Crashlytics.log(0,this.getClass().getSimpleName() + " - onCreate : ",ex.toString());
         }
     }
 
@@ -779,7 +817,13 @@ public class UsersLocationAddress extends BaseActivity implements View.OnClickLi
             alertDialog.setCancelable(true);
             alertDialog.show();
         }catch (Exception e){
-            e.printStackTrace();
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - showSettingsAlert : ",e.toString());
+            Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() + " - showSettingsAlert : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - showSettingsAlert : ",ex.toString());
+            Crashlytics.log(0,this.getClass().getSimpleName() + " - showSettingsAlert : ",ex.toString());
         }
     }
 
@@ -809,7 +853,13 @@ public class UsersLocationAddress extends BaseActivity implements View.OnClickLi
                 });
             }
         }catch (Exception e){
-            e.printStackTrace();
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - gotLocation : ",e.toString());
+            Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() + " - gotLocation : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - gotLocation : ",ex.toString());
+            Crashlytics.log(0,this.getClass().getSimpleName() + " - gotLocation : ",ex.toString());
         }
     }
 
@@ -873,7 +923,13 @@ public class UsersLocationAddress extends BaseActivity implements View.OnClickLi
                 }
                 userState.setText(State_Name);
             }catch (Exception e){
-                e.printStackTrace();
+                new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - handleMessage : ",e.toString());
+                Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() + " - handleMessage : ",e.toString());
+            }catch (VirtualMachineError ex){
+                StringWriter errors = new StringWriter();
+                ex.printStackTrace(new PrintWriter(errors));
+                new SendEmail().sendEmail(this.getClass().getSimpleName() + " - handleMessage : ",ex.toString());
+                Crashlytics.log(0,this.getClass().getSimpleName() + " - handleMessage : ",ex.toString());
             }
         }
     }

@@ -11,20 +11,21 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
+import com.crashlytics.android.Crashlytics;
+
 import org.app.mydukan.R;
-import org.app.mydukan.activities.Doa.DoaRecordListActivity;
-import org.app.mydukan.activities.Schemes.SchemeListActivity;
 import org.app.mydukan.activities.Schemes.SchemeRecordActivity;
-import org.app.mydukan.adapters.ComplaintsAdapter;
 import org.app.mydukan.adapters.RecordsAdapter;
 import org.app.mydukan.application.MyDukan;
-import org.app.mydukan.data.Complaint;
 import org.app.mydukan.data.Record;
+import org.app.mydukan.emailSending.SendEmail;
 import org.app.mydukan.server.ApiManager;
 import org.app.mydukan.server.ApiResult;
 import org.app.mydukan.utils.AppContants;
 import org.app.mydukan.utils.SimpleDividerItemDecoration;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
 
 /**
@@ -51,25 +52,26 @@ public class RecordsActivity extends BaseActivity implements RecordsAdapter.Reco
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_records);
 
-        mApp = (MyDukan) getApplicationContext();
-        recordArrayList = new ArrayList<>();
+        try {
+            mApp = (MyDukan) getApplicationContext();
+            recordArrayList = new ArrayList<>();
 
-        mBottomToolBar = (Toolbar) findViewById(R.id.bottomToolbar);
-        mBottomToolBar.findViewById(R.id.schemeBtn).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(RecordsActivity.this, SchemeRecordActivity.class);
-                startActivity(intent);
+            mBottomToolBar = (Toolbar) findViewById(R.id.bottomToolbar);
+            mBottomToolBar.findViewById(R.id.schemeBtn).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent intent = new Intent(RecordsActivity.this, SchemeRecordActivity.class);
+                    startActivity(intent);
+                }
+            });
+
+            Bundle bundle = getIntent().getExtras();
+            if (bundle.containsKey(AppContants.BRAND_NAME)) {
+                brandName = bundle.getString(AppContants.BRAND_NAME);
             }
-        });
-
-        Bundle bundle = getIntent().getExtras();
-        if(bundle.containsKey(AppContants.BRAND_NAME)){
-            brandName = bundle.getString(AppContants.BRAND_NAME);
-        }
-        if(bundle.containsKey(AppContants.PRODUCT)){
-            recordArrayList = (ArrayList<Record>)bundle.getSerializable(AppContants.PRODUCT);
-        }
+            if (bundle.containsKey(AppContants.PRODUCT)) {
+                recordArrayList = (ArrayList<Record>) bundle.getSerializable(AppContants.PRODUCT);
+            }
 
 //        mBottomToolBar.findViewById(R.mCatId.doaBtn).setOnClickListener(new View.OnClickListener() {
 //            @Override
@@ -78,11 +80,20 @@ public class RecordsActivity extends BaseActivity implements RecordsAdapter.Reco
 //                startActivity(intent);
 //            }
 //        });
-        setupActionBar();
+            setupActionBar();
 //        BaseActivity.showOkAlert(this,"Records","All Price Drop Model IMEI entered will be stored in Records for Retailer to keep track.","OK");
-        setupRecordsView();
+            setupRecordsView();
 //        fetchTheRecords();
-        setAdapter();
+            setAdapter();
+        }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - onCreate : ",e.toString());
+            Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() + " - onCreate : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - onCreate : ",ex.toString());
+            Crashlytics.log(0,this.getClass().getSimpleName() + " - onCreate : ",ex.toString());
+        }
     }
 
     private void setAdapter() {
@@ -174,26 +185,36 @@ public class RecordsActivity extends BaseActivity implements RecordsAdapter.Reco
 
     private void deleteTheRecord(final int position){
         showProgress();
-        if(recordArrayList.size() < position) {
-            return;
-        }
-        Record record = recordArrayList.get(position);
-        ApiManager.getInstance(RecordsActivity.this).deleteRecord(record.getSupplierInfo().getId(), record.getRecordId(), new ApiResult() {
-            @Override
-            public void onSuccess(Object data) {
-                dismissProgress();
-                Object mdata=data;
-                recordArrayList.remove(position);
+        try {
+            if (recordArrayList.size() < position) {
+                return;
+            }
+            Record record = recordArrayList.get(position);
+            ApiManager.getInstance(RecordsActivity.this).deleteRecord(record.getSupplierInfo().getId(), record.getRecordId(), new ApiResult() {
+                @Override
+                public void onSuccess(Object data) {
+                    dismissProgress();
+                    Object mdata = data;
+                    recordArrayList.remove(position);
 //                mAdapter.addItems(recordArrayList);
-                mAdapter.notifyDataSetChanged();
-            }
+                    mAdapter.notifyDataSetChanged();
+                }
 
-            @Override
-            public void onFailure(String response) {
-                dismissProgress();
-                showErrorToast(RecordsActivity.this,response);
-            }
-        });
+                @Override
+                public void onFailure(String response) {
+                    dismissProgress();
+                    showErrorToast(RecordsActivity.this, response);
+                }
+            });
+        }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - deleteTheRecord : ",e.toString());
+            Crashlytics.log(0,"Exception - RecordsActivity - deleteTheRecord : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - deleteTheRecord : ",ex.toString());
+            Crashlytics.log(0,"1 - RecordsActivity - deleteTheRecord : ",ex.toString());
+        }
     }
 
 

@@ -10,11 +10,10 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-import com.google.common.io.LineReader;
+import com.crashlytics.android.Crashlytics;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -32,10 +31,12 @@ import org.app.mydukan.adapters.AdapterListFeed;
 import org.app.mydukan.adapters.CircleTransform;
 import org.app.mydukan.data.ChattUser;
 import org.app.mydukan.data.Feed;
+import org.app.mydukan.emailSending.SendEmail;
 import org.app.mydukan.utils.Utils;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.text.ParseException;
-import java.util.ArrayList;
 
 /**
  * Created by Harshit Agarwal on 16-10-2017.
@@ -65,63 +66,73 @@ public class FeedViewHolder extends RecyclerView.ViewHolder implements View.OnCl
 
     public FeedViewHolder(final View itemView, final AdapterListFeed.OnClickItemFeed onClickItemFeed) {
         super(itemView);
-        auth = FirebaseAuth.getInstance().getCurrentUser();
-        itemView.setOnClickListener(this);
+        try {
+            auth = FirebaseAuth.getInstance().getCurrentUser();
+            itemView.setOnClickListener(this);
 
-        ivAvatar = (ImageView) itemView.findViewById(R.id.iv_avatar);
-        tvName = (TextView) itemView.findViewById(R.id.tv_name);
-        tvTime = (TextView) itemView.findViewById(R.id.tv_time);
+            ivAvatar = (ImageView) itemView.findViewById(R.id.iv_avatar);
+            tvName = (TextView) itemView.findViewById(R.id.tv_name);
+            tvTime = (TextView) itemView.findViewById(R.id.tv_time);
 //        tvLike = (TextView) itemView.findViewById(R.id.tv_like);
-        tvLike = (TextView) itemView.findViewById(R.id.post_like_count);
-        tvContent = (TextView) itemView.findViewById(R.id.tv_content);
-        tvLink = (TextView) itemView.findViewById(R.id.tv_contentLink);
-        ivContent = (ImageView) itemView.findViewById(R.id.iv_feed);
-        ivLike = (ImageView) itemView.findViewById(R.id.iv_like);
-        followBTN = (Button) itemView.findViewById(R.id.btn_follow);
+            tvLike = (TextView) itemView.findViewById(R.id.post_like_count);
+            tvContent = (TextView) itemView.findViewById(R.id.tv_content);
+            tvLink = (TextView) itemView.findViewById(R.id.tv_contentLink);
+            ivContent = (ImageView) itemView.findViewById(R.id.iv_feed);
+            ivLike = (ImageView) itemView.findViewById(R.id.iv_like);
+            followBTN = (Button) itemView.findViewById(R.id.btn_follow);
 //        viewProfile = (RelativeLayout) itemView.findViewById(R.id.layout_vProfile);
-        commentTV = (TextView) itemView.findViewById(R.id.commentTV);
-        overflowImage = itemView.findViewById(R.id.overflowMenu);
-        like = (LinearLayout) itemView.findViewById(R.id.like);
-        commentTv = (LinearLayout) itemView.findViewById(R.id.comment);
-        comment = (TextView) itemView.findViewById(R.id.post_comment_count);
-        tvCompany = (TextView) itemView.findViewById(R.id.post_company);
-        shareTv = (LinearLayout) itemView.findViewById(R.id.share);
-        like.setOnClickListener(this);
-        shareTv.setOnClickListener(this);
+            commentTV = (TextView) itemView.findViewById(R.id.commentTV);
+            overflowImage = itemView.findViewById(R.id.overflowMenu);
+            like = (LinearLayout) itemView.findViewById(R.id.like);
+            commentTv = (LinearLayout) itemView.findViewById(R.id.comment);
+            comment = (TextView) itemView.findViewById(R.id.post_comment_count);
+            tvCompany = (TextView) itemView.findViewById(R.id.post_company);
+            shareTv = (LinearLayout) itemView.findViewById(R.id.share);
+            like.setOnClickListener(this);
+            shareTv.setOnClickListener(this);
 //        comment.setOnClickListener(this);
-        followBTN.setOnClickListener(this);
-        commentTv.setOnClickListener(this);
+            followBTN.setOnClickListener(this);
+            commentTv.setOnClickListener(this);
 //        viewProfile.setOnClickListener(this);
-        tvLink.setOnClickListener(this);
-        this.onClickItemFeed = onClickItemFeed;
+            tvLink.setOnClickListener(this);
+            this.onClickItemFeed = onClickItemFeed;
 
-        overflowImage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                PopupMenu popupMenu = new PopupMenu(itemView.getContext(), overflowImage);
-                MenuInflater inflater = popupMenu.getMenuInflater();
-                inflater.inflate(R.menu.feed_popup_menu, popupMenu.getMenu());
-                if (!deletable) {
-                    Menu m = popupMenu.getMenu();
-                    m.removeItem(R.id.delete);
-                }
-
-                Menu menu = popupMenu.getMenu();
-                menu.removeItem(R.id.share);
-
-                popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-                    @Override
-                    public boolean onMenuItemClick(MenuItem item) {
-                        View view=new View(itemView.getContext());
-                        view.setId(item.getItemId());
-                        FeedViewHolder.this.onClick(view);
-                        return true;
+            overflowImage.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    PopupMenu popupMenu = new PopupMenu(itemView.getContext(), overflowImage);
+                    MenuInflater inflater = popupMenu.getMenuInflater();
+                    inflater.inflate(R.menu.feed_popup_menu, popupMenu.getMenu());
+                    if (!deletable) {
+                        Menu m = popupMenu.getMenu();
+                        m.removeItem(R.id.delete);
                     }
-                });
 
-                popupMenu.show();
-            }
-        });
+                    Menu menu = popupMenu.getMenu();
+                    menu.removeItem(R.id.share);
+
+                    popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                        @Override
+                        public boolean onMenuItemClick(MenuItem item) {
+                            View view = new View(itemView.getContext());
+                            view.setId(item.getItemId());
+                            FeedViewHolder.this.onClick(view);
+                            return true;
+                        }
+                    });
+
+                    popupMenu.show();
+                }
+            });
+        }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - FeedViewHolder : ",e.toString());
+            Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() + " - FeedViewHolder : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - FeedViewHolder : ",ex.toString());
+            Crashlytics.log(0,this.getClass().getSimpleName() + " - FeedViewHolder : ",ex.toString());
+        }
     }
 
     public void setIvAvatar(String url) {
@@ -196,61 +207,81 @@ public class FeedViewHolder extends RecyclerView.ViewHolder implements View.OnCl
     }
 
     public void getComments(final Feed feed) {
-        changeLikeUI(feed);
-        final DatabaseReference referenceLike = FirebaseDatabase.getInstance().getReference().child(MyNetworksActivity.COMMENT_ROOT + "/" + feed.getIdFeed());
+        try {
+            changeLikeUI(feed);
+            final DatabaseReference referenceLike = FirebaseDatabase.getInstance().getReference().child(MyNetworksActivity.COMMENT_ROOT + "/" + feed.getIdFeed());
 
-        referenceLike.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
+            referenceLike.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
 
-                if (dataSnapshot == null) {
-                    return;
-                }
-                feed.setCommentCount((int) dataSnapshot.getChildrenCount());
+                    if (dataSnapshot == null) {
+                        return;
+                    }
+                    feed.setCommentCount((int) dataSnapshot.getChildrenCount());
                 /*if (dataSnapshot.child(auth.getUid()).exists()) {
                     feed.setLiked(true);
                 } else {
                     feed.setLiked(false);
                 }*/
 
-                if (!feed.getIdFeed().equalsIgnoreCase(currFeed.getIdFeed())) {
-                    return;
+                    if (!feed.getIdFeed().equalsIgnoreCase(currFeed.getIdFeed())) {
+                        return;
+                    }
+                    comment.setText(feed.getCommentCount() + " comments");
                 }
-                comment.setText(feed.getCommentCount() + " comments");
-            }
 
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
 
-            }
-        });
+                }
+            });
+        }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - getComments : ",e.toString());
+            Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() + " - getComments : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - getComments : ",ex.toString());
+            Crashlytics.log(0,this.getClass().getSimpleName() + " - getComments : ",ex.toString());
+        }
     }
 
     public void getLikes(final Feed feed) {
-        changeLikeUI(feed);
-        final DatabaseReference referenceLike = FirebaseDatabase.getInstance().getReference().child(MyNetworksActivity.LIKE_ROOT + "/" + feed.getIdFeed());
+        try {
+            changeLikeUI(feed);
+            final DatabaseReference referenceLike = FirebaseDatabase.getInstance().getReference().child(MyNetworksActivity.LIKE_ROOT + "/" + feed.getIdFeed());
 
-        referenceLike.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
+            referenceLike.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
 
-                if (dataSnapshot == null) {
-                    return;
+                    if (dataSnapshot == null) {
+                        return;
+                    }
+                    feed.setLikeCount((int) dataSnapshot.getChildrenCount());
+                    if (dataSnapshot.child(auth.getUid()).exists()) {
+                        feed.setLiked(true);
+                    } else {
+                        feed.setLiked(false);
+                    }
+                    changeLikeUI(feed);
                 }
-                feed.setLikeCount((int) dataSnapshot.getChildrenCount());
-                if (dataSnapshot.child(auth.getUid()).exists()) {
-                    feed.setLiked(true);
-                } else {
-                    feed.setLiked(false);
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
                 }
-                changeLikeUI(feed);
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
+            });
+        }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - getLikes : ",e.toString());
+            Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() + " - getLikes : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - getLikes : ",ex.toString());
+            Crashlytics.log(0,this.getClass().getSimpleName() + " - getLikes : ",ex.toString());
+        }
     }
 
     private void changeLikeUI(Feed feed) {
@@ -326,21 +357,31 @@ public class FeedViewHolder extends RecyclerView.ViewHolder implements View.OnCl
     }
 
     public void getCurrentUserData(final String userId) {
-        //showProgress(true);
-        DatabaseReference feedReference = FirebaseDatabase.getInstance().getReference("chat_USER/" + userId);
-        feedReference.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                if(dataSnapshot!=null){
-                    ChattUser chattUser = dataSnapshot.getValue(ChattUser.class);
-                    setTvCompany(chattUser != null ? chattUser.getUserType() : "");
+        try {
+            //showProgress(true);
+            DatabaseReference feedReference = FirebaseDatabase.getInstance().getReference("chat_USER/" + userId);
+            feedReference.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    if (dataSnapshot != null) {
+                        ChattUser chattUser = dataSnapshot.getValue(ChattUser.class);
+                        setTvCompany(chattUser != null ? chattUser.getUserType() : "");
+                    }
+                    // showProgress(false);
                 }
-                // showProgress(false);
-            }
 
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-            }
-        });
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                }
+            });
+        }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - getCurrentUserData : ",e.toString());
+            Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() + " - getCurrentUserData : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - getCurrentUserData : ",ex.toString());
+            Crashlytics.log(0,this.getClass().getSimpleName() + " - getCurrentUserData : ",ex.toString());
+        }
     }
 }

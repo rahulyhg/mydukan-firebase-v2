@@ -11,6 +11,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.crashlytics.android.Crashlytics;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -18,13 +19,15 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.squareup.picasso.Picasso;
 
 import org.app.mydukan.R;
 import org.app.mydukan.activities.MyNetworksActivity;
 import org.app.mydukan.activities.MyProfileActivity;
 import org.app.mydukan.data.Feed;
+import org.app.mydukan.emailSending.SendEmail;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.List;
 
 
@@ -174,67 +177,89 @@ public class MyFeedAdapter extends RecyclerView.Adapter<MyFeedAdapter.MyViewHold
         }
 
         public void changeLikeImg(final String feedKey){
-            final DatabaseReference referenceLike = FirebaseDatabase.getInstance().getReference().child(MyNetworksActivity.LIKE_ROOT);
-            final FirebaseUser auth = FirebaseAuth.getInstance().getCurrentUser();
-            referenceLike.addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-                    long totalLike = 0;
-                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                        if (snapshot.getKey().equals(feedKey)) {
-                            totalLike = snapshot.getChildrenCount();
-                            break;
+            try {
+                final DatabaseReference referenceLike = FirebaseDatabase.getInstance().getReference().child(MyNetworksActivity.LIKE_ROOT);
+                final FirebaseUser auth = FirebaseAuth.getInstance().getCurrentUser();
+                referenceLike.addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        long totalLike = 0;
+                        for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                            if (snapshot.getKey().equals(feedKey)) {
+                                totalLike = snapshot.getChildrenCount();
+                                break;
+                            }
                         }
+
+                        if (dataSnapshot.child(feedKey).hasChild(auth.getUid())) {
+                            // ta curtido
+                            ivLike.setImageResource(R.drawable.ic_action_uplike);
+                        } else {
+                            // nao ta curtido
+                            ivLike.setImageResource(R.drawable.ic_action_like);
+                        }
+                        tvLike.setText(totalLike + " likes");
                     }
 
-                    if (dataSnapshot.child(feedKey).hasChild(auth.getUid())){
-                        // ta curtido
-                        ivLike.setImageResource( R.drawable.ic_action_uplike );
-                    }else{
-                        // nao ta curtido
-                        ivLike.setImageResource( R.drawable.ic_action_like );
-                    }
-                    tvLike.setText(totalLike+" likes");
-                }
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
 
-                }
-            });
+                    }
+                });
+            }catch (Exception e){
+                new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - changeLikeImg : ",e.toString());
+                Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() + " - changeLikeImg : ",e.toString());
+            }catch (VirtualMachineError ex){
+                StringWriter errors = new StringWriter();
+                ex.printStackTrace(new PrintWriter(errors));
+                new SendEmail().sendEmail(this.getClass().getSimpleName() + " - changeLikeImg : ",ex.toString());
+                Crashlytics.log(0,this.getClass().getSimpleName() + " - changeLikeImg : ",ex.toString());
+            }
         }
         public void changeFollowing(final String followKey){// followkey is user_id
-            final FirebaseUser auth = FirebaseAuth.getInstance().getCurrentUser();
-            final DatabaseReference referenceLike = FirebaseDatabase.getInstance().getReference().child(MyNetworksActivity.FOLLOW_ROOT);
-           // final FirebaseUser auth = FirebaseAuth.getInstance().getCurrentUser();
-          //  final DatabaseReference referenceLike = FirebaseDatabase.getInstance().getReference(MyNetworkActivity.FOLLOWING_ROOT+"/"+auth.getUid());
+            try {
+                final FirebaseUser auth = FirebaseAuth.getInstance().getCurrentUser();
+                final DatabaseReference referenceLike = FirebaseDatabase.getInstance().getReference().child(MyNetworksActivity.FOLLOW_ROOT);
+                // final FirebaseUser auth = FirebaseAuth.getInstance().getCurrentUser();
+                //  final DatabaseReference referenceLike = FirebaseDatabase.getInstance().getReference(MyNetworkActivity.FOLLOWING_ROOT+"/"+auth.getUid());
 
-            referenceLike.addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
+                referenceLike.addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
 
-                    long totalFollowers= 0;
+                        long totalFollowers = 0;
 
-                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                        if (snapshot.getKey().equals(followKey)) {
-                            totalFollowers = snapshot.getChildrenCount();
-                            break;
+                        for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                            if (snapshot.getKey().equals(followKey)) {
+                                totalFollowers = snapshot.getChildrenCount();
+                                break;
+                            }
                         }
-                    }
-                    if (dataSnapshot.child(followKey).hasChild(auth.getUid())){
-                        // ta curtido
-                        followBTN.setText("following");
-                    }else{
-                        // nao ta curtido
-                        followBTN.setText("follow");
-                    }
-                  //  tvLike.setText(totalLike+" likes");
+                        if (dataSnapshot.child(followKey).hasChild(auth.getUid())) {
+                            // ta curtido
+                            followBTN.setText("following");
+                        } else {
+                            // nao ta curtido
+                            followBTN.setText("follow");
+                        }
+                        //  tvLike.setText(totalLike+" likes");
 
-                }
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
+                    }
 
-                }
-            });
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
+            }catch (Exception e){
+                new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - changeFollowing : ",e.toString());
+                Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() + " - changeFollowing : ",e.toString());
+            }catch (VirtualMachineError ex){
+                StringWriter errors = new StringWriter();
+                ex.printStackTrace(new PrintWriter(errors));
+                new SendEmail().sendEmail(this.getClass().getSimpleName() + " - changeFollowing : ",ex.toString());
+                Crashlytics.log(0,this.getClass().getSimpleName() + " - changeFollowing : ",ex.toString());
+            }
         }
 
         @Override

@@ -10,6 +10,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.crashlytics.android.Crashlytics;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -21,8 +22,10 @@ import com.google.firebase.database.ValueEventListener;
 import org.app.mydukan.R;
 import org.app.mydukan.application.MyDukan;
 import org.app.mydukan.data.ChattUser;
-import org.app.mydukan.utils.AppContants;
+import org.app.mydukan.emailSending.SendEmail;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.List;
 
 /**
@@ -123,24 +126,35 @@ public class CustomBaseAdapter extends BaseAdapter {
 
     private static void removeFollowing(final String idProfile, final String removeId) {
         //  showProgress(true);
-        final DatabaseReference referenceFollow = FirebaseDatabase.getInstance().getReference().child(FOLLOW_ROOT);
-        final DatabaseReference referenceIFollow = FirebaseDatabase.getInstance().getReference().child(MYFOLLOW_ROOT);
-        //  final DatabaseReference referenceLike = FirebaseDatabase.getInstance().getReference(MyNetworkActivity.FOLLOWING_ROOT+"/"+auth.getUid()+"/"+feed.getIdUser());
-        final FirebaseUser auth = FirebaseAuth.getInstance().getCurrentUser();
-        referenceIFollow.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                if (dataSnapshot.child(idProfile).hasChild(removeId)) {
-                    referenceFollow.child(removeId).child(idProfile).removeValue();//removing userid to following list  .
-                    referenceIFollow.child(idProfile).child(removeId).removeValue();//removing the user id to distributor following list.
+        try {
+            final DatabaseReference referenceFollow = FirebaseDatabase.getInstance().getReference().child(FOLLOW_ROOT);
+            final DatabaseReference referenceIFollow = FirebaseDatabase.getInstance().getReference().child(MYFOLLOW_ROOT);
+            //  final DatabaseReference referenceLike = FirebaseDatabase.getInstance().getReference(MyNetworkActivity.FOLLOWING_ROOT+"/"+auth.getUid()+"/"+feed.getIdUser());
+            final FirebaseUser auth = FirebaseAuth.getInstance().getCurrentUser();
+            referenceIFollow.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    if (dataSnapshot.child(idProfile).hasChild(removeId)) {
+                        referenceFollow.child(removeId).child(idProfile).removeValue();//removing userid to following list  .
+                        referenceIFollow.child(idProfile).child(removeId).removeValue();//removing the user id to distributor following list.
+                    }
                 }
-            }
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                //showProgress(false);
-                int i =20;
-            }
-        });
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                    //showProgress(false);
+                    int i = 20;
+                }
+            });
+        }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + "CustombaseAdapter" + " - removeFollowing : ",e.toString());
+            Crashlytics.log(0,"Exception - " + "CustombaseAdapter" + " - removeFollowing : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail("CustombaseAdapter" + " - removeFollowing : ",ex.toString());
+            Crashlytics.log(0,"CustombaseAdapter" + " - removeFollowing : ",ex.toString());
+        }
 
     }
 

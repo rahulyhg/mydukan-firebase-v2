@@ -16,27 +16,24 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.crashlytics.android.answers.Answers;
-import com.crashlytics.android.answers.CustomEvent;
+import com.crashlytics.android.Crashlytics;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.MobileAds;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 
 import org.app.mydukan.R;
 import org.app.mydukan.adapters.AdapterListFeed;
 import org.app.mydukan.data.Feed;
+import org.app.mydukan.emailSending.SendEmail;
 import org.app.mydukan.services.VolleyNetworkRequest;
 import org.app.mydukan.utils.AppContants;
 import org.app.mydukan.utils.FeedRetriever2;
 import org.app.mydukan.utils.FeedUtils;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -87,77 +84,98 @@ public class MyNetworkFragment extends Fragment implements AdapterListFeed.OnCli
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
+
         mView = inflater.inflate(R.layout.fragment_one, container, false);
-        context = mView.getContext();
-        jsonRequest = new VolleyNetworkRequest(context);
-        initViews();
-        //initialize ads for the app  - ca-app-pub-1640690939729824/2174590993
-        MobileAds.initialize(context, "ca-app-pub-1640690939729824/2174590993");
-        mAdView = (AdView) mView.findViewById(R.id.adView_myNetwork_one);
-        AdRequest adRequest = new AdRequest.Builder().build();
-        mAdView.loadAd(adRequest);
+        try {
+            context = mView.getContext();
+            jsonRequest = new VolleyNetworkRequest(context);
+            initViews();
+            //initialize ads for the app  - ca-app-pub-1640690939729824/2174590993
+            MobileAds.initialize(context, "ca-app-pub-1640690939729824/2174590993");
+            mAdView = (AdView) mView.findViewById(R.id.adView_myNetwork_one);
+            AdRequest adRequest = new AdRequest.Builder().build();
+            mAdView.loadAd(adRequest);
+        }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - onCreate : ",e.toString());
+            Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() + " - onCreate : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - onCreate : ",ex.toString());
+            Crashlytics.log(0,this.getClass().getSimpleName() + " - onCreate : ",ex.toString());
+        }
         return mView;
     }
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        adapterListFeed = new AdapterListFeed(mList, this);
-        recyclerView.setAdapter(adapterListFeed);
+        try {
+            adapterListFeed = new AdapterListFeed(mList, this);
+            recyclerView.setAdapter(adapterListFeed);
 
-        feedRetriever = new FeedRetriever2(new FeedRetriever2.OnFeedRetrievedListener() {
-            @Override
-            public void onFeedRetrieved(List<Feed> feeds) {
-                if (feeds.size() == 0) {
-                    hasMoreFeeds = false;
+            feedRetriever = new FeedRetriever2(new FeedRetriever2.OnFeedRetrievedListener() {
+                @Override
+                public void onFeedRetrieved(List<Feed> feeds) {
+                    if (feeds.size() == 0) {
+                        hasMoreFeeds = false;
+                    }
+                    mList.addAll(feeds);
+                    adapterListFeed.notifyItemRangeInserted(mList.size() - feeds.size(), feeds.size());
+                    mSwipeRefereshLayout.setRefreshing(false);
+                    emptyText.setVisibility(mList.isEmpty() ? View.VISIBLE : View.GONE);
                 }
-                mList.addAll(feeds);
-                adapterListFeed.notifyItemRangeInserted(mList.size() - feeds.size(), feeds.size());
-                mSwipeRefereshLayout.setRefreshing(false);
-                emptyText.setVisibility(mList.isEmpty() ? View.VISIBLE : View.GONE);
-            }
 
-            @Override
-            public void onError() {
+                @Override
+                public void onError() {
 
-            }
-        });
+                }
+            });
 
-        mSwipeRefereshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                mList.clear();
-                adapterListFeed.notifyDataSetChanged();
-                feedRetriever.getFeeds(10, true);
+            mSwipeRefereshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+                @Override
+                public void onRefresh() {
+                    mList.clear();
+                    adapterListFeed.notifyDataSetChanged();
+                    feedRetriever.getFeeds(10, true);
 
-            }
-        });
+                }
+            });
 
-        final LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
-        recyclerView.setLayoutManager(layoutManager);
+            final LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
+            recyclerView.setLayoutManager(layoutManager);
 
-        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-            int lastVisibleItemPos, totalItemCount;
+            recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+                int lastVisibleItemPos, totalItemCount;
 
-            @Override
-            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                super.onScrolled(recyclerView, dx, dy);
-                if (dy > 0) {   //scroll down
+                @Override
+                public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                    super.onScrolled(recyclerView, dx, dy);
+                    if (dy > 0) {   //scroll down
 
-                    totalItemCount = layoutManager.getItemCount();
-                    lastVisibleItemPos = layoutManager.findLastVisibleItemPosition();
-                    if (!mSwipeRefereshLayout.isRefreshing() && hasMoreFeeds) {
-                        if (totalItemCount - lastVisibleItemPos < itemThreshold) {
-                            mSwipeRefereshLayout.setRefreshing(true);
-                            feedRetriever.getFeeds(10, false);
+                        totalItemCount = layoutManager.getItemCount();
+                        lastVisibleItemPos = layoutManager.findLastVisibleItemPosition();
+                        if (!mSwipeRefereshLayout.isRefreshing() && hasMoreFeeds) {
+                            if (totalItemCount - lastVisibleItemPos < itemThreshold) {
+                                mSwipeRefereshLayout.setRefreshing(true);
+                                feedRetriever.getFeeds(10, false);
+                            }
                         }
                     }
                 }
-            }
-        });
+            });
 
-        feedRetriever.getFeeds(10, false);
-        mSwipeRefereshLayout.setRefreshing(true);
+            feedRetriever.getFeeds(10, false);
+            mSwipeRefereshLayout.setRefreshing(true);
+        }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - onViewCreated : ",e.toString());
+            Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() + " - onViewCreated : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - onViewCreated : ",ex.toString());
+            Crashlytics.log(0,this.getClass().getSimpleName() + " - onViewCreated : ",ex.toString());
+        }
 
     }
 

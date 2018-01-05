@@ -10,10 +10,15 @@ import android.widget.CompoundButton;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.crashlytics.android.Crashlytics;
+
 import org.app.mydukan.R;
 import org.app.mydukan.application.MyDukan;
 import org.app.mydukan.data.Scheme;
+import org.app.mydukan.emailSending.SendEmail;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -55,28 +60,38 @@ public class SchemesAdapter extends RecyclerView.Adapter<SchemesAdapter.ViewHold
 
         Scheme scheme = mSchemesList.get(position);
 
-        holder.mNameView.setText(scheme.getName().toUpperCase());
-        holder.mDescriptionView.setText("Click for more details");
-        holder.mValidityView.setText("Validity "
-                + String.valueOf("From: "+mApp.getUtils().dateFormatter(scheme.getStartdate(), "dd-MM-yy")) + " to "
-                + String.valueOf(mApp.getUtils().dateFormatter(scheme.getEnddate(), "dd-MM-yy")));
+        try {
+            holder.mNameView.setText(scheme.getName().toUpperCase());
+            holder.mDescriptionView.setText("Click for more details");
+            holder.mValidityView.setText("Validity "
+                    + String.valueOf("From: " + mApp.getUtils().dateFormatter(scheme.getStartdate(), "dd-MM-yy")) + " to "
+                    + String.valueOf(mApp.getUtils().dateFormatter(scheme.getEnddate(), "dd-MM-yy")));
 
-        holder.mSchemeLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mListener.OnClick(position);
-            }
-        });
-        holder.mEnrolled.setOnCheckedChangeListener(null);
-        holder.mEnrolled.setChecked(scheme.isHasEnrolled());
+            holder.mSchemeLayout.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    mListener.OnClick(position);
+                }
+            });
+            holder.mEnrolled.setOnCheckedChangeListener(null);
+            holder.mEnrolled.setChecked(scheme.isHasEnrolled());
 
-        holder.mEnrolled.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                mListener.OnEnrolled(mSchemesList.get(position),position,isChecked);
+            holder.mEnrolled.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                    mListener.OnEnrolled(mSchemesList.get(position), position, isChecked);
 
-            }
-        });
+                }
+            });
+        }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - onBindViewHolder : ",e.toString());
+            Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() + " - onBindViewHolder : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - onBindViewHolder : ",ex.toString());
+            Crashlytics.log(0,this.getClass().getSimpleName() + " - onBindViewHolder : ",ex.toString());
+        }
     }
 
 

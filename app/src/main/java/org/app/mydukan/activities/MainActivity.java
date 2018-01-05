@@ -37,6 +37,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ViewFlipper;
 
+import com.crashlytics.android.Crashlytics;
 import com.crashlytics.android.answers.Answers;
 import com.crashlytics.android.answers.CustomEvent;
 import com.google.android.gms.ads.AdListener;
@@ -71,13 +72,15 @@ import org.app.mydukan.data.ImageModel;
 import org.app.mydukan.data.Supplier;
 import org.app.mydukan.data.SupplierBindData;
 import org.app.mydukan.data.User;
+import org.app.mydukan.emailSending.SendEmail;
 import org.app.mydukan.fragments.myschemes.fragmetns.MySelectedSchemesHelper;
 import org.app.mydukan.server.ApiManager;
 import org.app.mydukan.server.ApiResult;
 import org.app.mydukan.utils.AppContants;
-//import org.app.mydukan.utils.PaytmGateway;
 import org.app.mydukan.utils.Utils;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Timer;
@@ -88,6 +91,8 @@ import uk.co.deanwild.materialshowcaseview.target.Target;
 import static org.app.mydukan.activities.IntentForwardingActivity.DEEP_LINK;
 import static org.app.mydukan.utils.AppContants.FEED_ID;
 import static org.app.mydukan.utils.AppContants.USER_ID;
+
+//import org.app.mydukan.utils.PaytmGateway;
 
 //import org.app.mydukan.utils.PaytmGateway;
 
@@ -178,44 +183,45 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        mApp = (MyDukan) getApplicationContext();
+        try {
+            mApp = (MyDukan) getApplicationContext();
 
-        final FirebaseUser userid = FirebaseAuth.getInstance().getCurrentUser();
+            final FirebaseUser userid = FirebaseAuth.getInstance().getCurrentUser();
 
-        if(userid != null && userid.getUid() != null && !userid.getUid().isEmpty()){
-            userID=userid.getUid();
-        }else{
-            userID = mApp.getUserId();
-        }
+            if (userid != null && userid.getUid() != null && !userid.getUid().isEmpty()) {
+                userID = userid.getUid();
+            } else {
+                userID = mApp.getUserId();
+            }
 
-        mPager = (ViewPager) findViewById(R.id.pager);
-        handleDeepLink();
-        //get the initial data
-        Bundle bundle = getIntent().getExtras();
-        if (bundle != null) {
-            if (bundle.containsKey(AppContants.NOTIFICATION)) {
-                mNotification = (HashMap) bundle.getSerializable(AppContants.NOTIFICATION);
-                if (mNotification != null) {
-                    Intent intent = new Intent(this, NotificationDescriptionActivity.class);
-                    intent.putExtra(AppContants.NOTIFICATION, mNotification);
-                    startActivity(intent);
+            mPager = (ViewPager) findViewById(R.id.pager);
+            handleDeepLink();
+            //get the initial data
+            Bundle bundle = getIntent().getExtras();
+            if (bundle != null) {
+                if (bundle.containsKey(AppContants.NOTIFICATION)) {
+                    mNotification = (HashMap) bundle.getSerializable(AppContants.NOTIFICATION);
+                    if (mNotification != null) {
+                        Intent intent = new Intent(this, NotificationDescriptionActivity.class);
+                        intent.putExtra(AppContants.NOTIFICATION, mNotification);
+                        startActivity(intent);
+                    }
                 }
             }
-        }
 
-        mydukan_live = (FloatingActionButton) findViewById(R.id.mydukan_live);
-        addsupplierbtn = (FloatingActionButton) findViewById(R.id.add_supplier_button);
-        subscribeAleartLayout = (LinearLayout) findViewById(R.id.layout_subscribe);
-        btn_Subscribe = (Button) findViewById(R.id.btn_subscription);
-        btn_Trial = (Button) findViewById(R.id.btn_trial);
-        btn_DaysRemaing = (Button) findViewById(R.id.btn_remaingDays);
-        daysRemain = (TextView) findViewById(R.id.tv_message_trialUser);
-        btn_navigation = (Button) findViewById(R.id.button_menus);
-        mDueDays = (TextView) findViewById(R.id.tv_SubscriptionDueDate);
-        setupActionBar();
-        setupDrawerLayout();
-        //checkUserPresentInDatabase();
-        getUserProfile();
+            mydukan_live = (FloatingActionButton) findViewById(R.id.mydukan_live);
+            addsupplierbtn = (FloatingActionButton) findViewById(R.id.add_supplier_button);
+            subscribeAleartLayout = (LinearLayout) findViewById(R.id.layout_subscribe);
+            btn_Subscribe = (Button) findViewById(R.id.btn_subscription);
+            btn_Trial = (Button) findViewById(R.id.btn_trial);
+            btn_DaysRemaing = (Button) findViewById(R.id.btn_remaingDays);
+            daysRemain = (TextView) findViewById(R.id.tv_message_trialUser);
+            btn_navigation = (Button) findViewById(R.id.button_menus);
+            mDueDays = (TextView) findViewById(R.id.tv_SubscriptionDueDate);
+            setupActionBar();
+            setupDrawerLayout();
+            //checkUserPresentInDatabase();
+            getUserProfile();
 
      /*   imageModelArrayList = new ArrayList<>();
         imageModelArrayList = populateList(list_BannerImg);
@@ -223,33 +229,33 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
 //=============================================================
 
-        // Get Remote Config instance.
-        // [START get_remote_config_instance]
-        mFirebaseRemoteConfig = FirebaseRemoteConfig.getInstance();
-        // [END get_remote_config_instance]
+            // Get Remote Config instance.
+            // [START get_remote_config_instance]
+            mFirebaseRemoteConfig = FirebaseRemoteConfig.getInstance();
+            // [END get_remote_config_instance]
 
-        // Create a Remote Config Setting to enable developer mode, which you can use to increase
-        // the number of fetches available per hour during development. See Best Practices in the
-        // README for more information.
-        // [START enable_dev_mode]
-        FirebaseRemoteConfigSettings configSettings = new FirebaseRemoteConfigSettings.Builder()
-                .setDeveloperModeEnabled(BuildConfig.DEBUG)
-                .build();
-        mFirebaseRemoteConfig.setConfigSettings(configSettings);
-        // [END enable_dev_mode]
-        // Set default Remote Config parameter values. An app uses the in-app default values, and
-        // when you need to adjust those defaults, you set an updated value for only the values you
-        // want to change in the Firebase console. See Best Practices in the README for more
-        // information.
-        // [START set_default_values]
-        // mFirebaseRemoteConfig.setDefaults(R.xml.remote_config_defaults);
-        // [END set_default_values]
+            // Create a Remote Config Setting to enable developer mode, which you can use to increase
+            // the number of fetches available per hour during development. See Best Practices in the
+            // README for more information.
+            // [START enable_dev_mode]
+            FirebaseRemoteConfigSettings configSettings = new FirebaseRemoteConfigSettings.Builder()
+                    .setDeveloperModeEnabled(BuildConfig.DEBUG)
+                    .build();
+            mFirebaseRemoteConfig.setConfigSettings(configSettings);
+            // [END enable_dev_mode]
+            // Set default Remote Config parameter values. An app uses the in-app default values, and
+            // when you need to adjust those defaults, you set an updated value for only the values you
+            // want to change in the Firebase console. See Best Practices in the README for more
+            // information.
+            // [START set_default_values]
+            // mFirebaseRemoteConfig.setDefaults(R.xml.remote_config_defaults);
+            // [END set_default_values]
 
-        fetchWelcome();
-        setupSupplierCard();
-        showPermissions();
+            fetchWelcome();
+            setupSupplierCard();
+            showPermissions();
 
-        //=====================================================
+            //=====================================================
 
       /*  flipper_promotional = (ViewFlipper) findViewById(R.mCatId.flipper_promotional);
 
@@ -261,18 +267,18 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
        */
 
 
-        mydukan_live.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent youtube = new Intent(MainActivity.this,BroadcastActivity.class);
-                startActivity(youtube);
-            }
-        });
+            mydukan_live.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent youtube = new Intent(MainActivity.this, BroadcastActivity.class);
+                    startActivity(youtube);
+                }
+            });
 
-        relative_flipper_layout = (LinearLayout) findViewById(R.id.banner);
-        relative_flipper_layout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+            relative_flipper_layout = (LinearLayout) findViewById(R.id.banner);
+            relative_flipper_layout.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
 
             /*    Answers.getInstance().logCustom(new CustomEvent("PaytmButton click")
                         .putCustomAttribute("USER_ID/ USER_Email:", userID + "/" + userdetails.getUserinfo().getEmailid()));
@@ -283,130 +289,127 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 nIntent.putExtra(AppContants.FP_USER_ID,userdetails.getId());
                 startActivity(nIntent);*/
 
-            }
-        });
+                }
+            });
 
 
+            whatsapp_layout = (LinearLayout) findViewById(R.id.whatsapp_layout);
+            whatsapp_layout.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    onWhatsAppBtnClick();
+                }
+            });
 
-        whatsapp_layout = (LinearLayout) findViewById(R.id.whatsapp_layout);
-        whatsapp_layout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onWhatsAppBtnClick();
-            }
-        });
-
-        records_layout = (LinearLayout) findViewById(R.id.records_layout);
-        records_layout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+            records_layout = (LinearLayout) findViewById(R.id.records_layout);
+            records_layout.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
                 /*Intent record = new Intent(MainActivity.this, RecordsActivity.class);
                 startActivity(record);*/
-                 Intent record = new Intent(MainActivity.this, MyRecordsActivity.class);
-                startActivity(record);
-            }
-        });
+                    Intent record = new Intent(MainActivity.this, MyRecordsActivity.class);
+                    startActivity(record);
+                }
+            });
 
-        mynetwork_layout = (LinearLayout) findViewById(R.id.mynetwork_layout);
-        mynetwork_layout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent nIntent = new Intent(MainActivity.this, MyNetworksActivity.class);
-                startActivity(nIntent);
+            mynetwork_layout = (LinearLayout) findViewById(R.id.mynetwork_layout);
+            mynetwork_layout.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent nIntent = new Intent(MainActivity.this, MyNetworksActivity.class);
+                    startActivity(nIntent);
 
               /*  Intent nIntent = new Intent(MainActivity.this, PaytmGatewayActivity.class);
                 startActivity(nIntent);*/
-            }
-        });
+                }
+            });
 
-        askRaju_layout = (LinearLayout) findViewById(R.id.askRaju_layout);
-        askRaju_layout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(userdetails != null && userdetails.getUserinfo() != null && userdetails.getUserinfo().getEmailid() != null && !userdetails.getUserinfo().getEmailid().isEmpty())
-                    Answers.getInstance().logCustom(new CustomEvent("ASK_RAJU click")
-                            .putCustomAttribute("USER_ID/ USER_Email:", userID + "/" + userdetails.getUserinfo().getEmailid()));
-
-                Intent nIntent = new Intent(MainActivity.this, ChatActivity.class);
-                nIntent.putExtra("IS_SUBSCRIBED", isSubscribed);
-                startActivity(nIntent);
-            }
-        });
-
-        schemes_layout = (LinearLayout) findViewById(R.id.scheme_layout);
-        schemes_layout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                try{
-                   // REMOTECONFIG_SCHEMES_SUBSCRIPTION
-                    if(userdetails != null && userdetails.getUserinfo() != null && userdetails.getUserinfo().getEmailid() != null && !userdetails.getUserinfo().getEmailid().isEmpty())
-                        Answers.getInstance().logCustom(new CustomEvent("Schemes_click")
+            askRaju_layout = (LinearLayout) findViewById(R.id.askRaju_layout);
+            askRaju_layout.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (userdetails != null && userdetails.getUserinfo() != null && userdetails.getUserinfo().getEmailid() != null && !userdetails.getUserinfo().getEmailid().isEmpty())
+                        Answers.getInstance().logCustom(new CustomEvent("ASK_RAJU click")
                                 .putCustomAttribute("USER_ID/ USER_Email:", userID + "/" + userdetails.getUserinfo().getEmailid()));
 
-                    if(REMOTECONFIG_SCHEMES_SUBSCRIPTION){
+                    Intent nIntent = new Intent(MainActivity.this, ChatActivity.class);
+                    nIntent.putExtra("IS_SUBSCRIBED", isSubscribed);
+                    startActivity(nIntent);
+                }
+            });
 
-                        if(isSubscribed){
+            schemes_layout = (LinearLayout) findViewById(R.id.scheme_layout);
+            schemes_layout.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    try {
+                        // REMOTECONFIG_SCHEMES_SUBSCRIPTION
+                        if (userdetails != null && userdetails.getUserinfo() != null && userdetails.getUserinfo().getEmailid() != null && !userdetails.getUserinfo().getEmailid().isEmpty())
+                            Answers.getInstance().logCustom(new CustomEvent("Schemes_click")
+                                    .putCustomAttribute("USER_ID/ USER_Email:", userID + "/" + userdetails.getUserinfo().getEmailid()));
+
+                        if (REMOTECONFIG_SCHEMES_SUBSCRIPTION) {
+
+                            if (isSubscribed) {
+                                Intent schemeIntent = new Intent(MainActivity.this, SchemeListActivity.class);
+                                schemeIntent.putExtra(AppContants.SUPPLIER_ID, "WDSLSgxI10eiWVey4RVWY5niElE3");
+                                schemeIntent.putExtra(AppContants.SUPPLIER_NAME, " mobile dp for dealers(prime members)");
+                                startActivity(schemeIntent);
+                            } else {
+                                ShowSubscriptionAleasrt();
+                            }
+                        } else {
                             Intent schemeIntent = new Intent(MainActivity.this, SchemeListActivity.class);
-                            schemeIntent.putExtra(AppContants.SUPPLIER_ID,"WDSLSgxI10eiWVey4RVWY5niElE3");
+                            schemeIntent.putExtra(AppContants.SUPPLIER_ID, "WDSLSgxI10eiWVey4RVWY5niElE3");
                             schemeIntent.putExtra(AppContants.SUPPLIER_NAME, " mobile dp for dealers(prime members)");
                             startActivity(schemeIntent);
-                        }else{
-                            ShowSubscriptionAleasrt();
                         }
-                    }else{
-                        Intent schemeIntent = new Intent(MainActivity.this, SchemeListActivity.class);
-                        schemeIntent.putExtra(AppContants.SUPPLIER_ID,"WDSLSgxI10eiWVey4RVWY5niElE3");
-                        schemeIntent.putExtra(AppContants.SUPPLIER_NAME, " mobile dp for dealers(prime members)");
-                        startActivity(schemeIntent);
+
+                    } catch (Exception e) {
+                        Toast.makeText(MainActivity.this, "Some thing went wrong , Please try it after some time.", Toast.LENGTH_SHORT).show();
+
                     }
 
-                }catch (Exception e){
-                    Toast.makeText(MainActivity.this, "Some thing went wrong , Please try it after some time.", Toast.LENGTH_SHORT).show();
 
                 }
+            });
+            serviceCenter_layout = (LinearLayout) findViewById(R.id.servicecenter_layout);
+            serviceCenter_layout.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent nIntent = new Intent(MainActivity.this, ServiceProviders.class);
+                    startActivity(nIntent);
+                }
+            });
+            addsupplierbtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent supplier = new Intent(MainActivity.this, SupplierListActivity.class);
+                    //Intent supplier = new Intent(MainActivity.this,VideoActivity.class);
+                    startActivity(supplier);
+                }
+            });
 
+            mWhatsAppBtn = (FloatingActionButton) findViewById(R.id.whatsAppBtn);
+            mWhatsAppBtn.setVisibility(View.VISIBLE);
+            mWhatsAppBtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    onWhatsAppBtnClick();
+                }
+            });
 
-
-
+            sharedPreferences = getSharedPreferences("ShaPreferences", Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            boolean firstTime = sharedPreferences.getBoolean("first", true);
+            if (firstTime) {
+                editor.putBoolean("first", false);
+                //For commit the changes, Use either editor.commit(); or  editor.apply();.
+                editor.commit();
+                notNew_user = loginActivity.isNewUserForTrail;
+                lounchedDate_User = Utils.getCurrentdate();
+                // now the calling the method to clear the cache data or app data
             }
-        });
-        serviceCenter_layout = (LinearLayout) findViewById(R.id.servicecenter_layout);
-        serviceCenter_layout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent nIntent = new Intent(MainActivity.this, ServiceProviders.class);
-                startActivity(nIntent);
-            }
-        });
-        addsupplierbtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent supplier = new Intent(MainActivity.this, SupplierListActivity.class);
-                //Intent supplier = new Intent(MainActivity.this,VideoActivity.class);
-                startActivity(supplier);
-            }
-        });
-
-        mWhatsAppBtn = (FloatingActionButton) findViewById(R.id.whatsAppBtn);
-        mWhatsAppBtn.setVisibility(View.VISIBLE);
-        mWhatsAppBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                onWhatsAppBtnClick();
-            }
-        });
-
-        sharedPreferences = getSharedPreferences("ShaPreferences", Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        boolean firstTime = sharedPreferences.getBoolean("first", true);
-        if (firstTime) {
-            editor.putBoolean("first", false);
-            //For commit the changes, Use either editor.commit(); or  editor.apply();.
-            editor.commit();
-            notNew_user = loginActivity.isNewUserForTrail;
-            lounchedDate_User = Utils.getCurrentdate();
-            // now the calling the method to clear the cache data or app data
-        }
 
 
       /*  //checkUserSubscription();
@@ -431,31 +434,31 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         });*/
 
 
-        //initialize ads for the app  - ca-app-pub-1640690939729824/2174590993
-        MobileAds.initialize(getApplicationContext(), "ca-app-pub-1640690939729824/2174590993");
-        mAdView = (AdView) findViewById(R.id.adView);
-        AdRequest adRequest = new AdRequest.Builder().build();
-        mAdView.loadAd(adRequest);
+            //initialize ads for the app  - ca-app-pub-1640690939729824/2174590993
+            MobileAds.initialize(getApplicationContext(), "ca-app-pub-1640690939729824/2174590993");
+            mAdView = (AdView) findViewById(R.id.adView);
+            AdRequest adRequest = new AdRequest.Builder().build();
+            mAdView.loadAd(adRequest);
 
-        //for Interstitial ads
+            //for Interstitial ads
 
-        mInterstitialAd = new InterstitialAd(this);
-        mInterstitialAd.setAdUnitId("ca-app-pub-1640690939729824/3580285398");
-        requestNewInterstitial();
-        mInterstitialAd.setAdListener(new AdListener() {
-            @Override
-            public void onAdLoaded() {
-                //Write some logic on ad loaded
-            }
+            mInterstitialAd = new InterstitialAd(this);
+            mInterstitialAd.setAdUnitId("ca-app-pub-1640690939729824/3580285398");
+            requestNewInterstitial();
+            mInterstitialAd.setAdListener(new AdListener() {
+                @Override
+                public void onAdLoaded() {
+                    //Write some logic on ad loaded
+                }
 
-            @Override
-            public void onAdClosed() {
-                requestNewInterstitial();
-            }
-        });
+                @Override
+                public void onAdClosed() {
+                    requestNewInterstitial();
+                }
+            });
 
 
-        //========Showcase View using SpotlightSequence======================
+            //========Showcase View using SpotlightSequence======================
 
     /*    SpotlightSequence.getInstance(this, null)
                 .addSpotlight(btn_Subscribe, "MyDukan Subscription", "Subscription information is shown here", INTRO_CHANGE_POSITION)
@@ -464,7 +467,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 .startSequence();
 
 */
-        //====================================================================
+            //====================================================================
 
        /* ShowcaseConfig config = new ShowcaseConfig();
           config.setDelay(200);
@@ -513,8 +516,17 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 //            // thrown if you haven’t requested the required permissions in your AndroidManifest.xml
 //        }
 
-        //=================================================================
+            //=================================================================
 //        new CompanyInfo().execute();
+        }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - onCreate : ",e.toString());
+            Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() + " - onCreate : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - onCreate : ",ex.toString());
+            Crashlytics.log(0,this.getClass().getSimpleName() + " - onCreate : ",ex.toString());
+        }
     }
 
     private void ShowSubscriptionAleasrt() {
@@ -571,37 +583,46 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     }
 
     private void handleDeepLink() {
-        String deepLink = getIntent().getStringExtra(DEEP_LINK);
-        Uri deepLink2= getIntent().getData();
+        try {
+            String deepLink = getIntent().getStringExtra(DEEP_LINK);
+            Uri deepLink2 = getIntent().getData();
 
 
-        if (deepLink == null)
-            return;
+            if (deepLink == null)
+                return;
 
         /* link -> https://www.mydukan.com/link_type/params
         *   link_type -> feed_link or user_id or feed_id
         *
         */
-        if (!deepLink.startsWith("https://mydukaan.com/")) {
-            return;
-        }
-        deepLink = deepLink.substring("https://mydukaan.com/".length());
-        String[] splits = deepLink.split("/");
-        try {
-            int i = 0;
-            switch (splits[i++]) {
-                case "feed_link":
-                    Intent intent = new Intent(this, CommentsActivity.class);
-                    intent.putExtra(USER_ID, splits[i++]);
-                    intent.putExtra(FEED_ID, splits[i]);
-                    startActivity(intent);
-                    break;
+            if (!deepLink.startsWith("https://mydukaan.com/")) {
+                return;
             }
-        } catch (ArrayIndexOutOfBoundsException e) {
-            Toast.makeText(this, "Incomplete link!", Toast.LENGTH_SHORT).show();
+            deepLink = deepLink.substring("https://mydukaan.com/".length());
+            String[] splits = deepLink.split("/");
+            try {
+                int i = 0;
+                switch (splits[i++]) {
+                    case "feed_link":
+                        Intent intent = new Intent(this, CommentsActivity.class);
+                        intent.putExtra(USER_ID, splits[i++]);
+                        intent.putExtra(FEED_ID, splits[i]);
+                        startActivity(intent);
+                        break;
+                }
+            } catch (ArrayIndexOutOfBoundsException e) {
+                Toast.makeText(this, "Incomplete link!", Toast.LENGTH_SHORT).show();
+            }
+
+        }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - handleDeepLink : ",e.toString());
+            Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() + " - handleDeepLink : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - handleDeepLink : ",ex.toString());
+            Crashlytics.log(0,this.getClass().getSimpleName() + " - handleDeepLink : ",ex.toString());
         }
-
-
     }
 
 
@@ -686,42 +707,52 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
      * Fetch a welcome message from the Remote Config service, and then activate it.
      */
     private void fetchWelcome() {
-        // mWelcomeTextView.setText(mFirebaseRemoteConfig.getString(LOADING_PHRASE_CONFIG_KEY));
-        remoteUrl = mFirebaseRemoteConfig.getString(LOADING_PHRASE_CONFIG_KEY1);
-        remoteToDisplay = mFirebaseRemoteConfig.getString(LOADING_PHRASE_CONFIG_KEY2);
-        remoteDisp_Subscription = mFirebaseRemoteConfig.getString(LOADING_PHRASE_CONFIG_KEY3);
-        remote_imgBanner_one = mFirebaseRemoteConfig.getString(MAINPAGE_CONFIG__IMGBANNER_1);
+        try {
+            // mWelcomeTextView.setText(mFirebaseRemoteConfig.getString(LOADING_PHRASE_CONFIG_KEY));
+            remoteUrl = mFirebaseRemoteConfig.getString(LOADING_PHRASE_CONFIG_KEY1);
+            remoteToDisplay = mFirebaseRemoteConfig.getString(LOADING_PHRASE_CONFIG_KEY2);
+            remoteDisp_Subscription = mFirebaseRemoteConfig.getString(LOADING_PHRASE_CONFIG_KEY3);
+            remote_imgBanner_one = mFirebaseRemoteConfig.getString(MAINPAGE_CONFIG__IMGBANNER_1);
 
-        //  displayWelcomeMessage();LOADING_PHRASE_CONFIG_KEY3
+            //  displayWelcomeMessage();LOADING_PHRASE_CONFIG_KEY3
 
-        long cacheExpiration = 2000; // 1 hour in seconds.
-        //long cacheExpiration = 3; // 1 hour in seconds.
+            long cacheExpiration = 2000; // 1 hour in seconds.
+            //long cacheExpiration = 3; // 1 hour in seconds.
 
-        // If your app is using developer mode, cacheExpiration is set to 0, so each fetch will
-        // retrieve values from the service.
-        if (mFirebaseRemoteConfig.getInfo().getConfigSettings().isDeveloperModeEnabled()) {
-            cacheExpiration = 0;
-        }
-        // [START fetch_config_with_callback]
-        // cacheExpirationSeconds is set to cacheExpiration here, indicating the next fetch request
-        // will use fetch data from the Remote Config service, rather than cached parameter values,
-        // if cached parameter values are more than cacheExpiration seconds old.
-        // See Best Practices in the README for more information.
-        mFirebaseRemoteConfig.fetch(cacheExpiration).addOnCompleteListener(this, new OnCompleteListener<Void>() {
-            @Override
-            public void onComplete(@NonNull Task<Void> task) {
-                if (task.isSuccessful()) {
-                    // Toast.makeText(MainActivity.this, "Fetch Succeeded", Toast.LENGTH_SHORT).show();
-                    displayWelcomeMessage();
-                    // After config data is successfully fetched, it must be activated before newly fetched
-                    // values are returned.
-                    mFirebaseRemoteConfig.activateFetched();
-                } else {
-                    Toast.makeText(MainActivity.this, "Fetch Failed", Toast.LENGTH_SHORT).show();
-                }
-                // displayWelcomeMessage();
+            // If your app is using developer mode, cacheExpiration is set to 0, so each fetch will
+            // retrieve values from the service.
+            if (mFirebaseRemoteConfig.getInfo().getConfigSettings().isDeveloperModeEnabled()) {
+                cacheExpiration = 0;
             }
-        });
+            // [START fetch_config_with_callback]
+            // cacheExpirationSeconds is set to cacheExpiration here, indicating the next fetch request
+            // will use fetch data from the Remote Config service, rather than cached parameter values,
+            // if cached parameter values are more than cacheExpiration seconds old.
+            // See Best Practices in the README for more information.
+            mFirebaseRemoteConfig.fetch(cacheExpiration).addOnCompleteListener(this, new OnCompleteListener<Void>() {
+                @Override
+                public void onComplete(@NonNull Task<Void> task) {
+                    if (task.isSuccessful()) {
+                        // Toast.makeText(MainActivity.this, "Fetch Succeeded", Toast.LENGTH_SHORT).show();
+                        displayWelcomeMessage();
+                        // After config data is successfully fetched, it must be activated before newly fetched
+                        // values are returned.
+                        mFirebaseRemoteConfig.activateFetched();
+                    } else {
+                        Toast.makeText(MainActivity.this, "Fetch Failed", Toast.LENGTH_SHORT).show();
+                    }
+                    // displayWelcomeMessage();
+                }
+            });
+        }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - fetchWelcome : ",e.toString());
+            Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() + " - fetchWelcome : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - fetchWelcome : ",ex.toString());
+            Crashlytics.log(0,this.getClass().getSimpleName() + " - fetchWelcome : ",ex.toString());
+        }
         // [END fetch_config_with_callback]
     }
 
@@ -757,54 +788,64 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     private void getBannerImages() {
 
         //showProgress(true);
-        mBannerImg = new ArrayList<>();
-        DatabaseReference feedReference = FirebaseDatabase.getInstance().getReference("mainpage_Banners");
-        feedReference.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                if (dataSnapshot != null) {
-                    BannerImages bannerImages = new BannerImages();
-                    bannerImages = dataSnapshot.getValue(BannerImages.class);
-                    if (bannerImages != null) {
-                        mBannerImg.add(bannerImages.getBanner1());
-                        mBannerImg.add(bannerImages.getBanner2());
-                        mBannerImg.add(bannerImages.getBanner3());
-                        mBannerImg.add(bannerImages.getBanner4());
-                        mBannerImg.add(bannerImages.getBanner5());
-                        imageModelArrayList = new ArrayList<>();
-                        imageModelArrayList = populateList(mBannerImg);
-                        initViewPager();
-                        relative_flipper_layout.setVisibility(View.VISIBLE);
-                        return;
+        try {
+            mBannerImg = new ArrayList<>();
+            DatabaseReference feedReference = FirebaseDatabase.getInstance().getReference("mainpage_Banners");
+            feedReference.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    if (dataSnapshot != null) {
+                        BannerImages bannerImages = new BannerImages();
+                        bannerImages = dataSnapshot.getValue(BannerImages.class);
+                        if (bannerImages != null) {
+                            mBannerImg.add(bannerImages.getBanner1());
+                            mBannerImg.add(bannerImages.getBanner2());
+                            mBannerImg.add(bannerImages.getBanner3());
+                            mBannerImg.add(bannerImages.getBanner4());
+                            mBannerImg.add(bannerImages.getBanner5());
+                            imageModelArrayList = new ArrayList<>();
+                            imageModelArrayList = populateList(mBannerImg);
+                            initViewPager();
+                            relative_flipper_layout.setVisibility(View.VISIBLE);
+                            return;
+                        }
                     }
+                    // showProgress(false);
                 }
-                // showProgress(false);
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                }
+            });
+
+            list_BannerImg.clear();
+            if ((mFirebaseRemoteConfig.getString(MAINPAGE_CONFIG__IMGBANNER_1) != null) && !(mFirebaseRemoteConfig.getString(MAINPAGE_CONFIG__IMGBANNER_1).isEmpty())) {
+                list_BannerImg.add(mFirebaseRemoteConfig.getString(MAINPAGE_CONFIG__IMGBANNER_1));
+
+
             }
+            if ((mFirebaseRemoteConfig.getString(MAINPAGE_CONFIG__IMGBANNER_2) != null) && !(mFirebaseRemoteConfig.getString(MAINPAGE_CONFIG__IMGBANNER_2).isEmpty())) {
+                list_BannerImg.add(mFirebaseRemoteConfig.getString(MAINPAGE_CONFIG__IMGBANNER_2));
 
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
+
             }
-        });
+            if ((mFirebaseRemoteConfig.getString(MAINPAGE_CONFIG__IMGBANNER_3) != null) && !(mFirebaseRemoteConfig.getString(MAINPAGE_CONFIG__IMGBANNER_3).isEmpty())) {
+                list_BannerImg.add(mFirebaseRemoteConfig.getString(MAINPAGE_CONFIG__IMGBANNER_3));
+            }
+            if ((mFirebaseRemoteConfig.getString(MAINPAGE_CONFIG__IMGBANNER_4) != null) && !(mFirebaseRemoteConfig.getString(MAINPAGE_CONFIG__IMGBANNER_4).isEmpty())) {
+                list_BannerImg.add(mFirebaseRemoteConfig.getString(MAINPAGE_CONFIG__IMGBANNER_4));
+            }
+            if (!list_BannerImg.isEmpty() && list_BannerImg.size() > 0) {
 
-        list_BannerImg.clear();
-        if ((mFirebaseRemoteConfig.getString(MAINPAGE_CONFIG__IMGBANNER_1) != null) && !(mFirebaseRemoteConfig.getString(MAINPAGE_CONFIG__IMGBANNER_1).isEmpty())) {
-            list_BannerImg.add(mFirebaseRemoteConfig.getString(MAINPAGE_CONFIG__IMGBANNER_1));
-
-
-        }
-        if ((mFirebaseRemoteConfig.getString(MAINPAGE_CONFIG__IMGBANNER_2) != null) && !(mFirebaseRemoteConfig.getString(MAINPAGE_CONFIG__IMGBANNER_2).isEmpty())) {
-            list_BannerImg.add(mFirebaseRemoteConfig.getString(MAINPAGE_CONFIG__IMGBANNER_2));
-
-
-        }
-        if ((mFirebaseRemoteConfig.getString(MAINPAGE_CONFIG__IMGBANNER_3) != null) && !(mFirebaseRemoteConfig.getString(MAINPAGE_CONFIG__IMGBANNER_3).isEmpty())) {
-            list_BannerImg.add(mFirebaseRemoteConfig.getString(MAINPAGE_CONFIG__IMGBANNER_3));
-        }
-        if ((mFirebaseRemoteConfig.getString(MAINPAGE_CONFIG__IMGBANNER_4) != null) && !(mFirebaseRemoteConfig.getString(MAINPAGE_CONFIG__IMGBANNER_4).isEmpty())) {
-            list_BannerImg.add(mFirebaseRemoteConfig.getString(MAINPAGE_CONFIG__IMGBANNER_4));
-        }
-        if (!list_BannerImg.isEmpty() && list_BannerImg.size() > 0) {
-
+            }
+        }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - getBannerImages : ",e.toString());
+            Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() + " - getBannerImages : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - getBannerImages : ",ex.toString());
+            Crashlytics.log(0,this.getClass().getSimpleName() + " - getBannerImages : ",ex.toString());
         }
 
     }
@@ -873,63 +914,73 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     //==============================================================================
     private void getUserProfile() {
 
-        if (mViewType == AppContants.SIGN_UP) {
-            mApp.getPreference().setAppState(MainActivity.this, new AppStateContants().HOME_SCREEN);
-        }
+        try {
+            if (mViewType == AppContants.SIGN_UP) {
+                mApp.getPreference().setAppState(MainActivity.this, new AppStateContants().HOME_SCREEN);
+            }
         /*if (mApp.getFirebaseAuth().getCurrentUser() == null) {
             return;
         }*/
 
-        final FirebaseUser firebaseUser = mApp.getFirebaseAuth().getCurrentUser();
-        if(firebaseUser != null && firebaseUser.getUid() != null && !firebaseUser.getUid().isEmpty()) {
-            ApiManager.getInstance(MainActivity.this).getUserProfile(firebaseUser.getUid(), new ApiResult() {
-                @Override
-                public void onSuccess(Object data) {
-                    try {
-                        if (data != null) {
-                            userdetails = (User) data;
+            final FirebaseUser firebaseUser = mApp.getFirebaseAuth().getCurrentUser();
+            if (firebaseUser != null && firebaseUser.getUid() != null && !firebaseUser.getUid().isEmpty()) {
+                ApiManager.getInstance(MainActivity.this).getUserProfile(firebaseUser.getUid(), new ApiResult() {
+                    @Override
+                    public void onSuccess(Object data) {
+                        try {
+                            if (data != null) {
+                                userdetails = (User) data;
 
-                            //Store in Preference its very Important to add the suppliers to User.
-                            mApp.getPreference().setUser(MainActivity.this, userdetails);
+                                //Store in Preference its very Important to add the suppliers to User.
+                                mApp.getPreference().setUser(MainActivity.this, userdetails);
 
-                            checkUserSubscription(userdetails);
-                            getUserSubscription();
-                            setChatUserData();
-                            getBannerImages();
-                            isSubscribed = isUserSubscribed(userdetails);
-                            if (userdetails != null && userdetails.getCompanyinfo() == null) {
-                                new android.support.v7.app.AlertDialog.Builder(MainActivity.this)
-                                        .setTitle("Info")
-                                        .setMessage("Please fill the Company / Outlet Details to Continue..")
-                                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                                            public void onClick(DialogInterface dialog, int which) {
-                                                // continue
-                                                Intent intent = new Intent(MainActivity.this, CompanyDetails.class);
-                                                startActivity(intent);
-                                                finish();
-                                                dialog.dismiss();
-                                            }
-                                        })
-                                        .setCancelable(false)
-                                        .setIcon(android.R.drawable.ic_dialog_alert)
-                                        .show();
+                                checkUserSubscription(userdetails);
+                                getUserSubscription();
+                                setChatUserData();
+                                getBannerImages();
+                                isSubscribed = isUserSubscribed(userdetails);
+                                if (userdetails != null && userdetails.getCompanyinfo() == null) {
+                                    new android.support.v7.app.AlertDialog.Builder(MainActivity.this)
+                                            .setTitle("Info")
+                                            .setMessage("Please fill the Company / Outlet Details to Continue..")
+                                            .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                                public void onClick(DialogInterface dialog, int which) {
+                                                    // continue
+                                                    Intent intent = new Intent(MainActivity.this, CompanyDetails.class);
+                                                    startActivity(intent);
+                                                    finish();
+                                                    dialog.dismiss();
+                                                }
+                                            })
+                                            .setCancelable(false)
+                                            .setIcon(android.R.drawable.ic_dialog_alert)
+                                            .show();
+                                }
+                                return;
                             }
-                            return;
+                        } catch (Exception e) {
+                            e.printStackTrace();
                         }
-                    }catch (Exception e){
-                        e.printStackTrace();
                     }
-                }
 
 
-                @Override
-                public void onFailure(String response) {
-                    //Do when there is no data present in firebase
-                    dismissProgress();
-                    Toast.makeText(MainActivity.this, "Please update your profile details.", Toast.LENGTH_SHORT).show();
+                    @Override
+                    public void onFailure(String response) {
+                        //Do when there is no data present in firebase
+                        dismissProgress();
+                        Toast.makeText(MainActivity.this, "Please update your profile details.", Toast.LENGTH_SHORT).show();
 
-                }
-            });
+                    }
+                });
+            }
+        }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - getUserProfile : ",e.toString());
+            Crashlytics.log(0,"Exception - MainActivity - getUserProfile : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - getUserProfile : ",ex.toString());
+            Crashlytics.log(0,"1 - MainActivity - getUserProfile : ",ex.toString());
         }
 
     }
@@ -978,34 +1029,44 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
     private void getUserSubscription() {
 
-        if (mViewType == AppContants.SIGN_UP) {
-            mApp.getPreference().setAppState(MainActivity.this, new AppStateContants().HOME_SCREEN);
-        }
+        try {
+            if (mViewType == AppContants.SIGN_UP) {
+                mApp.getPreference().setAppState(MainActivity.this, new AppStateContants().HOME_SCREEN);
+            }
         /*if (mApp.getFirebaseAuth().getCurrentUser() == null) {
             return;
         }*/
-        final FirebaseUser firebaseUser = mApp.getFirebaseAuth().getCurrentUser();
-        if(firebaseUser != null && firebaseUser.getUid() != null && !firebaseUser.getUid().isEmpty()) {
-            ApiManager.getInstance(MainActivity.this).getSubscriptionInfo(firebaseUser.getUid(), new ApiResult() {
-                @Override
-                public void onSuccess(Object data) {
-                    if (data != null) {
-                        String subscription_PLAN = String.valueOf(data);
-                        appSubscriptionInfo.setSubscription_PLAN(subscription_PLAN);
-                        // userdetails.setAppSubscriptionInfo(appSubscriptionInfo);
-                        checkUserSubscription(userdetails);
-                        isSubscribed = isUserSubscribed(userdetails);
-                        dismissProgress();
-                        return;
+            final FirebaseUser firebaseUser = mApp.getFirebaseAuth().getCurrentUser();
+            if (firebaseUser != null && firebaseUser.getUid() != null && !firebaseUser.getUid().isEmpty()) {
+                ApiManager.getInstance(MainActivity.this).getSubscriptionInfo(firebaseUser.getUid(), new ApiResult() {
+                    @Override
+                    public void onSuccess(Object data) {
+                        if (data != null) {
+                            String subscription_PLAN = String.valueOf(data);
+                            appSubscriptionInfo.setSubscription_PLAN(subscription_PLAN);
+                            // userdetails.setAppSubscriptionInfo(appSubscriptionInfo);
+                            checkUserSubscription(userdetails);
+                            isSubscribed = isUserSubscribed(userdetails);
+                            dismissProgress();
+                            return;
+                        }
                     }
-                }
 
-                @Override
-                public void onFailure(String response) {
-                    //Do when there is no data present in firebase
-                    dismissProgress();
-                }
-            });
+                    @Override
+                    public void onFailure(String response) {
+                        //Do when there is no data present in firebase
+                        dismissProgress();
+                    }
+                });
+            }
+        }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - getUserSubscription : ",e.toString());
+            Crashlytics.log(0,"Exception - MainActivity - getUserSubscription : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - getUserSubscription : ",ex.toString());
+            Crashlytics.log(0,"1 - MainActivity - getUserSubscription : ",ex.toString());
         }
     }
 
@@ -1296,8 +1357,14 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
                 });
             }
-        } catch (Exception e) {
-            dismissProgress();
+        }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - fetchSupplierdata : ",e.toString());
+            Crashlytics.log(0,"Exception - MainActivity - fetchSupplierdata : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - fetchSupplierdata : ",ex.toString());
+            Crashlytics.log(0,"1 - MainActivity - fetchSupplierdata : ",ex.toString());
         }
     }
 
@@ -1361,8 +1428,14 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                     }
                 });
             }
-        } catch (Exception e) {
-            dismissProgress();
+        } catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - addSupplier : ",e.toString());
+            Crashlytics.log(0,"Exception - MainActivity - addSupplier : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - addSupplier : ",ex.toString());
+            Crashlytics.log(0,"1 - MainActivity - addSupplier : ",ex.toString());
         }
     }
 

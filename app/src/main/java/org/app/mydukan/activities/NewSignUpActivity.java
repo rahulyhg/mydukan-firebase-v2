@@ -1,17 +1,20 @@
 package org.app.mydukan.activities;
 
-import android.support.v4.app.Fragment;
+import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.view.View;
 
-import com.facebook.login.LoginFragment;
+import com.crashlytics.android.Crashlytics;
 
 import org.app.mydukan.R;
+import org.app.mydukan.emailSending.SendEmail;
 import org.app.mydukan.fragments.MobileVerificationFragment;
 import org.app.mydukan.utils.AppContants;
 import org.app.mydukan.utils.Utils;
+
+import java.io.PrintWriter;
+import java.io.StringWriter;
 
 public class NewSignUpActivity extends AppCompatActivity {
 
@@ -21,34 +24,44 @@ public class NewSignUpActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_new_sign_up);
+        try {
+            setContentView(R.layout.activity_new_sign_up);
 
-        Bundle bundle =getIntent().getExtras();
-        if (bundle != null && bundle.containsKey(AppContants.VIEW_TYPE)) {
-            viewType = bundle.getString(AppContants.VIEW_TYPE);
+            Bundle bundle = getIntent().getExtras();
+            if (bundle != null && bundle.containsKey(AppContants.VIEW_TYPE)) {
+                viewType = bundle.getString(AppContants.VIEW_TYPE);
+            }
+
+            fragmentManager = getSupportFragmentManager();
+
+            // If savedinstnacestate is null then replace login fragment
+            if (savedInstanceState == null) {
+
+                fragmentManager
+                        .beginTransaction()
+                        .replace(R.id.frameContainer, new MobileVerificationFragment(),
+                                Utils.Login_Fragment).commit();
+            }
+
+            // On close icon click finish activity
+            findViewById(R.id.close_activity).setOnClickListener(
+                    new View.OnClickListener() {
+
+                        @Override
+                        public void onClick(View arg0) {
+                            finish();
+
+                        }
+                    });
+        }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - onCreate : ",e.toString());
+            Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() + " - onCreate : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - onCreate : ",ex.toString());
+            Crashlytics.log(0,this.getClass().getSimpleName() + " - onCreate : ",ex.toString());
         }
-
-        fragmentManager = getSupportFragmentManager();
-
-        // If savedinstnacestate is null then replace login fragment
-        if (savedInstanceState == null) {
-
-            fragmentManager
-                    .beginTransaction()
-                    .replace(R.id.frameContainer, new MobileVerificationFragment(),
-                            Utils.Login_Fragment).commit();
-        }
-
-        // On close icon click finish activity
-        findViewById(R.id.close_activity).setOnClickListener(
-                new View.OnClickListener() {
-
-                    @Override
-                    public void onClick(View arg0) {
-                        finish();
-
-                    }
-                });
 
     }
 

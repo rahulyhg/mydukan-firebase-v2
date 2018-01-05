@@ -27,6 +27,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.crashlytics.android.Crashlytics;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -41,15 +42,17 @@ import org.app.mydukan.adapters.CircleTransform;
 import org.app.mydukan.data.ChattUser;
 import org.app.mydukan.data.Comment;
 import org.app.mydukan.data.Feed;
+import org.app.mydukan.emailSending.SendEmail;
 import org.app.mydukan.services.VolleyNetworkRequest;
 import org.app.mydukan.utils.AppContants;
 import org.app.mydukan.utils.FeedUtils;
 import org.app.mydukan.utils.Utils;
 import org.app.mydukan.viewholder.FeedViewHolder;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -84,58 +87,68 @@ public class CommentsActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_comments);
-        jsonRequest = new VolleyNetworkRequest(this);
+        try {
+            setContentView(R.layout.activity_comments);
+            jsonRequest = new VolleyNetworkRequest(this);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
-        setTitle("");
+            Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+            setSupportActionBar(toolbar);
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setDisplayShowHomeEnabled(true);
+            setTitle("");
 
-        user = FirebaseAuth.getInstance().getCurrentUser();
-        recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
-        commentET = (EditText) findViewById(R.id.etComment);
-        addCommentButton = (ImageView) findViewById(R.id.addComment);
-        progressBar = (ProgressBar) findViewById(R.id.progressBar);
-        emptyText = (TextView) findViewById(R.id.emptyText);
-        ivAvatar = (ImageView) findViewById(R.id.et_avatar);
-        feed = (Feed) getIntent().getSerializableExtra(AppContants.FEED);
-        company = (TextView) findViewById(R.id.post_company);
-        overflowMenu = (ImageView) findViewById(R.id.overflowMenu);
-        commentCount = (TextView) findViewById(R.id.post_comment_count);
+            user = FirebaseAuth.getInstance().getCurrentUser();
+            recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
+            commentET = (EditText) findViewById(R.id.etComment);
+            addCommentButton = (ImageView) findViewById(R.id.addComment);
+            progressBar = (ProgressBar) findViewById(R.id.progressBar);
+            emptyText = (TextView) findViewById(R.id.emptyText);
+            ivAvatar = (ImageView) findViewById(R.id.et_avatar);
+            feed = (Feed) getIntent().getSerializableExtra(AppContants.FEED);
+            company = (TextView) findViewById(R.id.post_company);
+            overflowMenu = (ImageView) findViewById(R.id.overflowMenu);
+            commentCount = (TextView) findViewById(R.id.post_comment_count);
 
-        if (feed == null) {
-            findViewById(R.id.cardView).setVisibility(View.INVISIBLE);
-            final ProgressDialog progressDialog = new ProgressDialog(this);
-            progressDialog.setMessage("Loading...");
-            progressDialog.setCancelable(false);
-            progressDialog.show();
+            if (feed == null) {
+                findViewById(R.id.cardView).setVisibility(View.INVISIBLE);
+                final ProgressDialog progressDialog = new ProgressDialog(this);
+                progressDialog.setMessage("Loading...");
+                progressDialog.setCancelable(false);
+                progressDialog.show();
 
-            String feedId = getIntent().getStringExtra(FEED_ID);
-            String userId = getIntent().getStringExtra(USER_ID);
-            FeedUtils.getFeed(feedId, userId, new FeedUtils.OnDataRetrieved() {
+                String feedId = getIntent().getStringExtra(FEED_ID);
+                String userId = getIntent().getStringExtra(USER_ID);
+                FeedUtils.getFeed(feedId, userId, new FeedUtils.OnDataRetrieved() {
 
-                @Override
-                public void onSuccess(Object object) {
-                    if (object instanceof Feed) {
-                        feed = (Feed) object;
-                        findViewById(R.id.cardView).setVisibility(View.VISIBLE);
-                        initializeFeed();
+                    @Override
+                    public void onSuccess(Object object) {
+                        if (object instanceof Feed) {
+                            feed = (Feed) object;
+                            findViewById(R.id.cardView).setVisibility(View.VISIBLE);
+                            initializeFeed();
+                            progressDialog.dismiss();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure() {
+                        Toast.makeText(getApplicationContext(), "Error while loading", Toast.LENGTH_SHORT).show();
+                        CommentsActivity.this.finish();
                         progressDialog.dismiss();
                     }
-                }
-
-                @Override
-                public void onFailure() {
-                    Toast.makeText(getApplicationContext(), "Error while loading", Toast.LENGTH_SHORT).show();
-                    CommentsActivity.this.finish();
-                    progressDialog.dismiss();
-                }
-            });
-        } else {
-            initializeFeed();
-            getCurrentUserData(feed.getIdUser());
+                });
+            } else {
+                initializeFeed();
+                getCurrentUserData(feed.getIdUser());
+            }
+        }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - onCreate : ",e.toString());
+            Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() + " - onCreate : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - onCreate : ",ex.toString());
+            Crashlytics.log(0,this.getClass().getSimpleName() + " - onCreate : ",ex.toString());
         }
     }
 
@@ -361,26 +374,35 @@ public class CommentsActivity extends AppCompatActivity {
 
     private void getComments() {
 
-        final DatabaseReference referenceFollow = FirebaseDatabase.getInstance().getReference().child(COMMENT_ROOT + "/" + feed.getIdFeed());
-        referenceFollow.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                commentList.clear();
-                if (dataSnapshot != null) {
-                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                        //for(DataSnapshot commentSnapshot: snapshot.getChildren())
-                        commentList.add(snapshot.getValue(Comment.class));
+        try {
+            final DatabaseReference referenceFollow = FirebaseDatabase.getInstance().getReference().child(COMMENT_ROOT + "/" + feed.getIdFeed());
+            referenceFollow.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    commentList.clear();
+                    if (dataSnapshot != null) {
+                        for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                            //for(DataSnapshot commentSnapshot: snapshot.getChildren())
+                            commentList.add(snapshot.getValue(Comment.class));
+                        }
                     }
+                    toggleLoading();
+                    mAdapter.notifyDataSetChanged();
                 }
-                toggleLoading();
-                mAdapter.notifyDataSetChanged();
-            }
 
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-            }
-        });
-
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                }
+            });
+        }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - getComments : ",e.toString());
+            Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() + " - getComments : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - getComments : ",ex.toString());
+            Crashlytics.log(0,this.getClass().getSimpleName() + " - getComments : ",ex.toString());
+        }
 
     }
 

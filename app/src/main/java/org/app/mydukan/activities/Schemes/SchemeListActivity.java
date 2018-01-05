@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
-import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
@@ -13,6 +12,7 @@ import android.widget.CompoundButton;
 import android.widget.RadioButton;
 import android.widget.TextView;
 
+import com.crashlytics.android.Crashlytics;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.MobileAds;
@@ -22,7 +22,7 @@ import org.app.mydukan.activities.BaseActivity;
 import org.app.mydukan.application.MyDukan;
 import org.app.mydukan.data.Scheme;
 import org.app.mydukan.data.SchemeRecord;
-import org.app.mydukan.fragments.SchemeFragment;
+import org.app.mydukan.emailSending.SendEmail;
 import org.app.mydukan.fragments.SchemesPagerFragment;
 import org.app.mydukan.fragments.myschemes.MySchemesActivity;
 import org.app.mydukan.fragments.myschemes.fragmetns.MySelectedSchemesHelper;
@@ -30,6 +30,8 @@ import org.app.mydukan.server.ApiManager;
 import org.app.mydukan.server.ApiResult;
 import org.app.mydukan.utils.AppContants;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -63,51 +65,61 @@ public class SchemeListActivity extends BaseActivity implements TabLayout.OnTabS
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_schemeslist);
 
-        mApp = (MyDukan) getApplicationContext();
+        try {
+            mApp = (MyDukan) getApplicationContext();
 
-        MobileAds.initialize(getApplicationContext(), "ca-app-pub-1640690939729824/1329319399");
-        AdView cALdview = (AdView) findViewById(R.id.adView_scmelist);
-        AdRequest adRequest = new AdRequest.Builder().build();
-        cALdview.loadAd(adRequest);
+            MobileAds.initialize(getApplicationContext(), "ca-app-pub-1640690939729824/1329319399");
+            AdView cALdview = (AdView) findViewById(R.id.adView_scmelist);
+            AdRequest adRequest = new AdRequest.Builder().build();
+            cALdview.loadAd(adRequest);
 
-        Bundle bundle = getIntent().getExtras();
-        if(bundle != null){
-            if (bundle.containsKey(AppContants.SUPPLIER_ID)) {
-                mSupplierId = bundle.getString(AppContants.SUPPLIER_ID);
-            }
-            if (bundle.containsKey(AppContants.SUPPLIER_NAME)) {
-                mSupplierName = bundle.getString(AppContants.SUPPLIER_NAME);
-            }
-        }
-
-        //Adding toolbar to the activity
-        setupActionBar();
-
-        //Initializing Tablayout
-        setupTabLayout();
-
-        //Initializing viewPager
-        setupViewPager();
-
-        mNoDataView = (TextView) findViewById(R.id.nodata_view);
-
-        getSchemesList();
-        if(mSupplierId!=null) {
-            if (mSupplierId.equalsIgnoreCase("WDSLSgxI10eiWVey4RVWY5niElE3")) {
-                cALdview.setVisibility(View.GONE);
-            }
-        }
-        // Set My Schemes Tab
-        mMySchemesTab = (RadioButton) findViewById(R.id.tab_myschemes);
-        mMySchemesTab.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked) {
-                    gotoMySchemesFragment();
+            Bundle bundle = getIntent().getExtras();
+            if (bundle != null) {
+                if (bundle.containsKey(AppContants.SUPPLIER_ID)) {
+                    mSupplierId = bundle.getString(AppContants.SUPPLIER_ID);
+                }
+                if (bundle.containsKey(AppContants.SUPPLIER_NAME)) {
+                    mSupplierName = bundle.getString(AppContants.SUPPLIER_NAME);
                 }
             }
-        });
-        mSchemesTab = (RadioButton) findViewById(R.id.tab_schemes);
+
+            //Adding toolbar to the activity
+            setupActionBar();
+
+            //Initializing Tablayout
+            setupTabLayout();
+
+            //Initializing viewPager
+            setupViewPager();
+
+            mNoDataView = (TextView) findViewById(R.id.nodata_view);
+
+            getSchemesList();
+            if (mSupplierId != null) {
+                if (mSupplierId.equalsIgnoreCase("WDSLSgxI10eiWVey4RVWY5niElE3")) {
+                    cALdview.setVisibility(View.GONE);
+                }
+            }
+            // Set My Schemes Tab
+            mMySchemesTab = (RadioButton) findViewById(R.id.tab_myschemes);
+            mMySchemesTab.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                    if (isChecked) {
+                        gotoMySchemesFragment();
+                    }
+                }
+            });
+            mSchemesTab = (RadioButton) findViewById(R.id.tab_schemes);
+        }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - OnCreate : ",e.toString());
+            Crashlytics.log(0,"Exception - SchemeListActivity - OnCreate : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - OnCreate : ",ex.toString());
+            Crashlytics.log(0,"1 - SchemeListActivity - OnCreate : ",ex.toString());
+        }
     }
 
     @Override
@@ -191,64 +203,84 @@ public class SchemeListActivity extends BaseActivity implements TabLayout.OnTabS
 
     private void getSchemesList(){
         showProgress();
-        ApiManager.getInstance(SchemeListActivity.this).getSchemeList(mSupplierId, mApp.getFirebaseAuth().getCurrentUser().getUid(),
-            new ApiResult() {
+        try {
+            ApiManager.getInstance(SchemeListActivity.this).getSchemeList(mSupplierId, mApp.getFirebaseAuth().getCurrentUser().getUid(),
+                    new ApiResult() {
+                        @Override
+                        public void onSuccess(Object data) {
+                            mSchemesList.clear();
+                            mSchemesList.putAll((HashMap<String, ArrayList<Scheme>>) data);
+                            if (!mSchemesList.isEmpty()) {
+                                mNoDataView.setVisibility(View.GONE);
+                                mViewPager.setVisibility(View.VISIBLE);
+
+                                setTabs();
+                                ((SchemesPagerFragment) mViewPager.getAdapter()).setData(new ArrayList<ArrayList<Scheme>>(mSchemesList.values()));
+
+                            } else {
+                                mNoDataView.setVisibility(View.VISIBLE);
+                                mViewPager.setVisibility(View.GONE);
+                                dismissProgress();
+                            }
+
+                            // TODO
+                            filterSchemesList();
+                        }
+
+                        @Override
+                        public void onFailure(String response) {
+                            dismissProgress();
+                            mNoDataView.setVisibility(View.VISIBLE);
+                            mViewPager.setVisibility(View.GONE);
+                        }
+                    });
+        }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - getSchemesList : ",e.toString());
+            Crashlytics.log(0,"Exception - SchemeListActivity - getSchemesList : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - getSchemesList : ",ex.toString());
+            Crashlytics.log(0,"1 - SchemeListActivity - getSchemesList : ",ex.toString());
+        }
+    }
+
+    private void filterSchemesList() {
+        try {
+            ApiManager.getInstance(this).getSchemeRecordList(new ApiResult() {
                 @Override
                 public void onSuccess(Object data) {
-                    mSchemesList.clear();
-                    mSchemesList.putAll((HashMap<String, ArrayList<Scheme>>) data);
-                    if(!mSchemesList.isEmpty()) {
-                        mNoDataView.setVisibility(View.GONE);
-                        mViewPager.setVisibility(View.VISIBLE);
-
-                        setTabs();
-                        ((SchemesPagerFragment) mViewPager.getAdapter()).setData(new ArrayList<ArrayList<Scheme>>(mSchemesList.values()));
-
-                    }else{
+                    try {
+                        if (data != null) {
+                            MySelectedSchemesHelper.getInstance().setRecordList((ArrayList<SchemeRecord>) data);
+                            MySelectedSchemesHelper.getInstance().updateMySelectedList((ArrayList<SchemeRecord>) data);
+                            // Notify Data set
+                            if (adapter != null && adapter.getCount() > 0) {
+                                ((SchemesPagerFragment) mViewPager.getAdapter()).notifyDataSetChanged();
+                            }
+                        }
+                        dismissProgress();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        dismissProgress();
                         mNoDataView.setVisibility(View.VISIBLE);
                         mViewPager.setVisibility(View.GONE);
-                        dismissProgress();
                     }
-
-                    // TODO
-                    filterSchemesList();
                 }
 
                 @Override
                 public void onFailure(String response) {
                     dismissProgress();
-                    mNoDataView.setVisibility(View.VISIBLE);
-                    mViewPager.setVisibility(View.GONE);
                 }
             });
-    }
-
-    private void filterSchemesList() {
-        ApiManager.getInstance(this).getSchemeRecordList(new ApiResult() {
-            @Override
-            public void onSuccess(Object data) {
-                try{
-                    if (data!=null) {
-                        MySelectedSchemesHelper.getInstance().setRecordList((ArrayList<SchemeRecord>) data);
-                        MySelectedSchemesHelper.getInstance().updateMySelectedList((ArrayList<SchemeRecord>) data);
-                        // Notify Data set
-                        if (adapter != null && adapter.getCount() > 0) {
-                            ((SchemesPagerFragment) mViewPager.getAdapter()).notifyDataSetChanged();
-                        }
-                    }
-                    dismissProgress();
-                }catch (Exception e){
-                    e.printStackTrace();
-                    dismissProgress();
-                    mNoDataView.setVisibility(View.VISIBLE);
-                    mViewPager.setVisibility(View.GONE);
-                }
-            }
-
-            @Override
-            public void onFailure(String response) {
-                dismissProgress();
-            }
-        });
+        }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - filterSchemesList : ",e.toString());
+            Crashlytics.log(0,"Exception - SchemeListActivity - filterSchemesList : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - filterSchemesList : ",ex.toString());
+            Crashlytics.log(0,"1 - SchemeListActivity - filterSchemesList : ",ex.toString());
+        }
     }
 }

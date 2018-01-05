@@ -19,6 +19,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.crashlytics.android.Crashlytics;
 import com.crashlytics.android.answers.Answers;
 import com.crashlytics.android.answers.CustomEvent;
 import com.google.android.gms.ads.AdRequest;
@@ -40,13 +41,16 @@ import org.app.mydukan.application.MyDukan;
 import org.app.mydukan.data.ChattUser;
 import org.app.mydukan.data.Feed;
 import org.app.mydukan.data.User;
+import org.app.mydukan.emailSending.SendEmail;
 import org.app.mydukan.server.ApiManager;
 import org.app.mydukan.server.ApiResult;
 import org.app.mydukan.services.VolleyNetworkRequest;
 import org.app.mydukan.utils.AppContants;
 import org.app.mydukan.utils.FeedUtils;
 
+import java.io.PrintWriter;
 import java.io.Serializable;
+import java.io.StringWriter;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -98,102 +102,113 @@ public class MyProfileActivity extends BaseActivity implements AdapterListFeed.O
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my_profile);
-        mApp = (MyDukan) getApplicationContext();
-        jsonRequest = new VolleyNetworkRequest(this);
-        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle("Profile");
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onBackPressed();
-            }
-        });
-        initViews();
-        mSwipeRefereshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                mList.clear();
-                mAdapter.notifyDataSetChanged();
-                Funct_onSwipeReload();
-
-            }
-        });
-        more=(TextView) findViewById(R.id.bt_more);
-        postcard=(CardView)findViewById(R.id.layout_ac_3);
-        tv_profile = (TextView) findViewById(R.id.profile_Name_1);
-        tv_profileEmail = (TextView) findViewById(R.id.profile_Email_1);
-        tv_profilePhone=(TextView)findViewById(R.id.profile_Phone_1);
-        tvFollowing=(TextView)findViewById(R.id.profile_Following_1);
-        tv_FeedText = (TextView) findViewById(R.id.editTextprofile_1);
-        details_layout=(LinearLayout)findViewById(R.id.layout_ac_2);
-        post_layout=(LinearLayout)findViewById(R.id.layout_ac_4);
-        bt_post=(TextView)findViewById(R.id.editTextprofile_1);
-        tv_profileImg = (ImageView) findViewById(R.id.profile_IMG_1);
-        btn_Follow = (Button) findViewById(R.id.bt_follow);
-        tvFollowers = (TextView) findViewById(R.id.profile_Followers_1);
-        btn_Followers = (LinearLayout) findViewById(R.id.view_followers_1);
-        btn_Following = (LinearLayout) findViewById(R.id.view_following_1);
-        Funct_onSwipeReload();
-        more.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(MyProfileActivity.this, YourAccountActivity.class);
-                intent.putExtra(AppContants.CHAT_USER_PROFILE, (Serializable) chattUser);
-                intent.putExtra(AppContants.IS_MY_PROFILE,(Serializable)mMyProfile);
-                startActivity(intent);
-            }
-        });
-        btn_Follow.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (mid != null) {
-                    addFollow(mid);
+        try {
+            mApp = (MyDukan) getApplicationContext();
+            jsonRequest = new VolleyNetworkRequest(this);
+            getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
+            Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+            setSupportActionBar(toolbar);
+            getSupportActionBar().setTitle("Profile");
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    onBackPressed();
                 }
-            }
-        });
+            });
+            initViews();
+            mSwipeRefereshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+                @Override
+                public void onRefresh() {
+                    mList.clear();
+                    mAdapter.notifyDataSetChanged();
+                    Funct_onSwipeReload();
 
-
-        btn_Following.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(profileUID.isEmpty()||(profileUID)==null){
-                    return;
                 }
-                Intent activityintent = new Intent( MyProfileActivity.this, FeedProfileFollowActivity.class);
-                activityintent.putExtra(AppContants.PROFILE_ID_FOLLOWING,profileUID);
-                activityintent.putExtra(AppContants.MYPROFILE_FOLLOW, AppContants.MYPROFILE_FOLLOW);
-                startActivity(activityintent);
-            }
-        });
-        btn_Followers.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(profileUID.isEmpty()||(profileUID)==null){
-                    return;
+            });
+            more = (TextView) findViewById(R.id.bt_more);
+            postcard = (CardView) findViewById(R.id.layout_ac_3);
+            tv_profile = (TextView) findViewById(R.id.profile_Name_1);
+            tv_profileEmail = (TextView) findViewById(R.id.profile_Email_1);
+            tv_profilePhone = (TextView) findViewById(R.id.profile_Phone_1);
+            tvFollowing = (TextView) findViewById(R.id.profile_Following_1);
+            tv_FeedText = (TextView) findViewById(R.id.editTextprofile_1);
+            details_layout = (LinearLayout) findViewById(R.id.layout_ac_2);
+            post_layout = (LinearLayout) findViewById(R.id.layout_ac_4);
+            bt_post = (TextView) findViewById(R.id.editTextprofile_1);
+            tv_profileImg = (ImageView) findViewById(R.id.profile_IMG_1);
+            btn_Follow = (Button) findViewById(R.id.bt_follow);
+            tvFollowers = (TextView) findViewById(R.id.profile_Followers_1);
+            btn_Followers = (LinearLayout) findViewById(R.id.view_followers_1);
+            btn_Following = (LinearLayout) findViewById(R.id.view_following_1);
+            Funct_onSwipeReload();
+            more.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(MyProfileActivity.this, YourAccountActivity.class);
+                    intent.putExtra(AppContants.CHAT_USER_PROFILE, (Serializable) chattUser);
+                    intent.putExtra(AppContants.IS_MY_PROFILE, (Serializable) mMyProfile);
+                    startActivity(intent);
                 }
-                Intent activityintent = new Intent(MyProfileActivity.this, FeedProfileFollowActivity.class);
-                activityintent.putExtra(AppContants.PROFILE_ID_FOLLOWERS,profileUID);
-                activityintent.putExtra(AppContants.MYPROFILE_FOLLOW, AppContants.MYPROFILE_FOLLOW);
-                startActivity(activityintent);
-            }
-        });
-        bt_post.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(MyProfileActivity.this, Post_Activity.class);
-                intent.putExtra(AppContants.CHAT_USER_PROFILE, (Serializable) chattUser);
-                startActivity(intent);
-            }
-        });
+            });
+            btn_Follow.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (mid != null) {
+                        addFollow(mid);
+                    }
+                }
+            });
 
-        //initialize ads for the app  - ca-app-pub-1640690939729824/2174590993
-        MobileAds.initialize(getApplicationContext(), "ca-app-pub-1640690939729824/2174590993");
-        mAdView = (AdView) findViewById(R.id.adView_myProfile);
-        AdRequest adRequest = new AdRequest.Builder().build();
-        mAdView.loadAd(adRequest);
+
+            btn_Following.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (profileUID.isEmpty() || (profileUID) == null) {
+                        return;
+                    }
+                    Intent activityintent = new Intent(MyProfileActivity.this, FeedProfileFollowActivity.class);
+                    activityintent.putExtra(AppContants.PROFILE_ID_FOLLOWING, profileUID);
+                    activityintent.putExtra(AppContants.MYPROFILE_FOLLOW, AppContants.MYPROFILE_FOLLOW);
+                    startActivity(activityintent);
+                }
+            });
+            btn_Followers.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (profileUID.isEmpty() || (profileUID) == null) {
+                        return;
+                    }
+                    Intent activityintent = new Intent(MyProfileActivity.this, FeedProfileFollowActivity.class);
+                    activityintent.putExtra(AppContants.PROFILE_ID_FOLLOWERS, profileUID);
+                    activityintent.putExtra(AppContants.MYPROFILE_FOLLOW, AppContants.MYPROFILE_FOLLOW);
+                    startActivity(activityintent);
+                }
+            });
+            bt_post.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(MyProfileActivity.this, Post_Activity.class);
+                    intent.putExtra(AppContants.CHAT_USER_PROFILE, (Serializable) chattUser);
+                    startActivity(intent);
+                }
+            });
+
+            //initialize ads for the app  - ca-app-pub-1640690939729824/2174590993
+            MobileAds.initialize(getApplicationContext(), "ca-app-pub-1640690939729824/2174590993");
+            mAdView = (AdView) findViewById(R.id.adView_myProfile);
+            AdRequest adRequest = new AdRequest.Builder().build();
+            mAdView.loadAd(adRequest);
+        }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - OnCreate : ",e.toString());
+            Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() + " - OnCreate : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - OnCreate : ",ex.toString());
+            Crashlytics.log(0,this.getClass().getSimpleName() + " - OnCreate : ",ex.toString());
+        }
+
         //TestFunc_Add50();
 
     }
@@ -236,62 +251,81 @@ public class MyProfileActivity extends BaseActivity implements AdapterListFeed.O
     }
 
     private void getProfileData(String profileUID) {
-        ApiManager.getInstance(this).getUserProfile(profileUID, new ApiResult() {
-            @Override
-            public void onSuccess(Object data) {
-                profileDetails = (User) data;
-                if (profileDetails == null) {
-                    return;
+        try {
+            ApiManager.getInstance(this).getUserProfile(profileUID, new ApiResult() {
+                @Override
+                public void onSuccess(Object data) {
+                    profileDetails = (User) data;
+                    if (profileDetails == null) {
+                        return;
+                    }
+                    profileDetails.getId();
+                    if (profileDetails != null) {
+                        initProfileView(profileDetails, chattUser);
+                        retriveFeedsData(profileDetails, chattUser.getuId());
+                    } else {
+                        Toast.makeText(MyProfileActivity.this, "Unable to Get the User Profile", Toast.LENGTH_SHORT).show();
+                    }
+
                 }
-                profileDetails.getId();
-                if(profileDetails!=null){
-                    initProfileView(profileDetails, chattUser);
-                    retriveFeedsData(profileDetails, chattUser.getuId());
-                }else{
+
+                @Override
+                public void onFailure(String response) {
                     Toast.makeText(MyProfileActivity.this, "Unable to Get the User Profile", Toast.LENGTH_SHORT).show();
                 }
 
-            }
-
-            @Override
-            public void onFailure(String response) {
-                Toast.makeText(MyProfileActivity.this, "Unable to Get the User Profile", Toast.LENGTH_SHORT).show();
-            }
-
-        });
+            });
+        }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - getProfileData : ",e.toString());
+            Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() + " - getProfileData : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - getProfileData : ",ex.toString());
+            Crashlytics.log(0,this.getClass().getSimpleName() + " - getProfileData : ",ex.toString());
+        }
     }
 
     private void retriveFeedsData(final User profileDetails, final String UserId) {
-        if (UserId != null && !UserId.isEmpty()) {
-            DatabaseReference feedReference = FirebaseDatabase.getInstance().getReference().child(FEED_ROOT).getRef();
-            feedReference.orderByChild("idUser").equalTo(UserId).addValueEventListener(new ValueEventListener() {
+        try {
+            if (UserId != null && !UserId.isEmpty()) {
+                DatabaseReference feedReference = FirebaseDatabase.getInstance().getReference().child(FEED_ROOT).getRef();
+                feedReference.orderByChild("idUser").equalTo(UserId).addValueEventListener(new ValueEventListener() {
 
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-                    //1_open
-                    Log.d(TAG,"abcd");
-                    showProgress(true);
-                    mList.clear();
-                    if (dataSnapshot != null) {
-                        for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                            Feed feed = snapshot.getValue(Feed.class);
-                            mList.add(feed);
-                            mSwipeRefereshLayout.setRefreshing(false);
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        //1_open
+                        Log.d(TAG, "abcd");
+                        showProgress(true);
+                        mList.clear();
+                        if (dataSnapshot != null) {
+                            for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                                Feed feed = snapshot.getValue(Feed.class);
+                                mList.add(feed);
+                                mSwipeRefereshLayout.setRefreshing(false);
+                            }
+                            initRecyclerView(mList);
+                            Log.d(TAG, "abcd2");
                         }
-                        initRecyclerView(mList);
-                        Log.d(TAG,"abcd2");
                     }
-                }
 
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
-                    //closefor1
-                    showProgress(false);
-                }
-            });
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+                        //closefor1
+                        showProgress(false);
+                    }
+                });
+            }
+
+        }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - retriveFeedsData : ",e.toString());
+            Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() + " - retriveFeedsData : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - retriveFeedsData : ",ex.toString());
+            Crashlytics.log(0,this.getClass().getSimpleName() + " - retriveFeedsData : ",ex.toString());
         }
-
-
     }
 
     // Change the following button Text(Follow - UnFollow).
@@ -322,40 +356,51 @@ public class MyProfileActivity extends BaseActivity implements AdapterListFeed.O
     // get the following profile count.
     public void getListFollowing(final String followingKey) {
 
-        final DatabaseReference referenceFollow = FirebaseDatabase.getInstance().getReference().child(FOLLOWING_ROOT +"/"+followingKey);
-        referenceFollow.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                //showProgress(false);
-                long totalFollowing = 0;
-                if(dataSnapshot!=null){
-                    totalFollowing=dataSnapshot.getChildrenCount();
-                }
-               // if(intial_follow) {
+        try {
+            final DatabaseReference referenceFollow = FirebaseDatabase.getInstance().getReference().child(FOLLOWING_ROOT + "/" + followingKey);
+            referenceFollow.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    //showProgress(false);
+                    long totalFollowing = 0;
+                    if (dataSnapshot != null) {
+                        totalFollowing = dataSnapshot.getChildrenCount();
+                    }
+                    // if(intial_follow) {
 
 //                    intial_follow=false;
-                //}
-                tvFollowing.setText(totalFollowing + "");
-            }
+                    //}
+                    tvFollowing.setText(totalFollowing + "");
+                }
 
 
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                showProgress(false);
-            }
-        });
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                    showProgress(false);
+                }
+            });
+        }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - getListFollowing : ",e.toString());
+            Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() + " - getListFollowing : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - getListFollowing : ",ex.toString());
+            Crashlytics.log(0,this.getClass().getSimpleName() + " - getListFollowing : ",ex.toString());
+        }
     }
     private void addFollow(final String id) {
-        final FirebaseUser auth = FirebaseAuth.getInstance().getCurrentUser();
-        flagFollow = true;
-        final DatabaseReference referenceFollowing = FirebaseDatabase.getInstance().getReference().child(FOLLOWING_ROOT +"/"+auth.getUid());
-        final DatabaseReference referenceFollowers = FirebaseDatabase.getInstance().getReference().child(FOLLOWERS_ROOT +"/"+id);
+        try {
+            final FirebaseUser auth = FirebaseAuth.getInstance().getCurrentUser();
+            flagFollow = true;
+            final DatabaseReference referenceFollowing = FirebaseDatabase.getInstance().getReference().child(FOLLOWING_ROOT + "/" + auth.getUid());
+            final DatabaseReference referenceFollowers = FirebaseDatabase.getInstance().getReference().child(FOLLOWERS_ROOT + "/" + id);
 
-        referenceFollowing.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
+            referenceFollowing.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
 //                if (flagFollow) {
-                    if (dataSnapshot!=null&& dataSnapshot.hasChild(id)) {
+                    if (dataSnapshot != null && dataSnapshot.hasChild(id)) {
                         referenceFollowing.child(id).removeValue();//removing userid to following list  .
                         referenceFollowers.child(auth.getUid()).removeValue();//removing the user id to distributor following list.
 //                        btn_Follow.setText("Follow");
@@ -373,13 +418,22 @@ public class MyProfileActivity extends BaseActivity implements AdapterListFeed.O
 
                     }
 //                }
-            }
+                }
 
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
 
-            }
-        });
+                }
+            });
+        }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - addFollow : ",e.toString());
+            Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() + " - addFollow : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - addFollow : ",ex.toString());
+            Crashlytics.log(0,this.getClass().getSimpleName() + " - addFollow : ",ex.toString());
+        }
     }
 
     private void initProfileView(User profileDetails, ChattUser mChattUser) {

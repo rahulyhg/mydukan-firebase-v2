@@ -18,6 +18,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.crashlytics.android.Crashlytics;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.MobileAds;
@@ -30,12 +31,12 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import org.app.mydukan.R;
-import org.app.mydukan.activities.MyNetworksActivity;
 import org.app.mydukan.activities.Search_MyNetworkActivity;
 import org.app.mydukan.adapters.AdapterListFeed;
 import org.app.mydukan.adapters.NetworkContactsAdapter;
 import org.app.mydukan.data.ContactUsers;
 import org.app.mydukan.data.Feed;
+import org.app.mydukan.emailSending.SendEmail;
 import org.app.mydukan.services.SyncContacts;
 import org.app.mydukan.services.VolleyNetworkRequest;
 import org.app.mydukan.utils.AppContants;
@@ -43,6 +44,8 @@ import org.app.mydukan.utils.FeedRetriever2;
 import org.app.mydukan.utils.FeedUtils;
 import org.app.mydukan.utils.Utils;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -52,7 +55,6 @@ import java.util.Map;
 import io.realm.Case;
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
-import okhttp3.internal.cache.DiskLruCache;
 
 import static org.app.mydukan.activities.CommentsActivity.RESULT_DELETED;
 import static org.app.mydukan.fragments.MyNetworkFragment.FEED_LOCATION;
@@ -114,15 +116,25 @@ public class TwoFragment extends Fragment implements AdapterListFeed.OnClickItem
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         mView = inflater.inflate(R.layout.fragment_two, container, false);
-        context = mView.getContext();
-        jsonRequest = new VolleyNetworkRequest(context);
-        initViews();
-        //initialize ads for the app  - ca-app-pub-1640690939729824/2174590993
-        MobileAds.initialize(context, "ca-app-pub-1640690939729824/2174590993");
-        mAdView = (AdView) mView.findViewById(R.id.adView_myNetwork_two);
-        followContact = (RecyclerView) mView.findViewById(R.id.contacts_rv);
-        AdRequest adRequest = new AdRequest.Builder().build();
-        mAdView.loadAd(adRequest);
+        try {
+            context = mView.getContext();
+            jsonRequest = new VolleyNetworkRequest(context);
+            initViews();
+            //initialize ads for the app  - ca-app-pub-1640690939729824/2174590993
+            MobileAds.initialize(context, "ca-app-pub-1640690939729824/2174590993");
+            mAdView = (AdView) mView.findViewById(R.id.adView_myNetwork_two);
+            followContact = (RecyclerView) mView.findViewById(R.id.contacts_rv);
+            AdRequest adRequest = new AdRequest.Builder().build();
+            mAdView.loadAd(adRequest);
+        }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - onCreate : ",e.toString());
+            Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() + " - onCreate : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - onCreate : ",ex.toString());
+            Crashlytics.log(0,this.getClass().getSimpleName() + " - onCreate : ",ex.toString());
+        }
         return mView;
     }
 

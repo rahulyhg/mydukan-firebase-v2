@@ -4,10 +4,10 @@ import android.content.Context;
 import android.location.Address;
 import android.location.Geocoder;
 import android.net.Uri;
-import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
+import com.crashlytics.android.Crashlytics;
 import com.crashlytics.android.answers.Answers;
 import com.crashlytics.android.answers.LoginEvent;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -53,13 +53,15 @@ import org.app.mydukan.data.SupplierBindData;
 import org.app.mydukan.data.SupplierGroups;
 import org.app.mydukan.data.User;
 import org.app.mydukan.data.Videos;
+import org.app.mydukan.emailSending.SendEmail;
 import org.app.mydukan.fragments.OneFragment;
-import org.app.mydukan.fragments.ProductFragment;
 import org.app.mydukan.utils.AppContants;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -270,42 +272,52 @@ public class ApiManager {
     }
 
     public void checkAndSignUpUser(final String uid, final String emailId, final ApiResult status) {
-        DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference("users/" + uid);
-        usersRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                if (dataSnapshot.exists()) {
-                    String userType = dataSnapshot.child("usertype").getValue(String.class);
-                    if (userType.equalsIgnoreCase("retailer")) {
-                        Answers.getInstance().logLogin(new LoginEvent()
-                                .putMethod("Digits")
-                                .putSuccess(true));
-                        status.onSuccess(mctx.getString(R.string.status_success));
-                        //mOBILE NUMBER VERIFICATION Approach MoEngage
-                        PayloadBuilder builder = new PayloadBuilder();
-                        builder.putAttrString("MobileNumber Verification", mctx.getString(R.string.status_success))
-                                .putAttrDate("Verified Date", new Date());
-                        MoEHelper.getInstance(mctx).trackEvent("Digits", builder.build());
+        try {
+            DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference("users/" + uid);
+            usersRef.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    if (dataSnapshot.exists()) {
+                        String userType = dataSnapshot.child("usertype").getValue(String.class);
+                        if (userType.equalsIgnoreCase("retailer")) {
+                            Answers.getInstance().logLogin(new LoginEvent()
+                                    .putMethod("Digits")
+                                    .putSuccess(true));
+                            status.onSuccess(mctx.getString(R.string.status_success));
+                            //mOBILE NUMBER VERIFICATION Approach MoEngage
+                            PayloadBuilder builder = new PayloadBuilder();
+                            builder.putAttrString("MobileNumber Verification", mctx.getString(R.string.status_success))
+                                    .putAttrDate("Verified Date", new Date());
+                            MoEHelper.getInstance(mctx).trackEvent("Digits", builder.build());
+                        } else {
+                            status.onFailure(mctx.getString(R.string.error_usertype));
+                            //1st Approach MoEngage
+                            PayloadBuilder builder = new PayloadBuilder();
+                            builder.putAttrString("MobileNumber Verification", mctx.getString(R.string.status_failed))
+                                    .putAttrString("User EmailId", emailId)
+                                    .putAttrDate("Verified Date", new Date());
+                            MoEHelper.getInstance(mctx).trackEvent("Digits", builder.build());
+                        }
                     } else {
-                        status.onFailure(mctx.getString(R.string.error_usertype));
-                        //1st Approach MoEngage
-                        PayloadBuilder builder = new PayloadBuilder();
-                        builder.putAttrString("MobileNumber Verification", mctx.getString(R.string.status_failed))
-                                .putAttrString("User EmailId", emailId)
-                                .putAttrDate("Verified Date", new Date());
-                        MoEHelper.getInstance(mctx).trackEvent("Digits", builder.build());
+                        // It is a new user. Need to create an entry.
+                        signUpUser(uid, emailId, status);
                     }
-                } else {
-                    // It is a new user. Need to create an entry.
-                    signUpUser(uid, emailId, status);
                 }
-            }
 
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                status.onSuccess(mctx.getString(R.string.error_loginfailed));
-            }
-        });
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                    status.onSuccess(mctx.getString(R.string.error_loginfailed));
+                }
+            });
+        }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - onBindViewHolder : ",e.toString());
+            Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() + " - onBindViewHolder : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - onBindViewHolder : ",ex.toString());
+            Crashlytics.log(0,this.getClass().getSimpleName() + " - onBindViewHolder : ",ex.toString());
+        }
     }
 
     public void signUpUser(final String uid, String emailId, final ApiResult status) {
@@ -2002,14 +2014,14 @@ public class ApiManager {
 
                                     @Override
                                     public void onFailure(String response) {
-
+                                        result.onFailure("empty");
                                     }
                                 });
                             }
 
                             @Override
                             public void onFailure(String response) {
-
+                                result.onFailure("empty");
                             }
                         });
 
@@ -2018,14 +2030,14 @@ public class ApiManager {
 
                     @Override
                     public void onFailure(String response) {
-
+                        result.onFailure("empty");
                     }
                 });
             }
 
             @Override
             public void onFailure(String response) {
-
+                result.onFailure("empty");
             }
         });
     }

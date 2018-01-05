@@ -11,6 +11,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.crashlytics.android.Crashlytics;
+
 import org.app.mydukan.R;
 import org.app.mydukan.activities.Schemes.SchemeDetailsActivity;
 import org.app.mydukan.activities.Schemes.SchemeListActivity;
@@ -20,6 +22,7 @@ import org.app.mydukan.data.Scheme;
 import org.app.mydukan.data.SchemeInfo;
 import org.app.mydukan.data.SchemeRecord;
 import org.app.mydukan.data.SupplierInfo;
+import org.app.mydukan.emailSending.SendEmail;
 import org.app.mydukan.fragments.myschemes.fragmetns.BaseFragment;
 import org.app.mydukan.fragments.myschemes.fragmetns.MySelectedSchemesHelper;
 import org.app.mydukan.server.ApiManager;
@@ -27,6 +30,8 @@ import org.app.mydukan.server.ApiResult;
 import org.app.mydukan.utils.AppContants;
 import org.app.mydukan.utils.SimpleDividerItemDecoration;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -64,17 +69,27 @@ public class SchemeFragment extends BaseFragment implements SchemesAdapter.Schem
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_scheme, container, false);
-        mApp = (MyDukan) getActivity().getApplicationContext();
+        try {
+            mApp = (MyDukan) getActivity().getApplicationContext();
 
-        Bundle bundle = getArguments();
-        if (bundle.containsKey(AppContants.SUPPLIER_ID)) {
-            mSupplierId = bundle.getString(AppContants.SUPPLIER_ID);
+            Bundle bundle = getArguments();
+            if (bundle.containsKey(AppContants.SUPPLIER_ID)) {
+                mSupplierId = bundle.getString(AppContants.SUPPLIER_ID);
+            }
+            if (bundle != null && bundle.containsKey(AppContants.SUPPLIER_NAME)) {
+                mSupplierName = bundle.getString(AppContants.SUPPLIER_NAME);
+            }
+            setupSchemeCard(v);
+            setTheSchemes();
+        }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - onCreate : ",e.toString());
+            Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() + " - onCreate : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - onCreate : ",ex.toString());
+            Crashlytics.log(0,this.getClass().getSimpleName() + " - onCreate : ",ex.toString());
         }
-        if (bundle != null && bundle.containsKey(AppContants.SUPPLIER_NAME)) {
-            mSupplierName = bundle.getString(AppContants.SUPPLIER_NAME);
-        }
-        setupSchemeCard(v);
-        setTheSchemes();
         return v;
     }
 

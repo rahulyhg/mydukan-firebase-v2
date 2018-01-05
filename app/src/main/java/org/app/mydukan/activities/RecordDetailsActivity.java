@@ -6,24 +6,25 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.crashlytics.android.Crashlytics;
+
 import org.app.mydukan.R;
 import org.app.mydukan.adapters.RecordInfoAdapter;
 import org.app.mydukan.application.MyDukan;
-import org.app.mydukan.data.Product;
 import org.app.mydukan.data.Record;
 import org.app.mydukan.data.RecordInfo;
-import org.app.mydukan.data.Scheme;
+import org.app.mydukan.emailSending.SendEmail;
 import org.app.mydukan.server.ApiManager;
 import org.app.mydukan.server.ApiResult;
 import org.app.mydukan.utils.AppContants;
 import org.app.mydukan.utils.SimpleDividerItemDecoration;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
 
 public class RecordDetailsActivity extends BaseActivity implements RecordInfoAdapter.RecordsInfoAdapterListener {
@@ -47,28 +48,37 @@ public class RecordDetailsActivity extends BaseActivity implements RecordInfoAda
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_recorddetails);
-        mApp = (MyDukan) getApplicationContext();
+        try {
+            mApp = (MyDukan) getApplicationContext();
 
-        //get the initial data
-        Bundle bundle = getIntent().getExtras();
-        if(bundle != null){
-            if(bundle.containsKey(AppContants.RECORD)) {
-                mRecordData = (Record) bundle.getSerializable(AppContants.RECORD);
+            //get the initial data
+            Bundle bundle = getIntent().getExtras();
+            if (bundle != null) {
+                if (bundle.containsKey(AppContants.RECORD)) {
+                    mRecordData = (Record) bundle.getSerializable(AppContants.RECORD);
+                }
             }
-        }
 
-        if(mRecordData == null){
-            finish();
-            return;
-        }
+            if (mRecordData == null) {
+                finish();
+                return;
+            }
 
-        mProductListSpinner = (Spinner) findViewById(R.id.productListSpinner);
-        setupActionBar();
-        setSummaryView();
-        setupRecordListView();
-        setupProfessionTypeSpinner();
+            mProductListSpinner = (Spinner) findViewById(R.id.productListSpinner);
+            setupActionBar();
+            setSummaryView();
+            setupRecordListView();
+            setupProfessionTypeSpinner();
+        }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - onCreate : ",e.toString());
+            Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() + " - onCreate : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - onCreate : ",ex.toString());
+            Crashlytics.log(0,this.getClass().getSimpleName() + " - onCreate : ",ex.toString());
+        }
     }
 
     private void setupProfessionTypeSpinner() {
@@ -202,22 +212,32 @@ public class RecordDetailsActivity extends BaseActivity implements RecordInfoAda
     public void OnUpdateClick(final int position, final String status) {
         RecordInfo info = mRecordData.getRecordList().get(position);
         showProgress();
-        ApiManager.getInstance(RecordDetailsActivity.this).updateRecordInfoStatus(mRecordData.getSupplierInfo().getId(),
-                mRecordData.getRecordId(), info.getId(), status, new ApiResult() {
-                    @Override
-                    public void onSuccess(Object data) {
-                        dismissProgress();
-                        mRecordData.getRecordList().get(position).setStatus(status.toLowerCase());
+        try {
+            ApiManager.getInstance(RecordDetailsActivity.this).updateRecordInfoStatus(mRecordData.getSupplierInfo().getId(),
+                    mRecordData.getRecordId(), info.getId(), status, new ApiResult() {
+                        @Override
+                        public void onSuccess(Object data) {
+                            dismissProgress();
+                            mRecordData.getRecordList().get(position).setStatus(status.toLowerCase());
 //                        mAdapter.addItems(mRecordData.getRecordList());
-                        mAdapter.notifyDataSetChanged();
-                    }
+                            mAdapter.notifyDataSetChanged();
+                        }
 
-                    @Override
-                    public void onFailure(String response) {
-                        dismissProgress();
-                        showErrorToast(RecordDetailsActivity.this,response);
-                    }
-                });
+                        @Override
+                        public void onFailure(String response) {
+                            dismissProgress();
+                            showErrorToast(RecordDetailsActivity.this, response);
+                        }
+                    });
+        }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - OnUpdateClick : ",e.toString());
+            Crashlytics.log(0,"Exception - RecordDetailsActivity - OnUpdateClick : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - OnUpdateClick : ",ex.toString());
+            Crashlytics.log(0,"1 - RecordDetailsActivity - OnUpdateClick : ",ex.toString());
+        }
 
     }
 
@@ -225,25 +245,35 @@ public class RecordDetailsActivity extends BaseActivity implements RecordInfoAda
     public void OnDeleteClick(final int position) {
         RecordInfo info = mRecordData.getRecordList().get(position);
         showProgress();
+        try {
 
-        ApiManager.getInstance(RecordDetailsActivity.this).deleteRecordInfo(mRecordData.getSupplierInfo().getId(),
-            mRecordData.getRecordId(), info.getId(), new ApiResult() {
-                @Override
-                public void onSuccess(Object data) {
-                    dismissProgress();
-                    Object mdata= data;
-                    mRecordData.getRecordList().remove(position);
+            ApiManager.getInstance(RecordDetailsActivity.this).deleteRecordInfo(mRecordData.getSupplierInfo().getId(),
+                    mRecordData.getRecordId(), info.getId(), new ApiResult() {
+                        @Override
+                        public void onSuccess(Object data) {
+                            dismissProgress();
+                            Object mdata = data;
+                            mRecordData.getRecordList().remove(position);
 //                    mAdapter.addItems(mRecordData.getRecordList());
-                    mAdapter.notifyDataSetChanged();
-                    setSummaryView(); // TODO: 04-03-2017  test for upadate the total amount and quantity.
-                }
+                            mAdapter.notifyDataSetChanged();
+                            setSummaryView(); // TODO: 04-03-2017  test for upadate the total amount and quantity.
+                        }
 
-                @Override
-                public void onFailure(String response) {
-                    dismissProgress();
-                    showErrorToast(RecordDetailsActivity.this,response);
-                }
-            });
+                        @Override
+                        public void onFailure(String response) {
+                            dismissProgress();
+                            showErrorToast(RecordDetailsActivity.this, response);
+                        }
+                    });
+        }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - OnDeleteClick : ",e.toString());
+            Crashlytics.log(0,"Exception - RecordDetailsActivity - OnDeleteClick : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - OnDeleteClick : ",ex.toString());
+            Crashlytics.log(0,"1 - RecordDetailsActivity - OnDeleteClick : ",ex.toString());
+        }
 
     }
 }
