@@ -56,7 +56,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_horizontal"
-                        android:hint="Write something to post here..."
+                        android:hint="Share your PRICE LIST/Schemes/Business Messages."
                         android:maxLines="25"
                         android:background="@null"
                         android:minLines="2"

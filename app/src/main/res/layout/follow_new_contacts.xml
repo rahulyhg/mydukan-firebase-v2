@@ -49,15 +49,15 @@
 
             <TextView
                 android:id="@+id/follow_contact"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="90dp"
+                android:layout_height="35dp"
                 android:textAlignment="center"
-                android:textColor="@color/white"
-                android:background="@color/authui_colorPrimary"
-                android:text="FOLLOW"
+                android:textColor="@color/new_btn_blue"
+                android:background="@drawable/bg_follow"
+                android:text="Follow"
                 android:textSize="@dimen/smalltextSize"
-                android:fontFamily="serif"
                 android:textStyle="bold"
+                android:gravity="center"
                 android:layout_gravity="center"
                 android:padding="5dp"
                 android:layout_marginTop="5dp"/>

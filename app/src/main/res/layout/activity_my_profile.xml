@@ -225,7 +225,7 @@
                     <TextView
                         android:id="@+id/editTextprofile_1"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
+                        android:layout_height="45dp"
                         android:layout_marginLeft="8dp"
                         android:layout_marginRight="8dp"
                         android:layout_marginTop="16dp"
@@ -233,7 +233,7 @@
                         android:padding="2dp"
                         android:layout_gravity="center_horizontal"
                         android:clickable="true"
-                        android:text="Write something to post here..."
+                        android:text="Click here to post...."
                         android:textColor="@color/text_muted_color"
                         android:gravity="center"
                         android:textSize="@dimen/mediumtextSize"
