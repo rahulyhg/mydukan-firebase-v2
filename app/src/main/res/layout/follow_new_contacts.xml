@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
+    android:layout_margin="3dp"
+    app:cardElevation="3dp"
     android:background="@color/white">
 
     <LinearLayout
@@ -53,6 +55,9 @@
                 android:textColor="@color/white"
                 android:background="@color/authui_colorPrimary"
                 android:text="FOLLOW"
+                android:textSize="@dimen/smalltextSize"
+                android:fontFamily="serif"
+                android:textStyle="bold"
                 android:layout_gravity="center"
                 android:padding="5dp"
                 android:layout_marginTop="5dp"/>
@@ -73,4 +78,4 @@
 
     </LinearLayout>
 
-</android.support.constraint.ConstraintLayout>
+</android.support.v7.widget.CardView>

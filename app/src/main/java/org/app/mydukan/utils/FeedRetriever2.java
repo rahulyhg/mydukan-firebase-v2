@@ -165,7 +165,7 @@ public class FeedRetriever2 {
         }
         query = query.limitToLast(11);//+1 for removing redundant element*/
         Query query = feedReference.orderByChild("idUser").equalTo(uId);
-        query.keepSynced(true);
+//        query.keepSynced(true);
         query.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {

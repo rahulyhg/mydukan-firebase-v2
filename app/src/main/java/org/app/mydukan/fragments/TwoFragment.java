@@ -93,6 +93,9 @@ public class TwoFragment extends Fragment implements AdapterListFeed.OnClickItem
     RecyclerView followContact;
     public static final String FOLLOWING_ROOT = "following";
 
+    TextView suggestingTitle;
+    View viewDivider;
+
     public TwoFragment() {
         // Required empty public constructor
     }
@@ -121,6 +124,10 @@ public class TwoFragment extends Fragment implements AdapterListFeed.OnClickItem
         MobileAds.initialize(context, "ca-app-pub-1640690939729824/2174590993");
         mAdView = (AdView) mView.findViewById(R.id.adView_myNetwork_two);
         followContact = (RecyclerView) mView.findViewById(R.id.contacts_rv);
+
+        suggestingTitle = (TextView) mView.findViewById(R.id.suggestingTitle);
+        viewDivider = (View) mView.findViewById(R.id.viewDivider);
+
         AdRequest adRequest = new AdRequest.Builder().build();
         mAdView.loadAd(adRequest);
         return mView;
@@ -340,6 +347,9 @@ public class TwoFragment extends Fragment implements AdapterListFeed.OnClickItem
                     for(int i=0; i<networkContacts.size(); i++){
                         if(!dataSnapshot.hasChild(networkContacts.get(i).getuId())){
                             contactUsers.add(networkContacts.get(i));
+
+                            suggestingTitle.setVisibility(View.VISIBLE);
+                            viewDivider.setVisibility(View.VISIBLE);
                         }
                     }
                     if(contactUsers.size() > 0) {
@@ -347,13 +357,20 @@ public class TwoFragment extends Fragment implements AdapterListFeed.OnClickItem
                         followContact.setAdapter(networkContactsAdapter);
                         followContact.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
                         networkContactsAdapter.notifyDataSetChanged();
+
+                        suggestingTitle.setVisibility(View.VISIBLE);
+                        viewDivider.setVisibility(View.VISIBLE);
                     }
                     else{
                         followContact.setVisibility(View.GONE);
+                        suggestingTitle.setVisibility(View.GONE);
+                        viewDivider.setVisibility(View.GONE);
                     }
                 }
                 else{
                     followContact.setVisibility(View.GONE);
+                    suggestingTitle.setVisibility(View.GONE);
+                    viewDivider.setVisibility(View.GONE);
                 }
             }
 

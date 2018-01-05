@@ -1,5 +1,6 @@
 package org.app.mydukan.activities;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -73,7 +74,7 @@ public class MyNetworksActivity extends AppCompatActivity {
     ChattUser chattUser;
     FirebaseUser auth = FirebaseAuth.getInstance().getCurrentUser();
     private List<Feed> mList;
-
+    private ProgressDialog mProgress;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -126,6 +127,7 @@ public class MyNetworksActivity extends AppCompatActivity {
                 fragmentManager.beginTransaction().replace(R.id.search_container, mFragment).commit();*/
                 Intent intent = new Intent(MyNetworksActivity.this, Search_MyNetworkActivity.class);
                 startActivity(intent);
+                finish();
                 Answers.getInstance().logCustom(new CustomEvent("MyNetwork_search")
                         .putCustomAttribute("Search Button", " searh button Clicked"));
             }
@@ -162,6 +164,31 @@ public class MyNetworksActivity extends AppCompatActivity {
         });
 
     }
+
+    public void showProgress() {
+
+        try {
+            if (mProgress != null && mProgress.isShowing()) {
+                mProgress.dismiss();
+            }
+            mProgress.setCancelable(true);
+            mProgress.setCanceledOnTouchOutside(false);
+        } catch (Exception e) {
+
+        }
+    }
+
+    public void dismissProgress() {
+        try {
+            if ( mProgress != null && mProgress.isShowing()) {
+                mProgress.dismiss();
+            }
+            mProgress = null;
+        } catch (Exception e) {
+
+        }
+    }
+
     private void getCurrentUserData(FirebaseUser auth) {
         //showProgress(true);
         mList = new ArrayList<>();

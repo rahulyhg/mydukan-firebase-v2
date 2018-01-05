@@ -1408,7 +1408,7 @@ public class ApiManager {
        /*  Example: productId = -Kum9BL07zBHDzDY20AH   */
         final ArrayList<PriceDropHistory> priceDropHistories = new ArrayList<>();
 
-        DatabaseReference Ref_PriceDropHistry = FirebaseDatabase.getInstance().getReference("pricedrophistory/" + "-Kum9BL07zBHDzDY20AH");
+        DatabaseReference Ref_PriceDropHistry = FirebaseDatabase.getInstance().getReference("pricedrophistory/" + productId);
         Ref_PriceDropHistry.keepSynced(true);
         Ref_PriceDropHistry.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override

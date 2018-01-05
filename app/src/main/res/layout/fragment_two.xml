@@ -15,15 +15,39 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
+            <TextView
+                android:id="@+id/suggestingTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Suggested Profile: "
+                android:layout_alignParentTop="true"
+                android:padding="6dp"
+                android:visibility="gone"
+                android:textColor="@color/orange_one"
+                android:textStyle="bold"
+                android:fontFamily="sans-serif-condensed"
+                android:textSize="@dimen/mediumtextSize_1"
+                />
+
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/contacts_rv"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_alignParentTop="true"
+                android:nestedScrollingEnabled="false"
+                android:layout_below="@id/suggestingTitle"
                 android:layout_marginTop="5dp"/>
 
+            <View
+                android:id="@+id/viewDivider"
+                android:layout_width="match_parent"
+                android:layout_height="3dp"
+                android:layout_marginTop="4dp"
+                android:visibility="gone"
+                android:layout_below="@id/contacts_rv"
+                android:background="@color/black"/>
+
             <LinearLayout
-                android:layout_below="@+id/contacts_rv"
+                android:layout_below="@+id/viewDivider"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_alignParentBottom="true"
@@ -38,6 +62,7 @@
                         android:padding="5dp"
                         android:clipToPadding="false"
                         android:id="@+id/rv_list_feed"
+                        android:nestedScrollingEnabled="false"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent" />
 

@@ -1,6 +1,7 @@
 package org.app.mydukan.activities;
 
 import android.app.SearchManager;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -135,6 +136,13 @@ public class Search_MyNetworkActivity extends AppCompatActivity {
         });
     }
 
+    @Override
+    public void onBackPressed() {
+        Intent intent = new Intent(Search_MyNetworkActivity.this, MyNetworksActivity.class);
+        startActivity(intent);
+        finish();
+    }
+
     private void loadData() {
         if (contactMap == null)
             return;
@@ -152,7 +160,9 @@ public class Search_MyNetworkActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
-            super.onBackPressed();
+            Intent intent = new Intent(Search_MyNetworkActivity.this, MyNetworksActivity.class);
+            startActivity(intent);
+            finish();
             return true;
         }
         return super.onOptionsItemSelected(item);
