@@ -32,7 +32,9 @@ import org.app.mydukan.R;
 import org.app.mydukan.activities.CommentsActivity;
 import org.app.mydukan.activities.FeedPrifileActivity;
 import org.app.mydukan.activities.MainActivity;
+import org.app.mydukan.activities.MyNetworksActivity;
 import org.app.mydukan.activities.MyProfileActivity;
+import org.app.mydukan.activities.Post_Activity;
 import org.app.mydukan.activities.WebViewActivity;
 import org.app.mydukan.adapters.AdapterListFeed;
 import org.app.mydukan.adapters.SupplierAdapter;
@@ -80,6 +82,7 @@ public class OneFragment extends Fragment implements AdapterListFeed.OnClickItem
     AdView mAdView;
     private FloatingActionButton appNewPost;
     VolleyNetworkRequest jsonRequest;
+    TextView writePost;
     //Variables
     private AdapterListFeed adapterListFeed;
     public OneFragment() {
@@ -89,6 +92,7 @@ public class OneFragment extends Fragment implements AdapterListFeed.OnClickItem
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
     }
 
     @Override
@@ -98,8 +102,18 @@ public class OneFragment extends Fragment implements AdapterListFeed.OnClickItem
         mView = inflater.inflate(R.layout.fragment_one, container, false);
         context = mView.getContext();
         jsonRequest = new VolleyNetworkRequest(context);
+        writePost = (TextView) mView.findViewById(R.id.writePost);
+        writePost.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getContext(), Post_Activity.class);
+                intent.putExtra(AppContants.CHAT_USER_PROFILE, "" );
+                startActivity(intent);
+            }
+        });
         initViews();
         retrieveData();
+
         //initialize ads for the app  - ca-app-pub-1640690939729824/2174590993
         MobileAds.initialize(context, "ca-app-pub-1640690939729824/2174590993");
         mAdView = (AdView) mView.findViewById(R.id.adView_myNetwork_one);

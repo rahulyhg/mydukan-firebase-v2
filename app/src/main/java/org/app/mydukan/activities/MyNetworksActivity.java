@@ -71,10 +71,10 @@ public class MyNetworksActivity extends AppCompatActivity {
     RelativeLayout profile_view;
     private TextView profileName,profileEmail;
     ImageView searchBTN, addProfileBTN;
-    ChattUser chattUser;
+    public ChattUser chattUser;
     FirebaseUser auth = FirebaseAuth.getInstance().getCurrentUser();
     private List<Feed> mList;
-    private ProgressDialog mProgress;
+    public ProgressDialog mProgress;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

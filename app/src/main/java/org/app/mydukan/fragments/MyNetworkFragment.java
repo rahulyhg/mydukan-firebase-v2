@@ -30,6 +30,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import org.app.mydukan.R;
+import org.app.mydukan.activities.Post_Activity;
 import org.app.mydukan.adapters.AdapterListFeed;
 import org.app.mydukan.data.Feed;
 import org.app.mydukan.services.VolleyNetworkRequest;
@@ -73,6 +74,7 @@ public class MyNetworkFragment extends Fragment implements AdapterListFeed.OnCli
     private int itemThreshold = 4;
     private boolean hasMoreFeeds = true;
     VolleyNetworkRequest jsonRequest;
+    TextView writePost;
 
     public MyNetworkFragment() {
         // Required empty public constructor
@@ -94,6 +96,15 @@ public class MyNetworkFragment extends Fragment implements AdapterListFeed.OnCli
         //initialize ads for the app  - ca-app-pub-1640690939729824/2174590993
         MobileAds.initialize(context, "ca-app-pub-1640690939729824/2174590993");
         mAdView = (AdView) mView.findViewById(R.id.adView_myNetwork_one);
+        writePost = (TextView) mView.findViewById(R.id.writePost);
+        writePost.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getContext(), Post_Activity.class);
+                intent.putExtra(AppContants.CHAT_USER_PROFILE, "" );
+                startActivity(intent);
+            }
+        });
         AdRequest adRequest = new AdRequest.Builder().build();
         mAdView.loadAd(adRequest);
         return mView;

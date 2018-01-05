@@ -5,6 +5,34 @@
     android:layout_height="match_parent"
     tools:context=".fragments.MyNetworkFragment">
 
+    <android.support.v7.widget.CardView
+        android:id="@+id/layout_ac_3"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_margin="4dp"
+        android:background="?android:attr/selectableItemBackground">
+
+        <TextView
+            android:id="@+id/writePost"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="16dp"
+            android:padding="2dp"
+            android:layout_gravity="center_horizontal"
+            android:text="Write something to post here..."
+            android:textColor="@color/text_muted_color"
+            android:gravity="center"
+            android:textSize="@dimen/mediumtextSize"
+            android:background="@drawable/rounded"
+            tools:ignore="HardcodedText,RtlSymmetry" />
+
+    </android.support.v7.widget.CardView>
 
     <com.google.android.gms.ads.AdView
         android:id="@+id/adView_myNetwork_one"
@@ -19,6 +47,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_above="@id/adView_myNetwork_one"
+        android:layout_below="@+id/layout_ac_3"
         android:orientation="vertical">
 
         <RelativeLayout

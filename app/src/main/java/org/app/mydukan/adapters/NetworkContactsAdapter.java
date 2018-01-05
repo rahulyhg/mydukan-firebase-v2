@@ -133,6 +133,7 @@ public class NetworkContactsAdapter extends RecyclerView.Adapter<NetworkContacts
         if (following == null || !following.hasChild(userToFollow.getuId())) {
             referenceFollowing.child(userToFollow.getuId()).setValue(true);//adding userid to following list  .
             referenceFollowers.child(user.getUid()).setValue(true);//adding the user id to distributor following list.
+            fragment.showProgress(true);
             getUserToken(user.getUid(), user.getDisplayName());
         } else {
             referenceFollowing.child(userToFollow.getuId()).removeValue();//removing userid from following list  .

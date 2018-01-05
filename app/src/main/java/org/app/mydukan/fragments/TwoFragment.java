@@ -258,8 +258,14 @@ public class TwoFragment extends Fragment implements AdapterListFeed.OnClickItem
         recyclerView.setAdapter(mAdapter);
     }
 
-    private void showProgress(boolean b) {
-        mProgressBar.setVisibility(b ? View.VISIBLE : View.GONE);
+    public void showProgress(boolean b) {
+        if(b){
+            mProgressBar.setProgress(View.VISIBLE);
+        }
+        else{
+            mProgressBar.setProgress(View.GONE);
+        }
+//        mProgressBar.setVisibility(b ? View.VISIBLE : View.GONE);
     }
 
     private boolean showingProgress() {

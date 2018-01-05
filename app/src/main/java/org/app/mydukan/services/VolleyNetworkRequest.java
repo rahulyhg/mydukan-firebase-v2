@@ -12,6 +12,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 
+import org.app.mydukan.fragments.TwoFragment;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -25,7 +26,7 @@ import java.util.Map;
 
 public class VolleyNetworkRequest {
 
-
+    TwoFragment fragment;
     RequestQueue requestQueue;
     Context context;
     String url = "https://fcm.googleapis.com/fcm/send";
@@ -34,6 +35,12 @@ public class VolleyNetworkRequest {
         public VolleyNetworkRequest(Context context){
             requestQueue = Volley.newRequestQueue(context);
             this.context = context;
+        }
+
+        public VolleyNetworkRequest(Context context, TwoFragment fragment){
+            requestQueue = Volley.newRequestQueue(context);
+            this.context = context;
+            this.fragment = fragment;
         }
 
         public void JsonObjectRequest(String token, final String message, final String type, final String feedId){
@@ -79,6 +86,9 @@ public class VolleyNetworkRequest {
                                 }
                                 else if(type.equalsIgnoreCase("follow")){
                                     Toast.makeText(context, "Following the user", Toast.LENGTH_SHORT).show();
+                                    if(fragment != null){
+                                        fragment.showProgress(false);
+                                    }
                                 }
                             }else{
                                 try {
@@ -89,16 +99,25 @@ public class VolleyNetworkRequest {
                                             if (errorObject.has("error")) {
                                                 String error = errorObject.getString("error");
                                                 Log.e("VolleyNetworkRequest Error ", error);
+                                                if(fragment!=null){
+                                                    fragment.showProgress(false);
+                                                }
 
                                             }
                                         }
                                     }
                                 } catch (JSONException e) {
                                     e.printStackTrace();
+                                    if(fragment != null){
+                                        fragment.showProgress(false);
+                                    }
                                 }
                             }
                         } catch (JSONException e) {
                             e.printStackTrace();
+                            if(fragment != null){
+                                fragment.showProgress(false);
+                            }
                         }
                     }
                 }
@@ -107,6 +126,9 @@ public class VolleyNetworkRequest {
                 public void onErrorResponse(VolleyError error) {
                     // TODO Auto-generated method stub
                     Log.e("VolleyNeworkResponse: ",error.toString());
+                    if(fragment != null){
+                        fragment.showProgress(false);
+                    }
                 }
             }){
                 @Override
