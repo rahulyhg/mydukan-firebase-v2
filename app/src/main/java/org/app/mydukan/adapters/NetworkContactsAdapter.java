@@ -66,7 +66,7 @@ public class NetworkContactsAdapter extends RecyclerView.Adapter<NetworkContacts
         final ContactUsers contactUsers = networkUsers.get(position);
 
         holder.contact_name.setText(contactUsers.getContactName());
-        holder.contact_type.setText(contactUsers.getUserType());
+        holder.contact_type.setText("(" + contactUsers.getUserType() + ")");
         holder.setIvAvatar(contactUsers.getPhotoUrl());
 
         holder.follow.setOnClickListener(new View.OnClickListener() {
