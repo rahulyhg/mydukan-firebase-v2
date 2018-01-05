@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -17,6 +16,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.crashlytics.android.Crashlytics;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -28,8 +28,11 @@ import com.google.firebase.database.ValueEventListener;
 import org.app.mydukan.R;
 import org.app.mydukan.activities.Search_MyNetworkActivity.Contact;
 import org.app.mydukan.data.ContactUsers;
+import org.app.mydukan.emailSending.SendEmail;
 import org.app.mydukan.services.VolleyNetworkRequest;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -153,32 +156,41 @@ public class SearchNetworkAdapter extends RecyclerView.Adapter {
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-        if (holder instanceof NetworkContactViewHolder) {
-            position--;
-            final ContactUsers user = networkUsers.get(position);
-            NetworkContactViewHolder viewHolder = (NetworkContactViewHolder) holder;
-            viewHolder.setContactName(user.getContactName());
-            viewHolder.setTvEmail(user.getEmail());
-            viewHolder.setIvAvatar(user.getPhotoUrl());
-            viewHolder.setTvType(user.getUserType());
-            viewHolder.setDukanName(user.getName());
-            if (followings != null && followings.hasChild(user.getuId()))
-                viewHolder.followBTN.setText("Unfollow");
-            else
-                viewHolder.followBTN.setText("Follow");
-        }
-        if (holder instanceof NonNetworkViewHolder) {
-            position -= networkUsers.size();
-            if (containsNetwork) {
+        try {
+            if (holder instanceof NetworkContactViewHolder) {
                 position--;
+                final ContactUsers user = networkUsers.get(position);
+                NetworkContactViewHolder viewHolder = (NetworkContactViewHolder) holder;
+                viewHolder.setContactName(user.getContactName());
+                viewHolder.setTvEmail(user.getEmail());
+                viewHolder.setIvAvatar(user.getPhotoUrl());
+                viewHolder.setTvType(user.getUserType());
+                viewHolder.setDukanName(user.getName());
+                if (followings != null && followings.hasChild(user.getuId()))
+                    viewHolder.followBTN.setText("Unfollow");
+                else
+                    viewHolder.followBTN.setText("Follow");
             }
-            position--;
+            if (holder instanceof NonNetworkViewHolder) {
+                position -= networkUsers.size();
+                if (containsNetwork) {
+                    position--;
+                }
+                position--;
 
-            NonNetworkViewHolder viewHolder = (NonNetworkViewHolder) holder;
-            viewHolder.name.setText(nonNetworkUsers.get(position).getName());
+                NonNetworkViewHolder viewHolder = (NonNetworkViewHolder) holder;
+                viewHolder.name.setText(nonNetworkUsers.get(position).getName());
+            }
+
+        }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - onBindViewHolder : ",e.toString());
+            Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() + " - onBindViewHolder : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - onBindViewHolder : ",ex.toString());
+            Crashlytics.log(0,this.getClass().getSimpleName() + " - onBindViewHolder : ",ex.toString());
         }
-
-
     }
 
     @Override
@@ -220,39 +232,59 @@ public class SearchNetworkAdapter extends RecyclerView.Adapter {
     }
 
     private void toggleFollow(final ContactUsers userToFollow) {
-        final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        final DatabaseReference referenceFollowing = FirebaseDatabase.getInstance().getReference().child(FOLLOWING_ROOT + "/" + user.getUid());
-        final DatabaseReference referenceFollowers = FirebaseDatabase.getInstance().getReference().child(FOLLOWERS_ROOT + "/" + userToFollow.getuId());
+        try {
+            final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+            final DatabaseReference referenceFollowing = FirebaseDatabase.getInstance().getReference().child(FOLLOWING_ROOT + "/" + user.getUid());
+            final DatabaseReference referenceFollowers = FirebaseDatabase.getInstance().getReference().child(FOLLOWERS_ROOT + "/" + userToFollow.getuId());
 
-        if (followings == null || !followings.hasChild(userToFollow.getuId())) {
-            referenceFollowing.child(userToFollow.getuId()).setValue(true);//adding userid to following list  .
-            referenceFollowers.child(user.getUid()).setValue(true);//adding the user id to distributor following list.
-            getUserToken(user.getUid(), user.getDisplayName());
-        } else {
-            referenceFollowing.child(userToFollow.getuId()).removeValue();//removing userid from following list  .
-            referenceFollowers.child(user.getUid()).removeValue();//removing the user id from distributor following list.
+            if (followings == null || !followings.hasChild(userToFollow.getuId())) {
+                referenceFollowing.child(userToFollow.getuId()).setValue(true);//adding userid to following list  .
+                referenceFollowers.child(user.getUid()).setValue(true);//adding the user id to distributor following list.
+                getUserToken(user.getUid(), user.getDisplayName());
+            } else {
+                referenceFollowing.child(userToFollow.getuId()).removeValue();//removing userid from following list  .
+                referenceFollowers.child(user.getUid()).removeValue();//removing the user id from distributor following list.
+            }
+        }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - toggleFollow : ",e.toString());
+            Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() + " - toggleFollow : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - toggleFollow : ",ex.toString());
+            Crashlytics.log(0,this.getClass().getSimpleName() + " - toggleFollow : ",ex.toString());
         }
     }
 
     public void getUserToken(final String auth, final String name){
-        final DatabaseReference referenceFcm = FirebaseDatabase.getInstance().getReference().child("fcmregistration");
+        try {
+            final DatabaseReference referenceFcm = FirebaseDatabase.getInstance().getReference().child("fcmregistration");
 //        final String auth = FirebaseAuth.getInstance().getCurrentUser().getUid();
-        referenceFcm.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                HashMap<String, Object> map = new HashMap<>();
-                map = (HashMap<String, Object>) dataSnapshot.getValue();
-                if(map.containsKey(auth)) {
-                    System.out.println("User Token Comment: " + map.get(auth));
-                    jsonRequest.JsonObjectRequest((String)map.get(auth), name, "follow", "");
+            referenceFcm.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    HashMap<String, Object> map = new HashMap<>();
+                    map = (HashMap<String, Object>) dataSnapshot.getValue();
+                    if (map.containsKey(auth)) {
+                        System.out.println("User Token Comment: " + map.get(auth));
+                        jsonRequest.JsonObjectRequest((String) map.get(auth), name, "follow", "");
+                    }
                 }
-            }
 
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
 
-            }
-        });
+                }
+            });
+        }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - getUserToken : ",e.toString());
+            Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() + " - getUserToken : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - getUserToken : ",ex.toString());
+            Crashlytics.log(0,this.getClass().getSimpleName() + " - getUserToken : ",ex.toString());
+        }
     }
 
     public boolean isEmpty() {

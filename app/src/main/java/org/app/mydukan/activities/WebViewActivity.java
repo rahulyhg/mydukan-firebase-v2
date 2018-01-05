@@ -1,7 +1,5 @@
 package org.app.mydukan.activities;
 
-import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.webkit.WebSettings;
@@ -9,10 +7,15 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Toast;
 
+import com.crashlytics.android.Crashlytics;
+
 import org.app.mydukan.R;
-import org.app.mydukan.data.ChattUser;
 import org.app.mydukan.data.Feed;
+import org.app.mydukan.emailSending.SendEmail;
 import org.app.mydukan.utils.AppContants;
+
+import java.io.PrintWriter;
+import java.io.StringWriter;
 
 public class WebViewActivity extends BaseActivity {
 
@@ -23,39 +26,40 @@ public class WebViewActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_web_view);
-        wv1=(WebView)findViewById(R.id.webview);
-        Bundle mybundle = getIntent().getExtras();
-        if (mybundle != null) {
-            if (mybundle.containsKey(AppContants.VIEW_PROFILE)) {
-                wFeed = (Feed) mybundle.getSerializable(AppContants.VIEW_PROFILE);
+        try{
+            wv1=(WebView)findViewById(R.id.webview);
+            Bundle mybundle = getIntent().getExtras();
+            if (mybundle != null) {
+                if (mybundle.containsKey(AppContants.VIEW_PROFILE)) {
+                    wFeed = (Feed) mybundle.getSerializable(AppContants.VIEW_PROFILE);
 
-                if (wFeed != null) {
-                    wv1.setVisibility(View.VISIBLE);
-                    wv1.setWebViewClient(new MyBrowser());
+                    if (wFeed != null) {
+                        wv1.setVisibility(View.VISIBLE);
+                        wv1.setWebViewClient(new MyBrowser());
 
-                    WebSettings settings = wv1.getSettings();
-                    settings.setMinimumFontSize(20);
-                    settings.setBuiltInZoomControls(true);
-                    settings.setUseWideViewPort(true);
-                    settings.setJavaScriptEnabled(true);
-                    settings.setSupportMultipleWindows(true);
-                    settings.setJavaScriptCanOpenWindowsAutomatically(true);
-                    settings.setLoadsImagesAutomatically(true);
-                    settings.setLightTouchEnabled(true);
-                    settings.setDomStorageEnabled(true);
-                    settings.setLoadWithOverviewMode(true);
-                    String url = wFeed.getLink();
-                    ///  String url ="file:///android_asset/responssivepage.html";
-                    wv1.getSettings().setLoadsImagesAutomatically(true);
-                    wv1.getSettings().setJavaScriptEnabled(true);
-                    wv1.setScrollBarStyle(View.SCROLLBARS_INSIDE_OVERLAY);
-                    wv1.loadUrl(url);
+                        WebSettings settings = wv1.getSettings();
+                        settings.setMinimumFontSize(20);
+                        settings.setBuiltInZoomControls(true);
+                        settings.setUseWideViewPort(true);
+                        settings.setJavaScriptEnabled(true);
+                        settings.setSupportMultipleWindows(true);
+                        settings.setJavaScriptCanOpenWindowsAutomatically(true);
+                        settings.setLoadsImagesAutomatically(true);
+                        settings.setLightTouchEnabled(true);
+                        settings.setDomStorageEnabled(true);
+                        settings.setLoadWithOverviewMode(true);
+                        String url = wFeed.getLink();
+                        ///  String url ="file:///android_asset/responssivepage.html";
+                        wv1.getSettings().setLoadsImagesAutomatically(true);
+                        wv1.getSettings().setJavaScriptEnabled(true);
+                        wv1.setScrollBarStyle(View.SCROLLBARS_INSIDE_OVERLAY);
+                        wv1.loadUrl(url);
 
-                } else {
-                    Toast.makeText(WebViewActivity.this, "Error: Unable to Open the Link", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(WebViewActivity.this, "Error: Unable to Open the Link", Toast.LENGTH_SHORT).show();
+                    }
                 }
-            }
-                 if (mybundle.containsKey(AppContants.VIEW_PLATFORM)) {
+                if (mybundle.containsKey(AppContants.VIEW_PLATFORM)) {
                     String url_Platform = (String) mybundle.get(AppContants.VIEW_PLATFORM);
 
                     if (url_Platform != null) {
@@ -82,10 +86,19 @@ public class WebViewActivity extends BaseActivity {
 
                     }
                     else {
-                    Toast.makeText(WebViewActivity.this, "Error: Unable to Open the Link", Toast.LENGTH_SHORT).show();
-                }
+                        Toast.makeText(WebViewActivity.this, "Error: Unable to Open the Link", Toast.LENGTH_SHORT).show();
+                    }
                 }
 
+            }
+        }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - onCreate : ",e.toString());
+            Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() +" - onCreate : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - onCreate : ",ex.toString());
+            Crashlytics.log(0,this.getClass().getSimpleName() +" - onCreate : ",ex.toString());
         }
 
     }

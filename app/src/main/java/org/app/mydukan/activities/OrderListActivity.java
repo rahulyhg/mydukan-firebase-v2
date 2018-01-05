@@ -2,7 +2,6 @@ package org.app.mydukan.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.PersistableBundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -11,20 +10,20 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
+import com.crashlytics.android.Crashlytics;
+
 import org.app.mydukan.R;
-import org.app.mydukan.adapters.CategoryAdapter;
-import org.app.mydukan.adapters.ComplaintsAdapter;
 import org.app.mydukan.adapters.MyOrderAdapter;
-import org.app.mydukan.adapters.OrderAdapter;
 import org.app.mydukan.application.MyDukan;
-import org.app.mydukan.data.Category;
-import org.app.mydukan.data.Complaint;
 import org.app.mydukan.data.Order;
+import org.app.mydukan.emailSending.SendEmail;
 import org.app.mydukan.server.ApiManager;
 import org.app.mydukan.server.ApiResult;
 import org.app.mydukan.utils.AppContants;
 import org.app.mydukan.utils.SimpleDividerItemDecoration;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -50,24 +49,34 @@ public class OrderListActivity extends BaseActivity implements MyOrderAdapter.Or
 
         setContentView(R.layout.activity_orderlist);
 
-        mApp = (MyDukan) getApplicationContext();
+        try {
+            mApp = (MyDukan) getApplicationContext();
 
-        Bundle bundle = getIntent().getExtras();
-        if(bundle != null){
-            if (bundle.containsKey(AppContants.SUPPLIER_ID)) {
-                mSupplierId = bundle.getString(AppContants.SUPPLIER_ID);
+            Bundle bundle = getIntent().getExtras();
+            if (bundle != null) {
+                if (bundle.containsKey(AppContants.SUPPLIER_ID)) {
+                    mSupplierId = bundle.getString(AppContants.SUPPLIER_ID);
+                }
+
+                if (bundle.containsKey(AppContants.SUPPLIER_NAME)) {
+                    mSupplierName = bundle.getString(AppContants.SUPPLIER_NAME);
+                }
             }
 
-            if (bundle.containsKey(AppContants.SUPPLIER_NAME)) {
-                mSupplierName = bundle.getString(AppContants.SUPPLIER_NAME);
-            }
+            //setup actionbar
+            setupActionBar();
+
+            setupListView();
+            fetchCategoryData();
+        }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - onCreate : ",e.toString());
+            Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() + " - onCreate : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - onCreate : ",ex.toString());
+            Crashlytics.log(0,this.getClass().getSimpleName() + " - onCreate : ",ex.toString());
         }
-
-        //setup actionbar
-        setupActionBar();
-
-        setupListView();
-        fetchCategoryData();
     }
     public void onBackPressed() {
           finish();
@@ -109,33 +118,43 @@ public class OrderListActivity extends BaseActivity implements MyOrderAdapter.Or
     }
 
     private void fetchCategoryData(){
-        showProgress();
-        ApiManager.getInstance(OrderListActivity.this).getOrderList(mSupplierId,mApp.getFirebaseAuth().getCurrentUser().getUid(), new ApiResult() {
-            @Override
-            public void onSuccess(Object data) {
-                dismissProgress();
-                mOrderList = (ArrayList<Order>) data;
-                if(mOrderList.isEmpty()){
-                    mNoDataView.setVisibility(View.VISIBLE);
-                    mRecyclerView.setVisibility(View.GONE);
-                } else {
-                    mNoDataView.setVisibility(View.GONE);
-                    mRecyclerView.setVisibility(View.VISIBLE);
+        try {
+            showProgress();
+            ApiManager.getInstance(OrderListActivity.this).getOrderList(mSupplierId, mApp.getFirebaseAuth().getCurrentUser().getUid(), new ApiResult() {
+                @Override
+                public void onSuccess(Object data) {
+                    dismissProgress();
+                    mOrderList = (ArrayList<Order>) data;
+                    if (mOrderList.isEmpty()) {
+                        mNoDataView.setVisibility(View.VISIBLE);
+                        mRecyclerView.setVisibility(View.GONE);
+                    } else {
+                        mNoDataView.setVisibility(View.GONE);
+                        mRecyclerView.setVisibility(View.VISIBLE);
 
-                    Collections.sort(mOrderList,new OrderComparator());
+                        Collections.sort(mOrderList, new OrderComparator());
 
-                    mAdapter.addItems(mOrderList);
-                    mAdapter.notifyDataSetChanged();
+                        mAdapter.addItems(mOrderList);
+                        mAdapter.notifyDataSetChanged();
+                    }
+                    dismissProgress();
                 }
-                dismissProgress();
-            }
 
-            @Override
-            public void onFailure(String response) {
-                dismissProgress();
+                @Override
+                public void onFailure(String response) {
+                    dismissProgress();
 
-            }
-        });
+                }
+            });
+        }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - fetchCategoryData : ",e.toString());
+            Crashlytics.log(0,"Exception - OrderListActivity - fetchCategoryData : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - fetchCategoryData : ",ex.toString());
+            Crashlytics.log(0,"1 - OrderListActivity - fetchCategoryData : ",ex.toString());
+        }
     }
 
     @Override

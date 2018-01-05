@@ -5,15 +5,18 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
+
+import com.crashlytics.android.Crashlytics;
 
 import org.app.mydukan.R;
 import org.app.mydukan.application.MyDukan;
 import org.app.mydukan.data.SchemeRecord;
+import org.app.mydukan.emailSending.SendEmail;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -54,41 +57,51 @@ public class SchemeRecordAdapter extends RecyclerView.Adapter<SchemeRecordAdapte
 
     @Override
     public void onBindViewHolder(SchemeRecordAdapter.ViewHolder holder, final int position) {
-        SchemeRecord record = mRecordsList.get(position);
+        try {
+            SchemeRecord record = mRecordsList.get(position);
 
-        if(!mApp.getUtils().isStringEmpty(record.getVoucherno())){
-            holder.mVoucherView.setText("Voucher no: " + record.getVoucherno());
-        } else{
-            holder.mVoucherView.setVisibility(View.GONE);
-        }
+            if (!mApp.getUtils().isStringEmpty(record.getVoucherno())) {
+                holder.mVoucherView.setText("Voucher no: " + record.getVoucherno());
+            } else {
+                holder.mVoucherView.setVisibility(View.GONE);
+            }
 
-        if(record.getDate() != 0){
-            holder.mDateView.setText(String.valueOf(mApp.getUtils().dateFormatter(
-                    record.getDate(), "dd-MM-yy")));
-        } else {
-            holder.mDateView.setVisibility(View.GONE);
-        }
+            if (record.getDate() != 0) {
+                holder.mDateView.setText(String.valueOf(mApp.getUtils().dateFormatter(
+                        record.getDate(), "dd-MM-yy")));
+            } else {
+                holder.mDateView.setVisibility(View.GONE);
+            }
 
-        holder.mNameView.setText(record.getSchemeinfo().getName());
+            holder.mNameView.setText(record.getSchemeinfo().getName());
 
-        if(!mApp.getUtils().isStringEmpty(record.getEarnings())){
-            holder.mAmountView.setText("Total Amount: " + record.getEarnings());
-        } else{
-            holder.mAmountView.setVisibility(View.GONE);
-        }
+            if (!mApp.getUtils().isStringEmpty(record.getEarnings())) {
+                holder.mAmountView.setText("Total Amount: " + record.getEarnings());
+            } else {
+                holder.mAmountView.setVisibility(View.GONE);
+            }
 
-        if(!mApp.getUtils().isStringEmpty(record.getSettledby())){
-            holder.mSettledByView.setText("Settled by: " +record.getSettledby());
-        } else {
-            holder.mSettledByView.setVisibility(View.GONE);
-        }
+            if (!mApp.getUtils().isStringEmpty(record.getSettledby())) {
+                holder.mSettledByView.setText("Settled by: " + record.getSettledby());
+            } else {
+                holder.mSettledByView.setVisibility(View.GONE);
+            }
 
-        if(record.getSettled()){
-            holder.mStatusView.setText("Settled");
-            holder.mStatusView.setTextColor(mContext.getResources().getColor(R.color.green_500));
-        } else{
-            holder.mStatusView.setText("Not Settled");
-            holder.mStatusView.setTextColor(mContext.getResources().getColor(R.color.colorBtnBackground));
+            if (record.getSettled()) {
+                holder.mStatusView.setText("Settled");
+                holder.mStatusView.setTextColor(mContext.getResources().getColor(R.color.green_500));
+            } else {
+                holder.mStatusView.setText("Not Settled");
+                holder.mStatusView.setTextColor(mContext.getResources().getColor(R.color.colorBtnBackground));
+            }
+        }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - onBindViewHolder : ",e.toString());
+            Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() + " - onBindViewHolder : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - onBindViewHolder : ",ex.toString());
+            Crashlytics.log(0,this.getClass().getSimpleName() + " - onBindViewHolder : ",ex.toString());
         }
     }
 

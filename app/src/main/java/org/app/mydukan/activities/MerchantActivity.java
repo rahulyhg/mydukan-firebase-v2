@@ -20,6 +20,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.VolleyLog;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.crashlytics.android.Crashlytics;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -32,11 +33,12 @@ import com.paytm.pgsdk.PaytmPGService;
 import com.paytm.pgsdk.PaytmPaymentTransactionCallback;
 
 import org.app.mydukan.R;
-import org.app.mydukan.data.ChattUser;
-import org.app.mydukan.data.Feed;
 import org.app.mydukan.data.User;
+import org.app.mydukan.emailSending.SendEmail;
 import org.app.mydukan.utils.AppContants;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -69,58 +71,66 @@ public class MerchantActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_merchant);
 
-        Bundle mybundle = getIntent().getExtras();
-        if (mybundle != null) {
-            if (mybundle.containsKey(AppContants.FP_USER_DETAILS)) {
-                mUserDetail = (User) mybundle.getSerializable(AppContants.FP_USER_DETAILS);
+        try {
+            Bundle mybundle = getIntent().getExtras();
+            if (mybundle != null) {
+                if (mybundle.containsKey(AppContants.FP_USER_DETAILS)) {
+                    mUserDetail = (User) mybundle.getSerializable(AppContants.FP_USER_DETAILS);
 
-                if (mUserDetail != null) {
-                    final FirebaseUser auth = FirebaseAuth.getInstance().getCurrentUser();
-                    mUserId = auth.getUid();
-                } else {
-                    Toast.makeText(this, "Unable to Get the User Profile", Toast.LENGTH_SHORT).show();
+                    if (mUserDetail != null) {
+                        final FirebaseUser auth = FirebaseAuth.getInstance().getCurrentUser();
+                        mUserId = auth.getUid();
+                    } else {
+                        Toast.makeText(this, "Unable to Get the User Profile", Toast.LENGTH_SHORT).show();
+                    }
+                }
+                if (mUserDetail != null && mUserId != null) {
+                    //	startGateWay(this, mUserDetail, mUserId);
                 }
             }
-            if (mUserDetail != null && mUserId != null) {
-                //	startGateWay(this, mUserDetail, mUserId);
-            }
+
+
+            // initOrderId();
+            String uuid = UUID.randomUUID().toString();
+
+
+            emailID = "shivayogih92@gmail.com";
+            mobNUM = "9886162309";
+            amount = "60";
+            custID = "Chskb4546" + amount;
+
+            getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
+            paynowBTN = (Button) findViewById(R.id.start_transaction);
+            paynowBTN.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    getCheckSumHash();
+                }
+            });
+
+            GetsubscriptionPlans();
+        }catch (Exception e){
+            Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() + " - onCreate : ",e.toString());
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - onCreate : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - onCreate : ",ex.toString());
+            Crashlytics.log(0,this.getClass().getSimpleName() + " - onCreate : ",ex.toString());
         }
-
-
-
-
-
-        // initOrderId();
-        String uuid = UUID.randomUUID().toString();
-
-
-        emailID="shivayogih92@gmail.com";
-        mobNUM="9886162309";
-        amount="60";
-        custID="Chskb4546"+amount;
-
-        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
-        paynowBTN = (Button) findViewById(R.id.start_transaction);
-        paynowBTN.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                getCheckSumHash();
-            }
-        });
-
-        GetsubscriptionPlans();
 
     }
 
     private void GetsubscriptionPlans() {
 
-            //showProgress(true);
+        //showProgress(true);
+        try {
             mList = new ArrayList<>();
             DatabaseReference feedReference = FirebaseDatabase.getInstance().getReference("subscription_plans");
             feedReference.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
-                    if(dataSnapshot!=null){
+                    if (dataSnapshot != null) {
 
                         InitPlansView();
                     }
@@ -131,8 +141,17 @@ public class MerchantActivity extends Activity {
                 public void onCancelled(DatabaseError databaseError) {
                 }
             });
-
+        }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - GetsubscriptionPlans : ",e.toString());
+            Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() + " - GetsubscriptionPlans : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - GetsubscriptionPlans : ",ex.toString());
+            Crashlytics.log(0,this.getClass().getSimpleName() + " - GetsubscriptionPlans : ",ex.toString());
         }
+
+    }
 
 
 
@@ -181,12 +200,12 @@ public class MerchantActivity extends Activity {
     }
 
 
-     private void initOrderId() {
-            Random r = new Random(System.currentTimeMillis());
-            orderId = "ORDER" + (1 + r.nextInt(2)) * 10000
-                    + r.nextInt(10000);
+    private void initOrderId() {
+        Random r = new Random(System.currentTimeMillis());
+        orderId = "ORDER" + (1 + r.nextInt(2)) * 10000
+                + r.nextInt(10000);
 
-        }
+    }
     private String createPostBody(Map<String, String> params) {
         StringBuilder sbPost = new StringBuilder();
         for (String key : params.keySet()) {

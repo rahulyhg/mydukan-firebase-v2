@@ -23,6 +23,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.crashlytics.android.Crashlytics;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.WriterException;
 import com.jraska.falcon.Falcon;
@@ -31,6 +32,7 @@ import com.squareup.picasso.Picasso;
 import org.app.mydukan.R;
 import org.app.mydukan.application.MyDukan;
 import org.app.mydukan.data.User;
+import org.app.mydukan.emailSending.SendEmail;
 import org.app.mydukan.server.ApiManager;
 import org.app.mydukan.server.ApiResult;
 import org.app.mydukan.utils.AppContants;
@@ -38,6 +40,8 @@ import org.app.mydukan.utils.QRCodeEncoder;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -71,87 +75,119 @@ public class GenerateQRCodeActivity extends BaseActivity implements OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_generate_qrcode);
 
-        showProgress();
-        mApp = (MyDukan) getApplicationContext();
-        printName= (TextView) findViewById(R.id.tv_UserName);
-        printAddress= (TextView) findViewById(R.id.tv_UserAddress);
-        printPhoneNumber = (TextView) findViewById(R.id.tv_UserPhoneNumber);
-        qrcode_Image = (ImageView) findViewById(R.id.img_QRcode);
-        shop_Image = (ImageView) findViewById(R.id.img_ShopImage);
-        shopimage_layout = (LinearLayout) findViewById(R.id.layoutshop_img);
-        saveBtn = (Button) findViewById(R.id.save_btn);
-        shareBtn = (Button) findViewById(R.id.editProfile_btn);
-        nextBtn= (Button) findViewById(R.id.next_btn);
-        bottomBar_LayoutButtons= (LinearLayout) findViewById(R.id.linearLayout_Buttons);
-        nextBtn.setOnClickListener(this);
-        saveBtn.setOnClickListener(this);
-        shareBtn.setOnClickListener(this);
-        bottomBar_LayoutButtons.setVisibility(View.GONE);
-        //  myDukhan_UserId = mApp.getFirebaseAuth().getCurrentUser().getUid();
+        try {
+            showProgress();
+            mApp = (MyDukan) getApplicationContext();
+            printName = (TextView) findViewById(R.id.tv_UserName);
+            printAddress = (TextView) findViewById(R.id.tv_UserAddress);
+            printPhoneNumber = (TextView) findViewById(R.id.tv_UserPhoneNumber);
+            qrcode_Image = (ImageView) findViewById(R.id.img_QRcode);
+            shop_Image = (ImageView) findViewById(R.id.img_ShopImage);
+            shopimage_layout = (LinearLayout) findViewById(R.id.layoutshop_img);
+            saveBtn = (Button) findViewById(R.id.save_btn);
+            shareBtn = (Button) findViewById(R.id.editProfile_btn);
+            nextBtn = (Button) findViewById(R.id.next_btn);
+            bottomBar_LayoutButtons = (LinearLayout) findViewById(R.id.linearLayout_Buttons);
+            nextBtn.setOnClickListener(this);
+            saveBtn.setOnClickListener(this);
+            shareBtn.setOnClickListener(this);
+            bottomBar_LayoutButtons.setVisibility(View.GONE);
+            //  myDukhan_UserId = mApp.getFirebaseAuth().getCurrentUser().getUid();
 
-        Bundle extras = getIntent().getExtras();
-        if (extras != null) {
-            //  userdetails =  getIntent().getExtras().getParcelable("UserDetails"); //The key argument here must match that used in the other activity
-            myDukhan_UserId =extras.getString("MyDhukhan_UserId");
-            userdetails = (User) getIntent().getExtras().getSerializable("UserDetails");
-            if (userdetails!=null){
-                initView(GenerateQRCodeActivity.this, myDukhan_UserId, userdetails);//Initialise the Activity View.
-                //  upLoadQRCode(bitmap);
+            Bundle extras = getIntent().getExtras();
+            if (extras != null) {
+                //  userdetails =  getIntent().getExtras().getParcelable("UserDetails"); //The key argument here must match that used in the other activity
+                myDukhan_UserId = extras.getString("MyDhukhan_UserId");
+                userdetails = (User) getIntent().getExtras().getSerializable("UserDetails");
+                if (userdetails != null) {
+                    initView(GenerateQRCodeActivity.this, myDukhan_UserId, userdetails);//Initialise the Activity View.
+                    //  upLoadQRCode(bitmap);
+                }
+            } else {
+                getUserProfile();
             }
-        }else{
-            getUserProfile();
+        }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - onCreate : ",e.toString());
+            Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() + " - onCreate : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - onCreate : ",ex.toString());
+            Crashlytics.log(0,this.getClass().getSimpleName() + " - onCreate : ",ex.toString());
         }
     }
 
     private void upLoadQRCode(Bitmap bitmap) {
-        showProgress();
-        if (bitmap != null) {
-            ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
-            byte[] data = bytes.toByteArray();
+        try {
+            showProgress();
+            if (bitmap != null) {
+                ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
+                byte[] data = bytes.toByteArray();
 
-            ApiManager.getInstance(GenerateQRCodeActivity.this).uploadqrcode(data, new ApiResult() {
-                @Override
-                public void onSuccess(Object data) {
-                    Uri qrcode_card = (Uri) data;
-                    if (qrcode_card != null) {
-                        user.setQrcodedurl(qrcode_card.toString());
-                        ///update to firebase db here....
-                        addQrCodeUrl(user.getQrcodedurl());
+                ApiManager.getInstance(GenerateQRCodeActivity.this).uploadqrcode(data, new ApiResult() {
+                    @Override
+                    public void onSuccess(Object data) {
+                        Uri qrcode_card = (Uri) data;
+                        if (qrcode_card != null) {
+                            user.setQrcodedurl(qrcode_card.toString());
+                            ///update to firebase db here....
+                            addQrCodeUrl(user.getQrcodedurl());
+                        }
+                        return;
                     }
-                    return;
-                }
-                @Override
-                public void onFailure(String response) {
-                    dismissProgress();
-                }
-            });
+
+                    @Override
+                    public void onFailure(String response) {
+                        dismissProgress();
+                    }
+                });
+            }
+        }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - upLoadQRCode : ",e.toString());
+            Crashlytics.log(0,"Exception - GenerateQRCodeActivity - upLoadQRCode : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - upLoadQRCode : ",ex.toString());
+            Crashlytics.log(0,"2 - GenerateQRCodeActivity - upLoadQRCode : ",ex.toString());
         }
     }
 
     private void getUserProfile() {
-        if (mApp.getFirebaseAuth().getCurrentUser() == null) {
-            return;
-        }
-        ApiManager.getInstance(GenerateQRCodeActivity.this).getUserProfile(mApp.getFirebaseAuth().getCurrentUser().getUid(), new ApiResult() {
-            @Override
-            public void onSuccess(Object data) {
-                if (data != null) {
-                    userdetails = (User) data;
-                    myDukhan_UserId=mApp.getFirebaseAuth().getCurrentUser().getUid();
-                    if (userdetails!=null){
-                        initView(GenerateQRCodeActivity.this, myDukhan_UserId, userdetails);//Initialise the Activity View.
+        try {
+            if (mApp.getFirebaseAuth().getCurrentUser() == null) {
+                return;
+            }
+            ApiManager.getInstance(GenerateQRCodeActivity.this).getUserProfile(mApp.getFirebaseAuth().getCurrentUser().getUid(), new ApiResult() {
+                @Override
+                public void onSuccess(Object data) {
+                    if (data != null) {
+                        userdetails = (User) data;
+                        myDukhan_UserId = mApp.getFirebaseAuth().getCurrentUser().getUid();
+                        if (userdetails != null) {
+                            initView(GenerateQRCodeActivity.this, myDukhan_UserId, userdetails);//Initialise the Activity View.
+                        }
+                        dismissProgress();
+                        return;
                     }
-                    dismissProgress();
-                    return;
                 }
-            }
-            @Override
-            public void onFailure(String response) {
-                //Do when there is no data present in firebase
-                dismissProgress();
-            }
-        });
+
+                @Override
+                public void onFailure(String response) {
+                    //Do when there is no data present in firebase
+                    dismissProgress();
+                }
+            });
+        }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - getUserProfile : ",e.toString());
+            Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() + " - getUserProfile : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - getUserProfile : ",ex.toString());
+            Crashlytics.log(0,this.getClass().getSimpleName() + " - getUserProfile : ",ex.toString());
+        }
     }
 
 
@@ -159,8 +195,10 @@ public class GenerateQRCodeActivity extends BaseActivity implements OnClickListe
         showProgress();
         String myDhukhan_UserAddress="";
         if(userdetails != null && userdetails.getUserinfo() != null && userdetails.getUserinfo().getAddressinfo() != null) {
-            if(userdetails.getUserinfo().getAddressinfo().getStreet() != null && !userdetails.getUserinfo().getAddressinfo().getStreet().isEmpty())
+            if(userdetails.getUserinfo().getAddressinfo().getStreet() != null && !userdetails.getUserinfo().getAddressinfo().getStreet().isEmpty()) {
                 myDhukhan_UserAddress = userdetails.getUserinfo().getAddressinfo().getStreet().toString().trim() + ",";
+                printAddress.setText("Address: "+mApp.getUtils().toSameCase(userdetails.getUserinfo().getAddressinfo().getStreet().trim().toString()));
+            }
 
             if(userdetails.getUserinfo().getAddressinfo().getCity() != null && !userdetails.getUserinfo().getAddressinfo().getCity().isEmpty())
                 myDhukhan_UserAddress = myDhukhan_UserAddress + userdetails.getUserinfo().getAddressinfo().getCity().toString().trim() + ",";
@@ -183,10 +221,14 @@ public class GenerateQRCodeActivity extends BaseActivity implements OnClickListe
         String qrInputText =userdetails.getUserinfo().getName().toString()+" ||| "+ myDukhan_UserId +" ||| "+myDhukhan_UserAddress + " ||| " + userdetails.getUserinfo().getNumber().toString();
         Log.v(LOG_TAG, qrInputText);
 
+        if(userdetails != null && userdetails.getUserinfo() != null && userdetails.getUserinfo().getName() != null && !userdetails.getUserinfo().getName().isEmpty())
+            printName.setText( mApp.getUtils().toSameCase(userdetails.getUserinfo().getName().trim().toString()));
 
-        printName.setText( mApp.getUtils().toSameCase(userdetails.getUserinfo().getName().trim().toString()));
-        printPhoneNumber.setText("PhoneNumber: "+userdetails.getUserinfo().getNumber().toString());
-        printAddress.setText("Address: "+mApp.getUtils().toSameCase(userdetails.getUserinfo().getAddressinfo().getStreet().trim().toString()));
+        if(userdetails != null && userdetails.getUserinfo() != null && userdetails.getUserinfo().getNumber() != null && !userdetails.getUserinfo().getNumber().isEmpty())
+            printPhoneNumber.setText("PhoneNumber: "+userdetails.getUserinfo().getNumber().toString());
+
+
+
         //draw the QR code for passed value(QR code is Text_Type)
         dwawQRCode(context, qrInputText);
 
@@ -265,23 +307,33 @@ public class GenerateQRCodeActivity extends BaseActivity implements OnClickListe
 
     }
     private void addQrCodeUrl(String status) {
-        ApiManager.getInstance(GenerateQRCodeActivity.this).setQRCodeURL(myDukhan_UserId, status,new ApiResult() {
-            @Override
-            public void onSuccess(Object data) {
-                if (data != null) {
-                    dismissProgress();
-                    Intent mainactivity = new Intent(GenerateQRCodeActivity.this, MainActivity.class);
-                    startActivity(mainactivity);
-                    finish();
+        try {
+            ApiManager.getInstance(GenerateQRCodeActivity.this).setQRCodeURL(myDukhan_UserId, status, new ApiResult() {
+                @Override
+                public void onSuccess(Object data) {
+                    if (data != null) {
+                        dismissProgress();
+                        Intent mainactivity = new Intent(GenerateQRCodeActivity.this, MainActivity.class);
+                        startActivity(mainactivity);
+                        finish();
+                    }
                 }
-            }
 
-            @Override
-            public void onFailure(String response) {
-                //Do when there is no data present in firebase
-                dismissProgress();
-            }
-        });
+                @Override
+                public void onFailure(String response) {
+                    //Do when there is no data present in firebase
+                    dismissProgress();
+                }
+            });
+        }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - onCreate : ",e.toString());
+            Crashlytics.log(0,"Exception - GenerateQRCodeActivity - addQrCodeUrl : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - onCreate : ",ex.toString());
+            Crashlytics.log(0,"1 - GenerateQRCodeActivity - addQrCodeUrl : ",ex.toString());
+        }
     }
     public void onClick(View v) {
         int id = v.getId();

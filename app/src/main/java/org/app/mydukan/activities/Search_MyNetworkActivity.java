@@ -17,6 +17,7 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.crashlytics.android.Crashlytics;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.Lists;
@@ -31,10 +32,13 @@ import com.google.firebase.database.ValueEventListener;
 import org.app.mydukan.R;
 import org.app.mydukan.adapters.SearchNetworkAdapter;
 import org.app.mydukan.data.ContactUsers;
+import org.app.mydukan.emailSending.SendEmail;
 import org.app.mydukan.services.SyncContacts;
 import org.app.mydukan.services.VolleyNetworkRequest;
 import org.app.mydukan.utils.Utils;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -70,37 +74,49 @@ public class Search_MyNetworkActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search_mynetwork);
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        jsonRequest = new VolleyNetworkRequest(this);
-
-        emptyText = (TextView) findViewById(R.id.emptyText);
-        progressBar = findViewById(R.id.progressBar);
-//        contactMap = SyncContacts.getNumberMap(this);
-        recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
-        swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipeToRefresh);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        mAdapter = new SearchNetworkAdapter(this, jsonRequest);
-        recyclerView.setAdapter(mAdapter);
-
-
-        RealmConfiguration config = new RealmConfiguration.Builder()
-                .deleteRealmIfMigrationNeeded()
-                .build();
-
-        realm = Realm.getInstance(config);
-        //loadData();
-
-        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                reSyncContacts();
+        try {
+            if(getSupportActionBar() != null) {
+                getSupportActionBar().setDisplayShowHomeEnabled(true);
+                getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             }
-        });
-        getFollowings();
+            jsonRequest = new VolleyNetworkRequest(this);
 
-        showProgress(true);
-        new ContactLoader().execute();
+            emptyText = (TextView) findViewById(R.id.emptyText);
+            progressBar = findViewById(R.id.progressBar);
+//        contactMap = SyncContacts.getNumberMap(this);
+            recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
+            swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipeToRefresh);
+            recyclerView.setLayoutManager(new LinearLayoutManager(this));
+            mAdapter = new SearchNetworkAdapter(this, jsonRequest);
+            recyclerView.setAdapter(mAdapter);
+
+
+            RealmConfiguration config = new RealmConfiguration.Builder()
+                    .deleteRealmIfMigrationNeeded()
+                    .build();
+
+            realm = Realm.getInstance(config);
+            //loadData();
+
+            swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+                @Override
+                public void onRefresh() {
+                    reSyncContacts();
+                }
+            });
+            getFollowings();
+
+            showProgress(true);
+            new ContactLoader().execute();
+        }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - onCreate : ",e.toString());
+            Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() + " - onCreate : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - onCreate : ",ex.toString());
+            Crashlytics.log(0,this.getClass().getSimpleName() + " - onCreate : ",ex.toString());
+        }
 
     }
 
@@ -117,22 +133,32 @@ public class Search_MyNetworkActivity extends AppCompatActivity {
     }
 
     private void getFollowings() {
-        swipeRefreshLayout.setRefreshing(true);
-        final FirebaseUser auth = FirebaseAuth.getInstance().getCurrentUser();
-        final DatabaseReference referenceFollowing = FirebaseDatabase.getInstance().getReference().child(FOLLOWING_ROOT+"/"+auth.getUid());
-        referenceFollowing.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                mAdapter.setFollowing(dataSnapshot);
-                reSyncContacts();
-            }
+        try {
+            swipeRefreshLayout.setRefreshing(true);
+            final FirebaseUser auth = FirebaseAuth.getInstance().getCurrentUser();
+            final DatabaseReference referenceFollowing = FirebaseDatabase.getInstance().getReference().child(FOLLOWING_ROOT + "/" + auth.getUid());
+            referenceFollowing.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    mAdapter.setFollowing(dataSnapshot);
+                    reSyncContacts();
+                }
 
 
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                showProgress(false);
-            }
-        });
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                    showProgress(false);
+                }
+            });
+        }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - getFollowings : ",e.toString());
+            Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() + " - getFollowings : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - getFollowings : ",ex.toString());
+            Crashlytics.log(0,this.getClass().getSimpleName() + " - getFollowings : ",ex.toString());
+        }
     }
 
     private void loadData() {

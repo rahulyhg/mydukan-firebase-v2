@@ -12,6 +12,7 @@ import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.crashlytics.android.Crashlytics;
 import com.crashlytics.android.answers.Answers;
 import com.crashlytics.android.answers.CustomEvent;
 
@@ -19,46 +20,18 @@ import org.app.mydukan.R;
 import org.app.mydukan.adapters.ServiceCenterAdapter;
 import org.app.mydukan.application.MyDukan;
 import org.app.mydukan.data.ServiceCenterInfo;
+import org.app.mydukan.emailSending.SendEmail;
 import org.app.mydukan.server.ApiManager;
 import org.app.mydukan.server.ApiResult;
 import org.app.mydukan.utils.AppContants;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-
-import android.content.res.Resources;
-import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
-import android.view.View;
-import android.webkit.WebView;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.EditText;
-import android.widget.ListView;
-import android.widget.Spinner;
-import android.widget.TextView;
-
-import com.crashlytics.android.answers.Answers;
-import com.crashlytics.android.answers.CustomEvent;
-
-import org.app.mydukan.R;
-import org.app.mydukan.adapters.ServiceCenterAdapter;
-import org.app.mydukan.application.MyDukan;
-import org.app.mydukan.data.ServiceCenterInfo;
-import org.app.mydukan.server.ApiManager;
-import org.app.mydukan.server.ApiResult;
-import org.app.mydukan.utils.AppContants;
-
-import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Set;
 
 public class DistributorProvider extends BaseActivity {
 
@@ -93,127 +66,134 @@ public class DistributorProvider extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_distributor_provider);
 
-        //fetchServiceCentersData();
-        // fetchDropdownData();
-        //==================================================================
-
-        //get reference to the brand spinner from the XML layout
-        state_spinner = (Spinner) findViewById(R.id.state_spinner);
-        emptyData = (TextView) findViewById(R.id.tv_nodata);
-        Bundle bundle = getIntent().getExtras();
-        if(bundle != null){
-            if (bundle.containsKey(AppContants.SERVICECENTERS_ENABLE)) {
-                mEnable = bundle.getString(AppContants.SERVICECENTERS_ENABLE);
-            }
-        }
         try {
-            Field popup = Spinner.class.getDeclaredField("mPopup");
-            popup.setAccessible(true);
+            //fetchServiceCentersData();
+            // fetchDropdownData();
+            //==================================================================
 
-            // Get private mPopup member variable and try cast to ListPopupWindow
-            android.widget.ListPopupWindow popupWindow = (android.widget.ListPopupWindow) popup.get(state_spinner);
-
-            // Set popupWindow height to 500px
-            popupWindow.setHeight(500);
-        }
-        catch (NoClassDefFoundError | ClassCastException | NoSuchFieldException | IllegalAccessException e) {
-            // silently fail...
-        }
-        //attach the listener to the brand spinner
-
-        //get reference to the state spinner from the XML layout
-        city_spinner = (Spinner) findViewById(R.id.city_spinner);
-        try {
-            Field popup = Spinner.class.getDeclaredField("mPopup");
-            popup.setAccessible(true);
-
-            // Get private mPopup member variable and try cast to ListPopupWindow
-            android.widget.ListPopupWindow popupWindow = (android.widget.ListPopupWindow) popup.get(city_spinner);
-            // Set popupWindow height to 500px
-            popupWindow.setHeight(500);
-        }
-        catch (NoClassDefFoundError | ClassCastException | NoSuchFieldException | IllegalAccessException e) {
-            // silently fail...
-        }
-        //attach the listener to the state spinner
-
-
-        city_spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                citySelacted = mCity.get(position);
-                State_Adapter.notifyDataSetChanged();
-                fetchServiceCentersData(stateSelected,citySelacted);
-
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
-        });
-
-        state_spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                stateSelected = stateNames.get(position);
-                List<Object> listCity =  (state_cityName.get(stateSelected));
-                mCity =new ArrayList<>();
-                for(Object obj : listCity) {
-                    mCity.add(String.valueOf(obj));
-                }
-                //create an ArrayAdaptar for State from the String Array
-                City_Adapter = new ArrayAdapter<String>(DistributorProvider.this,android.R.layout.simple_spinner_item,mCity);
-                //set the view for the Drop down list
-                City_Adapter.setDropDownViewResource(R.layout.brand_state_spinner);
-                //set the ArrayAdapter to the spinner
-                city_spinner.setAdapter(City_Adapter);
-
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
-        });
-
-        //==================================================================
-
-        mApp = (MyDukan) getApplicationContext();
-
-        list = (ListView) findViewById(R.id.listview);
-
-        editsearch = (EditText) findViewById(R.id.search);
-
-
-        // search data here
-        fetchDropdownData();
-        // Capture Text in EditText
-        editsearch.addTextChangedListener(new TextWatcher() {
-
-            @Override
-            public void afterTextChanged(Editable arg0) {
-                // TODO Auto-generated method stub
-                String text = editsearch.getText().toString().toLowerCase(Locale.getDefault());
-                if(text!=null) {
-                    adapter.filter(text);
+            //get reference to the brand spinner from the XML layout
+            state_spinner = (Spinner) findViewById(R.id.state_spinner);
+            emptyData = (TextView) findViewById(R.id.tv_nodata);
+            Bundle bundle = getIntent().getExtras();
+            if (bundle != null) {
+                if (bundle.containsKey(AppContants.SERVICECENTERS_ENABLE)) {
+                    mEnable = bundle.getString(AppContants.SERVICECENTERS_ENABLE);
                 }
             }
+            try {
+                Field popup = Spinner.class.getDeclaredField("mPopup");
+                popup.setAccessible(true);
 
-            @Override
-            public void beforeTextChanged(CharSequence arg0, int arg1,
-                                          int arg2, int arg3) {
-                // TODO Auto-generated method stub
+                // Get private mPopup member variable and try cast to ListPopupWindow
+                android.widget.ListPopupWindow popupWindow = (android.widget.ListPopupWindow) popup.get(state_spinner);
+
+                // Set popupWindow height to 500px
+                popupWindow.setHeight(500);
+            } catch (NoClassDefFoundError | ClassCastException | NoSuchFieldException | IllegalAccessException e) {
+                // silently fail...
             }
+            //attach the listener to the brand spinner
 
-            @Override
-            public void onTextChanged(CharSequence arg0, int arg1, int arg2,
-                                      int arg3) {
-                // TODO Auto-generated method stub
+            //get reference to the state spinner from the XML layout
+            city_spinner = (Spinner) findViewById(R.id.city_spinner);
+            try {
+                Field popup = Spinner.class.getDeclaredField("mPopup");
+                popup.setAccessible(true);
+
+                // Get private mPopup member variable and try cast to ListPopupWindow
+                android.widget.ListPopupWindow popupWindow = (android.widget.ListPopupWindow) popup.get(city_spinner);
+                // Set popupWindow height to 500px
+                popupWindow.setHeight(500);
+            } catch (NoClassDefFoundError | ClassCastException | NoSuchFieldException | IllegalAccessException e) {
+                // silently fail...
             }
-        });
+            //attach the listener to the state spinner
 
 
+            city_spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                    citySelacted = mCity.get(position);
+                    State_Adapter.notifyDataSetChanged();
+                    fetchServiceCentersData(stateSelected, citySelacted);
+
+                }
+
+                @Override
+                public void onNothingSelected(AdapterView<?> parent) {
+
+                }
+            });
+
+            state_spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                    stateSelected = stateNames.get(position);
+                    List<Object> listCity = (state_cityName.get(stateSelected));
+                    mCity = new ArrayList<>();
+                    for (Object obj : listCity) {
+                        mCity.add(String.valueOf(obj));
+                    }
+                    //create an ArrayAdaptar for State from the String Array
+                    City_Adapter = new ArrayAdapter<String>(DistributorProvider.this, android.R.layout.simple_spinner_item, mCity);
+                    //set the view for the Drop down list
+                    City_Adapter.setDropDownViewResource(R.layout.brand_state_spinner);
+                    //set the ArrayAdapter to the spinner
+                    city_spinner.setAdapter(City_Adapter);
+
+                }
+
+                @Override
+                public void onNothingSelected(AdapterView<?> parent) {
+
+                }
+            });
+
+            //==================================================================
+
+            mApp = (MyDukan) getApplicationContext();
+
+            list = (ListView) findViewById(R.id.listview);
+
+            editsearch = (EditText) findViewById(R.id.search);
+
+
+            // search data here
+            fetchDropdownData();
+            // Capture Text in EditText
+            editsearch.addTextChangedListener(new TextWatcher() {
+
+                @Override
+                public void afterTextChanged(Editable arg0) {
+                    // TODO Auto-generated method stub
+                    String text = editsearch.getText().toString().toLowerCase(Locale.getDefault());
+                    if (text != null) {
+                        adapter.filter(text);
+                    }
+                }
+
+                @Override
+                public void beforeTextChanged(CharSequence arg0, int arg1,
+                                              int arg2, int arg3) {
+                    // TODO Auto-generated method stub
+                }
+
+                @Override
+                public void onTextChanged(CharSequence arg0, int arg1, int arg2,
+                                          int arg3) {
+                    // TODO Auto-generated method stub
+                }
+            });
+
+        }catch (Exception e){
+            Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() + " - onCreate : ",e.toString());
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - onCreate : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - onCreate : ",ex.toString());
+            Crashlytics.log(0,this.getClass().getSimpleName() + " - onCreate : ",ex.toString());
+        }
      /*   WebSettings webSetting = webView.getSettings();
         webSetting.setBuiltInZoomControls(true);
         webSetting.setJavaScriptEnabled(true);
@@ -248,8 +228,14 @@ public class DistributorProvider extends BaseActivity {
                         dismissProgress();
                 }
             });
-        } catch (Exception e) {
-            //  dismissProgress();
+        } catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - fetchDropdownData : ",e.toString());
+            Crashlytics.log(0,"Exception - DistributorProvider - fetchDropdownData : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - fetchDropdownData : ",ex.toString());
+            Crashlytics.log(0,"1 - DistributorProvider - fetchDropdownData : ",ex.toString());
         }
     }
 
@@ -327,8 +313,14 @@ public class DistributorProvider extends BaseActivity {
                         dismissProgress();
                 }
             });
-        } catch (Exception e) {
-            //  dismissProgress();
+        } catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - fetchServiceCentersData : ",e.toString());
+            Crashlytics.log(0,"Exception - DistributorProvider - fetchServiceCentersData : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - fetchServiceCentersData : ",ex.toString());
+            Crashlytics.log(0,"1 - DistributorProvider - fetchServiceCentersData : ",ex.toString());
         }
     }
 

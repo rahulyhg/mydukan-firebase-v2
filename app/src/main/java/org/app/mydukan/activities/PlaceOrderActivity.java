@@ -1,8 +1,8 @@
 package org.app.mydukan.activities;
 
 import android.content.DialogInterface;
-import android.support.design.widget.FloatingActionButton;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -11,17 +11,21 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
+import com.crashlytics.android.Crashlytics;
+
 import org.app.mydukan.R;
 import org.app.mydukan.adapters.OrderAdapter;
 import org.app.mydukan.application.MyDukan;
 import org.app.mydukan.data.OrderProduct;
-import org.app.mydukan.data.OrderProduct_test;
 import org.app.mydukan.data.SupplierBindData;
+import org.app.mydukan.emailSending.SendEmail;
 import org.app.mydukan.server.ApiManager;
 import org.app.mydukan.server.ApiResult;
 import org.app.mydukan.utils.AppContants;
 import org.app.mydukan.utils.SimpleDividerItemDecoration;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -49,31 +53,41 @@ public class PlaceOrderActivity extends BaseActivity implements OrderAdapter.Ord
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_currentorder);
-        mApp = (MyDukan) getApplicationContext();
-        Bundle bundle = getIntent().getExtras();
-        if (bundle != null) {
+        try {
+            mApp = (MyDukan) getApplicationContext();
+            Bundle bundle = getIntent().getExtras();
+            if (bundle != null) {
 
-        if (bundle.containsKey(AppContants.SUPPLIER)) {
+                if (bundle.containsKey(AppContants.SUPPLIER)) {
 
-                mSupplier = (SupplierBindData) bundle.getSerializable(AppContants.SUPPLIER);
-                mSupplierId =mSupplier.getId();
-            }/*
+                    mSupplier = (SupplierBindData) bundle.getSerializable(AppContants.SUPPLIER);
+                    mSupplierId = mSupplier.getId();
+                }/*
             if (bundle.containsKey(AppContants.SUPPLIER_ID)) {
                 mSupplierId = bundle.getString(AppContants.SUPPLIER_ID);
             }
 */
-        }
-
-        mPlaceorder = (FloatingActionButton) findViewById(R.id.productsSubmit);
-        mPlaceorder.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                onSubmitBtn();
             }
-        });
 
-        setupActionBar();
-        setupSupplierCard();
+            mPlaceorder = (FloatingActionButton) findViewById(R.id.productsSubmit);
+            mPlaceorder.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    onSubmitBtn();
+                }
+            });
+
+            setupActionBar();
+            setupSupplierCard();
+        }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - onCreate : ",e.toString());
+            Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() + " - onCreate : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - onCreate : ",ex.toString());
+            Crashlytics.log(0,this.getClass().getSimpleName() + " - onCreate : ",ex.toString());
+        }
     }
 
     @Override
@@ -130,30 +144,40 @@ public class PlaceOrderActivity extends BaseActivity implements OrderAdapter.Ord
     }
 
     private void getCurrentOrdersInTheCart() {
-        showProgress();
-        ApiManager.getInstance(PlaceOrderActivity.this).getOrdersFromCart(mApp.getFirebaseAuth().getCurrentUser().getUid(),
-                mSupplierId, new ApiResult() {
-            @Override
-            public void onSuccess(Object data) {
-                mOrderList = (ArrayList<OrderProduct>) data;
-                if(mOrderList.isEmpty()){
-                    mOrderEmptyView.setVisibility(View.VISIBLE);
-                    mOrderEmptyView.setText(getString(R.string.cartempty));
-                }else {
-                    mOrderEmptyView.setVisibility(View.GONE);
-                    mOrderAdapter.clearItems();
-                    mOrderAdapter.addItems(mOrderList);
-                    mOrderAdapter.notifyDataSetChanged();
-                    updateTheAmount();
-                }
-                dismissProgress();
-            }
+        try {
+            showProgress();
+            ApiManager.getInstance(PlaceOrderActivity.this).getOrdersFromCart(mApp.getFirebaseAuth().getCurrentUser().getUid(),
+                    mSupplierId, new ApiResult() {
+                        @Override
+                        public void onSuccess(Object data) {
+                            mOrderList = (ArrayList<OrderProduct>) data;
+                            if (mOrderList.isEmpty()) {
+                                mOrderEmptyView.setVisibility(View.VISIBLE);
+                                mOrderEmptyView.setText(getString(R.string.cartempty));
+                            } else {
+                                mOrderEmptyView.setVisibility(View.GONE);
+                                mOrderAdapter.clearItems();
+                                mOrderAdapter.addItems(mOrderList);
+                                mOrderAdapter.notifyDataSetChanged();
+                                updateTheAmount();
+                            }
+                            dismissProgress();
+                        }
 
-            @Override
-            public void onFailure(String response) {
+                        @Override
+                        public void onFailure(String response) {
 
-            }
-        });
+                        }
+                    });
+        }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - getCurrentOrdersInTheCart : ",e.toString());
+            Crashlytics.log(0,"Exception - PlaceOrderActivity - getCurrentOrdersInTheCart : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - getCurrentOrdersInTheCart : ",ex.toString());
+            Crashlytics.log(0,"1 - PlaceOrderActivity - getCurrentOrdersInTheCart : ",ex.toString());
+        }
     }
 
     private void updateTheAmount(){
@@ -168,81 +192,101 @@ public class PlaceOrderActivity extends BaseActivity implements OrderAdapter.Ord
     }
 
     private void checkStatusAndThenOrder(){
-        showProgress();
+        try {
+            showProgress();
 
-        HashMap<String,Long> productIds = new HashMap<>();
-        boolean error = false;
-        for (OrderProduct prod: mOrderList) {
-            productIds.put(prod.getProductid(),prod.getQuantity());
-            if(Long.valueOf(prod.getQuantity()) <= 0){
-                error = true;
-                break;
-            }
-        }
-
-        if(error){
-            showOkAlert(PlaceOrderActivity.this,getString(R.string.info),getString(R.string.error_quantity),getString(R.string.ok));
-            dismissProgress();
-            return;
-        }
-
-        if(productIds.isEmpty()){
-            dismissProgress();
-            return;
-        }
-
-        ApiManager.getInstance(PlaceOrderActivity.this).checkStock(mSupplierId, productIds, new ApiResult() {
-            @Override
-            public void onSuccess(Object data) {
-                String response = (String) data;
-                if(response.equalsIgnoreCase(getString(R.string.status_success))){
-                    placeTheOrder();
-                } else {
-                    dismissProgress();
-                    showOkAlert(PlaceOrderActivity.this,getString(R.string.info),response,getString(R.string.ok));
+            HashMap<String, Long> productIds = new HashMap<>();
+            boolean error = false;
+            for (OrderProduct prod : mOrderList) {
+                productIds.put(prod.getProductid(), prod.getQuantity());
+                if (Long.valueOf(prod.getQuantity()) <= 0) {
+                    error = true;
+                    break;
                 }
             }
 
-            @Override
-            public void onFailure(String response) {
-                showOkAlert(PlaceOrderActivity.this,getString(R.string.info),response,getString(R.string.ok));
+            if (error) {
+                showOkAlert(PlaceOrderActivity.this, getString(R.string.info), getString(R.string.error_quantity), getString(R.string.ok));
+                dismissProgress();
+                return;
             }
-        });
+
+            if (productIds.isEmpty()) {
+                dismissProgress();
+                return;
+            }
+
+            ApiManager.getInstance(PlaceOrderActivity.this).checkStock(mSupplierId, productIds, new ApiResult() {
+                @Override
+                public void onSuccess(Object data) {
+                    String response = (String) data;
+                    if (response.equalsIgnoreCase(getString(R.string.status_success))) {
+                        placeTheOrder();
+                    } else {
+                        dismissProgress();
+                        showOkAlert(PlaceOrderActivity.this, getString(R.string.info), response, getString(R.string.ok));
+                    }
+                }
+
+                @Override
+                public void onFailure(String response) {
+                    showOkAlert(PlaceOrderActivity.this, getString(R.string.info), response, getString(R.string.ok));
+                }
+            });
+        }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - checkStatusAndThenOrder : ",e.toString());
+            Crashlytics.log(0,"Exception - PlaceOrderActivity - checkStatusAndThenOrder : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - checkStatusAndThenOrder : ",ex.toString());
+            Crashlytics.log(0,"1 - PlaceOrderActivity - checkStatusAndThenOrder : ",ex.toString());
+        }
     }
 
     private void placeTheOrder(){
-        HashMap<String, Object> orderList = new HashMap<>();
-        for (OrderProduct prod: mOrderList) {
-            HashMap<String, Object> orders = new HashMap<>();
-            orders.put("quantity", Long.valueOf(prod.getQuantity()));
-            orders.put("productname", prod.getProductname());
-            orders.put("price", prod.getPrice());
-            orderList.put(prod.getProductid(), orders);
-        }
+        try {
+            HashMap<String, Object> orderList = new HashMap<>();
+            for (OrderProduct prod : mOrderList) {
+                HashMap<String, Object> orders = new HashMap<>();
+                orders.put("quantity", Long.valueOf(prod.getQuantity()));
+                orders.put("productname", prod.getProductname());
+                orders.put("price", prod.getPrice());
+                orderList.put(prod.getProductid(), orders);
+            }
 
-        HashMap<String, Object> orderinfo = new HashMap<>();
-        orderinfo.put("totalamount", mGrandTotal.getText().toString());
-        orderinfo.put("status", "pending");
-        orderinfo.put("timestamp", System.currentTimeMillis());
+            HashMap<String, Object> orderinfo = new HashMap<>();
+            orderinfo.put("totalamount", mGrandTotal.getText().toString());
+            orderinfo.put("status", "pending");
+            orderinfo.put("timestamp", System.currentTimeMillis());
 
-        ApiManager.getInstance(PlaceOrderActivity.this).addOrder(mSupplierId, mApp.getFirebaseAuth().getCurrentUser().getUid(),
-                orderList, orderinfo, new ApiResult() {
-                    @Override
-                    public void onSuccess(Object data) {
-                        String response = (String) data;
-                        if (response.equalsIgnoreCase(getString(R.string.status_success))) {
-                            deleteAllOrder();
-                        } else {
-                            dismissProgress();
-                            showErrorToast(PlaceOrderActivity.this, response);
+            ApiManager.getInstance(PlaceOrderActivity.this).addOrder(mSupplierId, mApp.getFirebaseAuth().getCurrentUser().getUid(),
+                    orderList, orderinfo, new ApiResult() {
+                        @Override
+                        public void onSuccess(Object data) {
+                            String response = (String) data;
+                            if (response.equalsIgnoreCase(getString(R.string.status_success))) {
+                                deleteAllOrder();
+                            } else {
+                                dismissProgress();
+                                showErrorToast(PlaceOrderActivity.this, response);
+                            }
                         }
-                    }
 
-                    @Override
-                    public void onFailure(String response) {
-                        dismissProgress();
-                    }
-                });
+                        @Override
+                        public void onFailure(String response) {
+                            dismissProgress();
+                        }
+                    });
+        }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - placeTheOrder : ",e.toString());
+            Crashlytics.log(0,"Exception - PlaceOrderActivity - placeTheOrder : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - placeTheOrder : ",ex.toString());
+            Crashlytics.log(0,"1 - PlaceOrderActivity - placeTheOrder : ",ex.toString());
+        }
     }
 
     private void onSubmitBtn(){
@@ -250,43 +294,63 @@ public class PlaceOrderActivity extends BaseActivity implements OrderAdapter.Ord
     }
 
     private void deleteAllOrder(){
-        ApiManager.getInstance(PlaceOrderActivity.this).removeAllOrdersFromCart(
-            mApp.getFirebaseAuth().getCurrentUser().getUid(), mSupplierId, new ApiResult() {
-                @Override
-                public void onSuccess(Object data) {
-                    dismissProgress();
-                    finish();
-                }
+        try {
+            ApiManager.getInstance(PlaceOrderActivity.this).removeAllOrdersFromCart(
+                    mApp.getFirebaseAuth().getCurrentUser().getUid(), mSupplierId, new ApiResult() {
+                        @Override
+                        public void onSuccess(Object data) {
+                            dismissProgress();
+                            finish();
+                        }
 
-                @Override
-                public void onFailure(String response) {
-                    dismissProgress();
-                    finish();
-                }
-            });
+                        @Override
+                        public void onFailure(String response) {
+                            dismissProgress();
+                            finish();
+                        }
+                    });
+        }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - deleteAllOrder : ",e.toString());
+            Crashlytics.log(0,"Exception - PlaceOrderActivity - deleteAllOrder : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - deleteAllOrder : ",ex.toString());
+            Crashlytics.log(0,"1 - PlaceOrderActivity - deleteAllOrder : ",ex.toString());
+        }
     }
 
     private void deleteTheOrder(final int position){
-        String id = mOrderList.get(position).getProductid();
-        showProgress();
-        ApiManager.getInstance(PlaceOrderActivity.this).removeOrdersFromCart(mSupplierId,
-                mApp.getFirebaseAuth().getCurrentUser().getUid(), id, new ApiResult() {
-                    @Override
-                    public void onSuccess(Object data) {
-                        mOrderList.remove(position);
-                        updateTheAmount();
-                        mOrderAdapter.clearItems();
-                        mOrderAdapter.addItems(mOrderList);
-                        mOrderAdapter.notifyDataSetChanged();
-                        dismissProgress();
-                    }
+        try {
+            String id = mOrderList.get(position).getProductid();
+            showProgress();
+            ApiManager.getInstance(PlaceOrderActivity.this).removeOrdersFromCart(mSupplierId,
+                    mApp.getFirebaseAuth().getCurrentUser().getUid(), id, new ApiResult() {
+                        @Override
+                        public void onSuccess(Object data) {
+                            mOrderList.remove(position);
+                            updateTheAmount();
+                            mOrderAdapter.clearItems();
+                            mOrderAdapter.addItems(mOrderList);
+                            mOrderAdapter.notifyDataSetChanged();
+                            dismissProgress();
+                        }
 
-                    @Override
-                    public void onFailure(String response) {
-                        showErrorToast(PlaceOrderActivity.this, response);
-                        dismissProgress();
-                    }
-                });
+                        @Override
+                        public void onFailure(String response) {
+                            showErrorToast(PlaceOrderActivity.this, response);
+                            dismissProgress();
+                        }
+                    });
+        }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - deleteTheOrder : ",e.toString());
+            Crashlytics.log(0,"Exception - PlaceOrderActivity - deleteTheOrder : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - deleteTheOrder : ",ex.toString());
+            Crashlytics.log(0,"1 - PlaceOrderActivity - deleteTheOrder : ",ex.toString());
+        }
 
     }
 

@@ -25,6 +25,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import com.crashlytics.android.Crashlytics;
 import com.crashlytics.android.answers.Answers;
 import com.crashlytics.android.answers.CustomEvent;
 import com.google.firebase.auth.FirebaseAuth;
@@ -38,6 +39,7 @@ import org.app.mydukan.data.AppStateContants;
 import org.app.mydukan.data.ChattUser;
 import org.app.mydukan.data.ProfileContants;
 import org.app.mydukan.data.User;
+import org.app.mydukan.emailSending.SendEmail;
 import org.app.mydukan.server.ApiManager;
 import org.app.mydukan.server.ApiResult;
 import org.app.mydukan.utils.AppContants;
@@ -47,6 +49,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -104,74 +108,85 @@ public class CompanyDetails extends BaseActivity implements View.OnClickListener
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_company_details);
+        try {
 //        overridePendingTransition(R.anim.right_enter, R.anim.left_out);
 
-        mApp = (MyDukan) getApplicationContext();
-        myDhukhan_UserId = mApp.getFirebaseAuth().getCurrentUser().getUid();
+            mApp = (MyDukan) getApplicationContext();
+            myDhukhan_UserId = mApp.getFirebaseAuth().getCurrentUser().getUid();
 
-        back_button_2 = (ImageView) findViewById(R.id.back_button_2);
+            back_button_2 = (ImageView) findViewById(R.id.back_button_2);
 
-        user_Business_Card = (Button) findViewById(R.id.user_Business_Card);
-        user_Profile_Submit = (Button) findViewById(R.id.user_Profile_Submit);
+            user_Business_Card = (Button) findViewById(R.id.user_Business_Card);
+            user_Profile_Submit = (Button) findViewById(R.id.user_Profile_Submit);
 
-        user_Company_Name = (EditText) findViewById(R.id.user_Company_Name);
-        user_My_Profession = (EditText) findViewById(R.id.user_My_Profession);
-        user_Brand_Selection = (EditText) findViewById(R.id.user_Brand_Selection);
-        user_GST_Nmber = (EditText) findViewById(R.id.user_GST_Nmber);
-        user_office_Mail = (EditText) findViewById(R.id.user_office_Mail);
-        user_Shop_Nmber = (EditText) findViewById(R.id.user_Shop_Nmber);
-        user_Distributor_Nmber = (EditText) findViewById(R.id.user_Distributor_Nmber);
+            user_Company_Name = (EditText) findViewById(R.id.user_Company_Name);
+            user_My_Profession = (EditText) findViewById(R.id.user_My_Profession);
+            user_Brand_Selection = (EditText) findViewById(R.id.user_Brand_Selection);
+            user_GST_Nmber = (EditText) findViewById(R.id.user_GST_Nmber);
+            user_office_Mail = (EditText) findViewById(R.id.user_office_Mail);
+            user_Shop_Nmber = (EditText) findViewById(R.id.user_Shop_Nmber);
+            user_Distributor_Nmber = (EditText) findViewById(R.id.user_Distributor_Nmber);
 
-        linear_Brand = (LinearLayout) findViewById(R.id.linear_Brand);
-        linear_GST = (LinearLayout) findViewById(R.id.linear_GST);
-        linear_officeEmail = (LinearLayout) findViewById(R.id.linear_officeEmail);
-        linear_ShopNumber = (LinearLayout) findViewById(R.id.linear_ShopNumber);
-        linear_DistributorNumber = (LinearLayout) findViewById(R.id.linear_DistributorNumber);
-
-
-        back_button_2.setOnClickListener(this);
-
-        user_Business_Card.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                selectImage();
-            }
-        });
-        user_Profile_Submit.setOnClickListener(this);
-
-        user_My_Profession.setOnClickListener(this);
-        user_Brand_Selection.setOnClickListener(this);
+            linear_Brand = (LinearLayout) findViewById(R.id.linear_Brand);
+            linear_GST = (LinearLayout) findViewById(R.id.linear_GST);
+            linear_officeEmail = (LinearLayout) findViewById(R.id.linear_officeEmail);
+            linear_ShopNumber = (LinearLayout) findViewById(R.id.linear_ShopNumber);
+            linear_DistributorNumber = (LinearLayout) findViewById(R.id.linear_DistributorNumber);
 
 
-        getUserProfile();
+            back_button_2.setOnClickListener(this);
+
+            user_Business_Card.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    selectImage();
+                }
+            });
+            user_Profile_Submit.setOnClickListener(this);
+
+            user_My_Profession.setOnClickListener(this);
+            user_Brand_Selection.setOnClickListener(this);
+
+
+            getUserProfile();
+        }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - onCreate : ",e.toString());
+            Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() + " - onCreate : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - onCreate : ",ex.toString());
+            Crashlytics.log(0,this.getClass().getSimpleName() + " - onCreate : ",ex.toString());
+        }
 
     }
 
     private void getUserProfile() {
-        showProgress();
-        if (mViewType == AppContants.SIGN_UP) {
-            mApp.getPreference().setAppState(CompanyDetails.this, new AppStateContants().PROFILE_SCREEN);
-        }
-        if (mApp.getFirebaseAuth().getCurrentUser() == null) {
-            return;
-        }
-        ApiManager.getInstance(CompanyDetails.this).getUserProfile(mApp.getFirebaseAuth().getCurrentUser().getUid(), new ApiResult() {
-            @Override
-            public void onSuccess(Object data) {
+        try {
+            showProgress();
+            if (mViewType == AppContants.SIGN_UP) {
+                mApp.getPreference().setAppState(CompanyDetails.this, new AppStateContants().PROFILE_SCREEN);
+            }
+            if (mApp.getFirebaseAuth().getCurrentUser() == null) {
+                return;
+            }
+            ApiManager.getInstance(CompanyDetails.this).getUserProfile(mApp.getFirebaseAuth().getCurrentUser().getUid(), new ApiResult() {
+                @Override
+                public void onSuccess(Object data) {
 
-                userdetails = (User) data;
-                if (userdetails == null) {
-                    dismissProgress();
-                    return;
-                }
+                    userdetails = (User) data;
+                    if (userdetails == null) {
+                        dismissProgress();
+                        return;
+                    }
 
-                Answers.getInstance().logCustom(new CustomEvent("CompanyDetails_Page")
-                        .putCustomAttribute("CompanyDetails_Opened",  myDhukhan_UserId));
+                    Answers.getInstance().logCustom(new CustomEvent("CompanyDetails_Page")
+                            .putCustomAttribute("CompanyDetails_Opened", myDhukhan_UserId));
 
-                if (userdetails.getCompanyinfo() != null) {
-                    user_Company_Name.setText(mApp.getUtils().toCamelCase(userdetails.getCompanyinfo().getName()));
-                    user_GST_Nmber.setText(userdetails.getCompanyinfo().getVatno());
-                    user_office_Mail.setText(mApp.getUtils().toCamelCase(userdetails.getCompanyinfo().getEmailid()));
+                    if (userdetails.getCompanyinfo() != null) {
+                        user_Company_Name.setText(mApp.getUtils().toCamelCase(userdetails.getCompanyinfo().getName()));
+                        user_GST_Nmber.setText(userdetails.getCompanyinfo().getVatno());
+                        user_office_Mail.setText(mApp.getUtils().toCamelCase(userdetails.getCompanyinfo().getEmailid()));
 
 
                    /*
@@ -186,79 +201,69 @@ public class CompanyDetails extends BaseActivity implements View.OnClickListener
                         }
                     }
                    */
-                    dismissProgress();//remove it
-                    if (!mApp.getUtils().isStringEmpty(userdetails.getCompanyinfo().getCardurl())) {
-                        user_Business_Card.setText(getString(R.string.change));
+                        dismissProgress();//remove it
+                        if (!mApp.getUtils().isStringEmpty(userdetails.getCompanyinfo().getCardurl())) {
+                            user_Business_Card.setText(getString(R.string.change));
+                        }
                     }
-                }
 
-                    if (userdetails.getOtherinfo() != null && !mApp.getUtils().isStringEmpty(userdetails.getOtherinfo().getRole()))
-                    {
+                    if (userdetails.getOtherinfo() != null && !mApp.getUtils().isStringEmpty(userdetails.getOtherinfo().getRole())) {
                         String userType = userdetails.getOtherinfo().getRole().trim().toLowerCase();
                         user_My_Profession.setText(mApp.getUtils().toCamelCase(userdetails.getOtherinfo().getRole()));
                         String terms = userdetails.getOtherinfo().getAcceptedprivacypolicy().trim().toLowerCase();
 
 
-                        if (userType.equalsIgnoreCase("Distributor") )
-                        {
+                        if (userType.equalsIgnoreCase("Distributor")) {
                             user_Brand_Selection.setText(mApp.getUtils().toSameCase(userdetails.getOtherinfo().getBrands()));
                             linear_Brand.setVisibility(View.VISIBLE);
                             linear_GST.setVisibility(View.VISIBLE);
                         }
-                        if(userType.equalsIgnoreCase("Retailer"))
-                        {
+                        if (userType.equalsIgnoreCase("Retailer")) {
 //                            linear_officeEmail.setVisibility(View.VISIBLE);
                             linear_GST.setVisibility(View.VISIBLE);
 
                         }
 
-                        if (userType.equalsIgnoreCase("Brand Promoters"))
-                        {
+                        if (userType.equalsIgnoreCase("Brand Promoters")) {
                             user_Brand_Selection.setText(mApp.getUtils().toSameCase(userdetails.getOtherinfo().getBrands()));
                             linear_Brand.setVisibility(View.VISIBLE);
                             linear_officeEmail.setVisibility(View.VISIBLE);
                         }
 
-                        if(userType.equalsIgnoreCase("Company Professional"))
-                        {
+                        if (userType.equalsIgnoreCase("Company Professional")) {
                             user_Brand_Selection.setText(mApp.getUtils().toSameCase(userdetails.getOtherinfo().getBrands()));
                             linear_Brand.setVisibility(View.VISIBLE);
                             linear_officeEmail.setVisibility(View.VISIBLE);
 
                         }
 
-                        if(userType.equalsIgnoreCase("Shop Executive"))
-                        {
+                        if (userType.equalsIgnoreCase("Shop Executive")) {
                             user_Shop_Nmber.setText(mApp.getUtils().toSameCase(userdetails.getOtherinfo().getShopnumber()));
                             linear_ShopNumber.setVisibility(View.VISIBLE);
 //                            linear_officeEmail.setVisibility(View.VISIBLE);
                         }
 
-                        if(userType.equalsIgnoreCase("Service Centres"))
-                        {
+                        if (userType.equalsIgnoreCase("Service Centres")) {
                             user_Brand_Selection.setText(mApp.getUtils().toSameCase(userdetails.getOtherinfo().getBrands()));
                             linear_Brand.setVisibility(View.VISIBLE);
                             linear_GST.setVisibility(View.VISIBLE);
                         }
 
-                        if(userType.equalsIgnoreCase("Wholesaler"))
-                        {
+                        if (userType.equalsIgnoreCase("Wholesaler")) {
                             // wholesalerradio.setText(mApp.getUtils().toSameCase(userdetails.getCompanyinfo().getVatno()));
 //                            linear_officeEmail.setVisibility(View.VISIBLE);
                             linear_GST.setVisibility(View.VISIBLE);
 
                         }
 
-                        if(userType.equalsIgnoreCase("Manufacturers / Brands"))
-                        {
+                        if (userType.equalsIgnoreCase("Manufacturers / Brands")) {
                             user_Brand_Selection.setText(mApp.getUtils().toSameCase(userdetails.getOtherinfo().getBrands()));
                             linear_Brand.setVisibility(View.VISIBLE);
                             linear_officeEmail.setVisibility(View.VISIBLE);
 
                         }
 
-                        if(userType.equalsIgnoreCase("Distributor Sales Executive"))
-                        {
+                        if (userType.equalsIgnoreCase("Distributor Sales Executive")) {
                             user_Distributor_Nmber.setText(mApp.getUtils().toSameCase(userdetails.getOtherinfo().getDistributorphonenumber()));
 //                            linear_officeEmail.setVisibility(View.VISIBLE);
                             linear_DistributorNumber.setVisibility(View.VISIBLE);
@@ -267,55 +272,72 @@ public class CompanyDetails extends BaseActivity implements View.OnClickListener
                     }
 
                     //Initialize AppDukan
-                dismissProgress();
-            }
+                    dismissProgress();
+                }
 
-            @Override
-            public void onFailure(String response) {
-                //Do when there is no data present in firebase
-                dismissProgress();
-            }
-        });
+                @Override
+                public void onFailure(String response) {
+                    //Do when there is no data present in firebase
+                    dismissProgress();
+                }
+            });
+        }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - getUserProfile : ",e.toString());
+            Crashlytics.log(0,"Exception - CompanyDetails - getUserProfile : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - getUserProfile : ",ex.toString());
+            Crashlytics.log(0,"1 - CompanyDetails - getUserProfile : ",ex.toString());
+        }
     }
 
 
     private void updateCompanyVCard() {
 
-        if (user_Business_Card.getText().toString().equalsIgnoreCase(getString(R.string.change))) {
-            if (mSelectedBitmap != null) {
-                ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-                mSelectedBitmap.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
-                byte[] data = bytes.toByteArray();
+        try {
+            if (user_Business_Card.getText().toString().equalsIgnoreCase(getString(R.string.change))) {
+                if (mSelectedBitmap != null) {
+                    ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+                    mSelectedBitmap.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
+                    byte[] data = bytes.toByteArray();
 
-                ApiManager.getInstance(CompanyDetails.this).uploadVcard(data, new ApiResult() {
-                    @Override
-                    public void onSuccess(Object data) {
+                    ApiManager.getInstance(CompanyDetails.this).uploadVcard(data, new ApiResult() {
+                        @Override
+                        public void onSuccess(Object data) {
 
-                     Uri vcard = (Uri) data;
-                        if (vcard != null) {
-                            // user.getCompanyinfo().setCardurl(vcard.toString());
+                            Uri vcard = (Uri) data;
+                            if (vcard != null) {
+                                // user.getCompanyinfo().setCardurl(vcard.toString());
 
-                            updateCompanyDetails(vcard.toString());
+                                updateCompanyDetails(vcard.toString());
+                            }
+
                         }
 
-                    }
-
-                    @Override
-                    public void onFailure(String response) {
+                        @Override
+                        public void onFailure(String response) {
 //                        Toast.makeText(CompanyDetails.this, "Uploading Business Card Unsuccessful", Toast.LENGTH_SHORT).show();
-                    }
-                });
-            }
-         else {
-                String vcard=userdetails.getCompanyinfo().getCardurl();
-                updateCompanyDetails(vcard);
+                        }
+                    });
+                } else {
+                    String vcard = userdetails.getCompanyinfo().getCardurl();
+                    updateCompanyDetails(vcard);
 //            Toast.makeText(CompanyDetails.this, "Uploading Business Card Unsuccessful", Toast.LENGTH_SHORT).show();
 
-        }
-        }
-        else{
+                }
+            } else {
 
-            updateCompanyDetails("");
+                updateCompanyDetails("");
+            }
+        }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - updateCompanyVCard : ",e.toString());
+            Crashlytics.log(0,"Exception - CompanyDetails - updateCompanyVCard : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - updateCompanyVCard : ",ex.toString());
+            Crashlytics.log(0,"1 - CompanyDetails - updateCompanyVCard : ",ex.toString());
         }
     }
 

@@ -2,9 +2,9 @@ package org.app.mydukan.activities;
 
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.text.Editable;
 import android.text.InputFilter;
 import android.text.TextWatcher;
@@ -14,51 +14,17 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
-import android.widget.Toast;
 
-
-import org.app.mydukan.R;
-import org.app.mydukan.application.MyDukan;
-import org.app.mydukan.data.Chat_Author;
-import org.app.mydukan.data.FriendlyMessage;
-import org.app.mydukan.adapters.MessageAdapter;
-import org.app.mydukan.data.User;
-import org.app.mydukan.server.ApiManager;
-import org.app.mydukan.server.ApiResult;
-
-import android.content.Intent;
-import android.net.Uri;
-import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.v7.app.AppCompatActivity;
-import android.text.Editable;
-import android.text.InputFilter;
-import android.text.TextWatcher;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
-import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ImageButton;
-import android.widget.ListView;
-import android.widget.ProgressBar;
-import android.widget.Toast;
-
-
-import com.firebase.ui.auth.AuthUI;
+import com.crashlytics.android.Crashlytics;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -66,15 +32,23 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
+import org.app.mydukan.R;
+import org.app.mydukan.adapters.MessageAdapter;
+import org.app.mydukan.application.MyDukan;
+import org.app.mydukan.data.Chat_Author;
+import org.app.mydukan.data.FriendlyMessage;
+import org.app.mydukan.data.User;
+import org.app.mydukan.emailSending.SendEmail;
+import org.app.mydukan.server.ApiManager;
+import org.app.mydukan.server.ApiResult;
+
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.text.DateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 
 public class PostCommentsActivity extends AppCompatActivity {
 
@@ -118,95 +92,96 @@ public class PostCommentsActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_post_comments);
-        mFirebaseDatabase= FirebaseDatabase.getInstance();
+        try {
+            mFirebaseDatabase = FirebaseDatabase.getInstance();
 
-        // Initialize references to views
-        mProgressBar = (ProgressBar) findViewById(R.id.progressBar);
-        mMessageListView = (ListView) findViewById(R.id.messageListView);
-        mPhotoPickerButton = (ImageButton) findViewById(R.id.photoPickerButton);
-        mMessageEditText = (EditText) findViewById(R.id.messageEditText);
-        mSendButton = (Button) findViewById(R.id.sendButton);
+            // Initialize references to views
+            mProgressBar = (ProgressBar) findViewById(R.id.progressBar);
+            mMessageListView = (ListView) findViewById(R.id.messageListView);
+            mPhotoPickerButton = (ImageButton) findViewById(R.id.photoPickerButton);
+            mMessageEditText = (EditText) findViewById(R.id.messageEditText);
+            mSendButton = (Button) findViewById(R.id.sendButton);
 
-        layout = (LinearLayout) findViewById(R.id.layout1);
-        layout_2 = (RelativeLayout)findViewById(R.id.layout2);
-        scrollView = (ScrollView)findViewById(R.id.scrollView);
-        messageArea = (EditText)findViewById(R.id.messageArea);
+            layout = (LinearLayout) findViewById(R.id.layout1);
+            layout_2 = (RelativeLayout) findViewById(R.id.layout2);
+            scrollView = (ScrollView) findViewById(R.id.scrollView);
+            messageArea = (EditText) findViewById(R.id.messageArea);
 
-        Bundle extras = getIntent().getExtras();
-        if (extras != null) {
-            myDukhan_UserId =extras.getString("MyDhukhan_UserId");
-            userdetails = (User) getIntent().getExtras().getSerializable("UserDetails");
-            if (userdetails!=null){
-                if(myDukhan_UserId!=null){
-                    mUsername = userdetails.getUserinfo().getName();
+            Bundle extras = getIntent().getExtras();
+            if (extras != null) {
+                myDukhan_UserId = extras.getString("MyDhukhan_UserId");
+                userdetails = (User) getIntent().getExtras().getSerializable("UserDetails");
+                if (userdetails != null) {
+                    if (myDukhan_UserId != null) {
+                        mUsername = userdetails.getUserinfo().getName();
+                    }
+                    chat_author.setAuther_EmailID(userdetails.getEmailid());
+                    chat_author.setAuther_Name(userdetails.getUserinfo().getName());
                 }
-                chat_author.setAuther_EmailID(userdetails.getEmailid());
-                chat_author.setAuther_Name(userdetails.getUserinfo().getName());
-            }
-        }else{
+            } else {
                 getUserProfile();
-        }
-        mCommentsDatabaseReference=mFirebaseDatabase.getReference().child("Chat_Messages/"+myDukhan_UserId+"/"+myDukhan_UserId+"_"+"MyDukan_Admin");
-        mChatPhotosStorageReference = FirebaseStorage.getInstance().getReferenceFromUrl("gs://mydukan-1024.appspot.com/chat_photos");
-
-        // Initialize message ListView and its adapter
-        List<FriendlyMessage> friendlyMessages = new ArrayList<>();
-        mMessageAdapter = new MessageAdapter(this, R.layout.item_message, friendlyMessages);
-        mMessageListView.setAdapter(mMessageAdapter);
-
-        // Initialize progress bar
-        mProgressBar.setVisibility(ProgressBar.INVISIBLE);
-
-        // ImagePickerButton shows an image picker to upload a image for a message
-        mPhotoPickerButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                // TODO: Fire an intent to show an image picker
-                Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-                intent.setType("image/jpeg");
-                intent.putExtra(Intent.EXTRA_LOCAL_ONLY, true);
-                startActivityForResult(Intent.createChooser(intent, "Complete action using"), RC_PHOTO_PICKER);
             }
-        });
+            mCommentsDatabaseReference = mFirebaseDatabase.getReference().child("Chat_Messages/" + myDukhan_UserId + "/" + myDukhan_UserId + "_" + "MyDukan_Admin");
+            mChatPhotosStorageReference = FirebaseStorage.getInstance().getReferenceFromUrl("gs://mydukan-1024.appspot.com/chat_photos");
 
-        // Enable Send button when there's text to send
-        mMessageEditText.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-            }
+            // Initialize message ListView and its adapter
+            List<FriendlyMessage> friendlyMessages = new ArrayList<>();
+            mMessageAdapter = new MessageAdapter(this, R.layout.item_message, friendlyMessages);
+            mMessageListView.setAdapter(mMessageAdapter);
 
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                if (charSequence.toString().trim().length() > 0) {
-                    mSendButton.setEnabled(true);
-                } else {
-                    mSendButton.setEnabled(false);
+            // Initialize progress bar
+            mProgressBar.setVisibility(ProgressBar.INVISIBLE);
+
+            // ImagePickerButton shows an image picker to upload a image for a message
+            mPhotoPickerButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    // TODO: Fire an intent to show an image picker
+                    Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+                    intent.setType("image/jpeg");
+                    intent.putExtra(Intent.EXTRA_LOCAL_ONLY, true);
+                    startActivityForResult(Intent.createChooser(intent, "Complete action using"), RC_PHOTO_PICKER);
                 }
-            }
+            });
 
-            @Override
-            public void afterTextChanged(Editable editable) {
-            }
-        });
-        mMessageEditText.setFilters(new InputFilter[]{new InputFilter.LengthFilter(DEFAULT_MSG_LENGTH_LIMIT)});
+            // Enable Send button when there's text to send
+            mMessageEditText.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                }
 
-        // Send button sends a message and clears the EditText
-        mSendButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                // TODO: Send messages on click
-                FriendlyMessage friendlyMessage = new FriendlyMessage(mMessageEditText.getText().toString(), mUsername, null,chat_author);
-                mCommentsDatabaseReference.push().setValue(friendlyMessage);
-                // Clear input box
-                mMessageEditText.setText("");
-            }
-        });
+                @Override
+                public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                    if (charSequence.toString().trim().length() > 0) {
+                        mSendButton.setEnabled(true);
+                    } else {
+                        mSendButton.setEnabled(false);
+                    }
+                }
 
-        mChildEventListener=new ChildEventListener() {
-            @Override
-            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                FriendlyMessage friendlyMessage =  dataSnapshot.getValue(FriendlyMessage.class);
-                mMessageAdapter.add(friendlyMessage);
+                @Override
+                public void afterTextChanged(Editable editable) {
+                }
+            });
+            mMessageEditText.setFilters(new InputFilter[]{new InputFilter.LengthFilter(DEFAULT_MSG_LENGTH_LIMIT)});
+
+            // Send button sends a message and clears the EditText
+            mSendButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    // TODO: Send messages on click
+                    FriendlyMessage friendlyMessage = new FriendlyMessage(mMessageEditText.getText().toString(), mUsername, null, chat_author);
+                    mCommentsDatabaseReference.push().setValue(friendlyMessage);
+                    // Clear input box
+                    mMessageEditText.setText("");
+                }
+            });
+
+            mChildEventListener = new ChildEventListener() {
+                @Override
+                public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                    FriendlyMessage friendlyMessage = dataSnapshot.getValue(FriendlyMessage.class);
+                    mMessageAdapter.add(friendlyMessage);
 
             /*    Map map = dataSnapshot.getValue(Map.class);
                 String message = friendlyMessage.getText();
@@ -219,28 +194,38 @@ public class PostCommentsActivity extends AppCompatActivity {
                     addMessageBox("MyDUkan" + ":-\n" + message, 2);
                 }
                 */
-            }
+                }
 
-            @Override
-            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+                @Override
+                public void onChildChanged(DataSnapshot dataSnapshot, String s) {
 
-            }
-            @Override
-            public void onChildRemoved(DataSnapshot dataSnapshot) {
+                }
 
-            }
+                @Override
+                public void onChildRemoved(DataSnapshot dataSnapshot) {
 
-            @Override
-            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+                }
 
-            }
+                @Override
+                public void onChildMoved(DataSnapshot dataSnapshot, String s) {
 
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
+                }
 
-            }
-        };
-        mCommentsDatabaseReference.addChildEventListener(mChildEventListener);
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            };
+            mCommentsDatabaseReference.addChildEventListener(mChildEventListener);
+        }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - onCreate : ",e.toString());
+            Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() + " - onCreate : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - onCreate : ",ex.toString());
+            Crashlytics.log(0,this.getClass().getSimpleName() + " - onCreate : ",ex.toString());
+        }
     }
 
 
@@ -265,31 +250,42 @@ public class PostCommentsActivity extends AppCompatActivity {
 
     }
    private void getUserProfile() {
-        if (mApp.getFirebaseAuth().getCurrentUser() == null) {
-            return;
-        }
-        ApiManager.getInstance(this).getUserProfile(mApp.getFirebaseAuth().getCurrentUser().getUid(), new ApiResult() {
-            @Override
-            public void onSuccess(Object data) {
-                if (data != null) {
-                    userdetails = (User) data;
-                    myDukhan_UserId=mApp.getFirebaseAuth().getCurrentUser().getUid();
-                    if (userdetails!=null){
-                        if(myDukhan_UserId!=null){
-                            mUsername = myDukhan_UserId;
-                        }
+        try {
+            if (mApp.getFirebaseAuth().getCurrentUser() == null) {
+                return;
+            }
+            ApiManager.getInstance(this).getUserProfile(mApp.getFirebaseAuth().getCurrentUser().getUid(), new ApiResult() {
+                @Override
+                public void onSuccess(Object data) {
+                    if (data != null) {
+                        userdetails = (User) data;
+                        myDukhan_UserId = mApp.getFirebaseAuth().getCurrentUser().getUid();
+                        if (userdetails != null) {
+                            if (myDukhan_UserId != null) {
+                                mUsername = myDukhan_UserId;
+                            }
 
-                        chat_author.setAuther_EmailID(userdetails.getEmailid());
-                        chat_author.setAuther_EmailID(userdetails.getUserinfo().getName());
+                            chat_author.setAuther_EmailID(userdetails.getEmailid());
+                            chat_author.setAuther_EmailID(userdetails.getUserinfo().getName());
+                        }
+                        return;
                     }
-                    return;
                 }
-            }
-            @Override
-            public void onFailure(String response) {
-                //Do when there is no data present in firebase
-            }
-        });
+
+                @Override
+                public void onFailure(String response) {
+                    //Do when there is no data present in firebase
+                }
+            });
+        }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - getUserProfile : ",e.toString());
+            Crashlytics.log(0,"Exception - PostCommentsActivity - getUserProfile : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - getUserProfile : ",ex.toString());
+            Crashlytics.log(0,"1 - PostCommentsActivity - getUserProfile : ",ex.toString());
+        }
     }
 
 

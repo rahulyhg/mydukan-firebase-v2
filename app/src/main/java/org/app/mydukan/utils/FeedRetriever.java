@@ -1,5 +1,6 @@
 package org.app.mydukan.utils;
 
+import com.crashlytics.android.Crashlytics;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -10,7 +11,10 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import org.app.mydukan.data.Feed;
+import org.app.mydukan.emailSending.SendEmail;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -112,27 +116,37 @@ public class FeedRetriever {
     }
 
     private void retrieveFollowList(final OnFeedRetrievedListener onFeedRetrievedListener) {
-        final DatabaseReference referenceFollow = FirebaseDatabase.getInstance().getReference().child(FOLLOW_ROOT + "/" + user.getUid());
-        referenceFollow.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                following.clear();
-                List<String> users = new ArrayList<String>();
-                if (dataSnapshot != null) {
-                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                        following.put(snapshot.getKey(), new UserFollowing(snapshot.getKey()));
-                        users.add(snapshot.getKey());
+        try {
+            final DatabaseReference referenceFollow = FirebaseDatabase.getInstance().getReference().child(FOLLOW_ROOT + "/" + user.getUid());
+            referenceFollow.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    following.clear();
+                    List<String> users = new ArrayList<String>();
+                    if (dataSnapshot != null) {
+                        for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                            following.put(snapshot.getKey(), new UserFollowing(snapshot.getKey()));
+                            users.add(snapshot.getKey());
+                        }
                     }
+                    retrieveFeeds(users, onFeedRetrievedListener);
+
                 }
-                retrieveFeeds(users, onFeedRetrievedListener);
 
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                onFeedRetrievedListener.onError();
-            }
-        });
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                    onFeedRetrievedListener.onError();
+                }
+            });
+        }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - retrieveFollowList : ",e.toString());
+            Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() + " - retrieveFollowList : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - retrieveFollowList : ",ex.toString());
+            Crashlytics.log(0,this.getClass().getSimpleName() + " - retrieveFollowList : ",ex.toString());
+        }
     }
 
     private void retrieveFeeds(final List<String> users, final OnFeedRetrievedListener onFeedRetrievedListener) {
@@ -158,55 +172,65 @@ public class FeedRetriever {
     }
 
     private void retrieveFeeds(final UserFollowing follows, final OnFeedRetrievedListener onFeedRetrievedListener) {
-        if (!follows.containsMore || follows.callInProgress) return;
+        try {
+            if (!follows.containsMore || follows.callInProgress) return;
 
-        follows.callInProgress = true;
+            follows.callInProgress = true;
 
-        //todo the call doesn't work, because of current DB design. to change when the design is changed
-        DatabaseReference feedReference = FirebaseDatabase.getInstance().getReference().child(FEED_ROOT + "/" + follows.uId).getRef();
-        Query query = feedReference.orderByKey();
-        if (follows.feeds.size() > 0) {
-            query = query.endAt(follows.feeds.get(0).getIdFeed());
-        }
-        query = query.limitToLast(11);//+1 for removing redundant element
-        query.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
+            //todo the call doesn't work, because of current DB design. to change when the design is changed
+            DatabaseReference feedReference = FirebaseDatabase.getInstance().getReference().child(FEED_ROOT + "/" + follows.uId).getRef();
+            Query query = feedReference.orderByKey();
+            if (follows.feeds.size() > 0) {
+                query = query.endAt(follows.feeds.get(0).getIdFeed());
+            }
+            query = query.limitToLast(11);//+1 for removing redundant element
+            query.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
 
-                if (dataSnapshot == null || dataSnapshot.getChildrenCount() <= 1) {
-                    follows.containsMore = false;
+                    if (dataSnapshot == null || dataSnapshot.getChildrenCount() <= 1) {
+                        follows.containsMore = false;
 
-                } else {
-                    follows.feeds.clear();
-                    follows.index = 0;
-                    int i = 1;
-                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                        Feed feed = snapshot.getValue(Feed.class);
-                        follows.feeds.add(feed);
-                        queue.offer(feed);
-                        i++;
-                        if (i == dataSnapshot.getChildrenCount()) {
-                            break;
+                    } else {
+                        follows.feeds.clear();
+                        follows.index = 0;
+                        int i = 1;
+                        for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                            Feed feed = snapshot.getValue(Feed.class);
+                            follows.feeds.add(feed);
+                            queue.offer(feed);
+                            i++;
+                            if (i == dataSnapshot.getChildrenCount()) {
+                                break;
+                            }
                         }
+
+                    }
+                    follows.callInProgress = false;
+                    if (onFeedRetrievedListener != null) {
+                        onFeedRetrievedListener.onFeedRetrieved(null);
                     }
 
-                }
-                follows.callInProgress = false;
-                if (onFeedRetrievedListener != null) {
-                    onFeedRetrievedListener.onFeedRetrieved(null);
+
                 }
 
-
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                follows.callInProgress = false;
-                if (onFeedRetrievedListener != null) {
-                    onFeedRetrievedListener.onError();
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                    follows.callInProgress = false;
+                    if (onFeedRetrievedListener != null) {
+                        onFeedRetrievedListener.onError();
+                    }
                 }
-            }
-        });
+            });
+        }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - retrieveFeeds : ",e.toString());
+            Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() + " - retrieveFeeds : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - retrieveFeeds : ",ex.toString());
+            Crashlytics.log(0,this.getClass().getSimpleName() + " - retrieveFeeds : ",ex.toString());
+        }
     }
 
     public interface OnFeedRetrievedListener {

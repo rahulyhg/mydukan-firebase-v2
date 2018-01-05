@@ -12,6 +12,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.crashlytics.android.Crashlytics;
 import com.crashlytics.android.answers.Answers;
 import com.crashlytics.android.answers.CustomEvent;
 import com.google.firebase.auth.FirebaseAuth;
@@ -28,9 +29,13 @@ import org.app.mydukan.application.MyDukan;
 import org.app.mydukan.data.AppStateContants;
 import org.app.mydukan.data.ChattUser;
 import org.app.mydukan.data.User;
+import org.app.mydukan.emailSending.SendEmail;
 import org.app.mydukan.server.ApiManager;
 import org.app.mydukan.server.ApiResult;
 import org.app.mydukan.utils.AppContants;
+
+import java.io.PrintWriter;
+import java.io.StringWriter;
 
 public class UserProfile extends BaseActivity implements View.OnClickListener {
 
@@ -63,55 +68,56 @@ public class UserProfile extends BaseActivity implements View.OnClickListener {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_profile);
 
-        overridePendingTransition(R.anim.right_enter, R.anim.left_out);
+        try {
+            overridePendingTransition(R.anim.right_enter, R.anim.left_out);
 
 
-        mApp = (MyDukan) getApplicationContext();
+            mApp = (MyDukan) getApplicationContext();
 
-        user_Profile_Next = (Button) findViewById(R.id.user_Profile_Next);
+            user_Profile_Next = (Button) findViewById(R.id.user_Profile_Next);
 
-        back_button_1 = (ImageView) findViewById(R.id.back_button_1);
-        user_profile_pic = (ImageView) findViewById(R.id.user_profile_pic);
+            back_button_1 = (ImageView) findViewById(R.id.back_button_1);
+            user_profile_pic = (ImageView) findViewById(R.id.user_profile_pic);
 
-        user_Profile_Name = (TextView) findViewById(R.id.user_Profile_Name);
-        user_Email_Id = (TextView) findViewById(R.id.user_Email_Id);
+            user_Profile_Name = (TextView) findViewById(R.id.user_Profile_Name);
+            user_Email_Id = (TextView) findViewById(R.id.user_Email_Id);
 
-        edit_PhoneNo = (TextView) findViewById(R.id.edit_PhoneNo);
-        edit_Address = (TextView) findViewById(R.id.edit_Address);
+            edit_PhoneNo = (TextView) findViewById(R.id.edit_PhoneNo);
+            edit_Address = (TextView) findViewById(R.id.edit_Address);
 
-        user_Phone_Number = (EditText) findViewById(R.id.user_Phone_Number);
-        user_Profile_Location = (EditText) findViewById(R.id.user_Profile_Location);
-        user_Profile_Pincode = (EditText) findViewById(R.id.user_Profile_Pincode);
-        user_Profile_State = (EditText) findViewById(R.id.user_Profile_State);
+            user_Phone_Number = (EditText) findViewById(R.id.user_Phone_Number);
+            user_Profile_Location = (EditText) findViewById(R.id.user_Profile_Location);
+            user_Profile_Pincode = (EditText) findViewById(R.id.user_Profile_Pincode);
+            user_Profile_State = (EditText) findViewById(R.id.user_Profile_State);
 
-        user_Profile_Next.setOnClickListener(this);
-        back_button_1.setOnClickListener(this);
+            user_Profile_Next.setOnClickListener(this);
+            back_button_1.setOnClickListener(this);
 
-        edit_Address.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+            edit_Address.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
 
-                Intent address = new Intent(UserProfile.this, UsersLocationAddress.class);
-                address.putExtra(AppContants.VIEW_TYPE, AppContants.USER_PROFILE);
-                overridePendingTransition(R.anim.left_enter, R.anim.right_out);
-                startActivity(address);
+                    Intent address = new Intent(UserProfile.this, UsersLocationAddress.class);
+                    address.putExtra(AppContants.VIEW_TYPE, AppContants.USER_PROFILE);
+                    overridePendingTransition(R.anim.left_enter, R.anim.right_out);
+                    startActivity(address);
 
-                Answers.getInstance().logCustom(new CustomEvent("UserProfile_Page")
-                        .putCustomAttribute("Edit_btn_Address", mApp.getFirebaseAuth().getCurrentUser().getUid()));
+                    Answers.getInstance().logCustom(new CustomEvent("UserProfile_Page")
+                            .putCustomAttribute("Edit_btn_Address", mApp.getFirebaseAuth().getCurrentUser().getUid()));
 
-            }
-        });
-        edit_PhoneNo.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+                }
+            });
+            edit_PhoneNo.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
 
-               Intent phone = new Intent(UserProfile.this, NewSignUpActivity.class);
-                phone.putExtra(AppContants.VIEW_TYPE, AppContants.USER_PROFILE);
-                overridePendingTransition(R.anim.left_enter, R.anim.right_out);
-                startActivity(phone);
+                    Intent phone = new Intent(UserProfile.this, NewSignUpActivity.class);
+                    phone.putExtra(AppContants.VIEW_TYPE, AppContants.USER_PROFILE);
+                    overridePendingTransition(R.anim.left_enter, R.anim.right_out);
+                    startActivity(phone);
 
-                Answers.getInstance().logCustom(new CustomEvent("UserProfile_Page")
-                        .putCustomAttribute("Edit_btn_PhoneNumber", mApp.getFirebaseAuth().getCurrentUser().getUid()));
+                    Answers.getInstance().logCustom(new CustomEvent("UserProfile_Page")
+                            .putCustomAttribute("Edit_btn_PhoneNumber", mApp.getFirebaseAuth().getCurrentUser().getUid()));
 
 
 
@@ -125,34 +131,53 @@ public class UserProfile extends BaseActivity implements View.OnClickListener {
                         .add(R.id.container_profile,mobileVerificationFragment, Utils.Login_Fragment).commit();
 
 */
-            }
-        });
+                }
+            });
 
 //        InitProfileView(chattUser);
-        SharedPreferences sharedPreferences2 = getSharedPreferences("firstname", Context.MODE_PRIVATE);
-        firstname = sharedPreferences2.getString("firstname", DEFAULT);
-        user_Profile_Name.setText(firstname);
-        getCurrentUserData(auth);
-        getUserProfile();
+            SharedPreferences sharedPreferences2 = getSharedPreferences("firstname", Context.MODE_PRIVATE);
+            firstname = sharedPreferences2.getString("firstname", DEFAULT);
+            user_Profile_Name.setText(firstname);
+            getCurrentUserData(auth);
+            getUserProfile();
+        }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - onCreate : ",e.toString());
+            Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() + " - onCreate : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - onCreate : ",ex.toString());
+            Crashlytics.log(0,this.getClass().getSimpleName() + " - onCreate : ",ex.toString());
+        }
     }
 
     private void getCurrentUserData(FirebaseUser auth) {
         //showProgress(true);
-        DatabaseReference feedReference = FirebaseDatabase.getInstance().getReference("chat_USER/" + auth.getUid());
-        feedReference.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                if(dataSnapshot!=null){
-                    chattUser = dataSnapshot.getValue(ChattUser.class);
-                    InitProfileView(chattUser);
+        try {
+            DatabaseReference feedReference = FirebaseDatabase.getInstance().getReference("chat_USER/" + auth.getUid());
+            feedReference.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    if (dataSnapshot != null) {
+                        chattUser = dataSnapshot.getValue(ChattUser.class);
+                        InitProfileView(chattUser);
+                    }
+                    // showProgress(false);
                 }
-                // showProgress(false);
-            }
 
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-            }
-        });
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                }
+            });
+        }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - getCurrentUserData : ",e.toString());
+            Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() + " - getCurrentUserData : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - getCurrentUserData : ",ex.toString());
+            Crashlytics.log(0,this.getClass().getSimpleName() + " - getCurrentUserData : ",ex.toString());
+        }
 
     }
 
@@ -190,62 +215,72 @@ public class UserProfile extends BaseActivity implements View.OnClickListener {
     }
 
     private void getUserProfile() {
-        showProgress();
-        if (mViewType == AppContants.SIGN_UP) {
-            mApp.getPreference().setAppState(UserProfile.this, new AppStateContants().PROFILE_SCREEN);
-        }
-        if (mApp.getFirebaseAuth().getCurrentUser() == null) {
-            return;
-        }
-        ApiManager.getInstance(UserProfile.this).getUserProfile(mApp.getFirebaseAuth().getCurrentUser().getUid(), new ApiResult() {
-            @Override
-            public void onSuccess(Object data) {
-                userdetails = (User) data;
-                if (userdetails == null) {
-                    dismissProgress();
-                    return;
-                }
+        try {
+            showProgress();
+            if (mViewType == AppContants.SIGN_UP) {
+                mApp.getPreference().setAppState(UserProfile.this, new AppStateContants().PROFILE_SCREEN);
+            }
+            if (mApp.getFirebaseAuth().getCurrentUser() == null) {
+                return;
+            }
+            ApiManager.getInstance(UserProfile.this).getUserProfile(mApp.getFirebaseAuth().getCurrentUser().getUid(), new ApiResult() {
+                @Override
+                public void onSuccess(Object data) {
+                    userdetails = (User) data;
+                    if (userdetails == null) {
+                        dismissProgress();
+                        return;
+                    }
 
-                Answers.getInstance().logCustom(new CustomEvent("UserProfile_Page")
-                        .putCustomAttribute("UserProfile_PageOpened", mApp.getFirebaseAuth().getCurrentUser().getUid() ));
+                    Answers.getInstance().logCustom(new CustomEvent("UserProfile_Page")
+                            .putCustomAttribute("UserProfile_PageOpened", mApp.getFirebaseAuth().getCurrentUser().getUid()));
 
-                if (userdetails.getUserinfo() != null) {
+                    if (userdetails.getUserinfo() != null) {
 //                    user_Profile_Name.setText(mApp.getUtils().toCamelCase(userdetails.getUserinfo().getName()));
 //                    user_Email_Id.setText(mApp.getUtils().toSameCase(userdetails.getUserinfo().getEmailid()).toLowerCase());
-                    String phoneNum = userdetails.getUserinfo().getNumber();
-                    if(phoneNum!=null){
-                        user_Phone_Number.setText(phoneNum);
+                        String phoneNum = userdetails.getUserinfo().getNumber();
+                        if (phoneNum != null) {
+                            user_Phone_Number.setText(phoneNum);
 
-                    }else{
-                        user_Phone_Number.setText(userdetails.getUserinfo().getNumber());
+                        } else {
+                            user_Phone_Number.setText(userdetails.getUserinfo().getNumber());
 
-                    }
-                    // mNumberView.setText(userdetails.getUserinfo().getNumber());
-                    // digitsButton.setVisibility(View.GONE);
-                    // mValidatedbtn.setVisibility(View.GONE);
-                    // mNumberView.setEnabled(true);
+                        }
+                        // mNumberView.setText(userdetails.getUserinfo().getNumber());
+                        // digitsButton.setVisibility(View.GONE);
+                        // mValidatedbtn.setVisibility(View.GONE);
+                        // mNumberView.setEnabled(true);
 
 
-                    if (userdetails.getUserinfo().getAddressinfo() != null) {
-                        user_Profile_Pincode.setText(userdetails.getUserinfo().getAddressinfo().getPincode());
-                        user_Profile_Location.setText(mApp.getUtils().toSameCase(userdetails.getUserinfo().getAddressinfo().getStreet()));
+                        if (userdetails.getUserinfo().getAddressinfo() != null) {
+                            user_Profile_Pincode.setText(userdetails.getUserinfo().getAddressinfo().getPincode());
+                            user_Profile_Location.setText(mApp.getUtils().toSameCase(userdetails.getUserinfo().getAddressinfo().getStreet()));
 //                        mCityView.setText(mApp.getUtils().toCamelCase(userdetails.getUserinfo().getAddressinfo().getCity()));
-                        user_Profile_State.setText(mApp.getUtils().toCamelCase(userdetails.getUserinfo().getAddressinfo().getState()));
+                            user_Profile_State.setText(mApp.getUtils().toCamelCase(userdetails.getUserinfo().getAddressinfo().getState()));
 
+                        }
+
+
+                        //Initialize AppDukan
                     }
-
-
-                    //Initialize AppDukan
+                    dismissProgress();
                 }
-                dismissProgress();
-            }
 
-            @Override
-            public void onFailure(String response) {
-                //Do when there is no data present in firebase
-                dismissProgress();
-            }
-        });
+                @Override
+                public void onFailure(String response) {
+                    //Do when there is no data present in firebase
+                    dismissProgress();
+                }
+            });
+        }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - getUserProfile : ",e.toString());
+            Crashlytics.log(0,"Exception - UserProfile - getUserProfile : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - getUserProfile : ",ex.toString());
+            Crashlytics.log(0,"1 - UserProfile - getUserProfile : ",ex.toString());
+        }
     }
 
     @Override
@@ -287,6 +322,6 @@ public class UserProfile extends BaseActivity implements View.OnClickListener {
 
                 break;
 
-            }
+        }
     }
 }

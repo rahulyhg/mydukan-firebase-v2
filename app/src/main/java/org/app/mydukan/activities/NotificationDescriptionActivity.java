@@ -12,14 +12,18 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.crashlytics.android.Crashlytics;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.MobileAds;
 
 import org.app.mydukan.R;
 import org.app.mydukan.application.MyDukan;
+import org.app.mydukan.emailSending.SendEmail;
 import org.app.mydukan.utils.AppContants;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.HashMap;
 
 public class NotificationDescriptionActivity extends Activity {
@@ -44,45 +48,55 @@ public class NotificationDescriptionActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_notification_description);
 
-        mApp = (MyDukan) getApplicationContext();
-        //initialization of adview in this activity//
+        try {
+            mApp = (MyDukan) getApplicationContext();
+            //initialization of adview in this activity//
 
-        MobileAds.initialize(this,"ca-app-pub-1640690939729824/9566634197");
-        AdView cALdview=(AdView)findViewById(R.id.adView_MainFragment_one);//adView_MainFragment
-        AdRequest adRequest= new AdRequest.Builder().build();
-        cALdview.loadAd(adRequest);
+            MobileAds.initialize(this, "ca-app-pub-1640690939729824/9566634197");
+            AdView cALdview = (AdView) findViewById(R.id.adView_MainFragment_one);//adView_MainFragment
+            AdRequest adRequest = new AdRequest.Builder().build();
+            cALdview.loadAd(adRequest);
 
-        //end of adview mobAds//
-        mSupplierNameView= (TextView) findViewById(R.id.tv_msgTitle);
-        mNotificationTextView= (TextView) findViewById(R.id.tv_msgBody);
-        mNotificationImage = (ImageView) findViewById(R.id.img_Notification);
-        backButton = (ImageButton) findViewById(R.id.ibtn_Back);
-        shareButton = (ImageButton) findViewById(R.id.ibtn_share);
+            //end of adview mobAds//
+            mSupplierNameView = (TextView) findViewById(R.id.tv_msgTitle);
+            mNotificationTextView = (TextView) findViewById(R.id.tv_msgBody);
+            mNotificationImage = (ImageView) findViewById(R.id.img_Notification);
+            backButton = (ImageButton) findViewById(R.id.ibtn_Back);
+            shareButton = (ImageButton) findViewById(R.id.ibtn_share);
 
-        wv1=(WebView)findViewById(R.id.webview);
-        wv1.setWebViewClient(new MyBrowser());
-        //get the initial data
-        Bundle bundle = getIntent().getExtras();
-        if(bundle != null){
-            if(bundle.containsKey(AppContants.NOTIFICATION)) {
-                mNotification = (HashMap) bundle.getSerializable(AppContants.NOTIFICATION);
+            wv1 = (WebView) findViewById(R.id.webview);
+            wv1.setWebViewClient(new MyBrowser());
+            //get the initial data
+            Bundle bundle = getIntent().getExtras();
+            if (bundle != null) {
+                if (bundle.containsKey(AppContants.NOTIFICATION)) {
+                    mNotification = (HashMap) bundle.getSerializable(AppContants.NOTIFICATION);
+                }
+                setLayoutView(mNotification);
             }
-            setLayoutView(mNotification);
+
+            backButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    startActivity(new Intent(NotificationDescriptionActivity.this, MainActivity.class));
+                    finish();
+                }
+            });
+            shareButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    shareTheLink(mNotification);
+                }
+            });
+        }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - onCreate : ",e.toString());
+            Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() + " - onCreate : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - onCreate : ",ex.toString());
+            Crashlytics.log(0,this.getClass().getSimpleName() + " - onCreate : ",ex.toString());
         }
-
-        backButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(NotificationDescriptionActivity.this, MainActivity.class));
-                finish();
-            }
-        });
-        shareButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                shareTheLink(mNotification);
-            }
-        });
     }
     private void shareTheLink(HashMap nNotification) {
         String nTitle= String.valueOf(nNotification.get("notificationTitle"));
@@ -113,15 +127,15 @@ public class NotificationDescriptionActivity extends Activity {
     private void setLayoutView(HashMap mNotification) {
 
         String mTitle= "";
-        if(mNotification.containsKey("notificationTitle"))
+        if(mNotification != null && mNotification.containsKey("notificationTitle"))
             mTitle= String.valueOf(mNotification.get("notificationTitle"));
 
         String mMessage="";
-        if(mNotification.containsKey("notificationMessage"))
+        if(mNotification != null && mNotification.containsKey("notificationMessage"))
             mMessage= String.valueOf(mNotification.get("notificationMessage"));
 
         String mImageURL="";
-        if(mNotification.containsKey("notificationImage"))
+        if(mNotification != null && mNotification.containsKey("notificationImage"))
             mImageURL= String.valueOf(mNotification.get("notificationImage"));
 
         mSupplierNameView.setText(mTitle );

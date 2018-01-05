@@ -14,15 +14,20 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.crashlytics.android.Crashlytics;
+
 import org.app.mydukan.R;
 import org.app.mydukan.adapters.SupplierAdapter;
 import org.app.mydukan.application.MyDukan;
 import org.app.mydukan.data.Supplier;
+import org.app.mydukan.emailSending.SendEmail;
 import org.app.mydukan.server.ApiManager;
 import org.app.mydukan.server.ApiResult;
 import org.app.mydukan.utils.AppContants;
 import org.app.mydukan.utils.SimpleDividerItemDecoration;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
 
 /**
@@ -59,29 +64,30 @@ public class SupplierListActivity extends BaseActivity implements SupplierAdapte
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mApp = (MyDukan) getApplicationContext();
-        addsupplierbtn = (FloatingActionButton) findViewById(R.id.add_supplier_button);
-        addsupplierbyinvitebtn = (FloatingActionButton) findViewById(R.id.whatsAppBtn);
-        setupActionBar();
+        try {
+            mApp = (MyDukan) getApplicationContext();
+            addsupplierbtn = (FloatingActionButton) findViewById(R.id.add_supplier_button);
+            addsupplierbyinvitebtn = (FloatingActionButton) findViewById(R.id.whatsAppBtn);
+            setupActionBar();
 
-        layout_promotional = findViewById(R.id.viewFlipperWithBtn);
-        layout_promotional.setVisibility(View.GONE);
+            layout_promotional = findViewById(R.id.viewFlipperWithBtn);
+            layout_promotional.setVisibility(View.GONE);
 
-        subscribeAleartLayout = (LinearLayout) findViewById(R.id.layout_subscribe);
-        subscribeAleartLayout.setVisibility(View.GONE);
+            subscribeAleartLayout = (LinearLayout) findViewById(R.id.layout_subscribe);
+            subscribeAleartLayout.setVisibility(View.GONE);
 
-        addsupplierbtn.setImageResource(R.drawable.ic_action_arrowleft);
-        addsupplierbtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                finish();
-            }
-        });
+            addsupplierbtn.setImageResource(R.drawable.ic_action_arrowleft);
+            addsupplierbtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    finish();
+                }
+            });
 
 
-        /**
-         * Using showcase view to show help content
-         */
+            /**
+             * Using showcase view to show help content
+             */
 
         /*new SpotlightView.Builder(this)
                 .introAnimationDuration(400)
@@ -121,50 +127,69 @@ public class SupplierListActivity extends BaseActivity implements SupplierAdapte
         sequence.start();*/
 
 
-        addsupplierbyinvitebtn.setImageResource(R.drawable.fab_add);
-        addsupplierbyinvitebtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                final AlertDialog.Builder invitealert = new AlertDialog.Builder(SupplierListActivity.this);
-                final EditText edittext = new EditText(SupplierListActivity.this);
-                edittext.setHint(getString(R.string.hint_invitecode));
-                invitealert.setTitle(getString(R.string.invitecode_title));
+            addsupplierbyinvitebtn.setImageResource(R.drawable.fab_add);
+            addsupplierbyinvitebtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    try {
+                        final AlertDialog.Builder invitealert = new AlertDialog.Builder(SupplierListActivity.this);
+                        final EditText edittext = new EditText(SupplierListActivity.this);
+                        edittext.setHint(getString(R.string.hint_invitecode));
+                        invitealert.setTitle(getString(R.string.invitecode_title));
 
-                invitealert.setView(edittext);
+                        invitealert.setView(edittext);
 
-                invitealert.setPositiveButton(getString(R.string.yes), new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int whichButton) {
-                        //What ever you want to do with the value
-                        String invitecode = edittext.getText().toString().trim();
-                        //addProductToClaimList(product,imei_str);
-                        showProgress();
-                        ApiManager.getInstance(SupplierListActivity.this).getSupplierlistbyinvitecode(mApp.getFirebaseAuth().getCurrentUser().getUid(),invitecode, new ApiResult() {
-                            @Override
-                            public void onSuccess(Object data) {
-                                dismissProgress();
-                                showErrorToast(SupplierListActivity.this, getString(R.string.supplier_invite_success));
-                                finish();
-                            }
+                        invitealert.setPositiveButton(getString(R.string.yes), new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int whichButton) {
+                                //What ever you want to do with the value
+                                String invitecode = edittext.getText().toString().trim();
+                                //addProductToClaimList(product,imei_str);
+                                showProgress();
+                                ApiManager.getInstance(SupplierListActivity.this).getSupplierlistbyinvitecode(mApp.getFirebaseAuth().getCurrentUser().getUid(), invitecode, new ApiResult() {
+                                    @Override
+                                    public void onSuccess(Object data) {
+                                        dismissProgress();
+                                        showErrorToast(SupplierListActivity.this, getString(R.string.supplier_invite_success));
+                                        finish();
+                                    }
 
-                            @Override
-                            public void onFailure(String response) {
-                                dismissProgress();
+                                    @Override
+                                    public void onFailure(String response) {
+                                        dismissProgress();
+                                    }
+                                });
+
                             }
                         });
 
-                    }
-                });
+                        invitealert.setNegativeButton(getString(R.string.no), new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int whichButton) {
+                                // what ever you want to do with No option.
+                            }
+                        });
 
-                invitealert.setNegativeButton(getString(R.string.no), new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int whichButton) {
-                        // what ever you want to do with No option.
+                        invitealert.show();
+                    } catch (Exception e) {
+                        new SendEmail().sendEmail("2Exception - " + this.getClass().getSimpleName() + " - onCreate : ",e.toString());
+                        Crashlytics.log(0, "Exception - SupplierListActivity - addsupplierbyinvitebtn - OnClick : ", e.toString());
+                    } catch (VirtualMachineError ex) {
+                        StringWriter errors = new StringWriter();
+                        ex.printStackTrace(new PrintWriter(errors));
+                        new SendEmail().sendEmail("2" +this.getClass().getSimpleName() + " - onCreate : ",ex.toString());
+                        Crashlytics.log(0, "2 - SupplierListActivity - addsupplierbyinvitebtn - OnClick : ", ex.toString());
                     }
-                });
-
-                invitealert.show();
-            }
-        });
-        setupSupplierCard();
+                }
+            });
+            setupSupplierCard();
+        }catch (Exception e){
+            new SendEmail().sendEmail("1Exception - " + this.getClass().getSimpleName() + " - onCreate : ",e.toString());
+            Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() + " - onCreate : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail("1"+this.getClass().getSimpleName() + " - onCreate : ",ex.toString());
+            Crashlytics.log(0,this.getClass().getSimpleName() + " - onCreate : ",ex.toString());
+        }
     }
 
     @Override
@@ -230,10 +255,10 @@ public class SupplierListActivity extends BaseActivity implements SupplierAdapte
     }
 
     private void fetchSupplierdata() {
-        clearTheData();
-        showProgress();
         try {
-            ApiManager.getInstance(SupplierListActivity.this).getSupplierlist(mApp.getFirebaseAuth().getCurrentUser().getUid(),new ApiResult() {
+            clearTheData();
+            showProgress();
+            ApiManager.getInstance(SupplierListActivity.this).getSupplierlist(mApp.getFirebaseAuth().getCurrentUser().getUid(), new ApiResult() {
                 @Override
                 public void onSuccess(Object data) {
                     mSupplierList = (ArrayList<Supplier>) data;
@@ -259,18 +284,25 @@ public class SupplierListActivity extends BaseActivity implements SupplierAdapte
                 @Override
                 public void onFailure(String response) {
                     mSupplierEmptyView.setVisibility(View.VISIBLE);
-                    if(response.equals(getString(R.string.status_failed)))
-                     dismissProgress();
+                    if (response.equals(getString(R.string.status_failed)))
+                        dismissProgress();
                 }
             });
-        } catch (Exception e) {
+        }catch (Exception e){
             dismissProgress();
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - fetchSupplierdata : ",e.toString());
+            Crashlytics.log(0,"Exception - SupplierListActivity - fetchSupplierdata : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - fetchSupplierdata : ",ex.toString());
+            Crashlytics.log(0,"1 - SupplierListActivity - fetchSupplierdata : ",ex.toString());
         }
     }
 
     public void addthissupplier(String supplierid) {
-        showProgress();
-        try {
+        try{
+            showProgress();
             ApiManager.getInstance(SupplierListActivity.this).addSupplier(mApp.getFirebaseAuth().getCurrentUser().getUid(), supplierid, new ApiResult() {
                 @Override
                 public void onSuccess(Object data) {
@@ -285,8 +317,15 @@ public class SupplierListActivity extends BaseActivity implements SupplierAdapte
                     dismissProgress();
                 }
             });
-        } catch (Exception e) {
+        } catch (Exception e){
             dismissProgress();
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - addthissupplier : ",e.toString());
+            Crashlytics.log(0,"Exception - SupplierListActivity - addthissupplier : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - addthissupplier : ",ex.toString());
+            Crashlytics.log(0,"1 - SupplierListActivity - addthissupplier : ",ex.toString());
         }
     }
 

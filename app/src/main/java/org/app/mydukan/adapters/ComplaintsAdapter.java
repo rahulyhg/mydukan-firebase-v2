@@ -8,11 +8,15 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.crashlytics.android.Crashlytics;
+
 import org.app.mydukan.R;
 import org.app.mydukan.application.MyDukan;
 import org.app.mydukan.data.Complaint;
-import org.app.mydukan.data.Scheme;
+import org.app.mydukan.emailSending.SendEmail;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -52,25 +56,35 @@ public class ComplaintsAdapter extends RecyclerView.Adapter<ComplaintsAdapter.Vi
 
     @Override
     public void onBindViewHolder(ComplaintsAdapter.ViewHolder holder, final int position) {
-        Complaint complaint = mSchemesList.get(position);
+        try {
+            Complaint complaint = mSchemesList.get(position);
 
-        holder.mIdView.setText("Id:" + complaint.getComplaintId());
-        holder.mNameView.setText("Supplier Name :" + mApp.getUtils().toCamelCase(mSupplierName));
-        holder.mDateView.setText("Create Date : " + String.valueOf(mApp.getUtils().dateFormatter(complaint.getCreateddate(), "dd-MM-yy")));
-        holder.mStatusView.setText("Status: " + complaint.getStatus());
-        if(!mApp.getUtils().isStringEmpty(complaint.getComment())){
-            holder.mCommentView.setVisibility(View.VISIBLE);
-            holder.mCommentView.setText("Comment:" + complaint.getComment());
-        } else {
-            holder.mCommentView.setVisibility(View.GONE);
-        }
-
-        holder.mComplaintLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mListener.OnClick(position);
+            holder.mIdView.setText("Id:" + complaint.getComplaintId());
+            holder.mNameView.setText("Supplier Name :" + mApp.getUtils().toCamelCase(mSupplierName));
+            holder.mDateView.setText("Create Date : " + String.valueOf(mApp.getUtils().dateFormatter(complaint.getCreateddate(), "dd-MM-yy")));
+            holder.mStatusView.setText("Status: " + complaint.getStatus());
+            if (!mApp.getUtils().isStringEmpty(complaint.getComment())) {
+                holder.mCommentView.setVisibility(View.VISIBLE);
+                holder.mCommentView.setText("Comment:" + complaint.getComment());
+            } else {
+                holder.mCommentView.setVisibility(View.GONE);
             }
-        });
+
+            holder.mComplaintLayout.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    mListener.OnClick(position);
+                }
+            });
+        }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - onBindViewHolder : ",e.toString());
+            Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() + " - onBindViewHolder : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - onBindViewHolder : ",ex.toString());
+            Crashlytics.log(0,this.getClass().getSimpleName() + " - onBindViewHolder : ",ex.toString());
+        }
     }
 
     @Override

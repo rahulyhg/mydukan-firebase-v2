@@ -8,11 +8,15 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.crashlytics.android.Crashlytics;
+
 import org.app.mydukan.R;
 import org.app.mydukan.application.MyDukan;
-import org.app.mydukan.data.Category;
 import org.app.mydukan.data.Order;
+import org.app.mydukan.emailSending.SendEmail;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -53,26 +57,36 @@ public class MyOrderAdapter extends RecyclerView.Adapter<MyOrderAdapter.ViewHold
 
     @Override
     public void onBindViewHolder(MyOrderAdapter.ViewHolder holder, final int position) {
-        Order myorder = mDataList.get(position);
+        try {
+            Order myorder = mDataList.get(position);
 
-        holder.mOrderidView.setText(": "+myorder.getOrderId());
-        holder.mQuantity.setText(String.valueOf(myorder.getProductList().size()));
-        holder.mGrandtotal.setText(": Rs."+ myorder.getOrderInfo().getTotalamount());
-        holder.mStatusview.setText(": "+myorder.getOrderInfo().getStatus());
+            holder.mOrderidView.setText(": " + myorder.getOrderId());
+            holder.mQuantity.setText(String.valueOf(myorder.getProductList().size()));
+            holder.mGrandtotal.setText(": Rs." + myorder.getOrderInfo().getTotalamount());
+            holder.mStatusview.setText(": " + myorder.getOrderInfo().getStatus());
 
-        if(!mApp.getUtils().isStringEmpty(myorder.getOrderInfo().getExecutionstatus())){
-            holder.mExeStatusLayout.setVisibility(View.VISIBLE);
-            holder.mExecutionStatusview.setText(": "+myorder.getOrderInfo().getExecutionstatus());
-        } else {
-            holder.mExeStatusLayout.setVisibility(View.GONE);
-        }
-
-        holder.mOrderLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mListener.OnClick(position);
+            if (!mApp.getUtils().isStringEmpty(myorder.getOrderInfo().getExecutionstatus())) {
+                holder.mExeStatusLayout.setVisibility(View.VISIBLE);
+                holder.mExecutionStatusview.setText(": " + myorder.getOrderInfo().getExecutionstatus());
+            } else {
+                holder.mExeStatusLayout.setVisibility(View.GONE);
             }
-        });
+
+            holder.mOrderLayout.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    mListener.OnClick(position);
+                }
+            });
+        }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - onBindViewHolder : ",e.toString());
+            Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() + " - onBindViewHolder : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - onBindViewHolder : ",ex.toString());
+            Crashlytics.log(0,this.getClass().getSimpleName() + " - onBindViewHolder : ",ex.toString());
+        }
     }
 
     @Override

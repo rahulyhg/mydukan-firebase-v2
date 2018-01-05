@@ -17,9 +17,13 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
-
+import com.crashlytics.android.Crashlytics;
 
 import org.app.mydukan.R;
+import org.app.mydukan.emailSending.SendEmail;
+
+import java.io.PrintWriter;
+import java.io.StringWriter;
 
 /**
  * Created by arpithadudi on 9/6/16.
@@ -38,57 +42,67 @@ public class HelpActivity extends BaseActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_help);
-        setupActionBar();
-
-        PackageInfo pInfo = null;
         try {
-            pInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
-            version = pInfo.versionName;
-            verCode = pInfo.versionCode;
-            int i= 20;
-        } catch (PackageManager.NameNotFoundException e) {
-            e.printStackTrace();
-        }
+            setupActionBar();
 
-
-        mVersionTextView = (TextView) findViewById(R.id.version);
-        mHelpLineTextView = (TextView) findViewById(R.id.helpno);
-        button_PrivacyPolicy = (Button) findViewById(R.id.btn_PrivacyPolicy);
-        youtubeVideo = (Button) findViewById(R.id.btn_youtube);
-        youtubeVideo.setVisibility(View.GONE);
-
-        youtubeVideo.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(HelpActivity.this, VideoActivity.class);
-                startActivity(intent);
+            PackageInfo pInfo = null;
+            try {
+                pInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
+                version = pInfo.versionName;
+                verCode = pInfo.versionCode;
+                int i = 20;
+            } catch (PackageManager.NameNotFoundException e) {
+                e.printStackTrace();
             }
-        });
 
-        button_PrivacyPolicy.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(HelpActivity.this, PrivacyPolicyActivity.class);
-                startActivity(intent);
-                //   PaytmOrderInfo paytmOrderInfo= new PaytmOrderInfo();
-                // paytmOrderInfo=VolleyApiManager.useData(HelpActivity.this,"RetDig03944840906164","4c45bb65-13a1-46c9-b6a8-889de6e6ad6a");
 
-            }
-        });
+            mVersionTextView = (TextView) findViewById(R.id.version);
+            mHelpLineTextView = (TextView) findViewById(R.id.helpno);
+            button_PrivacyPolicy = (Button) findViewById(R.id.btn_PrivacyPolicy);
+            youtubeVideo = (Button) findViewById(R.id.btn_youtube);
+            youtubeVideo.setVisibility(View.GONE);
 
-        mVersionTextView.setText("Version: "+String.format(String.valueOf(verCode)));
-
-        mHelpLineTextView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (contactExists(HelpActivity.this, "+919036770772")) {
-                    sendwhatsapp();
-                } else if (!contactExists(HelpActivity.this, "+919036770772")) {
-                    showProgress();
-                    addcontact();
+            youtubeVideo.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(HelpActivity.this, VideoActivity.class);
+                    startActivity(intent);
                 }
-            }
-        });
+            });
+
+            button_PrivacyPolicy.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(HelpActivity.this, PrivacyPolicyActivity.class);
+                    startActivity(intent);
+                    //   PaytmOrderInfo paytmOrderInfo= new PaytmOrderInfo();
+                    // paytmOrderInfo=VolleyApiManager.useData(HelpActivity.this,"RetDig03944840906164","4c45bb65-13a1-46c9-b6a8-889de6e6ad6a");
+
+                }
+            });
+
+            mVersionTextView.setText("Version: " + String.format(String.valueOf(verCode)));
+
+            mHelpLineTextView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (contactExists(HelpActivity.this, "+919036770772")) {
+                        sendwhatsapp();
+                    } else if (!contactExists(HelpActivity.this, "+919036770772")) {
+                        showProgress();
+                        addcontact();
+                    }
+                }
+            });
+        }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - onCreate : ",e.toString());
+            Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() + " - onCreate : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - onCreate : ",ex.toString());
+            Crashlytics.log(0,this.getClass().getSimpleName() + " - onCreate : ",ex.toString());
+        }
     }
 
 

@@ -1,7 +1,6 @@
 package org.app.mydukan.activities;
 
 import android.os.Bundle;
-import android.os.PersistableBundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -11,6 +10,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.crashlytics.android.Crashlytics;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -18,7 +18,11 @@ import com.google.firebase.database.FirebaseDatabase;
 import org.app.mydukan.R;
 import org.app.mydukan.application.MyDukan;
 import org.app.mydukan.data.NotificationData;
+import org.app.mydukan.emailSending.SendEmail;
 import org.app.mydukan.utils.SimpleDividerItemDecoration;
+
+import java.io.PrintWriter;
+import java.io.StringWriter;
 
 /**
  * Created by arpithadudi on 9/30/16.
@@ -39,14 +43,24 @@ public class NotificationsActivity extends BaseActivity {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.activity_notifications);
+        try {
+            setContentView(R.layout.activity_notifications);
 
-        mApp = (MyDukan) getApplicationContext();
+            mApp = (MyDukan) getApplicationContext();
 
-        //setup actionbar
-        setupActionBar();
-        setupListView();
-        setupTheAdapter();
+            //setup actionbar
+            setupActionBar();
+            setupListView();
+            setupTheAdapter();
+        }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - onCreate : ",e.toString());
+            Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() + " - onCreate : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - onCreate : ",ex.toString());
+            Crashlytics.log(0,this.getClass().getSimpleName() + " - onCreate : ",ex.toString());
+        }
     }
 
     private void setupActionBar() {

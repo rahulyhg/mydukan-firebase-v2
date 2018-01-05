@@ -7,10 +7,15 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.Toast;
 
+import com.crashlytics.android.Crashlytics;
 import com.moe.pushlibrary.MoEHelper;
 
-import org.app.mydukan.utils.ProgressSpinner;
 import org.app.mydukan.R;
+import org.app.mydukan.emailSending.SendEmail;
+import org.app.mydukan.utils.ProgressSpinner;
+
+import java.io.PrintWriter;
+import java.io.StringWriter;
 
 /**
  * Created by arpithadudi on 7/27/16.
@@ -20,13 +25,23 @@ public class BaseActivity extends AppCompatActivity {
     private ProgressSpinner mProgress;
     private MoEHelper mHelper;
     public void showProgress() {
-        if (!isFinishing()) {
-            if (mProgress != null && mProgress.isShowing()) {
-                mProgress.dismiss();
+        try{
+            if (!isFinishing()) {
+                if (mProgress != null && mProgress.isShowing()) {
+                    mProgress.dismiss();
+                }
+                mProgress = ProgressSpinner.show(this, "", "");
+                mProgress.setCancelable(true);
+                mProgress.setCanceledOnTouchOutside(false);
             }
-            mProgress = ProgressSpinner.show(this, "", "");
-            mProgress.setCancelable(true);
-            mProgress.setCanceledOnTouchOutside(false);
+        }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - onCreate : ",e.toString());
+            Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() +" - onCreate : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            Crashlytics.log(0,this.getClass().getSimpleName() +" - onCreate : ",ex.toString());
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - onCreate : ",ex.toString());
         }
     }
 
@@ -36,8 +51,14 @@ public class BaseActivity extends AppCompatActivity {
                 mProgress.dismiss();
             }
             mProgress = null;
-        } catch (Exception e) {
-
+        }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - dismissProgress : ",e.toString());
+            Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() +" - dismissProgress : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - dismissProgress : ",ex.toString());
+            Crashlytics.log(0,this.getClass().getSimpleName() +" - dismissProgress : ",ex.toString());
         }
     }
 
@@ -87,13 +108,34 @@ public class BaseActivity extends AppCompatActivity {
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        mHelper.onSaveInstanceState(outState);
+        try{
+            super.onSaveInstanceState(outState);
+            mHelper.onSaveInstanceState(outState);
+        }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - onSaveInstanceState : ",e.toString());
+            Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() +" - onSaveInstanceState : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - onSaveInstanceState : ",ex.toString());
+            Crashlytics.log(0,this.getClass().getSimpleName() +" - onSaveInstanceState : ",ex.toString());
+        }
     }
 
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
-        super.onRestoreInstanceState(savedInstanceState);
-        mHelper.onRestoreInstanceState(savedInstanceState);
+        try{
+            super.onRestoreInstanceState(savedInstanceState);
+            mHelper.onRestoreInstanceState(savedInstanceState);
+        }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - onRestoreInstanceState : ",e.toString());
+            Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() +" - onRestoreInstanceState : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - onRestoreInstanceState : ",ex.toString());
+            Crashlytics.log(0,this.getClass().getSimpleName() +" - onRestoreInstanceState : ",ex.toString());
+        }
     }
 }
+

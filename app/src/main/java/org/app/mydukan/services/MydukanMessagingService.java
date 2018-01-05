@@ -15,9 +15,9 @@ import android.net.Uri;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.TaskStackBuilder;
 import android.util.Log;
-
 import android.widget.RemoteViews;
 
+import com.crashlytics.android.Crashlytics;
 import com.crashlytics.android.answers.Answers;
 import com.crashlytics.android.answers.CustomEvent;
 import com.google.firebase.messaging.FirebaseMessagingService;
@@ -34,6 +34,7 @@ import org.app.mydukan.data.Feed;
 import org.app.mydukan.data.Product;
 import org.app.mydukan.data.Supplier;
 import org.app.mydukan.data.SupplierBindData;
+import org.app.mydukan.emailSending.SendEmail;
 import org.app.mydukan.server.ApiManager;
 import org.app.mydukan.server.ApiResult;
 import org.app.mydukan.utils.AppContants;
@@ -42,6 +43,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.InputStream;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.math.BigInteger;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -217,7 +220,14 @@ public class MydukanMessagingService extends FirebaseMessagingService {
                 public void onFailure(String response) {
                 }
             });
-        } catch (Exception e) {
+        } catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - retrieveProductData : ",e.toString());
+            Crashlytics.log(0,"Exception - MydukanMessagingService - retrieveProductData : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - retrieveProductData : ",ex.toString());
+            Crashlytics.log(0,"1 - MydukanMessagingService - retrieveProductData : ",ex.toString());
         }
     }
 
@@ -233,7 +243,14 @@ public class MydukanMessagingService extends FirebaseMessagingService {
                 public void onFailure(String response) {
                 }
             });
-        } catch (Exception e) {
+        } catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - retrieveFeedsData : ",e.toString());
+            Crashlytics.log(0,"Exception - MydukanMessagingService - retrieveFeedsData : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - retrieveFeedsData : ",ex.toString());
+            Crashlytics.log(0,"1 - MydukanMessagingService - retrieveFeedsData : ",ex.toString());
         }
     }
 

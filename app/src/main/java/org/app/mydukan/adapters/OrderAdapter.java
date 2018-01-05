@@ -10,10 +10,15 @@ import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.crashlytics.android.Crashlytics;
+
 import org.app.mydukan.R;
 import org.app.mydukan.application.MyDukan;
 import org.app.mydukan.data.OrderProduct;
+import org.app.mydukan.emailSending.SendEmail;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -66,39 +71,49 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.ViewHolder> 
 
     @Override
     public void onBindViewHolder(final OrderAdapter.ViewHolder holder, final int position) {
-        OrderProduct myorder = mOrderList.get(position);
-        holder.mDisplayLayout.setVisibility(View.VISIBLE);
-        holder.mEditLayout.setVisibility(View.GONE);
+        try {
+            OrderProduct myorder = mOrderList.get(position);
+            holder.mDisplayLayout.setVisibility(View.VISIBLE);
+            holder.mEditLayout.setVisibility(View.GONE);
 
-        holder.mNameView.setText(mApp.getUtils().toCamelCase(myorder.getProductname()));
-        holder.mQuantityView.setText(mApp.getResources().getString(R.string.quantity) + ":" +String.valueOf(myorder.getQuantity()));
-        holder.mPriceView.setText(mApp.getUtils().getPriceFormat(String.valueOf(myorder.getPrice())));
-        holder.mEditBtn.setTag(myorder.getQuantity());
-        holder.mEditBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                holder.mEditLayout.setVisibility(View.VISIBLE);
-                holder.mQuantityEditView.setText(String.valueOf(view.getTag()));
+            holder.mNameView.setText(mApp.getUtils().toCamelCase(myorder.getProductname()));
+            holder.mQuantityView.setText(mApp.getResources().getString(R.string.quantity) + ":" + String.valueOf(myorder.getQuantity()));
+            holder.mPriceView.setText(mApp.getUtils().getPriceFormat(String.valueOf(myorder.getPrice())));
+            holder.mEditBtn.setTag(myorder.getQuantity());
+            holder.mEditBtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    holder.mEditLayout.setVisibility(View.VISIBLE);
+                    holder.mQuantityEditView.setText(String.valueOf(view.getTag()));
+                }
+            });
+
+            holder.mDeleteBtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    mListener.OnDeleteClick(position);
+                }
+            });
+
+            holder.mOkBtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    String noOfItems = holder.mQuantityEditView.getText().toString();
+                    mListener.OnEditDone(position, noOfItems);
+                }
+            });
+
+            if (mViewtype.equals(VIEW)) {
+                holder.mEditBtn.setVisibility(View.GONE);
             }
-        });
-
-        holder.mDeleteBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mListener.OnDeleteClick(position);
-            }
-        });
-
-        holder.mOkBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String noOfItems = holder.mQuantityEditView.getText().toString();
-                mListener.OnEditDone(position,noOfItems);
-            }
-        });
-
-        if(mViewtype.equals(VIEW)){
-            holder.mEditBtn.setVisibility(View.GONE);
+        }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - onBindViewHolder : ",e.toString());
+            Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() + " - onBindViewHolder : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - onBindViewHolder : ",ex.toString());
+            Crashlytics.log(0,this.getClass().getSimpleName() + " - onBindViewHolder : ",ex.toString());
         }
     }
 

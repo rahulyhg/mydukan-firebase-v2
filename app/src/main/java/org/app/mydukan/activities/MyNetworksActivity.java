@@ -17,6 +17,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.crashlytics.android.Crashlytics;
 import com.crashlytics.android.answers.Answers;
 import com.crashlytics.android.answers.CustomEvent;
 import com.google.common.base.Predicate;
@@ -36,12 +37,15 @@ import org.app.mydukan.adapters.NetworkContactsAdapter;
 import org.app.mydukan.data.ChattUser;
 import org.app.mydukan.data.ContactUsers;
 import org.app.mydukan.data.Feed;
+import org.app.mydukan.emailSending.SendEmail;
 import org.app.mydukan.fragments.MyNetworkFragment;
 import org.app.mydukan.fragments.TwoFragment;
 import org.app.mydukan.utils.AppContants;
 import org.app.mydukan.utils.Utils;
 
+import java.io.PrintWriter;
 import java.io.Serializable;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -79,23 +83,24 @@ public class MyNetworksActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my_networks);
-        Answers.getInstance().logCustom(new CustomEvent("MyNetwork")
-                .putCustomAttribute("MyNetwork_page", "Mynetwork page Opened"));
-        profileIMG= (ImageView) findViewById(R.id.img_pic);
+        try {
+            Answers.getInstance().logCustom(new CustomEvent("MyNetwork")
+                    .putCustomAttribute("MyNetwork_page", "Mynetwork page Opened"));
+            profileIMG = (ImageView) findViewById(R.id.img_pic);
 
-        profileName=(TextView) findViewById(R.id.tv_profileName);
-        profileEmail=(TextView) findViewById(R.id.tv_profileEmail);
-        profile_view = (RelativeLayout) findViewById(R.id.profile_view);
-        searchBTN =(ImageView) findViewById(R.id.btn_Search);
+            profileName = (TextView) findViewById(R.id.tv_profileName);
+            profileEmail = (TextView) findViewById(R.id.tv_profileEmail);
+            profile_view = (RelativeLayout) findViewById(R.id.profile_view);
+            searchBTN = (ImageView) findViewById(R.id.btn_Search);
 
-        backBTN =(ImageView) findViewById(R.id.back_button);
-        fab_addPosts  = (FloatingActionButton) findViewById(R.id.fab_addPosts);
-        viewPager = (ViewPager) findViewById(R.id.viewpager);
-        setupViewPager(viewPager);
-        tabLayout = (TabLayout) findViewById(R.id.tabs);
-        tabLayout.setupWithViewPager(viewPager);
-        setupTabIcons();
-        getCurrentUserData(auth);
+            backBTN = (ImageView) findViewById(R.id.back_button);
+            fab_addPosts = (FloatingActionButton) findViewById(R.id.fab_addPosts);
+            viewPager = (ViewPager) findViewById(R.id.viewpager);
+            setupViewPager(viewPager);
+            tabLayout = (TabLayout) findViewById(R.id.tabs);
+            tabLayout.setupWithViewPager(viewPager);
+            setupTabIcons();
+            getCurrentUserData(auth);
 
     /*  ShowcaseConfig config = new ShowcaseConfig();
         config.setDelay(200);
@@ -111,82 +116,100 @@ public class MyNetworksActivity extends AppCompatActivity {
         sequence.start();
         */
 
-        backBTN.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                onBackPressed();
-            }
-        });
+            backBTN.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    onBackPressed();
+                }
+            });
 
-        searchBTN.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+            searchBTN.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
                 /*Fragment mFragment = new SearchFragment();
                 FragmentManager fragmentManager = getSupportFragmentManager();
                 fragmentManager.beginTransaction().replace(R.id.search_container, mFragment).commit();*/
-                Intent intent = new Intent(MyNetworksActivity.this, Search_MyNetworkActivity.class);
-                startActivity(intent);
-                Answers.getInstance().logCustom(new CustomEvent("MyNetwork_search")
-                        .putCustomAttribute("Search Button", " searh button Clicked"));
-            }
-        });
+                    Intent intent = new Intent(MyNetworksActivity.this, Search_MyNetworkActivity.class);
+                    startActivity(intent);
+                    Answers.getInstance().logCustom(new CustomEvent("MyNetwork_search")
+                            .putCustomAttribute("Search Button", " searh button Clicked"));
+                }
+            });
 
 
+            fab_addPosts.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Answers.getInstance().logCustom(new CustomEvent("MyNetwork_search")
+                            .putCustomAttribute("Own Profile", "Own profile Clicked"));
+                    Intent intent = new Intent(MyNetworksActivity.this, MyProfileActivity.class);
+                    intent.putExtra(AppContants.CHAT_USER_PROFILE, (Serializable) chattUser);
+                    startActivity(intent);
 
-        fab_addPosts.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Answers.getInstance().logCustom(new CustomEvent("MyNetwork_search")
-                        .putCustomAttribute("Own Profile", "Own profile Clicked"));
-                Intent intent = new Intent(MyNetworksActivity.this, MyProfileActivity.class);
-                intent.putExtra(AppContants.CHAT_USER_PROFILE, (Serializable) chattUser);
-                startActivity(intent);
-
-            }
-        });
-        profile_view.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+                }
+            });
+            profile_view.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
                 /*
                 Fragment mFragment = new SearchFragment();
                 FragmentManager fragmentManager = getSupportFragmentManager();
                 fragmentManager.beginTransaction().replace(R.id.search_container, mFragment).commit();
                 */
 
-                Answers.getInstance().logCustom(new CustomEvent("MyNetwork_search")
-                        .putCustomAttribute("Own Profile", "Own profile Clicked"));
-                Intent intent = new Intent(MyNetworksActivity.this, MyProfileActivity.class);
-                intent.putExtra(AppContants.CHAT_USER_PROFILE, (Serializable) chattUser);
-                startActivity(intent);
-            }
-        });
+                    Answers.getInstance().logCustom(new CustomEvent("MyNetwork_search")
+                            .putCustomAttribute("Own Profile", "Own profile Clicked"));
+                    Intent intent = new Intent(MyNetworksActivity.this, MyProfileActivity.class);
+                    intent.putExtra(AppContants.CHAT_USER_PROFILE, (Serializable) chattUser);
+                    startActivity(intent);
+                }
+            });
+        }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - onCreate : ",e.toString());
+            Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() + " - onCreate : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - onCreate : ",ex.toString());
+            Crashlytics.log(0,this.getClass().getSimpleName() + " - onCreate : ",ex.toString());
+        }
 
     }
     private void getCurrentUserData(FirebaseUser auth) {
         //showProgress(true);
-        mList = new ArrayList<>();
-        if(auth == null || auth.getUid() == null || auth.getUid().isEmpty())
-            return;
+        try {
+            mList = new ArrayList<>();
+            if (auth == null || auth.getUid() == null || auth.getUid().isEmpty())
+                return;
 
-        DatabaseReference feedReference = FirebaseDatabase.getInstance().getReference("chat_USER/" + auth.getUid());
-        feedReference.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                if(dataSnapshot!=null){
-                    chattUser = dataSnapshot.getValue(ChattUser.class);
-                    userType =  chattUser.getUserType();
-                    InitProfileView(chattUser);
-                    if(userType.equalsIgnoreCase("Ditributor")){
+            DatabaseReference feedReference = FirebaseDatabase.getInstance().getReference("chat_USER/" + auth.getUid());
+            feedReference.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    if (dataSnapshot != null) {
+                        chattUser = dataSnapshot.getValue(ChattUser.class);
+                        userType = chattUser.getUserType();
+                        InitProfileView(chattUser);
+                        if (userType.equalsIgnoreCase("Ditributor")) {
 
+                        }
                     }
+                    // showProgress(false);
                 }
-                // showProgress(false);
-            }
 
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-            }
-        });
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                }
+            });
+        }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - getCurrentUserData : ",e.toString());
+            Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() + " - getCurrentUserData : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - getCurrentUserData : ",ex.toString());
+            Crashlytics.log(0,this.getClass().getSimpleName() + " - getCurrentUserData : ",ex.toString());
+        }
 
     }
     @Override

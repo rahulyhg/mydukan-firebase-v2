@@ -2,11 +2,16 @@ package org.app.mydukan.appSubscription;
 
 import android.content.Context;
 
+import com.crashlytics.android.Crashlytics;
+
 import org.app.mydukan.data.AppSubscriptionInfo;
 import org.app.mydukan.data.User;
+import org.app.mydukan.emailSending.SendEmail;
 import org.app.mydukan.server.ApiManager;
 import org.app.mydukan.server.ApiResult;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -234,19 +239,29 @@ public class PriceDropSubscription {
 
     private void inValidateSubscription(final Context mContext, String status) {
 
-        ApiManager.getInstance(mContext).validateAppSubscriptionInfo(mUserId, status, new ApiResult() {
-            @Override
-            public void onSuccess(Object data) {
-                if (data != null) {
-                    return;
+        try {
+            ApiManager.getInstance(mContext).validateAppSubscriptionInfo(mUserId, status, new ApiResult() {
+                @Override
+                public void onSuccess(Object data) {
+                    if (data != null) {
+                        return;
+                    }
                 }
-            }
 
-            @Override
-            public void onFailure(String response) {
-                //Do when there is no data present in firebase
-            }
-        });
+                @Override
+                public void onFailure(String response) {
+                    //Do when there is no data present in firebase
+                }
+            });
+        }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - onCreate : ",e.toString());
+            Crashlytics.log(0,"Exception - PriceDropSubscription - inValidateSubscription : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - onCreate : ",ex.toString());
+            Crashlytics.log(0,"1 - PriceDropSubscription - inValidateSubscription : ",ex.toString());
+        }
     }
 
     private String dateFormatter(String mdate) {

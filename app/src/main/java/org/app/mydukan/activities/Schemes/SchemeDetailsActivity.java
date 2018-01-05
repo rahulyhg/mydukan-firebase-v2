@@ -1,12 +1,10 @@
 package org.app.mydukan.activities.Schemes;
 
-import android.app.Dialog;
 import android.app.DownloadManager;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -33,21 +31,23 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.crashlytics.android.Crashlytics;
+
 import org.app.mydukan.R;
 import org.app.mydukan.activities.BaseActivity;
-import org.app.mydukan.activities.PrivacyPolicyActivity;
-import org.app.mydukan.activities.WebViewActivity;
 import org.app.mydukan.application.MyDukan;
 import org.app.mydukan.data.Scheme;
 import org.app.mydukan.data.SchemeInfo;
 import org.app.mydukan.data.SchemeRecord;
 import org.app.mydukan.data.SupplierInfo;
-import org.app.mydukan.fragments.DescriptionFragment;
+import org.app.mydukan.emailSending.SendEmail;
 import org.app.mydukan.server.ApiManager;
 import org.app.mydukan.server.ApiResult;
 import org.app.mydukan.utils.AppContants;
 import org.app.mydukan.utils.NetworkUtil;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.Random;
 
 /**
@@ -353,68 +353,88 @@ public class SchemeDetailsActivity extends BaseActivity {
     }
 
     private void getSchemeRecordInfo() {
-        ApiManager.getInstance(SchemeDetailsActivity.this).getSchemeRecord(mScheme.getSchemeId(),
-                mSupplierId, new ApiResult() {
-                    @Override
-                    public void onSuccess(Object data) {
-                        dismissProgress();
-                        if (data != null) {
-                            mSchemeRecord = (SchemeRecord) data;
-                        } else {
-                            mSchemeRecord = new SchemeRecord();
-                            SupplierInfo info = new SupplierInfo();
-                            info.setId(mSupplierId);
-                            info.setName(mSupplierName);
-                            mSchemeRecord.setSupplierinfo(info);
+        try {
+            ApiManager.getInstance(SchemeDetailsActivity.this).getSchemeRecord(mScheme.getSchemeId(),
+                    mSupplierId, new ApiResult() {
+                        @Override
+                        public void onSuccess(Object data) {
+                            dismissProgress();
+                            if (data != null) {
+                                mSchemeRecord = (SchemeRecord) data;
+                            } else {
+                                mSchemeRecord = new SchemeRecord();
+                                SupplierInfo info = new SupplierInfo();
+                                info.setId(mSupplierId);
+                                info.setName(mSupplierName);
+                                mSchemeRecord.setSupplierinfo(info);
 
-                            SchemeInfo schemeInfo = new SchemeInfo();
-                            schemeInfo.setId(mScheme.getSchemeId());
-                            schemeInfo.setName(mScheme.getName());
-                            mSchemeRecord.setSchemeinfo(schemeInfo);
+                                SchemeInfo schemeInfo = new SchemeInfo();
+                                schemeInfo.setId(mScheme.getSchemeId());
+                                schemeInfo.setName(mScheme.getName());
+                                mSchemeRecord.setSchemeinfo(schemeInfo);
+                            }
+
+                            if (mSchemeRecord.getEnrolled()) {
+                                mEnrolledBtn.setChecked(true);
+                                mDetailsBtn.setEnabled(true);
+                            } else {
+                                mEnrolledBtn.setChecked(false);
+                                mDetailsBtn.setEnabled(false);
+                            }
                         }
 
-                        if (mSchemeRecord.getEnrolled()) {
-                            mEnrolledBtn.setChecked(true);
-                            mDetailsBtn.setEnabled(true);
-                        } else {
-                            mEnrolledBtn.setChecked(false);
-                            mDetailsBtn.setEnabled(false);
+                        @Override
+                        public void onFailure(String response) {
+
                         }
-                    }
-
-                    @Override
-                    public void onFailure(String response) {
-
-                    }
-                });
+                    });
+        }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - getSchemeRecordInfo : ",e.toString());
+            Crashlytics.log(0,"Exception - SchemeDetailsActivity - getSchemeRecordInfo : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - getSchemeRecordInfo : ",ex.toString());
+            Crashlytics.log(0,"1 - SchemeDetailsActivity - getSchemeRecordInfo : ",ex.toString());
+        }
     }
 
     private void addSchemeRecord(SchemeRecord record) {
-        showProgress();
+        try {
+            showProgress();
 
-        ApiManager.getInstance(SchemeDetailsActivity.this).addSchemeRecord(record, new ApiResult() {
-            @Override
-            public void onSuccess(Object data) {
-                String result = (String) data;
-                dismissProgress();
-                if (!result.equalsIgnoreCase(getString(R.string.status_success))) {
-                    showErrorToast(SchemeDetailsActivity.this, result);
-                    mSchemeRecord.setEnrolled(!mSchemeRecord.getEnrolled());
-                    mEnrolledBtn.setChecked(!mSchemeRecord.getEnrolled());
-                } else {
-                    if (mSchemeRecord.getEnrolled()) {
-                        mDetailsBtn.setEnabled(true);
+            ApiManager.getInstance(SchemeDetailsActivity.this).addSchemeRecord(record, new ApiResult() {
+                @Override
+                public void onSuccess(Object data) {
+                    String result = (String) data;
+                    dismissProgress();
+                    if (!result.equalsIgnoreCase(getString(R.string.status_success))) {
+                        showErrorToast(SchemeDetailsActivity.this, result);
+                        mSchemeRecord.setEnrolled(!mSchemeRecord.getEnrolled());
+                        mEnrolledBtn.setChecked(!mSchemeRecord.getEnrolled());
                     } else {
-                        mDetailsBtn.setEnabled(false);
+                        if (mSchemeRecord.getEnrolled()) {
+                            mDetailsBtn.setEnabled(true);
+                        } else {
+                            mDetailsBtn.setEnabled(false);
+                        }
                     }
                 }
-            }
 
-            @Override
-            public void onFailure(String response) {
+                @Override
+                public void onFailure(String response) {
 
-            }
-        });
+                }
+            });
+        }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - addSchemeRecord : ",e.toString());
+            Crashlytics.log(0,"Exception - SchemeDetailsActivity - addSchemeRecord : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - addSchemeRecord : ",ex.toString());
+            Crashlytics.log(0,"1 - SchemeDetailsActivity - addSchemeRecord : ",ex.toString());
+        }
 
     }
 

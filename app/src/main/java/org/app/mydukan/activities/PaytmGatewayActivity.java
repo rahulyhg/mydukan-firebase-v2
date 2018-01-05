@@ -32,6 +32,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.VolleyLog;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.crashlytics.android.Crashlytics;
 import com.crashlytics.android.answers.Answers;
 import com.crashlytics.android.answers.CustomEvent;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -50,11 +51,14 @@ import org.app.mydukan.application.MyDukan;
 import org.app.mydukan.data.AppSubscriptionInfo;
 import org.app.mydukan.data.FonPaisaData;
 import org.app.mydukan.data.User;
+import org.app.mydukan.emailSending.SendEmail;
 import org.app.mydukan.server.ApiManager;
 import org.app.mydukan.server.ApiResult;
 import org.app.mydukan.utils.AppContants;
 import org.app.mydukan.utils.ProgressSpinner;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -133,128 +137,138 @@ public class PaytmGatewayActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_fone_paise_gateway);
-        overridePendingTransition(R.anim.right_enter, R.anim.left_out);
-        Bundle mybundle = getIntent().getExtras();
-        if (mybundle != null) {
-            if (mybundle.containsKey(AppContants.FP_USER_DETAILS)) {
-                mUserDetail = (User) mybundle.getSerializable(AppContants.FP_USER_DETAILS);
+        try {
+            overridePendingTransition(R.anim.right_enter, R.anim.left_out);
+            Bundle mybundle = getIntent().getExtras();
+            if (mybundle != null) {
+                if (mybundle.containsKey(AppContants.FP_USER_DETAILS)) {
+                    mUserDetail = (User) mybundle.getSerializable(AppContants.FP_USER_DETAILS);
 
-                if (mUserDetail != null) {
-                    final FirebaseUser auth = FirebaseAuth.getInstance().getCurrentUser();
-                    mUserId = auth.getUid();
-                } else {
-                    Toast.makeText(this, "Unable to Get the User Profile", Toast.LENGTH_SHORT).show();
-                }
-            }
-            if (mUserDetail != null && mUserId != null) {
-                startGateWay(this, mUserDetail, mUserId);
-            }
-        }
-        mProgressBar = (ProgressBar) findViewById(R.id.progerssBar);
-
-        radioButtonGroup = (LinearLayout) findViewById(R.id.linearLayout8);
-        promocodeGroup = (LinearLayout) findViewById(R.id.layout_promocode);
-
-        btnBack = (ImageView) findViewById(R.id.imageBack);
-        btn_PayNow = (Button) findViewById(R.id.btn_PayNow);
-        tv_Status = (TextView) findViewById(R.id.tv_status);
-        editTextPromoCode = (EditText) findViewById(R.id.tv_PromoCode);
-        tv_selectedPlan = (TextView) findViewById(R.id.tv_Selected_Plan);
-        btn_promoCode = (Button) findViewById(R.id.btn_promoCode);
-        InitPlansView();
-        //============================================
-        // Get Remote Config instance.
-        // [START get_remote_config_instance]
-        mFirebaseRemoteConfig = FirebaseRemoteConfig.getInstance();
-        // [END get_remote_config_instance]
-
-        // Create a Remote Config Setting to enable developer mode, which you can use to increase
-        // the number of fetches available per hour during development. See Best Practices in the
-        // README for more information.
-        // [START enable_dev_mode]  DEBUG
-        FirebaseRemoteConfigSettings configSettings = new FirebaseRemoteConfigSettings.Builder()
-                .setDeveloperModeEnabled(BuildConfig.DEBUG)
-                .build();
-        mFirebaseRemoteConfig.setConfigSettings(configSettings);
-        // [END enable_dev_mode]
-        // Set default Remote Config parameter values. An app uses the in-app default values, and
-        // when you need to adjust those defaults, you set an updated value for only the values you
-        // want to change in the Firebase console. See Best Practices in the README for more
-        // information.
-        // [START set_default_values]
-        // mFirebaseRemoteConfig.setDefaults(R.xml.remote_config_defaults);
-        // [END set_default_values]
-        getRemoteMessage();
-        //============================================
-
-        btn_promoCode.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                editTextPromoCode.setVisibility(View.VISIBLE);
-                btn_promoCode.setVisibility(View.GONE);
-            }
-        });
-
-        btn_PayNow.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //  startFonePaise_Transaction();
-
-                if (TXN_AMOUNT == null || TXN_AMOUNT == "") {
-                    dismissProgress();
-                    Toast.makeText(mContext, " Please choose the Subscription Plan", Toast.LENGTH_LONG).show();
-                    return;
-                } else {
-                    showProgress();
-                    btn_PayNow.setEnabled(false);
-                    btn_PayNow.setBackgroundColor(Color.parseColor("#9B9B9B"));
-                    showProgress(true);
-                    String promoCode = String.valueOf(editTextPromoCode.getText());
-                    int rdmNuM = rand.nextInt(50) + 1;
-                    REQUEST_TYPE = "DEFAULT";
-                    uuid = uuid.replace("-", "");
-                    if(promoCode!=null && !promoCode.isEmpty()){
-                        CUST_ID = "PROMO"+"@"+promoCode+customerID+ rdmNuM;
-                    }else{
-                        CUST_ID = "MDK"+customerID+ rdmNuM;
+                    if (mUserDetail != null) {
+                        final FirebaseUser auth = FirebaseAuth.getInstance().getCurrentUser();
+                        mUserId = auth.getUid();
+                    } else {
+                        Toast.makeText(this, "Unable to Get the User Profile", Toast.LENGTH_SHORT).show();
                     }
-                    ORDER_ID =uuid;
-                    MID = "RetDig03944840906164";//"MYDUKA26141672397932";//Mydukan MID is "MYDUKA26141672397932"     // ORDER_ID = mPromocode + "-" + uuid;
-                    //CUST_ID = mPromocode + "@" + customerID + 1 + "@" + rdmNuM;// mUserName+"-"+mUserPhoneNum+"-"+mUserEmailId;//mUserId;//
-                   // mUserName+"-"+mUserPhoneNum+"-"+mUserEmailId;//mUserId;//
-                    CHANNEL_ID = "WAP";
-                    INDUSTRY_TYPE_ID = "Retail109";
-                    WEBSITE = "RetDigWAP";
-                    THEME = "merchant";
-                    EMAIL = mUserEmailId;
-                    MOBILE_NO = mUserPhoneNum;
-                    GENERATECHECKSUM_URL = "https://mydukan-firebase.000webhostapp.com/V3/generateChecksum.php";     //"https://mydukan-firebase.000webhostapp.com/generateChecksum.php";   //"https://mydukandev.000webhostapp.com/generateChecksum.php";
-
-                    paramMap1.put("MID", "RetDig03944840906164 ");
-                    paramMap1.put("ORDER_ID", ORDER_ID);
-                    paramMap1.put("CUST_ID", CUST_ID);
-                    //Chskb4546   paramMap1.put("CUST_ID", CUST_ID);
-                    paramMap1.put("INDUSTRY_TYPE_ID", "Retail109");
-                    paramMap1.put("CHANNEL_ID", "WAP");
-                    paramMap1.put("TXN_AMOUNT", TXN_AMOUNT);
-                    paramMap1.put("WEBSITE", "RetDigWAP");
-                    paramMap1.put("CALLBACK_URL", "https://securegw.paytm.in/theia/paytmCallback?ORDER_ID="+ORDER_ID);
-                    paramMap1.put("EMAIL", EMAIL);
-                    paramMap1.put("MOBILE_NO",MOBILE_NO);
-
-                    getCheckSumHash(mContext, (HashMap) paramMap1);
-                    showProgress(false);
+                }
+                if (mUserDetail != null && mUserId != null) {
+                    startGateWay(this, mUserDetail, mUserId);
                 }
             }
-        });
+            mProgressBar = (ProgressBar) findViewById(R.id.progerssBar);
 
-        btnBack.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showProgress(false);
-                onBackPressed();
-            }
-        });
+            radioButtonGroup = (LinearLayout) findViewById(R.id.linearLayout8);
+            promocodeGroup = (LinearLayout) findViewById(R.id.layout_promocode);
+
+            btnBack = (ImageView) findViewById(R.id.imageBack);
+            btn_PayNow = (Button) findViewById(R.id.btn_PayNow);
+            tv_Status = (TextView) findViewById(R.id.tv_status);
+            editTextPromoCode = (EditText) findViewById(R.id.tv_PromoCode);
+            tv_selectedPlan = (TextView) findViewById(R.id.tv_Selected_Plan);
+            btn_promoCode = (Button) findViewById(R.id.btn_promoCode);
+            InitPlansView();
+            //============================================
+            // Get Remote Config instance.
+            // [START get_remote_config_instance]
+            mFirebaseRemoteConfig = FirebaseRemoteConfig.getInstance();
+            // [END get_remote_config_instance]
+
+            // Create a Remote Config Setting to enable developer mode, which you can use to increase
+            // the number of fetches available per hour during development. See Best Practices in the
+            // README for more information.
+            // [START enable_dev_mode]  DEBUG
+            FirebaseRemoteConfigSettings configSettings = new FirebaseRemoteConfigSettings.Builder()
+                    .setDeveloperModeEnabled(BuildConfig.DEBUG)
+                    .build();
+            mFirebaseRemoteConfig.setConfigSettings(configSettings);
+            // [END enable_dev_mode]
+            // Set default Remote Config parameter values. An app uses the in-app default values, and
+            // when you need to adjust those defaults, you set an updated value for only the values you
+            // want to change in the Firebase console. See Best Practices in the README for more
+            // information.
+            // [START set_default_values]
+            // mFirebaseRemoteConfig.setDefaults(R.xml.remote_config_defaults);
+            // [END set_default_values]
+            getRemoteMessage();
+            //============================================
+
+            btn_promoCode.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    editTextPromoCode.setVisibility(View.VISIBLE);
+                    btn_promoCode.setVisibility(View.GONE);
+                }
+            });
+
+            btn_PayNow.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    //  startFonePaise_Transaction();
+
+                    if (TXN_AMOUNT == null || TXN_AMOUNT == "") {
+                        dismissProgress();
+                        Toast.makeText(mContext, " Please choose the Subscription Plan", Toast.LENGTH_LONG).show();
+                        return;
+                    } else {
+                        showProgress();
+                        btn_PayNow.setEnabled(false);
+                        btn_PayNow.setBackgroundColor(Color.parseColor("#9B9B9B"));
+                        showProgress(true);
+                        String promoCode = String.valueOf(editTextPromoCode.getText());
+                        int rdmNuM = rand.nextInt(50) + 1;
+                        REQUEST_TYPE = "DEFAULT";
+                        uuid = uuid.replace("-", "");
+                        if (promoCode != null && !promoCode.isEmpty()) {
+                            CUST_ID = "PROMO" + "@" + promoCode + customerID + rdmNuM;
+                        } else {
+                            CUST_ID = "MDK" + customerID + rdmNuM;
+                        }
+                        ORDER_ID = uuid;
+                        MID = "RetDig03944840906164";//"MYDUKA26141672397932";//Mydukan MID is "MYDUKA26141672397932"     // ORDER_ID = mPromocode + "-" + uuid;
+                        //CUST_ID = mPromocode + "@" + customerID + 1 + "@" + rdmNuM;// mUserName+"-"+mUserPhoneNum+"-"+mUserEmailId;//mUserId;//
+                        // mUserName+"-"+mUserPhoneNum+"-"+mUserEmailId;//mUserId;//
+                        CHANNEL_ID = "WAP";
+                        INDUSTRY_TYPE_ID = "Retail109";
+                        WEBSITE = "RetDigWAP";
+                        THEME = "merchant";
+                        EMAIL = mUserEmailId;
+                        MOBILE_NO = mUserPhoneNum;
+                        GENERATECHECKSUM_URL = "https://mydukan-firebase.000webhostapp.com/V3/generateChecksum.php";     //"https://mydukan-firebase.000webhostapp.com/generateChecksum.php";   //"https://mydukandev.000webhostapp.com/generateChecksum.php";
+
+                        paramMap1.put("MID", "RetDig03944840906164 ");
+                        paramMap1.put("ORDER_ID", ORDER_ID);
+                        paramMap1.put("CUST_ID", CUST_ID);
+                        //Chskb4546   paramMap1.put("CUST_ID", CUST_ID);
+                        paramMap1.put("INDUSTRY_TYPE_ID", "Retail109");
+                        paramMap1.put("CHANNEL_ID", "WAP");
+                        paramMap1.put("TXN_AMOUNT", TXN_AMOUNT);
+                        paramMap1.put("WEBSITE", "RetDigWAP");
+                        paramMap1.put("CALLBACK_URL", "https://securegw.paytm.in/theia/paytmCallback?ORDER_ID=" + ORDER_ID);
+                        paramMap1.put("EMAIL", EMAIL);
+                        paramMap1.put("MOBILE_NO", MOBILE_NO);
+
+                        getCheckSumHash(mContext, (HashMap) paramMap1);
+                        showProgress(false);
+                    }
+                }
+            });
+
+            btnBack.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    showProgress(false);
+                    onBackPressed();
+                }
+            });
+        }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - onCreate : ",e.toString());
+            Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() + " - onCreate : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - onCreate : ",ex.toString());
+            Crashlytics.log(0,this.getClass().getSimpleName() + " - onCreate : ",ex.toString());
+        }
     }
 
     public void showProgress() {
@@ -1119,83 +1133,95 @@ public class PaytmGatewayActivity extends AppCompatActivity {
 
     //============================
     private void updateSubscriptionInfo(final Context mContext, final AppSubscriptionInfo appSubscriptionInfo) {
-        mUserDetail.setAppSubscriptionInfo(appSubscriptionInfo);
-        // appSubscriptionInfo.setSubscription_PLAN("Monthly");
-        HashMap<String, Object> userInfo = new HashMap<>();
-        userInfo.put(AppContants.SUBSCRIPTION_DATE, appSubscriptionInfo.getSubscription_DATE());
-        userInfo.put(AppContants.SUBSCRIPTION_PLAN, appSubscriptionInfo.getSubscription_PLAN());
-        userInfo.put(AppContants.SUBSCRIPTION_ISVALID, appSubscriptionInfo.getSubcription_ISVALID());
-        userInfo.put(AppContants.SUBSCRIPTION_CURRENCY, appSubscriptionInfo.getSubcription_CURRENCY());
-        userInfo.put(AppContants.SUBSCRIPTION_AMOUNT, appSubscriptionInfo.getSubcription_AMOUNT());
-        userInfo.put(AppContants.SUBSCRIPTION_EXTRAINFO, appSubscriptionInfo.getSubcription_EXTRAINFO());
-        userInfo.put(AppContants.SUBSCRIPTION_ORDERID, appSubscriptionInfo.getSubcription_ORDERID());
-        userInfo.put(AppContants.SUBSCRIPTION_TXNID, appSubscriptionInfo.getSubcription_TXNID());
-        userInfo.put(AppContants.SUBSCRIPTION_EXFIREDATE, appSubscriptionInfo.getSubscription_EXPIREDATE());
-        userInfo.put(AppContants.SUBSCRIPTION_DAYS, appSubscriptionInfo.getSubscription_DAYS());
-        userInfo.put(AppContants.SUBSCRIPTION_MID, "RetDig03944840906164");
-        userInfo.put(AppContants.SUBSCRIPTION_TRIALDAYS, "7");
-        if (appSubscriptionInfo.getSubscription_TRIALSTARTDATE() == "" || appSubscriptionInfo.getSubscription_TRIALSTARTDATE() == null) {
-            userInfo.put(AppContants.SUBSCRIPTION_TRIALSTARTDATE, appSubscriptionInfo.getSubscription_DATE());
-        } else {
-            userInfo.put(AppContants.SUBSCRIPTION_TRIALSTARTDATE, appSubscriptionInfo.getSubscription_TRIALSTARTDATE());
-        }
-        userInfo.put(AppContants.SUBSCRIPTION_USERID, mApp.getFirebaseAuth().getCurrentUser().getUid());
+        try {
+            mUserDetail.setAppSubscriptionInfo(appSubscriptionInfo);
+            // appSubscriptionInfo.setSubscription_PLAN("Monthly");
+            HashMap<String, Object> userInfo = new HashMap<>();
+            userInfo.put(AppContants.SUBSCRIPTION_DATE, appSubscriptionInfo.getSubscription_DATE());
+            userInfo.put(AppContants.SUBSCRIPTION_PLAN, appSubscriptionInfo.getSubscription_PLAN());
+            userInfo.put(AppContants.SUBSCRIPTION_ISVALID, appSubscriptionInfo.getSubcription_ISVALID());
+            userInfo.put(AppContants.SUBSCRIPTION_CURRENCY, appSubscriptionInfo.getSubcription_CURRENCY());
+            userInfo.put(AppContants.SUBSCRIPTION_AMOUNT, appSubscriptionInfo.getSubcription_AMOUNT());
+            userInfo.put(AppContants.SUBSCRIPTION_EXTRAINFO, appSubscriptionInfo.getSubcription_EXTRAINFO());
+            userInfo.put(AppContants.SUBSCRIPTION_ORDERID, appSubscriptionInfo.getSubcription_ORDERID());
+            userInfo.put(AppContants.SUBSCRIPTION_TXNID, appSubscriptionInfo.getSubcription_TXNID());
+            userInfo.put(AppContants.SUBSCRIPTION_EXFIREDATE, appSubscriptionInfo.getSubscription_EXPIREDATE());
+            userInfo.put(AppContants.SUBSCRIPTION_DAYS, appSubscriptionInfo.getSubscription_DAYS());
+            userInfo.put(AppContants.SUBSCRIPTION_MID, "RetDig03944840906164");
+            userInfo.put(AppContants.SUBSCRIPTION_TRIALDAYS, "7");
+            if (appSubscriptionInfo.getSubscription_TRIALSTARTDATE() == "" || appSubscriptionInfo.getSubscription_TRIALSTARTDATE() == null) {
+                userInfo.put(AppContants.SUBSCRIPTION_TRIALSTARTDATE, appSubscriptionInfo.getSubscription_DATE());
+            } else {
+                userInfo.put(AppContants.SUBSCRIPTION_TRIALSTARTDATE, appSubscriptionInfo.getSubscription_TRIALSTARTDATE());
+            }
+            userInfo.put(AppContants.SUBSCRIPTION_USERID, mApp.getFirebaseAuth().getCurrentUser().getUid());
 
-        ApiManager.getInstance(mContext).appsubcription(mApp.getFirebaseAuth().getCurrentUser().getUid(),
-                userInfo, new ApiResult() {
-                    @Override
-                    public void onSuccess(Object data) {
-                        Log.i(MyDukan.LOGTAG, "User updated successfully");
+            ApiManager.getInstance(mContext).appsubcription(mApp.getFirebaseAuth().getCurrentUser().getUid(),
+                    userInfo, new ApiResult() {
+                        @Override
+                        public void onSuccess(Object data) {
+                            Log.i(MyDukan.LOGTAG, "User updated successfully");
 
-                        if (mUserDetail != null) {
-                            if (mUserDetail.getAppSubscriptionInfo() != null) {
-                                return;
-                            }
-                        }
-                    }
-                    @Override
-                    public void onFailure(String response) {
-                        Log.i(MyDukan.LOGTAG, "Failed to update user profile");
-                    }
-                });
-
-        //Initialize AppDukan   appsubcription
-        ApiManager.getInstance(mContext).updateUserSubscription(mApp.getFirebaseAuth().getCurrentUser().getUid(),
-                userInfo, new ApiResult() {
-                    @Override
-                    public void onSuccess(Object data) {
-                        Log.i(MyDukan.LOGTAG, "User updated successfully");
-
-                        if (mUserDetail != null) {
-                            if (mUserDetail.getAppSubscriptionInfo() != null) {
-                                Answers.getInstance().logCustom(new CustomEvent("PaytmTXN successful")
-                                        .putCustomAttribute("USER_ID/ USER_Email:", mUserDetail.getId() + "/" + mUserDetail.getUserinfo().getEmailid()));
-
-                                String orderid = appSubscriptionInfo.getSubcription_ORDERID();
-                                String orderAmt = appSubscriptionInfo.getSubcription_AMOUNT();
-                                String txnId = appSubscriptionInfo.getSubcription_TXNID();
-                                String Subcription_Plan = appSubscriptionInfo.getSubscription_PLAN();
-                                String plan = "";
-                                if (Subcription_Plan == "HalfYearly") {
-                                    plan = "6 months(180 days)";
-                                } else if (Subcription_Plan == "Monthly") {
-                                    plan = "30 days";
-                                } else if (Subcription_Plan == "Yearly") {
-                                    plan = "one year(365 days)";
+                            if (mUserDetail != null) {
+                                if (mUserDetail.getAppSubscriptionInfo() != null) {
+                                    return;
                                 }
-                                tv_Status.setText("Dear Customer,Payment of " + "\u20B9" + orderAmt + " has been recieved towards MyDukan subscription. Your transaction is successful." + "\n" + "\n Your subscription is valid " + plan + ".\nYour TransactionId:" + txnId + "\n" + "Thank you.");
-                                btn_PayNow.setVisibility(View.GONE);
-                                radioButtonGroup.setVisibility(View.GONE);
-                                promocodeGroup.setVisibility(View.GONE);
-                                return;
                             }
                         }
-                    }
-                    @Override
-                    public void onFailure(String response) {
-                        Log.i(MyDukan.LOGTAG, "Failed to update user profile");
-                    }
-                });
+
+                        @Override
+                        public void onFailure(String response) {
+                            Log.i(MyDukan.LOGTAG, "Failed to update user profile");
+                        }
+                    });
+
+            //Initialize AppDukan   appsubcription
+            ApiManager.getInstance(mContext).updateUserSubscription(mApp.getFirebaseAuth().getCurrentUser().getUid(),
+                    userInfo, new ApiResult() {
+                        @Override
+                        public void onSuccess(Object data) {
+                            Log.i(MyDukan.LOGTAG, "User updated successfully");
+
+                            if (mUserDetail != null) {
+                                if (mUserDetail.getAppSubscriptionInfo() != null) {
+                                    Answers.getInstance().logCustom(new CustomEvent("PaytmTXN successful")
+                                            .putCustomAttribute("USER_ID/ USER_Email:", mUserDetail.getId() + "/" + mUserDetail.getUserinfo().getEmailid()));
+
+                                    String orderid = appSubscriptionInfo.getSubcription_ORDERID();
+                                    String orderAmt = appSubscriptionInfo.getSubcription_AMOUNT();
+                                    String txnId = appSubscriptionInfo.getSubcription_TXNID();
+                                    String Subcription_Plan = appSubscriptionInfo.getSubscription_PLAN();
+                                    String plan = "";
+                                    if (Subcription_Plan == "HalfYearly") {
+                                        plan = "6 months(180 days)";
+                                    } else if (Subcription_Plan == "Monthly") {
+                                        plan = "30 days";
+                                    } else if (Subcription_Plan == "Yearly") {
+                                        plan = "one year(365 days)";
+                                    }
+                                    tv_Status.setText("Dear Customer,Payment of " + "\u20B9" + orderAmt + " has been recieved towards MyDukan subscription. Your transaction is successful." + "\n" + "\n Your subscription is valid " + plan + ".\nYour TransactionId:" + txnId + "\n" + "Thank you.");
+                                    btn_PayNow.setVisibility(View.GONE);
+                                    radioButtonGroup.setVisibility(View.GONE);
+                                    promocodeGroup.setVisibility(View.GONE);
+                                    return;
+                                }
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(String response) {
+                            Log.i(MyDukan.LOGTAG, "Failed to update user profile");
+                        }
+                    });
+        }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - updateSubscriptionInfo : ",e.toString());
+            Crashlytics.log(0,"Exception - PaytmGatewayActivity - updateSubscriptionInfo : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - updateSubscriptionInfo : ",ex.toString());
+            Crashlytics.log(0,"1 - PaytmGatewayActivity - updateSubscriptionInfo : ",ex.toString());
+        }
     }
 
 }

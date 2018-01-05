@@ -36,6 +36,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.VolleyLog;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.crashlytics.android.Crashlytics;
 import com.crashlytics.android.answers.Answers;
 import com.crashlytics.android.answers.CustomEvent;
 import com.google.firebase.auth.FirebaseUser;
@@ -48,11 +49,14 @@ import org.app.mydukan.activities.LoginActivity;
 import org.app.mydukan.activities.NewSignUpActivity;
 import org.app.mydukan.activities.UsersLocationAddress;
 import org.app.mydukan.application.MyDukan;
+import org.app.mydukan.emailSending.SendEmail;
 import org.app.mydukan.utils.NetworkUtil;
 import org.app.mydukan.utils.Utils;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -154,33 +158,42 @@ public class MobileVerificationFragment extends Fragment implements View.OnClick
 
         view = inflater.inflate(R.layout.fragment_mobile_verification, container, false);
 
-       // viewType = getArguments().getString(AppContants.VIEW_TYPE);
+        try {
+            // viewType = getArguments().getString(AppContants.VIEW_TYPE);
 
-        mApp = (MyDukan) getActivity().getApplicationContext();
-        networkUtil = new NetworkUtil();
+            mApp = (MyDukan) getActivity().getApplicationContext();
+            networkUtil = new NetworkUtil();
 
-       // viewType = getArguments().getString(AppContants.VIEW_TYPE);
+            // viewType = getArguments().getString(AppContants.VIEW_TYPE);
 
-        getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE | WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
-        OtpReader.bind(this, "MYDUKN");
-
-
-        initViews();
-        setListeners();
-
-        requestRuntimePermissions(android.Manifest.permission.READ_SMS, android.Manifest.permission.RECEIVE_SMS, android.Manifest.permission.SEND_SMS);
+            getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE | WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+            OtpReader.bind(this, "MYDUKN");
 
 
-        pDialog = new ProgressDialog(getContext());
-        pDialog.setMessage("Please wait...");
-        pDialog.setCancelable(false);
+            initViews();
+            setListeners();
 
-        progressBar = (ProgressBar) view.findViewById(R.id.progressBar2);
-        mainlayout = (RelativeLayout) view.findViewById(R.id.mainlayout);
-        verified_icon = (ImageView) view.findViewById(R.id.verified_icon);
-        goBackBtn = (ImageView) view.findViewById(R.id.goBackBtn);
-        goBackBtn.setOnClickListener(this);
+            requestRuntimePermissions(android.Manifest.permission.READ_SMS, android.Manifest.permission.RECEIVE_SMS, android.Manifest.permission.SEND_SMS);
 
+
+            pDialog = new ProgressDialog(getContext());
+            pDialog.setMessage("Please wait...");
+            pDialog.setCancelable(false);
+
+            progressBar = (ProgressBar) view.findViewById(R.id.progressBar2);
+            mainlayout = (RelativeLayout) view.findViewById(R.id.mainlayout);
+            verified_icon = (ImageView) view.findViewById(R.id.verified_icon);
+            goBackBtn = (ImageView) view.findViewById(R.id.goBackBtn);
+            goBackBtn.setOnClickListener(this);
+        }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - onCreate : ",e.toString());
+            Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() + " - onCreate : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - onCreate : ",ex.toString());
+            Crashlytics.log(0,this.getClass().getSimpleName() + " - onCreate : ",ex.toString());
+        }
 
         return view;
     }

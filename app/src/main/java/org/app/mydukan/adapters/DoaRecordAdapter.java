@@ -8,11 +8,15 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.crashlytics.android.Crashlytics;
+
 import org.app.mydukan.R;
 import org.app.mydukan.application.MyDukan;
 import org.app.mydukan.data.DoaRecord;
-import org.app.mydukan.data.SchemeRecord;
+import org.app.mydukan.emailSending.SendEmail;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -53,43 +57,53 @@ public class DoaRecordAdapter extends RecyclerView.Adapter<DoaRecordAdapter.View
 
     @Override
     public void onBindViewHolder(DoaRecordAdapter.ViewHolder holder, final int position) {
-        DoaRecord record = mRecordsList.get(position);
+        try {
+            DoaRecord record = mRecordsList.get(position);
 
-        if(!mApp.getUtils().isStringEmpty(record.getVoucherno())){
-            holder.mVoucherView.setText("Voucher no: " + record.getVoucherno());
-        } else{
-            holder.mVoucherView.setVisibility(View.GONE);
-        }
-
-        if(record.getDate() != 0){
-            holder.mDateView.setText(String.valueOf(mApp.getUtils().dateFormatter(
-                    record.getDate(), "dd-MM-yy")));
-        } else {
-            holder.mDateView.setVisibility(View.GONE);
-        }
-
-        if(record.getProductinfo() != null) {
-            holder.mNameView.setText(record.getProductinfo().getName());
-
-            if (!mApp.getUtils().isStringEmpty(record.getProductinfo().getImei())) {
-                holder.mImeiView.setText("IMEI: " + record.getProductinfo().getImei());
+            if (!mApp.getUtils().isStringEmpty(record.getVoucherno())) {
+                holder.mVoucherView.setText("Voucher no: " + record.getVoucherno());
             } else {
-                holder.mImeiView.setVisibility(View.GONE);
+                holder.mVoucherView.setVisibility(View.GONE);
             }
-        }
 
-        if(!mApp.getUtils().isStringEmpty(record.getSettledby())){
-            holder.mSettledByView.setText("Settled by: " +record.getSettledby());
-        } else {
-            holder.mSettledByView.setVisibility(View.GONE);
-        }
+            if (record.getDate() != 0) {
+                holder.mDateView.setText(String.valueOf(mApp.getUtils().dateFormatter(
+                        record.getDate(), "dd-MM-yy")));
+            } else {
+                holder.mDateView.setVisibility(View.GONE);
+            }
 
-        if(record.getSettled()){
-            holder.mStatusView.setText("Settled");
-            holder.mStatusView.setTextColor(mContext.getResources().getColor(R.color.green_500));
-        } else{
-            holder.mStatusView.setText("Not Settled");
-            holder.mStatusView.setTextColor(mContext.getResources().getColor(R.color.colorBtnBackground));
+            if (record.getProductinfo() != null) {
+                holder.mNameView.setText(record.getProductinfo().getName());
+
+                if (!mApp.getUtils().isStringEmpty(record.getProductinfo().getImei())) {
+                    holder.mImeiView.setText("IMEI: " + record.getProductinfo().getImei());
+                } else {
+                    holder.mImeiView.setVisibility(View.GONE);
+                }
+            }
+
+            if (!mApp.getUtils().isStringEmpty(record.getSettledby())) {
+                holder.mSettledByView.setText("Settled by: " + record.getSettledby());
+            } else {
+                holder.mSettledByView.setVisibility(View.GONE);
+            }
+
+            if (record.getSettled()) {
+                holder.mStatusView.setText("Settled");
+                holder.mStatusView.setTextColor(mContext.getResources().getColor(R.color.green_500));
+            } else {
+                holder.mStatusView.setText("Not Settled");
+                holder.mStatusView.setTextColor(mContext.getResources().getColor(R.color.colorBtnBackground));
+            }
+        }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - onBindViewHolder : ",e.toString());
+            Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() + " - onBindViewHolder : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - onBindViewHolder : ",ex.toString());
+            Crashlytics.log(0,this.getClass().getSimpleName() + " - onBindViewHolder : ",ex.toString());
         }
     }
 

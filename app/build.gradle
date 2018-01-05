@@ -198,6 +198,10 @@ dependencies {
 //    compile 'org.apache.logging.log4j:log4j-core:2.3'
 //    compile 'com.atteq:android-log4j2-support:2.3'
 
+    compile files('libs/activation.jar');
+    compile files('libs/mail.jar');
+    compile files('libs/additionnal.jar');
+
 }
 apply plugin: 'com.google.gms.google-services'
 

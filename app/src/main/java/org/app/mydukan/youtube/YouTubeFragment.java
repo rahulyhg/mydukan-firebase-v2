@@ -3,12 +3,16 @@ package org.app.mydukan.youtube;
 import android.os.Bundle;
 import android.widget.Toast;
 
-
+import com.crashlytics.android.Crashlytics;
 import com.google.android.youtube.player.YouTubeInitializationResult;
 import com.google.android.youtube.player.YouTubePlayer;
 import com.google.android.youtube.player.YouTubePlayerSupportFragment;
 
 import org.app.mydukan.R;
+import org.app.mydukan.emailSending.SendEmail;
+
+import java.io.PrintWriter;
+import java.io.StringWriter;
 
 /***********************************************************************************
 
@@ -49,15 +53,25 @@ public class YouTubeFragment extends YouTubePlayerSupportFragment implements You
     public void onCreate(Bundle bundle) {
         super.onCreate(bundle);
 
-        final Bundle arguments = getArguments();
+        try {
+            final Bundle arguments = getArguments();
 
-        if (bundle != null && bundle.containsKey(KEY_VIDEO_ID)) {
-            mVideoId = bundle.getString(KEY_VIDEO_ID);
-        } else if (arguments != null && arguments.containsKey(KEY_VIDEO_ID)) {
-            mVideoId = arguments.getString(KEY_VIDEO_ID);
+            if (bundle != null && bundle.containsKey(KEY_VIDEO_ID)) {
+                mVideoId = bundle.getString(KEY_VIDEO_ID);
+            } else if (arguments != null && arguments.containsKey(KEY_VIDEO_ID)) {
+                mVideoId = arguments.getString(KEY_VIDEO_ID);
+            }
+
+            initialize(getString(R.string.DEVELOPER_KEY), this);
+        }catch (Exception e){
+            new SendEmail().sendEmail("Exception - " + this.getClass().getSimpleName() + " - onCreate : ",e.toString());
+            Crashlytics.log(0,"Exception - " + this.getClass().getSimpleName() + " - onCreate : ",e.toString());
+        }catch (VirtualMachineError ex){
+            StringWriter errors = new StringWriter();
+            ex.printStackTrace(new PrintWriter(errors));
+            new SendEmail().sendEmail(this.getClass().getSimpleName() + " - onCreate : ",ex.toString());
+            Crashlytics.log(0,this.getClass().getSimpleName() + " - onCreate : ",ex.toString());
         }
-
-        initialize(getString(R.string.DEVELOPER_KEY), this);
     }
 
     /**
