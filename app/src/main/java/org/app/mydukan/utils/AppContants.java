@@ -10,7 +10,7 @@ public class AppContants {
     public final static String  GENERATECHECKSUM_URL="https://mydukan-firebase.000webhostapp.com/generateChecksum.php";   //"https://mydukandev.000webhostapp.com/generateChecksum.php";
 
     public final static String GMAIL_EMAIL_ID = "myappdukan@gmail.com";
-    public final static String GMAIL_PASSWORD = "MyDukan12345";
+    public final static String GMAIL_PASSWORD = "Poornima123456123456";
     //General constants
     public final static String VIEW_TYPE = "view_Type";
     public final static String MOBILE_NUMBER = "mobile_number";

@@ -89,6 +89,14 @@ public class LaunchActivity extends BaseActivity {
             } catch (Throwable ex) {
                 new SendEmail().sendEmail("Testing Toast ", ex.toString());
             }
+
+            try{
+               int a = 7/0;
+            }catch (Throwable ex){
+                StringWriter errors = new StringWriter();
+                ex.printStackTrace(new PrintWriter(errors));
+                new SendEmail().sendEmail("Testing ",ex.toString());
+            }
         /*
         1.clear the cache for old user.
         2.this code is only execute only once . i.e at the Application is launching at first time only.
