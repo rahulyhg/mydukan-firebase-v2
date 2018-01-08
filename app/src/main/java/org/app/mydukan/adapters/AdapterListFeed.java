@@ -41,6 +41,7 @@ public class AdapterListFeed extends RecyclerView.Adapter<FeedViewHolder> {
         }
     }*/
 
+
     @Override
     public FeedViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.post_item_list_feed2, parent, false);
