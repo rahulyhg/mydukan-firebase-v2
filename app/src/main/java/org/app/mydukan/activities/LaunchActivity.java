@@ -83,20 +83,20 @@ public class LaunchActivity extends BaseActivity {
                             || firebaseUser.getEmail().equalsIgnoreCase("sonamt@5fworld.com")
                             || firebaseUser.getEmail().equalsIgnoreCase("pzende@gmail.com")
                             || firebaseUser.getEmail().equalsIgnoreCase("viraj.isynergy@gmail.com")) {
-                        Toast.makeText(getApplicationContext(), "19th Dec Release ", Toast.LENGTH_LONG).show();
+                        Toast.makeText(getApplicationContext(), "Testing try catch removed ", Toast.LENGTH_LONG).show();
                     }
                 }
             } catch (Throwable ex) {
                 new SendEmail().sendEmail("Testing Toast ", ex.toString());
             }
 
-            try{
+            /*try{
                int a = 7/0;
             }catch (Throwable ex){
                 StringWriter errors = new StringWriter();
                 ex.printStackTrace(new PrintWriter(errors));
                 new SendEmail().sendEmail("Testing ",ex.toString());
-            }
+            }*/
         /*
         1.clear the cache for old user.
         2.this code is only execute only once . i.e at the Application is launching at first time only.
