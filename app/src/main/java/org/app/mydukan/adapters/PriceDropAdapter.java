@@ -119,11 +119,11 @@ public class PriceDropAdapter extends RecyclerView.Adapter<PriceDropAdapter.View
                 holder.priceDropCount.setText(String.valueOf(map.get(categoryList.get(position))));
                 break;
 
-            /*case *//*"-KrovlBYSgcM3NA8GxAg"*//*"COMIO":
+             case  "COMIO":
                 // COMIO = -KrovlBYSgcM3NA8GxAg
                 holder.brandLogo.setBackground(ContextCompat.getDrawable(mContext, R.drawable.logo_comio));
-                holder.priceDropCount.setText(String.valueOf(map.get(categoryList.get(position))));
-                break;*/
+                 holder.priceDropCount.setText(String.valueOf(map.get(categoryList.get(position))));
+                break;
 
             case /*"-KThq1qTj7upEbf5OAGV"*/"ASUS":
                 // ASUS = -KThq1qTj7upEbf5OAGV
@@ -179,29 +179,28 @@ public class PriceDropAdapter extends RecyclerView.Adapter<PriceDropAdapter.View
                 holder.priceDropCount.setText(String.valueOf(map.get(categoryList.get(position))));
                 break;
 
-            /*case *//*"-KUSXXe-dC52lGIcD16J"*//*"ZEN":
+            case  "ZEN":
                 //ZEN
                 holder.brandLogo.setBackground(ContextCompat.getDrawable(mContext, R.drawable.logo_zen));
                 holder.priceDropCount.setText(String.valueOf(map.get(categoryList.get(position))));
-                break;*/
+                break;
 
             case /*"-KTlvtThlXhnokm3hux3"*/"INTEX":
                 //INTEX= -KTlvtThlXhnokm3hux3
                 holder.brandLogo.setBackground(ContextCompat.getDrawable(mContext, R.drawable.logo_intex));
                 holder.priceDropCount.setText(String.valueOf(map.get(categoryList.get(position))));
                 break;
-
-            /*case *//*"-KTzALKLYilcvlcnM1Z0"*//*"CELKON":
-                // CELKON
-                holder.brandLogo.setBackground(ContextCompat.getDrawable(mContext, R.drawable.logo_celkon));
-                holder.priceDropCount.setText(String.valueOf(map.get(categoryList.get(position))));
-                break;*/
-
-           /* case *//*"-KUFxA23cmu4baJ3BL0P"*//*"NOKIA":
+             case "NOKIA":
                 //NOKIA
                 holder.brandLogo.setBackground(ContextCompat.getDrawable(mContext, R.drawable.logo_nokia));
                 holder.priceDropCount.setText(String.valueOf(map.get(categoryList.get(position))));
-                break;*/
+                break ;
+
+            case  "CELKON":
+                // CELKON
+                holder.brandLogo.setBackground(ContextCompat.getDrawable(mContext, R.drawable.logo_celkon));
+                holder.priceDropCount.setText(String.valueOf(map.get(categoryList.get(position))));
+                break;
 
             case /*"-KkvKrWFqJR7tpaAb7Sy"*/"TECNO":
                 //TECNO
@@ -215,17 +214,17 @@ public class PriceDropAdapter extends RecyclerView.Adapter<PriceDropAdapter.View
                 holder.priceDropCount.setText(String.valueOf(map.get(categoryList.get(position))));
                 break;
 
-            /*case *//*"-Kjg5QfunwoNhVUAXz-z"*//*"PIXEL":
+            case  /*"-Kjg5QfunwoNhVUAXz-z"*/ "PIXEL":
                 //Google Pixel
                 holder.brandLogo.setBackground(ContextCompat.getDrawable(mContext, R.drawable.logo_pixel));
                 holder.priceDropCount.setText(String.valueOf(map.get(categoryList.get(position))));
-                break;*/
+                break;
 
-            /*case *//*"-KpY9KtzUtnRFFoVLjXO"*//*"SPICE":
+           case  /*"-KpY9KtzUtnRFFoVLjXO"*/ "SPICE":
                 //SPICE= -KpY9KtzUtnRFFoVLjXO
                 holder.brandLogo.setBackground(ContextCompat.getDrawable(mContext, R.drawable.logo_spice));
                 holder.priceDropCount.setText(String.valueOf(map.get(categoryList.get(position))));
-                break;*/
+                break;
 
             case /*"-KqmnwSZdtFqRtjVqeDh"*/"COOLPAD":
                 //COOLPAD
@@ -390,8 +389,10 @@ public class PriceDropAdapter extends RecyclerView.Adapter<PriceDropAdapter.View
                 break;*/
 
             default:
-                /*holder.brandLogo.setBackground(ContextCompat.getDrawable(mContext, R.drawable.logo_voto));
-                holder.priceDropCount.setText(String.valueOf(map.get(categoryList.get(position))));*/
+              holder.brandLogo.setVisibility(View.GONE);
+                holder.brandName.setVisibility(View.VISIBLE);
+                holder.brandName.setText(categoryList.get(position));
+                holder.priceDropCount.setText(String.valueOf(map.get(categoryList.get(position))));
                 break;
         }
     }
@@ -403,11 +404,12 @@ public class PriceDropAdapter extends RecyclerView.Adapter<PriceDropAdapter.View
 
     public static class ViewHolder extends RecyclerView.ViewHolder{
         public ImageView brandLogo;
-        public TextView priceDropCount;
+        public TextView priceDropCount,brandName;
 
         public ViewHolder(final View itemView) {
             super(itemView);
             this.brandLogo = (ImageView) itemView.findViewById(R.id.brand_logo);
+            this.brandName = (TextView) itemView.findViewById(R.id.brand_name);
             this.priceDropCount = (TextView) itemView.findViewById(R.id.no_of_records);
         }
     }
