@@ -250,11 +250,11 @@ public class PriceDropAdapter extends RecyclerView.Adapter<PriceDropAdapter.View
                 holder.priceDropCount.setText(String.valueOf(map.get(categoryList.get(position))));
                 break;
 
-            /*case *//*"-KU1m3xWbMbRpybhTFyb"*//*"INFOCUS":
+            case /* "-KU1m3xWbMbRpybhTFyb"*/"INFOCUS":
                 //INFOCUS
                 holder.brandLogo.setBackground(ContextCompat.getDrawable(mContext, R.drawable.logo_infocus));
                 holder.priceDropCount.setText(String.valueOf(map.get(categoryList.get(position))));
-                break;*/
+                break;
 
             case /*"-KTzBkfTUVuHcjKL-_nG"*/"HUAWEI":
                 //HUAWEI
