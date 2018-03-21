@@ -2,7 +2,6 @@ package org.app.mydukan.adapters;
 
 import android.content.Context;
 import android.content.Intent;
-import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -13,15 +12,12 @@ import android.widget.TextView;
 
 import org.app.mydukan.R;
 import org.app.mydukan.activities.PriceDropModels;
-import org.app.mydukan.activities.ProductListActivity;
 import org.app.mydukan.data.Product;
 import org.app.mydukan.data.SupplierBindData;
-import org.app.mydukan.fragments.ProductPagerFragment;
 import org.app.mydukan.utils.AppContants;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 
 /**

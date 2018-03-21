@@ -124,10 +124,4 @@ public class MyDukan extends Application {
         }
     }
 
-
-
-
-
-
-
 }

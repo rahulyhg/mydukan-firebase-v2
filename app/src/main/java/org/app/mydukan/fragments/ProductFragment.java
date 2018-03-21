@@ -262,7 +262,7 @@ public class ProductFragment extends android.support.v4.app.Fragment implements 
             }
         });
 
-*/
+    */
 
         // bug is in this below code after sorting
 
@@ -278,7 +278,7 @@ public class ProductFragment extends android.support.v4.app.Fragment implements 
                             getResources().getString(R.string.ok));
                 } else {
                     mProductAdapter.clearProduct();
-                    Collections.sort(sortedlist_PrivceDrop, new DateComparator());
+                    Collections.sort(sortedlist_PrivceDrop, new DateComparator1());
                     mProductAdapter.addProduct(sortedlist_PrivceDrop);
                     mProductAdapter.notifyDataSetChanged();
                 }
@@ -322,7 +322,11 @@ public class ProductFragment extends android.support.v4.app.Fragment implements 
 
         } else {
             mProductAdapter.clearProduct();
-            Collections.sort(sortedlist_MRPMONTH, new mrpMonthComparator());
+          //   Collections.sort(sortedlist_MRPMONTH, new mrpMonthComparator());
+      //      Collections.sort(sortedlist_MRPMONTH, new DateComparator());
+
+            Collections.sort(sortedlist_MRPMONTH, new DateComparator1());
+            Collections.reverse(sortedlist_MRPMONTH);
             mProductAdapter.addProduct(sortedlist_MRPMONTH);
             mProductAdapter.notifyDataSetChanged();
         }
@@ -374,7 +378,7 @@ public class ProductFragment extends android.support.v4.app.Fragment implements 
         }
     }
 
-    public class DateComparator implements Comparator<Product> {
+/*    public class DateComparator implements Comparator<Product> {
         DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
         public String convertTime(long time) {
@@ -387,17 +391,55 @@ public class ProductFragment extends android.support.v4.app.Fragment implements 
             //descending getPriceDrop().getStartdate();
             long mdate1 = p1.getPriceDrop().getStartdate();
             long mdate2 = p2.getPriceDrop().getStartdate();
+         //   convertTime(long mdate1)
             Date d1 = null;
             Date d2 = null;
             d1 = new Date(mdate1);
             d2 = new Date(mdate2);
+            if(d2==null){
+                p1. getPriceDrop().setStartdate(0);
+            }
+            if(d1==null  ){
+                p2. getPriceDrop().setStartdate(0);
+            }
             return d1.compareTo(d2) * -1;
 
             //descendi
         }
+    }*/
+
+    private class DateComparator1 implements Comparator<Product> {
+        DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+     /*   SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy hh:mm:ss a");*/
+
+        public int compare(Product p1, Product p2) {
+            //descending getPriceDrop().getStartdate();
+            int result = 0;
+            try {
+                if ((p1.getPriceDrop() != null) && (p1.getPriceDrop() != null)) {
+                    long mdate1 = p1.getPriceDrop().getStartdate();
+                    long mdate2 = p2.getPriceDrop().getStartdate();
+                    Date d1 = null;
+                    Date d2 = null;
+                    d1 = new Date(p1.getPriceDrop().getStartdate());
+                    d2 = new Date(p2.getPriceDrop().getStartdate());
+
+                    if (d1 == null || d2 == null)
+                        return result;
+                    result = d1.compareTo(d2);
+                    //result = d1 < d2 ? -1 : d1 > d2 ? 1 : 0;
+                }
+                return result;
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                return 0;
+            }
+        }
     }
 
-    public class mrpMonthComparator implements Comparator<Product> {
+
+/*    public class mrpMonthComparator implements Comparator<Product> {
 
         public int compare(Product p1, Product p2) {
 
@@ -413,7 +455,7 @@ public class ProductFragment extends android.support.v4.app.Fragment implements 
             return pMRP1.compareTo(pMRP2) * -1;
 
         }
-    }
+    }*/
 
     private class NameComparator implements Comparator<Product> {
         public int compare(Product p1, Product p2) {
